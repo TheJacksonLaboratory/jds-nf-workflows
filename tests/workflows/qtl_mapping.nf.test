@@ -1,0 +1,23 @@
+nextflow_workflow {
+
+    name "Test Workflow QTL_MAPPING"
+    script "workflows/qtl_mapping.nf"
+    workflow "QTL_MAPPING"
+
+    test("Full Workflow -- TEST TO BE ADDED") {
+
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                pipeline = 'qtl_mapping'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+}
