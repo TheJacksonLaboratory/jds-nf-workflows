@@ -4,7 +4,6 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/qtl_mapping.nf"
 include {param_log} from "${projectDir}/bin/log/qtl_mapping.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
 
 
