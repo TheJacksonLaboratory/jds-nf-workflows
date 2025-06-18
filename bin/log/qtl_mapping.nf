@@ -14,9 +14,6 @@ Results Published to: ${params.pubdir}
 ______________________________________________________
 --workflow                      ${params.workflow}
 --gen_org                       ${params.gen_org}
---genome_build                  ${params.genome_build}
-
-... ADJUST AS NEEDED ...
-
+--n_perms                       ${params.n_perms}
 """
 }
