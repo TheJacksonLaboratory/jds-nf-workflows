@@ -12,8 +12,8 @@ process MAP_QTL {
 
     output:
     tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), path(pheno_file), val(phenotype), emit: probs_files
-    tuple val(id), val(phenotype), path("*_scan1out.rds"), emit: scan1_files
-    tuple val(id), val(phenotype), path("*_scan1.png"), emit: scan1_plots
+    tuple val(id), path("*_scan1out.rds"), emit: scan1_files
+    tuple val(id), path("*_scan1.png"), emit: scan1_plots
 
     script:
 

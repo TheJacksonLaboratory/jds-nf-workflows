@@ -10,7 +10,7 @@ process DATA_QC {
 
     output:
     tuple val(id), path("pr.rds"), path("apr.rds"), path("cross.rds"), path("kinship.rds"), path("covar.csv"), emit: probs_files
-    tuple path("*_pheno.csv"), emit: pheno_files
+    path("*_pheno.csv"), emit: pheno_files
 
     script:
 

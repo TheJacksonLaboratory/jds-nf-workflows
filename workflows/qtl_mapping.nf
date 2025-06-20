@@ -38,11 +38,14 @@ workflow QTL_MAPPING {
 
     // Map QTL
     MAP_QTL(map_perm_ch)
-    MAP_QTL.out.scan1_files.view()
 
     // Run permutations
     RUN_PERMS(map_perm_ch)
-    RUN_PERMS.out.perm_files.view()
+
+    // Collect results
+    RUN_PERMS.out.perm_files.flatten().view()
+    MAP_QTL.out.scan1_files.flatten().view()
+
 
     
 }
