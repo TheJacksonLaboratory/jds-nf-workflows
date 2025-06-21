@@ -45,7 +45,7 @@ scan1out <- qtl2::scan1(genoprobs = alleleprobs,
 
 # Plot LODs
 png(paste0(colnames(pheno),"_scan1.png"))
-qtl2::plot_scan1(x = scan1out, map = cross$pmap)
+qtl2::plot_scan1(x = scan1out, map = cross$pmap, main = colnames(pheno))
 dev.off()
 
 # Save the files

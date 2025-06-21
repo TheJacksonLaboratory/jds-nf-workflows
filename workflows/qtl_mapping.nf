@@ -8,6 +8,7 @@ include {extract_csv} from "${projectDir}/bin/shared/extract_csv_qtl.nf"
 include {DATA_QC} from "${projectDir}/modules/qtl2/data_qc.nf"
 include {MAP_QTL} from "${projectDir}/modules/qtl2/map_qtl.nf"
 include {RUN_PERMS} from "${projectDir}/modules/qtl2/run_perms.nf"
+include {HARVEST_QTL} from "${projectDir}/modules/qtl2/harvest_qtl.nf"
 
 // help if needed
 if (params.help){
@@ -43,9 +44,10 @@ workflow QTL_MAPPING {
     RUN_PERMS(map_perm_ch)
 
     // Collect results
-    RUN_PERMS.out.perm_files.flatten().view()
-    MAP_QTL.out.scan1_files.flatten().view()
-
+    perm_ch =   RUN_PERMS.out.perm_files.groupTuple()
+    map_ch  =   MAP_QTL.out.scan1_files.groupTuple()
+    harvest_ch = perm_ch.join(map_ch, by: 0)
+    HARVEST_QTL(harvest_ch)
 
     
 }
