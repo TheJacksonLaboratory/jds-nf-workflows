@@ -6,7 +6,7 @@ println logo.show()
 
 def param_log(){
 log.info """
-QTL MAPPING PARAMETER LOG
+HAPLOTYPE RECONSTRUCTION PARAMETER LOG
 
 --comment: ${params.comment}
 
@@ -14,6 +14,8 @@ Results Published to: ${params.pubdir}
 ______________________________________________________
 --workflow                      ${params.workflow}
 --csv                           ${params.csv}
---n_perms                       ${params.n_perms}
+--rerun                         ${params.rerun}
+--correct_ids                   ${params.correct_ids}
+--remove_markers                ${params.remove_markers}
 """
 }
