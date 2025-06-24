@@ -20,7 +20,7 @@ process GS_TO_QTL2 {
   script:
   """
   Rscript --vanilla ${projectDir}/bin/qtl/geneseek2qtl2.R \
-	${params.CCDOalleleCodes} \
+	${params.cc_do_allele_codes} \
 	${covar_file} \
 	${finalreport_files} \
   ${params.max_pct_missing}
