@@ -15,34 +15,41 @@
 ################################################################################
 
 library(qtl2)
+library(dplyr)
 
 # Read in the data
 args <- commandArgs(trailingOnly = TRUE)
 
 # Inputs (for testing):
-# baseDir           <- "/projects/compsci/vmp/USERS/widmas/attie_500"
-# pheno_file        <- file.path(baseDir,"data/phenotypes/attie_test_pheno.csv")
-# covar_file        <- file.path(baseDir,"results/attie_500_test_covar.csv")
-# genoprobs_file    <- file.path(baseDir,"results/attie_500_test_genoprobs.rds")
-# alleleprobs_file  <- file.path(baseDir,"results/attie_500_test_alleleprobs.rds")
-# cross_file        <- file.path(baseDir,"results/attie_500_test_cross.rds")
-# kinship_file      <- file.path(baseDir,"results/attie_500_test_kinship.rds")
+baseDir           <- "/flashscratch/widmas/outputDir/work/8e/987ae9cbc622f1541c24adb23ea0e8"
+pheno_file        <- "attie_test_pheno.csv"
+covar_file        <- "attie_500_test_covar.csv"
+genoprobs_file    <- "attie_500_test_genoprobs.rds"
+alleleprobs_file  <- "attie_500_test_alleleprobs.rds"
+cross_file        <- "attie_500_test_cross.rds"
+kinship_file      <- "attie_500_test_kinship.rds"
+pheno_file        <- "attie_test_pheno.csv"
+transform_file    <- "attie_test_transform.csv"
 # outdir            <- "/flashscratch/widmas/qtl_mapping_qc"
 # dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
 args <- commandArgs(trailingOnly = TRUE)
-covar_file        <- args[1]
-cross_file        <- args[2]
-genoprobs_file    <- args[3]
-alleleprobs_file  <- args[4]
-kinship_file      <- args[5]
-pheno_file        <- args[6]
+covar_file              <- args[1]
+cross_file              <- args[2]
+genoprobs_file          <- args[3]
+alleleprobs_file        <- args[4]
+kinship_file            <- args[5]
+pheno_file              <- args[6]
+transform_file     <- args[7]
 
 # Read in the phenotype data
 pheno <- read.csv(pheno_file)
+transform <- read.csv(transform_file)
 
 # Fix phenotype columns
 colnames(pheno) <- gsub(" ","_",colnames(pheno))
+transform$phenotype <- gsub(" ","_",transform$phenotype)
+stopifnot(all(transform$phenotype %in% colnames(pheno)))
 
 # Read in the covariate data
 covar <- read.csv(covar_file)
@@ -63,6 +70,54 @@ if (!all(covar$id %in% pheno$id)) {
 pheno <- pheno[order(pheno$id), ]
 covar <- covar[order(covar$id), ]
 stopifnot(pheno$id == covar$id)
+
+# Transform the phenotypes according to the transform file
+transformed_phenos <- list()
+for(i in 1:nrow(transform)){
+  t <- transform[i,]$transformation
+  p <- transform[i,]$phenotype
+  
+  if(is.na(t)){
+    
+    untrans_pheno <- data.frame(pheno[,which(colnames(pheno) == p)])
+    colnames(untrans_pheno) <- colnames(pheno)[which(colnames(pheno) == p)]
+    transformed_phenos[[i]] <- untrans_pheno
+    
+  } else if(t == "log"){
+    
+    trans_pheno <- data.frame(log10(pheno[,which(colnames(pheno) == p)]))
+    colnames(trans_pheno) <- paste0("log_",p)
+    transformed_phenos[[i]] <- trans_pheno
+    
+  } else if(t == "log1p"){
+    
+    trans_pheno <- data.frame(log1p(pheno[,which(colnames(pheno) == p)]))
+    colnames(trans_pheno) <- paste0("log1p_",p)
+    transformed_phenos[[i]] <- trans_pheno
+    
+  } else if(t == "sqrt"){
+    
+    trans_pheno <- data.frame(sqrt(pheno[,which(colnames(pheno) == p)]))
+    colnames(trans_pheno) <- paste0("sqrt_",p)
+    transformed_phenos[[i]] <- trans_pheno
+    
+  } else if(t == "rankZ"){
+    
+  } else if(t == "exp"){
+    
+    trans_pheno <- data.frame(exp(pheno[,which(colnames(pheno) == p)]))
+    colnames(trans_pheno) <- paste0("e_",p)
+    transformed_phenos[[i]] <- trans_pheno
+    
+  } else {
+    
+    stop("One of log, log1p, sqrt, rankZ, exp tranformations, or NA (no transformation) not specified; quitting")
+  }
+  
+}
+transformed_phenos <- Reduce(cbind, transformed_phenos)
+pheno <- cbind(pheno, transformed_phenos) %>%
+  dplyr::select(id, colnames(transformed_phenos))
 
 # Read in the genotype probabilities
 genoprobs <- readRDS(genoprobs_file)

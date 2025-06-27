@@ -24,7 +24,7 @@ workflow QTL_MAPPING {
     project_ch = extract_csv(params.csv)
     project_ch.map{it -> [  it[0], 
                             it[1].covar_file, it[1].cross_file, it[1].genoprobs_file, it[1].alleleprobs_file, it[1].kinship_file, 
-                            it[1].pheno_file ] }set{data_qc_ch}
+                            it[1].pheno_file, it[1].transformation_file] }set{data_qc_ch}
 
     // Data quality control
     DATA_QC(data_qc_ch)

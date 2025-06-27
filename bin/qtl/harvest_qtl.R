@@ -7,12 +7,10 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250619
+# 20250626
 ################################################################################
 
 library(qtl2)
-
-# setwd("/flashscratch/widmas/outputDir/work/78/9df6e92e90bfb09251cb28f303da77")
 
 # Test files
 scan1_files <- list.files(pattern = "scan1out.rds")
@@ -24,20 +22,6 @@ phenotypes <- unlist(lapply(perm_files, function(x){
   pheno <- gsub(pattern = "_scan1perms.rds",replacement = "", basename(x))
   return(pheno)
 }))
-
-# Plot QTL scans with permutation thresholds
-for(i in phenotypes){
-  scan1 <- readRDS(scan1_files[grep(i, scan1_files)])
-  perms <- readRDS(perm_files[grep(i, perm_files)])
-  cross <- readRDS(cross_files[grep(i, cross_files)])
-  thresh <- as.numeric()
-  png(paste0(i,"_scan1_thresh.png"))
-  qtl2::plot_scan1(scan1, cross$pmap, main = i)
-  qtl2::add_threshold(cross$pmap, 
-                      thresholdA = summary(perms)[[1]], 
-                      thresholdX = summary(perms)[[2]], col = "red")
-  dev.off()
-}
 
 # Pull significant QTLs and Find peaks
 peaks <- list()
@@ -57,14 +41,14 @@ for(i in phenotypes){
   dev.off()
   
   # find peaks
-  peaks[[i]] <- find_peaks(scan1_output = scan1, 
-                           map = cross$pmap, 
-                           threshold  = summary(perms)[[1]], prob = 0.95, 
-                           thresholdX = summary(perms)[[2]], probX = 0.95,
-                           sort_by = "pos",
-                           cores = 0)
+  peaks[[i]] <-  qtl2::find_peaks(scan1_output = scan1, 
+                                  map = cross$pmap,
+                                  threshold = summary(perms)[[1]], drop = 3, peakdrop = 3,
+                                  thresholdX = summary(perms)[[2]], dropX = 3, peakdropX = 3,
+                                  expand2markers = TRUE,
+                                  sort_by = "pos")
   
 }
 QTL_table <- Reduce(rbind, peaks)
-write.csv(QTL_table, file = "peaks.csv")
+write.csv(QTL_table, file = "peaks.csv", row.names = F, quote = F)
 

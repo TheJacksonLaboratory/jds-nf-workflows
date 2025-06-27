@@ -6,7 +6,7 @@ process DATA_QC {
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
     input:
-    tuple val(id), path(covar_file), path(cross_file), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(pheno_file)
+    tuple val(id), path(covar_file), path(cross_file), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(pheno_file), path(transformation_file)
 
     output:
     tuple val(id), path("pr.rds"), path("apr.rds"), path("cross.rds"), path("kinship.rds"), path("covar.csv"), emit: probs_files
@@ -20,8 +20,8 @@ process DATA_QC {
             ${genoprobs_file} \
             ${alleleprobs_file} \
             ${kinship_file} \
-            ${pheno_file}
-
+            ${pheno_file} \
+            ${transformation_file}
     """
 
 }
