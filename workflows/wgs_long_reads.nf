@@ -169,50 +169,49 @@ workflow WGS_LONG_READS {
   // FASTQC  
   FASTQC(FASTP.out.trimmed_fastq)
 
-//   // START Split FASTQ
-//   if (params.split_fastq) {
-//     split_fastq_files = FASTP.out.trimmed_fastq
-//                          .map{it -> [it[0], it[1]]}
-//                          .splitFastq(by: params.split_fastq_bin_size, file: true)
-//                          .map{it -> [it[0], it[1], it[1].name.split('\\.')[-2]]}
+  // START Split FASTQ
+  if (params.split_fastq) {
+    split_fastq_files = FASTP.out.trimmed_fastq
+                         .map{it -> [it[0], it[1]]}
+                         .splitFastq(by: params.split_fastq_bin_size, file: true)
+                         .map{it -> [it[0], it[1], it[1].name.split('\\.')[-2]]}
 
-//                          // from fastp the naming convention will always be *R*.fastq. 
-//                          // splitFastq adds an increment between *R* and .fastq. 
-//                          // This can be used to set an 'index' value to make file names unique.
-//     split_fastq_count = split_fastq_files
-//                     .groupTuple()
-//                     .map{sample, reads, index -> [sample, groupKey(sample, index.size())]}
+                         // from fastp the naming convention will always be *R*.fastq. 
+                         // splitFastq adds an increment between *R* and .fastq. 
+                         // This can be used to set an 'index' value to make file names unique.
+    split_fastq_count = split_fastq_files
+                    .groupTuple()
+                    .map{sample, reads, index -> [sample, groupKey(sample, index.size())]}
     
-//     pbmm2_mapping = split_fastq_count
-//                 .combine(split_fastq_files, by:0)
-//                 .map{it -> [it[1], it[2], it[3], it[4]] }
+    pbmm2_mapping = split_fastq_count
+                .combine(split_fastq_files, by:0)
+                .map{it -> [it[1], it[2], it[3]] }
 
 
-//     } else {
+    } else {
     
-//     // bwa_mem_mapping = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
-//     //                   .map{it -> [it[0], it[1], 'aln', it[2]]}
-//     } 
-//     // END Split FASTQ
+    pbmm2_mapping = FASTP.out.trimmed_fastq
 
+    }
+    
     // PBMM2 Alignment
     ch_minimap2_index = file("${params.minimap2_index}")
 
     // Map reads to indexed genome
-    PBMM2_CALL(FASTP.out.trimmed_fastq, ch_minimap2_index)
+    PBMM2_CALL(pbmm2_mapping, ch_minimap2_index)
+    
+    if (params.split_fastq) {
+      SAMTOOLS_MERGE(PBMM2_CALL.out.pbmm2_bam.map{it -> [it[0], it[1]] }.groupTuple(), 'merged_file')
+      bam_file = SAMTOOLS_MERGE.out.bam
+    } else {
+      bam_file = PBMM2_CALL.out.pbmm2_bam.map{it -> [it[0], it[1]] }
+    }
     
     // BAMs are split into two channels, one for SNP/INDEL calling and one for SV calling.
-    PBMM2_CALL.out.pbmm2_bam.multiMap{it -> 
-                                  snp_indel: [it[0], it[1]]
-                                  sv_calling: [it[0], it[1], it[2]]}.set{bam_channels}
+    bam_file.multiMap{it -> 
+                      snp_indel: [it[0], it[1]]
+                      sv_calling: [it[0], it[1], it[2]]}.set{bam_channels}
   
-    // speculating on this use case here...
-    //   if (params.split_fastq) {
-    //     SAMTOOLS_MERGE(....groupTuple(), 'merged_file')
-    //     bam_file = SAMTOOLS_MERGE.out.bam
-    //   } else {
-    //     bam_file = PICARD_SORTSAM.out.bam
-    //   }
     
     // Begin Merge on Individuals
     if (params.merge_inds) {
