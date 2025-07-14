@@ -10,17 +10,17 @@ process SAMTOOLS_STATS {
     publishDir {
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
-    }, pattern: "*.flagstat", mode: 'copy', enabled: params.keep_intermediate
+    }, pattern: "*.flagstat", mode: 'copy'
 
     publishDir {
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
-    }, pattern: "*.idxstats", mode: 'copy', enabled: params.keep_intermediate
+    }, pattern: "*.idxstats", mode: 'copy'
 
     publishDir {
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
-    }, pattern: "*.stats", mode: 'copy', enabled: params.keep_intermediate
+    }, pattern: "*.stats", mode: 'copy'
 
 
     input:
