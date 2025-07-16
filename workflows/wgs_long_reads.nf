@@ -230,8 +230,7 @@ workflow WGS_LONG_READS {
 
     } // END merge on individual
 
-    // BAMs are split into two channels, one for SNP/INDEL calling and one for SV calling.
-    bam_file.view()
+    // BAMs are split into two channels, one for SNP/INDEL calling and one for SV calling
 
     SAMTOOLS_STATS(bam_file)
     MOSDEPTH(bam_file.join(index_file))
