@@ -19,7 +19,7 @@ def param_log(){
     --gen_org                       ${params.gen_org}
     --genome_build                  ${params.genome_build}
     --ref_fa                        ${params.ref_fa}
-    --chrom_contigs                 ${params.chrom_contigs}
+    --interval_count                ${params.interval_count}
 
     Project Directory: ${projectDir}
 
