@@ -1,4 +1,5 @@
 process MOSDEPTH {
+  tag "${sampleID}"
 
   cpus 1
   memory 10.GB

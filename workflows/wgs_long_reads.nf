@@ -67,7 +67,7 @@ if (params.help){
     exit 0
 }
 
-log params
+// log params
 param_log()
 
 if (params.download_data && !params.csv_input) {
@@ -182,29 +182,24 @@ workflow WGS_LONG_READS {
     // Map reads to indexed genome
     PBMM2_CALL(pbmm2_mapping, ch_minimap2_index)
     
+    // 
     if (params.split_fastq) {
       SAMTOOLS_MERGE(PBMM2_CALL.out.pbmm2_bam.map{it -> [it[0], it[1]] }.groupTuple(), 'merged_file')
       bam_file = SAMTOOLS_MERGE.out.bam
     } else {
       bam_file = PBMM2_CALL.out.pbmm2_bam.map{it -> [it[0], it[1]] }
     }
-    
-    // BAMs are split into two channels, one for SNP/INDEL calling and one for SV calling.
-    bam_file.multiMap{it -> 
-                      snp_indel: [it[0], it[1]]
-                      sv_calling: [it[0], it[1], it[2]]}.set{bam_channels}
-  
-    
+        
     // Begin Merge on Individuals
     if (params.merge_inds) {
-      merge_ch = bam_channels.snp_indel.join(meta_ch, by: 0)
-                          .map{it -> [it[2].ind, it[1]]}
-                          .groupTuple()
-                          .map{it -> [it[0], it[1], it[1].size()]}
-                          .branch{
+      merge_ch = bam_file.join(meta_ch, by: 0)
+                         .map{it -> [it[2].ind, it[1]]}
+                         .groupTuple()
+                         .map{it -> [it[0], it[1], it[1].size()]}
+                         .branch{
                                 merge: it[2] > 1
                                 pass:  it[2] == 1
-                            }
+                          }
       // BAM files are joined to the meta_ch (which contains individual IDs in meta.ind)
       // Individual IDs are taken from the meta_ch, and set to the '0' index of a tuple
       // The '0' index defines the sampleID moving forward, which is `ind` in this case.
@@ -234,6 +229,10 @@ workflow WGS_LONG_READS {
       index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
 
     } // END merge on individual
+
+    // BAMs are split into two channels, one for SNP/INDEL calling and one for SV calling.
+    bam_file.view()
+
     SAMTOOLS_STATS(bam_file)
     MOSDEPTH(bam_file.join(index_file))
 
@@ -337,16 +336,16 @@ workflow WGS_LONG_READS {
       GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
     }
 
-    // // SV Calling
-    // // Call SV with PBSV
-    PBSV_DISCOVER(bam_channels.sv_calling)
+    // SV Calling
+    // Call SV with PBSV
+    PBSV_DISCOVER(bam_file.join(index_file))
     ch_fasta = params.ref_fa
     PBSV_CALL(PBSV_DISCOVER.out.pbsv_svsig, ch_fasta)
 
     // Call SV with sniffles
-    SNIFFLES(PBMM2_CALL.out.pbmm2_bam)
+    SNIFFLES(bam_file.join(index_file))
 
-    // * Merge callers and annotate results
+    // Merge caller results
 
     // Join VCFs together by sampleID and run SURVIVOR merge
     survivor_input = PBSV_CALL.out.pbsv_vcf.join(SNIFFLES.out.sniffles_vcf)
