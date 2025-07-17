@@ -11,12 +11,12 @@ process MAP_QTL {
     publishDir "${params.pubdir}/${id}", pattern:"*_scan1out.rds", mode:'copy'
 
     input:
-    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), path(pheno_file), val(phenotype)
+    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file)
 
     output:
-    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path("*_cross.rds"), path(kinship_file), path(covar_file), path(pheno_file), val(phenotype), emit: probs_files
-    tuple val(id), path("*_scan1out.rds"), path("*_cross.rds"), emit: scan1_files
-    tuple val(id), path("*_scan1.png"), emit: scan1_plots
+    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), emit: probs_files
+    tuple val(id), path('*_scan1out.rds'), path('*_cross.rds'), emit: scan1_files
+    tuple val(id), path('*_scan1.png'), emit: scan1_plots
 
     script:
 
@@ -26,9 +26,8 @@ process MAP_QTL {
             ${genoprobs_file} \
             ${alleleprobs_file} \
             ${kinship_file} \
-            ${pheno_file}
-
-    mv ${cross_file} ${phenotype}_cross.rds
+            ${pheno_file} \
+            ${covar_info_file}
     """
 
 }

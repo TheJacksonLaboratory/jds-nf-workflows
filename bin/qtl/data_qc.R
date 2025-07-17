@@ -11,7 +11,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250618
+# 20250716
 ################################################################################
 
 library(qtl2)
@@ -20,16 +20,17 @@ library(dplyr)
 # Read in the data
 args <- commandArgs(trailingOnly = TRUE)
 
-# Inputs (for testing):
-baseDir           <- "/flashscratch/widmas/outputDir/work/8e/987ae9cbc622f1541c24adb23ea0e8"
-pheno_file        <- "attie_test_pheno.csv"
-covar_file        <- "attie_500_test_covar.csv"
-genoprobs_file    <- "attie_500_test_genoprobs.rds"
-alleleprobs_file  <- "attie_500_test_alleleprobs.rds"
-cross_file        <- "attie_500_test_cross.rds"
-kinship_file      <- "attie_500_test_kinship.rds"
-pheno_file        <- "attie_test_pheno.csv"
-transform_file    <- "attie_test_transform.csv"
+# # Inputs (for testing):
+# baseDir           <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3d/52883ff42ddafa870f93cadf526e8d/"
+# setwd(baseDir)
+# pheno_file        <- "attie_test_pheno.csv"
+# covar_file        <- "attie_500_test_covar.csv"
+# genoprobs_file    <- "attie_500_test_genoprobs.rds"
+# alleleprobs_file  <- "attie_500_test_alleleprobs.rds"
+# cross_file        <- "attie_500_test_cross.rds"
+# kinship_file      <- "attie_500_test_kinship.rds"
+# pheno_file        <- "attie_test_pheno.csv"
+# covar_info_file    <- "attie_test_transform.csv"
 # outdir            <- "/flashscratch/widmas/qtl_mapping_qc"
 # dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 
@@ -40,11 +41,13 @@ genoprobs_file          <- args[3]
 alleleprobs_file        <- args[4]
 kinship_file            <- args[5]
 pheno_file              <- args[6]
-transform_file     <- args[7]
+covar_info_file         <- args[7]
 
 # Read in the phenotype data
 pheno <- read.csv(pheno_file)
-transform <- read.csv(transform_file)
+covar_info <- read.csv(covar_info_file)
+transform <- covar_info %>%
+  dplyr::distinct(phenotype, transformation)
 
 # Fix phenotype columns
 colnames(pheno) <- gsub(" ","_",colnames(pheno))
@@ -88,18 +91,21 @@ for(i in 1:nrow(transform)){
     trans_pheno <- data.frame(log10(pheno[,which(colnames(pheno) == p)]))
     colnames(trans_pheno) <- paste0("log_",p)
     transformed_phenos[[i]] <- trans_pheno
+    covar_info$phenotype[which(covar_info$phenotype == p & covar_info$transformation == t)] <- paste0("log_",p)
     
   } else if(t == "log1p"){
     
     trans_pheno <- data.frame(log1p(pheno[,which(colnames(pheno) == p)]))
     colnames(trans_pheno) <- paste0("log1p_",p)
     transformed_phenos[[i]] <- trans_pheno
+    covar_info$phenotype[which(covar_info$phenotype == p & covar_info$transformation == t)] <- paste0("log1p_",p)
     
   } else if(t == "sqrt"){
     
     trans_pheno <- data.frame(sqrt(pheno[,which(colnames(pheno) == p)]))
     colnames(trans_pheno) <- paste0("sqrt_",p)
     transformed_phenos[[i]] <- trans_pheno
+    covar_info$phenotype[which(covar_info$phenotype == p & covar_info$transformation == t)] <- paste0("sqrt_",p)
     
   } else if(t == "rankZ"){
     
@@ -108,6 +114,7 @@ for(i in 1:nrow(transform)){
     trans_pheno <- data.frame(exp(pheno[,which(colnames(pheno) == p)]))
     colnames(trans_pheno) <- paste0("e_",p)
     transformed_phenos[[i]] <- trans_pheno
+    covar_info$phenotype[which(covar_info$phenotype == p & covar_info$transformation == t)] <- paste0("e_",p)
     
   } else {
     
@@ -118,6 +125,7 @@ for(i in 1:nrow(transform)){
 transformed_phenos <- Reduce(cbind, transformed_phenos)
 pheno <- cbind(pheno, transformed_phenos) %>%
   dplyr::select(id, colnames(transformed_phenos))
+
 
 # Read in the genotype probabilities
 genoprobs <- readRDS(genoprobs_file)
@@ -155,6 +163,13 @@ for(i in names(genoprobs)){
 pheno_cols <- colnames(pheno)[!colnames(pheno) %in% c("id","sex","gen")]
 for(i in pheno_cols){
   write.csv(pheno[,c("id",i)], file = paste0(i,"_pheno.csv"), row.names = FALSE, quote = FALSE)
+}
+
+for(i in pheno_cols){
+  filtered_covar_info <- covar_info %>%
+    dplyr::filter(phenotype == i) %>%
+    dplyr::select(-transformation)
+  write.csv(filtered_covar_info, file = paste0(i,"_covar_info.csv"), row.names = FALSE, quote = FALSE)
 }
 
 # Save the updated files

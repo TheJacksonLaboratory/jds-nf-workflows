@@ -10,11 +10,11 @@ process RUN_PERMS {
     publishDir "${params.pubdir}/${id}", pattern:"*_scan1perms.rds", mode:'copy'
 
     input:
-    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), path(pheno_file), val(phenotype)
+    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file)
 
     output:
-    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), path(pheno_file), val(phenotype), emit: probs_files
-    tuple val(id), path("*_scan1perms.rds"), emit: perm_files
+    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), emit: probs_files
+    tuple val(id), path('*_scan1perms.rds'), emit: perm_files
 
     script:
 
@@ -25,6 +25,7 @@ process RUN_PERMS {
             ${alleleprobs_file} \
             ${kinship_file} \
             ${pheno_file} \
+            ${covar_info_file} \
             ${params.n_perms}
     """
 

@@ -30,7 +30,7 @@ def extract_csv(csv_file) {
             meta_map.viterbi_file = row.viterbi_file ?: 'NA'
             meta_map.kinship_file = row.kinship_file ?: 'NA'
             meta_map.pheno_file = row.pheno_file ?: 'NA'
-            meta_map.transformation_file = row.transformation_file ?: 'NA'
+            meta_map.covar_info_file = row.covar_info_file ?: 'NA'
             
             if (params.workflow == "sample_qc_haplotype_reconstructions" && meta_map.finalreport_file == 'NA') {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
@@ -40,9 +40,9 @@ def extract_csv(csv_file) {
             System.exit(1)
             }
 
-            if (params.workflow == "qtl_mapping" && (meta_map.pheno_file == 'NA' || meta_map.transformation_file == 'NA')) {
+            if (params.workflow == "qtl_mapping" && (meta_map.pheno_file == 'NA' || meta_map.covar_info_file == 'NA')) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-            System.err.println(ANSI_RED + "`workflow = qtl_mapping` specified but `pheno_file` and/or `transformation_file` field is missing in the CSV manifest. Please add the `pheno_file` field to the manifest and restart the run." + ANSI_RESET)
+            System.err.println(ANSI_RED + "`workflow = qtl_mapping` specified but `pheno_file` and/or `covar_info_file` field is missing in the CSV manifest. Please add the `pheno_file` field to the manifest and restart the run." + ANSI_RESET)
             System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.exit(1)
