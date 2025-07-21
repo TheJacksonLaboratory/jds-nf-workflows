@@ -19,13 +19,12 @@ include {QC_REPORT} from "${projectDir}/modules/r/render_QC_markdown"
 
 
 // Make channel of consensus files (GigaMUGA)
-GM_foundergenos = Channel.fromPath("${params.CCDOdataDir}/GM_foundergeno*").collect()
-GM_gmaps = Channel.fromPath("${params.CCDOdataDir}/GM_gmap*").collect()
-GM_pmaps = Channel.fromPath("${params.CCDOdataDir}/GM_pmap*").collect()
-consensusFiles = GM_foundergenos
-                    .concat(GM_gmaps)
-                    .concat(GM_pmaps)
-                    .flatten().collect()
+founder_genos   = Channel.fromPath(params.gm_cc_do_founder_genotypes).collect()
+gmaps           = Channel.fromPath(params.gm_gmaps).collect()
+pmaps           = Channel.fromPath(params.gm_pmaps).collect()
+consensus_files = founder_genos.concat(gmaps)
+                               .concat(pmaps)
+                               .flatten().collect()
 
 
 // QC and Haplotype Reconstruction Workflow
@@ -57,7 +56,7 @@ workflow HAPLOTYPE_RECONSTRUCTION {
         sampleGenos = GS_TO_QTL2.out.sampleGenos
 
         // Write control file
-        WRITE_CROSS(metadata, sampleGenos, consensusFiles)
+        WRITE_CROSS(metadata, sampleGenos, consensus_files)
 
         // Initial haplotype reconstruction
         GENOPROBS(WRITE_CROSS.out.cross)

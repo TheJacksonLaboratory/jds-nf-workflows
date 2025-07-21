@@ -15,6 +15,7 @@ process HARVEST_QTL {
 
     output:
     tuple val(id), path("peaks.csv"), emit: qtl_table
+    tuple val(id), path(cross_files), path(scan1_files), emit: qtl_files
     tuple val(id), path("*_scan1_thresh.png"), emit: scan1_thresh
 
     script:

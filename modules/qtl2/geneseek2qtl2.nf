@@ -20,10 +20,9 @@ process GS_TO_QTL2 {
   script:
   """
   Rscript --vanilla ${projectDir}/bin/qtl/geneseek2qtl2.R \
-	${params.cc_do_allele_codes} \
+	${params.gm_cc_do_allele_codes} \
 	${covar_file} \
-	${finalreport_files} \
-  ${params.max_pct_missing}
+	${finalreport_files}
 
   current_dir=\$(echo pwd)
   hash=\$(\$current_dir | tail -c 9)

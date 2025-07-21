@@ -44,14 +44,32 @@ workflow QTL_MAPPING {
     // Map QTL
     MAP_QTL(map_perm_ch)
 
-    // // Run permutations
+    // Run permutations
     RUN_PERMS(map_perm_ch)
 
-    // // Collect results
+    // Collect results
     perm_ch =   RUN_PERMS.out.perm_files.groupTuple()
     map_ch  =   MAP_QTL.out.scan1_files.groupTuple()
     harvest_ch = perm_ch.join(map_ch, by: 0)
     HARVEST_QTL(harvest_ch)
+
+    // Make channels for each QTL
+    HARVEST_QTL.out.qtl_table.splitCsv(header: true).map{
+        it -> [ [it[0], it[1].lodcolumn], [it[1].chr, it[1].pos, it[1].ci_lo, it[1].ci_hi] ]
+    }.set{peaks_ch}
+
+    // Join peaks with probs files for effect estimation
+    MAP_QTL.out.probs_files
+               .map{
+                    it -> [ [it[0], it[6]], [it[1], it[2], it[3], it[4], it[5], it[7], it[8]] ] // sets the project id and phenotype as combine key
+               }.combine(peaks_ch, by: 0)
+               .map{
+                    it -> [it[0][0], it[0][1], // project id and phenotype
+                           it[1][0], it[1][1], it[1][2], it[1][3], it[1][4], it[1][5], it[1][6], // prob files
+                           it[2][0], it[2][1], it[2][2], it[2][3]] // peak info
+               }.set{probs_peaks_ch}
+    probs_peaks_ch.view()
+    
 
     
 }

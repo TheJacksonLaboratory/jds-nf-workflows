@@ -17,9 +17,9 @@ process QC_REPORT {
   script:
 
   """
-  ls ${projectDir}/bin/scripts/markdown/QC_template.Rmd
-  cat ${projectDir}/bin/scripts/markdown/QC_template.Rmd > QC_working.Rmd
-  Rscript --vanilla ${projectDir}/bin/scripts/markdown/render_markdown.R QC_working.Rmd
+  ls ${projectDir}/bin/qtl/QC_template.Rmd
+  cat ${projectDir}/bin/qtl/QC_template.Rmd > QC_working.Rmd
+  Rscript --vanilla ${projectDir}/bin/qtl/render_markdown.R QC_working.Rmd
   mv QC_working.html QC_markdown.html
   mv QC_working.Rmd QC_markdown.Rmd
   """
