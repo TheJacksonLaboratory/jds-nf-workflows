@@ -9,7 +9,7 @@ library(dplyr)
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250523
+# 20250721
 ################################################################################
 
 # # testing
@@ -28,6 +28,7 @@ marker_file <- args[7]
 cross_type <- args[8]
 remove_markers <- args[9]
 correct_ids <- args[10]
+project_id <- args[11]
 print(args)
 
 # Read in the files
@@ -64,6 +65,8 @@ if(remove_markers == TRUE){
                             lowmem = FALSE,
                             cores = (parallel::detectCores()/2), 
                             quiet = F)
+    # clean genotype probabilities
+    genoprobs <- qtl2::clean_genoprob(genoprobs, cores = parallel::detectCores())
     
     message("Converting to allele probabilities...")
     # convert to allele probs
@@ -82,6 +85,10 @@ if(remove_markers == TRUE){
     message("Remove markers is FALSE, reading probability files...")
     # Read in files that we need if correct_ids is TRUE and remove_markers is FALSE
     genoprobs <- readRDS(genoprobs_file)
+
+    # clean genotype probabilities
+    genoprobs <- qtl2::clean_genoprob(genoprobs, cores = parallel::detectCores())
+
     alleleprobs <- readRDS(alleleprobs_file)
     m <- readRDS(viterbi_file)
     k <- readRDS(kinship_file)
@@ -113,22 +120,22 @@ if(correct_ids == TRUE){
 
         message("IDs corrected.")
         message("Saving updated cross, genotype probabilities, allele probabilities, and viterbi files...")
-        saveRDS(cross, file = "cross.rds")
-        saveRDS(genoprobs, file = "genoprobs.rds", compress = TRUE)
-        saveRDS(alleleprobs, file = "alleleprobs.rds", compress = TRUE)
-        saveRDS(m, file = "maxmarg.rds", compress = TRUE)
-        saveRDS(k, file = "kinship.rds", compress = TRUE)
+        saveRDS(cross, file = paste(project_id,"updated_cross.rds", sep = "_"))
+        saveRDS(genoprobs, file = paste(project_id,"updated_genoprobs.rds",sep = "_"), compress = TRUE)
+        saveRDS(alleleprobs, file = paste(project_id,"updated_alleleprobs.rds",sep = "_"), compress = TRUE)
+        saveRDS(m, file = paste(project_id,"updated_maxmarg.rds",sep = "_"), compress = TRUE)
+        saveRDS(k, file = paste(project_id,"updated_kinship.rds",sep = "_"), compress = TRUE)
         write.csv(covar, file = "covar.csv", row.names = FALSE, quote = FALSE)
 
 
 } else {
         message("rerun = FALSE, remove_markers = FALSE, and correct_ids = FALSE. No changes required to haplotype reconstructions.")
         message("Saving updated cross, genotype probabilities, allele probabilities, and viterbi files...")
-        saveRDS(cross, file = "cross.rds")
-        saveRDS(genoprobs, file = "genoprobs.rds", compress = TRUE)
-        saveRDS(alleleprobs, file = "alleleprobs.rds", compress = TRUE)
-        saveRDS(m, file = "maxmarg.rds", compress = TRUE)
-        saveRDS(k, file = "kinship.rds", compress = TRUE)
+        saveRDS(cross, file = paste(project_id,"updated_cross.rds", sep = "_"))
+        saveRDS(genoprobs, file = paste(project_id,"updated_genoprobs.rds",sep = "_"), compress = TRUE)
+        saveRDS(alleleprobs, file = paste(project_id,"updated_alleleprobs.rds",sep = "_"), compress = TRUE)
+        saveRDS(m, file = paste(project_id,"updated_maxmarg.rds",sep = "_"), compress = TRUE)
+        saveRDS(k, file = paste(project_id,"updated_kinship.rds",sep = "_"), compress = TRUE)
         write.csv(covar, file = "covar.csv", row.names = FALSE, quote = FALSE)
 }
 

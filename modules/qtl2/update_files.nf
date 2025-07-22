@@ -18,7 +18,7 @@ process UPDATE_FILES {
   tuple val(project_id), path(covar_file), path(cross_file), path(genoprobs_file), path(alleleprobs_file), path(viterbi_file), path(kinship_file), path(marker_file), val(cross_type)
                                 
   output:
-  tuple val(project_id), file("*_updated_genoprobs.rds"), file("*_updated_alleleprobs.rds"), file("*_updated_cross.rds"), file("*_updated_maxmarg.rds"), file("*_updated_kinship.rds"), emit: qtl2_files
+  tuple val(project_id), file("${project_id}_updated_genoprobs.rds"), file("${project_id}_updated_alleleprobs.rds"), file("${project_id}_updated_cross.rds"), file("${project_id}_updated_maxmarg.rds"), file("${project_id}_updated_kinship.rds"), emit: qtl2_files
 
   script:
   
@@ -32,13 +32,8 @@ process UPDATE_FILES {
                 ${marker_file} \
                 ${cross_type} \
                 ${params.remove_markers} \
-                ${params.correct_ids}
-
-  mv genoprobs.rds ${project_id}_updated_genoprobs.rds
-  mv alleleprobs.rds ${project_id}_updated_alleleprobs.rds
-  mv cross.rds ${project_id}_updated_cross.rds
-  mv maxmarg.rds ${project_id}_updated_maxmarg.rds
-  mv kinship.rds ${project_id}_updated_kinship.rds
+                ${params.correct_ids} \
+                ${project_id}
   
   """
 }

@@ -17,6 +17,14 @@ include {CONCAT_INTENSITIES} from "${projectDir}/modules/qtl2/concat_intensities
 include {UPDATE_FILES} from "${projectDir}/modules/qtl2/update_files"
 include {QC_REPORT} from "${projectDir}/modules/r/render_QC_markdown"
 
+// help if needed
+if (params.help){
+    help()
+    exit 0
+}
+
+// log params
+param_log()
 
 // Make channel of consensus files (GigaMUGA)
 founder_genos   = Channel.fromPath(params.gm_cc_do_founder_genotypes).collect()

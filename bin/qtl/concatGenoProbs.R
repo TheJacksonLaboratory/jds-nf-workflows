@@ -8,7 +8,7 @@ library(parallel)
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250602
+# 20250721
 ################################################################################ 
 
 # # testing
@@ -66,6 +66,9 @@ probs_list <- lapply(probs_file_list, function(x){
 
 # concatenate
 genoprobs <- Reduce(rbind, probs_list)
+
+# clean genotype probabilities
+genoprobs <- qtl2::clean_genoprob(genoprobs, cores = parallel::detectCores())
 
 # convert to allele probs
 alleleprobs <- qtl2::genoprob_to_alleleprob(probs = genoprobs, 
