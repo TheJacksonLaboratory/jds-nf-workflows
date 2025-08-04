@@ -5,7 +5,7 @@ process MOSDEPTH {
   memory 10.GB
   time '06:00:00'
 
-  container 'mosdepth_v0.3.3'
+  container 'brentp/mosdepth:v0.3.3'
 
   publishDir "${params.pubdir}/${sampleID + '/samtools'}", pattern: "*.mosdepth*", mode:'copy'
 

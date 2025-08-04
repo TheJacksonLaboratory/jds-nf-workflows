@@ -1,0 +1,229 @@
+nextflow_workflow {
+
+    name "Test Workflow wgs_long_read"
+    script "workflows/wgs_long_read.nf"
+    workflow "wgs_long_read"
+
+
+    test("PacBio -- Invalid Param") {
+        tag "GRCm39"
+        tag "failed"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_ccs_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CSS"
+                genome_build = 'GRCm39'
+                }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+   test("PacBio -- CCS -- Mouse -- GRCm38") {
+       tag "GRCm38"
+       tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_ccs_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CCS"
+                genome_build = 'GRCm38'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("PacBio -- CCS -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_ccs_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CCS"
+                genome_build = 'GRCm39'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("PacBio -- CLR -- Mouse -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_clr_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CLR"
+                genome_build = 'GRCm38'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("PacBio -- CLR -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_clr_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CLR"
+                genome_build = 'GRCm39'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+
+
+    test("PacBio -- CCS -- Human -- GRCh38") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/human/hg38_PacBio_ccs_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CCS"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("PacBio -- CLR -- Human -- GRCh38") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/human/hg38_PacBio_clr_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CLR"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+
+    test("PacBio -- Split Fastq") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_clr_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CLR"
+                genome_build = 'GRCm39'
+                split_fastq = true
+                split_fastq_bin_size = 1000
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+    // Note that only 1 split test is needed, as it is not specific to gen_org.
+
+    test("PacBio -- merge_ind Bad Input") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_clr_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CLR"
+                genome_build = 'GRCm39'
+                merge_inds = true
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+    test("PacBio -- Individual Merge") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/pacbio/mouse/mm10_PacBio_clr_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs_long_read'
+                data_type = 'pacbio'
+                pbmode = "CLR"
+                genome_build = 'GRCm39'
+                merge_inds = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+    // Note that only 1 split test is needed, as it is not specific to gen_org.
+
+
+
+// GVCF TEST.
+
+}

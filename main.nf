@@ -70,8 +70,8 @@ else if (params.workflow == "generate_rnaseq_index"){
 else if (params.workflow == "joint_gvcf_calling"){
   include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
 }
-else if (params.workflow == "wgs_long_reads"){
-  include {WGS_LONG_READS} from './workflows/wgs_long_reads'
+else if (params.workflow == "wgs_long_read"){
+  include {wgs_long_read} from './workflows/wgs_long_read'
 }
 else {
   // if workflow name is not supported: 
@@ -143,7 +143,7 @@ workflow{
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
   }
-  if (params.workflow == "wgs_long_reads"){
-    WGS_LONG_READS()
+  if (params.workflow == "wgs_long_read"){
+    wgs_long_read()
   }
 }

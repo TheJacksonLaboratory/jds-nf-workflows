@@ -26,7 +26,8 @@ process SNPSIFT_ANNOTATE {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    output_name = params.gen_org == 'mouse' && params.workflow =='pta' ? "${sampleID}_germline_snv_indel_annotated_filtered_final.vcf" : "${vcf.baseName}_${output_suffix}.vcf"
+    def baseName = vcf.getName().replaceAll(/(\.vcf|\.vcf\.gz)$/, '')
+    output_name = params.gen_org == 'mouse' && params.workflow =='pta' ? "${sampleID}_germline_snv_indel_annotated_filtered_final.vcf" : "${baseName}_${output_suffix}.vcf"
 
     """
     java -Xmx${my_mem}G -jar /opt/snpEff/SnpSift.jar \

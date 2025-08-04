@@ -35,7 +35,7 @@ workflow PACBIO {
     if (params.fastq1 && !params.bam) {
         fq_reads = ch_sampleID.concat(ch_fastq1)
                             .collect()
-                            .map { it -> tuple(it[0], it[1], 'aln')}
+                            .map { it -> tuple(it[0], it[1])}
     }
 
     else {

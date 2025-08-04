@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --mail-user=first.last@jax.org
-#SBATCH --job-name=wgs_long_reads_mouse
+#SBATCH --job-name=wgs_long_read_mouse
 #SBATCH --mail-type=END,FAIL
 #SBATCH -p compute
 #SBATCH -q batch
@@ -16,7 +16,7 @@ module load nextflow/24.10.6
 
 # RUN PIPELINE
 nextflow ../main.nf \
---workflow wgs_long_reads \
+--workflow wgs_long_read \
 -profile sumner2 \
 --gen_org mouse \
 --genome_build 'GRCm38' \

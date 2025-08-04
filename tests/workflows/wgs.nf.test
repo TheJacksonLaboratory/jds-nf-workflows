@@ -22,7 +22,7 @@ nextflow_workflow {
 
     }
 
-    test("Full Workflow -- Mouse -- GRCm38 -- Deduplicate Coverage Cap Split Fastqwm") {
+    test("Full Workflow -- Mouse -- GRCm38 -- Deduplicate Coverage Cap Split Fastq") {
         tag "GRCm38"
         tag "options"
         when {

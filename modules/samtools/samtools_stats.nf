@@ -32,9 +32,12 @@ process SAMTOOLS_STATS {
     tuple val(sampleID), file("*.stats"), emit: stats
 
     script:
+
+    def prefix = params.workflow == 'chipseq' ? bam[0].baseName : sampleID
+
     """
-    samtools flagstat ${bam[0]} > ${bam[0]}.flagstat
-    samtools idxstats ${bam[0]} > ${bam[0]}.idxstats
-    samtools stats ${bam[0]} > ${bam[0]}.stats
+    samtools flagstat ${bam[0]} > ${prefix}.flagstat
+    samtools idxstats ${bam[0]} > ${prefix}.idxstats
+    samtools stats ${bam[0]} > ${prefix}.stats
     """
 }

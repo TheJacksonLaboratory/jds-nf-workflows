@@ -36,6 +36,9 @@ process SNPEFF{
     }
     if (indel_snp == 'BOTH'){
         output_suffix = 'SNP_INDEL_filtered_annotated_final.vcf'
+    }
+    if (indel_snp == 'DEEPVAR'){
+        output_suffix = 'SNP_INDEL_annotated_final.vcf'
     }  
     if (indel_snp == 'BOTH' && params.workflow == 'amplicon_generic' ){
         output_suffix = 'mergedCallers_filtered_annotated.vcf'

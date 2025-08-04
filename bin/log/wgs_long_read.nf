@@ -11,6 +11,11 @@ if (params.gen_org != "human" && params.gen_org != "mouse" && params.gen_org != 
 }
 
 
+if (params.pbmode != "CCS" && params.pbmode != "CLR") {
+    error "'--pbmode': \"${params.pbmode}\" is not valid, supported options are 'CCS' or 'CLR'" 
+}
+
+
 if (params.gen_org=='human')
 log.info """
 WGS PARAMETER LOG
@@ -41,7 +46,6 @@ ________________________________________________________________________________
 --split_fastq_bin_size          ${params.split_fastq_bin_size}
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
---detect_adapter_for_pe         ${params.detect_adapter_for_pe}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
 --snpEff_config                 ${params.snpEff_config}
@@ -90,8 +94,6 @@ ________________________________________________________________________________
 --coverage_cap                  ${params.coverage_cap}
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
---detect_adapter_for_pe         ${params.detect_adapter_for_pe}
---deepvariant                   ${params.deepvariant}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
 --snpEff_config                 ${params.snpEff_config}
