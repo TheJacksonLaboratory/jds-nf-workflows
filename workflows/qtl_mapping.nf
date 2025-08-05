@@ -9,6 +9,8 @@ include {DATA_QC} from "${projectDir}/modules/qtl2/data_qc.nf"
 include {MAP_QTL} from "${projectDir}/modules/qtl2/map_qtl.nf"
 include {RUN_PERMS} from "${projectDir}/modules/qtl2/run_perms.nf"
 include {HARVEST_QTL} from "${projectDir}/modules/qtl2/harvest_qtl.nf"
+include {QTL_EFFECTS} from "${projectDir}/modules/qtl2/qtl_effects.nf"
+include {SUMMARIZE_QTL_EFFECTS} from "${projectDir}/modules/r/summarize_qtl_effects.nf"
 
 // help if needed
 if (params.help){
@@ -58,18 +60,28 @@ workflow QTL_MAPPING {
         it -> [ [it[0], it[1].lodcolumn], [it[1].chr, it[1].pos, it[1].ci_lo, it[1].ci_hi] ]
     }.set{peaks_ch}
 
+    // Collect scan1 files for effect estimation
+    MAP_QTL.out.scan1_files
+               .map{
+                    it -> [ [it[0], it[1]], it[2] ]
+               }.set{scan1_ch}
+
     // Join peaks with probs files for effect estimation
     MAP_QTL.out.probs_files
                .map{
                     it -> [ [it[0], it[6]], [it[1], it[2], it[3], it[4], it[5], it[7], it[8]] ] // sets the project id and phenotype as combine key
                }.combine(peaks_ch, by: 0)
+               .combine(scan1_ch, by: 0)
                .map{
                     it -> [it[0][0], it[0][1], // project id and phenotype
                            it[1][0], it[1][1], it[1][2], it[1][3], it[1][4], it[1][5], it[1][6], // prob files
-                           it[2][0], it[2][1], it[2][2], it[2][3]] // peak info
+                           it[2][0], it[2][1], it[2][2], it[2][3], // peak info
+                           it[3]] // scan1 file
                }.set{probs_peaks_ch}
-    probs_peaks_ch.view()
     
-
+    // Estimate QTL effects
+    QTL_EFFECTS(probs_peaks_ch)
     
+    // Summarize QTL effects
+    SUMMARIZE_QTL_EFFECTS(QTL_EFFECTS.out.peaks_file.groupTuple())
 }
