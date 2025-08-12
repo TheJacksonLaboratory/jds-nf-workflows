@@ -8,7 +8,7 @@ process PICARD_MT_COVERAGEATEVERYBASE {
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
     
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*per_base_coverage.tsv", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*per_base_coverage.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), path(bam), path(bai), path(shifted_bam), path(shifted_bai)

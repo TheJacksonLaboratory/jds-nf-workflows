@@ -8,6 +8,8 @@ process GATK_LEFTALIGNANDTRIMVARIANTS {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
+    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*_splitAndPassOnly.vcf*", mode:'copy'
+
     input:
     tuple val(sampleID), path(vcf), path(tbi)
     val(type)
