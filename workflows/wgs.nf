@@ -255,7 +255,7 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
     // Begin Merge on Individuals
     if (params.merge_inds) {
@@ -372,7 +372,7 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
     // Begin Merge on Individuals
     if (params.merge_inds) {

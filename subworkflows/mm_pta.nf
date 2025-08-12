@@ -204,7 +204,7 @@ workflow MM_PTA {
 
         // ** Get alignment and WGS metrics
         PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-        PICARD_COLLECTWGSMETRICS(bam_file)
+        PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
 
         // ** NEXTFLOW OPERATORS::: Establish channels with sample pairs and individual input objects for downstream calling

@@ -9,10 +9,10 @@ process GATK_PRINTREADS {
     container 'broadinstitute/gatk:4.4.0.0'
 
     input:
-    tuple val(sampleID), val(meta), path(bam), path(bai)
+    tuple val(sampleID), path(bam), path(bai)
 
     output:
-    tuple val(sampleID), val(meta), file("*.bam"), file("*.bai"), emit: bam_bai
+    tuple val(sampleID), file("*.bam"), emit: bam
 
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -21,8 +21,11 @@ process GATK_PRINTREADS {
     """
     mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" PrintReads \
-    -L ${params.target_gatk} \
+    -L ${params.mt_contig_name} \
+    --read-filter MateOnSameContigOrNoMappedMateReadFilter \
+    --read-filter MateUnmappedAndUnmappedReadFilter \
     -I ${bam} \
-    -O ${bam.baseName}.targetOnly.bam
+    --read-index ${bai} \
+    -O ${bam.baseName}.MtExtracted.bam
     """
 }

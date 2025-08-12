@@ -12,6 +12,7 @@ process PICARD_COLLECTWGSMETRICS {
 
     input:
     tuple val(sampleID), file(bam)
+    val(type)
 
     output:
     tuple val(sampleID), file("*.txt"), emit: txt
@@ -20,12 +21,16 @@ process PICARD_COLLECTWGSMETRICS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
+    reference = type == 'mt' ? params.mt_fasta : params.ref_fa
+    options = type == 'mt' ? "--COVERAGE_CAP 100000 --USE_FAST_ALGORITHM true --INCLUDE_BQ_HISTOGRAM true --THEORETICAL_SENSITIVITY_OUTPUT ${sampleID}_theoretical_sensitivity.txt" : ""
+
     """
     mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" CollectWgsMetrics \
     --INPUT ${bam} \
     --OUTPUT ${sampleID}_CollectWgsMetrics.txt \
-    --REFERENCE_SEQUENCE ${params.ref_fa} \
-    --VALIDATION_STRINGENCY LENIENT
+    --REFERENCE_SEQUENCE ${reference} \
+    --VALIDATION_STRINGENCY LENIENT \
+    ${options}
     """
 }
