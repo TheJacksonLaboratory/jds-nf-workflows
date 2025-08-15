@@ -41,7 +41,7 @@ readCNV = function(f) {
     },
     error = function(e) {
       print(e)
-        GRanges()
+      GRanges()
     }
   )
   # if CNV CSV is empty (i.e., no somatic CNV), return empty GRanges object.
@@ -58,7 +58,7 @@ annotateWithClosestChangepoint = function(sv, cnv) {
   sv$cnv = ''
   cnv.str = paste0(as.character(seqnames(cnv)), ':', start(cnv), '-', end(cnv))
   nearest.cnv = GenomicRanges::nearest(sv, cnv)
-  
+
   ## Make sure NAs (i.e. no nearest neightbor) are preserved as blanks  
   idx.na = which(is.na(nearest.cnv))
   nearest.cnv[idx.na] = 1  
@@ -101,17 +101,18 @@ vcfToBedpe = function(vcf) {
     res.i = c(sqn[i], start(vcf)[i], end(vcf)[i],                                  ## chr1, start1, end1
               sqn[partner.idx], start(vcf)[partner.idx], end(vcf)[partner.idx],    ## chr2, start2, end 2
               vcf$type[i], '.', strand[i], strand[partner.idx],                    ## type, score, strand1, strand2
-              vcf$evidence[i], vcf$tools[i], vcf$`tumor--normal`[i], vcf$info[i],  ## evidence, tools, TN, info 
+              vcf$evidence[i], vcf$tools[i], vcf$support[i], vcf$support_vector[i], vcf$sampleID[i], vcf$info[i],  ## evidence, tools, TN, info 
               vcf$cnv[i], vcf$cnv[partner.idx])                                    ## changepoint1 , changpoint2
+
     ## Add to result, keep track of processed breakends
     res = rbind(res, res.i)
+    
     processed = c(processed, bnd, partner)
   } 
-  
-  
+
   ## Add colnames and fill in simple event classifications
   colnames(res) = c('chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 
-                    'score', 'strand1', 'strand2', 'evidence', 'tools', 'tumor--normal',
+                    'score', 'strand1', 'strand2', 'evidence', 'tools', 'support', 'support_vector', 'sampleID',
                     'info', 'cnv_changepoint_1', 'cnv_changepoint_2')
   res = as.data.frame(res, stringsAsFactors=F)
   
@@ -143,7 +144,7 @@ sv <- tryCatch(
   },
   error = function(e) {
       res <- data.frame('a'=character(), 'b'=numeric(), 'c'=numeric(), 'd'=character(), 'e'=numeric(), 'f'=numeric(), 'g'=character(), 'h'=character(), 'i'=character(), 'j'=character(), 'k'=character(), 'l'=character(), 'm'=character(), 'n'=character(), 'o'=character(), 'p'=character())
-      colnames(res) = c('#chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 'score', 'strand1', 'strand2', 'evidence', 'tools', 'tumor--normal', 'info', 'cnv_changepoint_1', 'cnv_changepoint_2')
+      colnames(res) = c('#chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 'score', 'strand1', 'strand2', 'evidence', 'tools', 'support', 'support_vector', 'sampleID', 'info', 'cnv_changepoint_1', 'cnv_changepoint_2')
       write.table(res, opt$out_file, row.names=F, col.names=T, sep='\t', quote=F)
       quit(save = "no", status = 0)
   }
