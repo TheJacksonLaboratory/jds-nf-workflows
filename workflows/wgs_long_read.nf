@@ -33,6 +33,7 @@ include {SNPEFF_ONEPERLINE} from "${projectDir}/modules/snpeff_snpsift/snpeff_on
 include {SNPSIFT_DBNSFP} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
 include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
 
+include {PAV} from "${projectDir}/modules/pav/pav"
 include {PBSV_DISCOVER} from "${projectDir}/modules/pbsv/pbsv_discover"
 include {PBSV_CALL} from "${projectDir}/modules/pbsv/pbsv_call"
 include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
@@ -197,6 +198,9 @@ workflow wgs_long_read {
     PBSV_DISCOVER(bam_file.join(index_file))
     ch_fasta = params.ref_fa
     PBSV_CALL(PBSV_DISCOVER.out.pbsv_svsig, ch_fasta)
+    
+    // Call SV with PAV
+    PAV(read_ch, ch_fasta)
 
     // Call SV with sniffles
     SNIFFLES(bam_file.join(index_file))
