@@ -8,8 +8,6 @@ process SVABA {
 
     container 'quay.io/jaxcompsci/svaba:v0.2.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*svaba*.vcf.gz", mode:'copy'
-
     input:
     tuple val(sampleID), path(bam), path(bai)
 
@@ -29,6 +27,7 @@ process SVABA {
         -p ${task.cpus} \
         -a ${sampleID}_svaba \
         -G ${params.combined_reference_set} \
+        --region ${params.callRegions} \
         --germline \
         -z on
     """

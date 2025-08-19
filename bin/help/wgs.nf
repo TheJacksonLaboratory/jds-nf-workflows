@@ -98,6 +98,8 @@ if (params.gen_org == 'human' && params.run_sv)
   --cnv_window | 10000 | Window size for CNV calling.
   --cnv_min_size | 10000 | Minimum CNV size to report.
 
+  --callRegions | /<PATH> | BED file of regions to call SVs, used with MANTA.
+
   --combined_reference_set | /<PATH> | Reference fasta for SVABA (must be in same directory as BWA index).
 
   --cytoband | /<PATH> | Cytoband annotation file for CNV annotation.
@@ -111,7 +113,9 @@ if (params.gen_org == 'human' && params.run_sv)
   --thousandGVcf | /<PATH> | 1000 Genomes SV VCF for SV annotation.
   --svPon | /<PATH> | SV Panel of Normals BEDPE for SV annotation.
   --cosmicBedPe | /<PATH> | COSMIC SV BEDPE for SV annotation.
+  --min_sv_length | <INT> | Minimum length of SVs to report.
+  --cnv_distance_limit | <INT> | Maximum distance allowed between SV and nearest CNV.
+  --sv_slop | <INT> | Number of bases to extend SV breakpoints to merge.
   '''
-
 }
 

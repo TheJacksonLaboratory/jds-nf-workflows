@@ -160,13 +160,14 @@ ________________________________     WGS PARAMS     ____________________________
 
 ________________________________     SV PARAMS     _____________________________________
 --run_sv                        ${params.run_sv}
+--ref_fa_dict                   ${params.ref_fa_dict}
 --smoove_support                ${params.smoove_support}
 --exclude_regions               ${params.exclude_regions}
---ref_fa_dict                   ${params.ref_fa_dict}
 --delly_exclusion               ${params.delly_exclusion}
 --delly_mappability             ${params.delly_mappability}
 --cnv_window                    ${params.cnv_window}
 --cnv_min_size                  ${params.cnv_min_size}
+--callRegions                   ${params.callRegions}
 --combined_reference_set        ${params.combined_reference_set}
 --cytoband                      ${params.cytoband}
 --dgv                           ${params.dgv}
@@ -178,6 +179,9 @@ ________________________________     SV PARAMS     _____________________________
 --thousandGVcf                  ${params.thousandGVcf}
 --svPon                         ${params.svPon}
 --cosmicBedPe                   ${params.cosmicBedPe}
+--min_sv_length                 ${params.min_sv_length}
+--cnv_distance_limit            ${params.cnv_distance_limit}
+--sv_slop                       ${params.sv_slop}
 
 Project Directory: ${projectDir}
 
@@ -227,19 +231,23 @@ ________________________________     WGS PARAMS     ____________________________
 
 ________________________________     SV PARAMS     _____________________________________
 --run_sv                        ${params.run_sv}
+--ref_fa_dict                   ${params.ref_fa_dict}
 --smoove_support                ${params.smoove_support}
 --exclude_regions               ${params.exclude_regions}
---ref_fa_dict                   ${params.ref_fa_dict}
 --delly_exclusion               ${params.delly_exclusion}
 --delly_mappability             ${params.delly_mappability}
 --cnv_window                    ${params.cnv_window}
 --cnv_min_size                  ${params.cnv_min_size}
+--callRegions                   ${params.callRegions}
 --combined_reference_set        ${params.combined_reference_set}
 --cytoband                      ${params.cytoband}
 --known_del                     ${params.known_del}
 --known_ins                     ${params.known_ins}
 --known_inv                     ${params.known_inv}
 --ensemblUniqueBed              ${params.ensemblUniqueBed}
+--min_sv_length                 ${params.min_sv_length}
+--cnv_distance_limit            ${params.cnv_distance_limit}
+--sv_slop                       ${params.sv_slop}
 
 Project Directory: ${projectDir}
 

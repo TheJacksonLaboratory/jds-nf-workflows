@@ -36,6 +36,11 @@ readCNV = function(f) {
   x <- tryCatch( 
     {
         imp <- read.csv(f, h=F, stringsAsFactors=F, sep='\t', comment.char='#')
+  
+        # Delly CNV annotates every position. For this, we are interested in non-neutral CNV regions, 
+        # and filter those that NEU. The other caller used `BICSEQ2` does not have this behavior.         
+        imp <- imp[(grepl('delly', imp$V6) & imp$V4 != 'NEU') | !grepl('delly', imp$V6), ]
+
         colnames(imp)[1:3] = c('chr','start','end')
         makeGRangesFromDataFrame(imp)
     },

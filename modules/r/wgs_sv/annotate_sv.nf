@@ -22,7 +22,7 @@ process ANNOTATE_SV {
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
             --db_names=gap,DGV,1000G,PON,COSMIC \
             --db_files=${params.gap},${params.dgvBedpe},${params.thousandGVcf},${params.svPon},${params.cosmicBedPe} \
-            --slop=500 \
+            --slop=${params.sv_slop} \
             --db_ignore_strand=COSMIC \
             --bedpe=${merged_sv_bed} \
             --out_file=${sampleID}.DLMS_sv_annotated.bed
@@ -33,7 +33,7 @@ process ANNOTATE_SV {
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
             --db_names=gap,DGV,1000G,PON,COSMIC \
             --db_files=${params.gap},${params.dgvBedpe},${params.thousandGVcf},${params.svPon},${params.cosmicBedPe} \
-            --slop=500 \
+            --slop=${params.sv_slop} \
             --db_ignore_strand=COSMIC \
             --bedpe=${merged_sv_bed} \
             --out_file=${sampleID}.DLMS_sv_annotated_supplemental.bed
@@ -44,7 +44,7 @@ process ANNOTATE_SV {
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
             --db_names=GAP,DEL,INS,INV,EXCLUDE_RANGE \
             --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_regions} \
-            --slop=500 \
+            --slop=${params.sv_slop} \
             --bedpe=${merged_sv_bed} \
             --out_file=${sampleID}.DLMS_sv_annotated.bed
 
@@ -54,7 +54,7 @@ process ANNOTATE_SV {
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
             --db_names=GAP,DEL,INS,INV,EXCLUDE_RANGE \
             --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_regions} \
-            --slop=500 \
+            --slop=${params.sv_slop} \
             --bedpe=${merged_sv_bed} \
             --out_file=${sampleID}.DLMS_sv_annotated_supplemental.bed
         """

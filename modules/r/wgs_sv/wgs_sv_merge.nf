@@ -8,7 +8,7 @@ process SV_MERGE {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.bedpe", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID}/merged_sv", pattern:"*.bedpe", mode:'copy'
 
     input:
         tuple val(sampleID), file(vcf_tuple)
@@ -30,7 +30,7 @@ process SV_MERGE {
         --build=${params.genome_build} \
         --slop=1000 \
         --allowed_chr=${listOfChroms} \
-        --min_sv_length=200 \
+        --min_sv_length=${params.min_sv_length} \
         --out_file=${sampleID}.mergedCall.DLMS.bedpe \
         --out_file_supplemental=${sampleID}.mergedCall.DLMS.supplemental.bedpe
     """

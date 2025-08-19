@@ -8,14 +8,14 @@ process ANNOTATE_SV_WITH_CNV {
     
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bedpe", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID}/merged_sv", pattern: "*.bedpe", mode: 'copy'
 
     input:
         tuple val(sampleID), path(delly_annot), path(annot_sv_genes_bedpe)
         val(suppl_switch)
 
     output:
-        tuple val(sampleID), path("*DLMS_sv_annotated_genes_cnv*.bedpe"), emit: sv_genes_cnv_bedpe
+        tuple val(sampleID), path("*DLMS_sv_annotation_genes_cnv*.bedpe"), emit: sv_genes_cnv_bedpe
     
     script:
 
@@ -24,7 +24,8 @@ process ANNOTATE_SV_WITH_CNV {
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-cnv.r \
             --cnv=${delly_annot} \
             --bedpe=${annot_sv_genes_bedpe} \
-            --out_file=${sampleID}_DLMS_sv_annotated_genes_cnv.bedpe
+            --distance_limit=${params.cnv_distance_limit} \
+            --out_file=${sampleID}_DLMS_sv_annotation_genes_cnv.bedpe
         """
 
         else if (suppl_switch == "supplemental")
@@ -32,6 +33,7 @@ process ANNOTATE_SV_WITH_CNV {
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-cnv.r \
             --cnv=${delly_annot} \
             --bedpe=${annot_sv_genes_bedpe} \
-            --out_file=${sampleID}_DLMS_sv_annotated_genes_cnv_supplemental.bedpe
+            --distance_limit=${params.cnv_distance_limit} \
+            --out_file=${sampleID}_DLMS_sv_annotation_genes_cnv_supplemental.bedpe
         """    
 }

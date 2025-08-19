@@ -13,7 +13,6 @@ include {BCFTOOLS_QUERY_DELLY_CNV} from "${projectDir}/modules/bcftools/bcftools
 
 include {BCFTOOLS_REHEAD_SORT as REHEAD_SORT_LUMPY;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_DELLY;
-         BCFTOOLS_REHEAD_SORT as REHEAD_SORT_CNV;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_MANTA;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_SVABA} from "${projectDir}/modules/bcftools/bcftools_rehead_sort"
 
@@ -36,6 +35,8 @@ include {ANNOTATE_GENES_SV;
          ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_genes_sv"
 include {ANNOTATE_SV_WITH_CNV;
          ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_sv_with_cnv"
+include {FILTER_BEDPE;
+         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/filter_bedpe"
 
 workflow WGS_SV {
 
@@ -115,7 +116,9 @@ workflow WGS_SV {
         
         annot_sv_cnv_input = ANNOTATE_DELLY_CNV.out.delly_annot.join(ANNOTATE_GENES_SV.out.annot_sv_genes_bedpe)
         ANNOTATE_SV_WITH_CNV(annot_sv_cnv_input, "main")
+        FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
 
         annot_sv_cnv_suppl_input = ANNOTATE_DELLY_CNV.out.delly_annot.join(ANNOTATE_GENES_SV_SUPPLEMENTAL.out.annot_sv_genes_bedpe)
         ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL(annot_sv_cnv_suppl_input, "supplemental")
+        FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")   
 }

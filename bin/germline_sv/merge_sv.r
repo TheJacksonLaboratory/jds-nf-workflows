@@ -359,7 +359,10 @@ res = NULL
 for (i in 1:length(opt$vcf)) {
   ## Read VCF
   caller = opt$caller[i]
+  print(caller)
   vcf = VariantAnnotation::readVcf(opt$vcf[i], genome=opt$build)
+  # Filter VCF to contain only allowed chromosomes
+  vcf = vcf[seqnames(rowRanges(vcf)) %in% opt$allowed_chr, ]
   ## Get read support
   rowRanges(vcf)$support = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$sample_name)
   rowRanges(vcf)$supplemental = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$sample_name, supplementary=T )
@@ -369,8 +372,6 @@ for (i in 1:length(opt$vcf)) {
   vcf = StructuralVariantAnnotation::breakpointRanges(vcf, nominalPosition=T, inferMissingBreakends=T)
   ## Add breakendPosID for later redundancy checks
   vcf$breakendPosID = paste0('[',caller,'=',as.character(seqnames(vcf)),':',start(vcf),':',strand(vcf),']')
-
-  print(vcf)
 
   ## Overlap if this isn't the first callset
   if (i == 1) {
