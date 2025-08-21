@@ -12,7 +12,8 @@ process GATK_PRINTREADS {
     tuple val(sampleID), path(bam), path(bai)
 
     output:
-    tuple val(sampleID), file("*.bam"), emit: bam
+    tuple val(sampleID), path("*.bam"), emit: bam
+    tuple val(sampleID), path("*.bai"), emit: bai
 
     script:
     String my_mem = (task.memory-1.GB).toString()

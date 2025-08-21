@@ -8,8 +8,8 @@ process GATK_FILTERMUECTCALLS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*exclusionFiltered.vcf*", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.filteringStats.tsv", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/mt_callers'}", pattern: "*exclusionFiltered.vcf*", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/mt_callers/stats'}", pattern: "*.filteringStats.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(stats), path(contamination)

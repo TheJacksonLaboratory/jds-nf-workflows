@@ -8,7 +8,7 @@ process PICARD_MT_COVERAGEATEVERYBASE {
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
     
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*per_base_coverage.tsv", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/mt_callers'}", pattern: "*per_base_coverage.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), path(bam), path(bai), path(shifted_bam), path(shifted_bai)
@@ -64,7 +64,7 @@ process PICARD_MT_COVERAGEATEVERYBASE {
 
     non_control_region <- read.table("non_control_region.tsv", header=TRUE, sep="\\t")
     combined_table <- rbind(beginning, non_control_region, end)
-    write.table(combined_table, paste0("${sampleID}_per_base_coverage.tsv"), row.names=FALSE, col.names=TRUE, quote=FALSE, sep="\\t")
+    write.table(combined_table, paste0("${sampleID}.per_base_coverage.tsv"), row.names=FALSE, col.names=TRUE, quote=FALSE, sep="\\t")
     EOF
 
     # Run the R script

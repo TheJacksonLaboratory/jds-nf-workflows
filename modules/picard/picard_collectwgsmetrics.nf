@@ -8,7 +8,7 @@ process PICARD_COLLECTWGSMETRICS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.txt", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID}${type == 'mt' ? '/mt_callers/stats' : '/stats'}", pattern: "*.txt", mode: 'copy'
 
     input:
     tuple val(sampleID), file(bam)
@@ -22,13 +22,14 @@ process PICARD_COLLECTWGSMETRICS {
     my_mem =  my_mem[0..-4]
 
     reference = type == 'mt' ? params.mt_fasta : params.ref_fa
-    options = type == 'mt' ? "--COVERAGE_CAP 100000 --USE_FAST_ALGORITHM true --INCLUDE_BQ_HISTOGRAM true --THEORETICAL_SENSITIVITY_OUTPUT ${sampleID}_theoretical_sensitivity.txt" : ""
+    options = type == 'mt' ? "--COVERAGE_CAP 100000 --USE_FAST_ALGORITHM true --INCLUDE_BQ_HISTOGRAM true --THEORETICAL_SENSITIVITY_OUTPUT ${sampleID}_theoretical_sensitivity.mt.txt" : ""
+    suffix = type == 'mt' ? ".mt" : ""
 
     """
     mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" CollectWgsMetrics \
     --INPUT ${bam} \
-    --OUTPUT ${sampleID}_CollectWgsMetrics.txt \
+    --OUTPUT ${sampleID}_CollectWgsMetrics${suffix}.txt \
     --REFERENCE_SEQUENCE ${reference} \
     --VALIDATION_STRINGENCY LENIENT \
     ${options}

@@ -25,10 +25,12 @@ process GATK_MUTECT2_MT {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
+    reference = type == 'mt' ? params.mt_fasta : params.mt_shifted_fasta
+
     """
     mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" Mutect2 \
-    -R ${params.mt_fasta} \
+    -R ${reference} \
     -I ${bam} \
     --read-filter MateOnSameContigOrNoMappedMateReadFilter \
     --read-filter MateUnmappedAndUnmappedReadFilter \

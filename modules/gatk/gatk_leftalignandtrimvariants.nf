@@ -8,7 +8,7 @@ process GATK_LEFTALIGNANDTRIMVARIANTS {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*_splitAndPassOnly.vcf*", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/mt_callers'}", pattern: "*.splitAndPassOnly.vcf*", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(tbi)
@@ -16,7 +16,7 @@ process GATK_LEFTALIGNANDTRIMVARIANTS {
 
     output:
     tuple val(sampleID), file("*.split.vcf"), emit: split_vcf
-    tuple val(sampleID), file("*_splitAndPassOnly.vcf"), emit: vcf, optional: true
+    tuple val(sampleID), file("*.splitAndPassOnly.vcf"), emit: vcf, optional: true
     
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -35,7 +35,7 @@ process GATK_LEFTALIGNANDTRIMVARIANTS {
     if [[ "${type}" == "pass-only" ]]; then
         gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" SelectVariants \
             -V ${sampleID}.split.vcf \
-            -O ${sampleID}_splitAndPassOnly.vcf \
+            -O ${sampleID}.splitAndPassOnly.vcf \
             --exclude-filtered
     fi
 

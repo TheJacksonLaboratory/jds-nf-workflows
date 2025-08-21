@@ -32,6 +32,9 @@ include {HAPLOCHECK} from "${projectDir}/modules/haplocheck/haplocheck"
 
 include {PICARD_MT_COVERAGEATEVERYBASE} from "${projectDir}/modules/picard/picard_mt_coverageateverybase"
 
+include {MITY_RUNALL} from "${projectDir}/modules/mity/mity_runall"
+include {MUTSERVE} from "${projectDir}/modules/mutserve/mutserve"
+
 workflow MT_VARIANT_CALLING {
 
     take:
@@ -61,6 +64,10 @@ workflow MT_VARIANT_CALLING {
         mt_alignment = PICARD_SORTSAM_MT.out.bam.join(PICARD_SORTSAM_MT.out.bai)
         shifted_mt_alignment = PICARD_SORTSAM_SHIFTED_MT.out.bam.join(PICARD_SORTSAM_SHIFTED_MT.out.bai)
 
+        MITY_RUNALL(mt_alignment)
+
+        MUTSERVE(mt_alignment)
+
         PICARD_COLLECTWGSMETRICS(PICARD_SORTSAM_MT.out.bam, 'mt')
         // This needs to be checked for cases where it is wgs and not mt to make sure it works correctly.  
 
@@ -84,8 +91,6 @@ workflow MT_VARIANT_CALLING {
 
             GATK_FILTERMUECTCALLS(GATK_FILTERMUECTCALLS_PRIMARY.out.vcf.join(GATK_MERGEMUTECTSTATS.out.stats).join(HAPLOCHECK.out.contamination))
             
-            // MITY?
-
         } else if (params.gen_org == 'mouse') {
 
             GATK_MUTECT2_MT(mt_alignment, 'mt', 'MT:1-15423')
@@ -101,8 +106,6 @@ workflow MT_VARIANT_CALLING {
             filter_calls_input = PICARD_LIFTOVERVCF_MERGEVCF.out.vcf.join(GATK_MERGEMUTECTSTATS.out.stats).map{it -> [it[0], it[1], it[2], '/mouse']}
             GATK_FILTERMUECTCALLS(filter_calls_input)
             // Note: 'mouse' is a placeholder for path(contamination), which is not used in mouse
-            
-            // MITY?
 
         }
         // for human the original positions are: chrM:576-16024 and the shifted calling is done in chrM:8024-9145.
@@ -111,23 +114,21 @@ workflow MT_VARIANT_CALLING {
 
         PICARD_MT_COVERAGEATEVERYBASE(mt_alignment.join(shifted_mt_alignment))
 
-        GATK_LEFTALIGNANDTRIMVARIANTS(GATK_FILTERMUECTCALLS.out.mutect2_vcf_tbi, 'all-calls')
+        GATK_LEFTALIGNANDTRIMVARIANTS(GATK_FILTERMUECTCALLS.out.mutect2_vcf_tbi, 'pass-only')
 
     emit:
         output_string = "nothing yet" // This is a placeholder;
 }
 
 // Punch list: 
-
-// Add MITY variant caller
-// Check Picard CollectWgsMetrics works for WGS
+// Merge callers
+// Check Picard CollectWgsMetrics still works for WGS
 // Add annotation
 // Wiki page
 // Emit strings and connection to WGS and PTA workflows
 // Test human workflow
-// Write tests and add test data
+// Write tests and add test BAM data
 
-// quay.io/biocontainers/mity:2.0.0--pyhdfd78af_0
 
 //   output {
 //     File subset_bam = SubsetBamToChrM.output_bam
