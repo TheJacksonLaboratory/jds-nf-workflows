@@ -13,7 +13,7 @@ process ANNOTATE_SV {
         val(suppl_switch)
 
     output:
-        tuple val(sampleID), file("${sampleID}.DLMS_sv_annotated*.bed"), emit: annot_sv_bedpe
+        tuple val(sampleID), file("${sampleID}.MDLS_sv_annotated*.bed"), emit: annot_sv_bedpe
 
     script:
     if ( params.gen_org == 'human' )
@@ -25,7 +25,7 @@ process ANNOTATE_SV {
             --slop=${params.sv_slop} \
             --db_ignore_strand=COSMIC \
             --bedpe=${merged_sv_bed} \
-            --out_file=${sampleID}.DLMS_sv_annotated.bed
+            --out_file=${sampleID}.MDLS_sv_annotated.bed
 
         """
         else if (suppl_switch == "supplemental")
@@ -36,7 +36,7 @@ process ANNOTATE_SV {
             --slop=${params.sv_slop} \
             --db_ignore_strand=COSMIC \
             --bedpe=${merged_sv_bed} \
-            --out_file=${sampleID}.DLMS_sv_annotated_supplemental.bed
+            --out_file=${sampleID}.MDLS_sv_annotated_supplemental.bed
         """
     else if ( params.gen_org == 'mouse' )
         if (suppl_switch == "main")
@@ -46,7 +46,7 @@ process ANNOTATE_SV {
             --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_regions} \
             --slop=${params.sv_slop} \
             --bedpe=${merged_sv_bed} \
-            --out_file=${sampleID}.DLMS_sv_annotated.bed
+            --out_file=${sampleID}.MDLS_sv_annotated.bed
 
         """
         else if (suppl_switch == "supplemental")
@@ -56,6 +56,6 @@ process ANNOTATE_SV {
             --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_regions} \
             --slop=${params.sv_slop} \
             --bedpe=${merged_sv_bed} \
-            --out_file=${sampleID}.DLMS_sv_annotated_supplemental.bed
+            --out_file=${sampleID}.MDLS_sv_annotated_supplemental.bed
         """
 }

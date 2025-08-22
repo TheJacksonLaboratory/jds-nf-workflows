@@ -15,7 +15,7 @@ process ANNOTATE_SV_WITH_CNV {
         val(suppl_switch)
 
     output:
-        tuple val(sampleID), path("*DLMS_sv_annotation_genes_cnv*.bedpe"), emit: sv_genes_cnv_bedpe
+        tuple val(sampleID), path("*MDLS_sv_annotation_genes_cnv*.bedpe"), emit: sv_genes_cnv_bedpe
     
     script:
 
@@ -25,7 +25,7 @@ process ANNOTATE_SV_WITH_CNV {
             --cnv=${delly_annot} \
             --bedpe=${annot_sv_genes_bedpe} \
             --distance_limit=${params.cnv_distance_limit} \
-            --out_file=${sampleID}_DLMS_sv_annotation_genes_cnv.bedpe
+            --out_file=${sampleID}_MDLS_sv_annotation_genes_cnv.bedpe
         """
 
         else if (suppl_switch == "supplemental")
@@ -34,6 +34,6 @@ process ANNOTATE_SV_WITH_CNV {
             --cnv=${delly_annot} \
             --bedpe=${annot_sv_genes_bedpe} \
             --distance_limit=${params.cnv_distance_limit} \
-            --out_file=${sampleID}_DLMS_sv_annotation_genes_cnv_supplemental.bedpe
+            --out_file=${sampleID}_MDLS_sv_annotation_genes_cnv_supplemental.bedpe
         """    
 }

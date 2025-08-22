@@ -105,7 +105,7 @@ workflow WGS_SV {
         // * Merge callers and annotate results
 
         // Join VCFs together by sampleID and merge via NYGC based script
-        merge_input = BCFTOOLS_DUPHOLD_FILTER_DELLY.out.vcf.join(BCFTOOLS_DUPHOLD_FILTER_LUMPY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_MANTA.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_SVABA.out.vcf)
+        merge_input = BCFTOOLS_DUPHOLD_FILTER_MANTA.out.vcf.join(BCFTOOLS_DUPHOLD_FILTER_DELLY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_LUMPY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_SVABA.out.vcf)
                         .map { it -> tuple(it[0], tuple(it[1], it[2], it[3], it[4])) }
         SV_MERGE(merge_input, chrom_list)
         ANNOTATE_SV(SV_MERGE.out.bedpe, "main")

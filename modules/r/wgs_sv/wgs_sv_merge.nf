@@ -15,23 +15,23 @@ process SV_MERGE {
         val(chrom_list)
 
     output:
-        tuple val(sampleID), file("*.mergedCall.DLMS.bedpe"), emit: bedpe
-        tuple val(sampleID), file("*.mergedCall.DLMS.supplemental.bedpe"), emit: supp_bedpe
+        tuple val(sampleID), file("*.mergedCall.MDLS.bedpe"), emit: bedpe
+        tuple val(sampleID), file("*.mergedCall.MDLS.supplemental.bedpe"), emit: supp_bedpe
 
     script:
     
     listOfChroms = chrom_list.collect { "$it" }.join(',')
 
     """
-        Rscript ${projectDir}/bin/germline_sv/merge_sv.r \
+        Rscript ${projectDir}/bin/wgs/merge_sv.r \
         --vcf=${vcf_tuple[0]},${vcf_tuple[1]},${vcf_tuple[2]},${vcf_tuple[3]} \
-        --caller=delly,lumpy,manta,svaba \
+        --caller=manta,delly,lumpy,svaba \
         --sample_name=${sampleID} \
         --build=${params.genome_build} \
         --slop=1000 \
         --allowed_chr=${listOfChroms} \
         --min_sv_length=${params.min_sv_length} \
-        --out_file=${sampleID}.mergedCall.DLMS.bedpe \
-        --out_file_supplemental=${sampleID}.mergedCall.DLMS.supplemental.bedpe
+        --out_file=${sampleID}.mergedCall.MDLS.bedpe \
+        --out_file_supplemental=${sampleID}.mergedCall.MDLS.supplemental.bedpe
     """
 }
