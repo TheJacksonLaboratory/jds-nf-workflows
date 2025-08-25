@@ -1,0 +1,99 @@
+nextflow_workflow {
+
+    name "Test Workflow WGS_SV"
+    script "subworkflows/wgs_sv.nf"
+    workflow "WGS_SV"
+
+    test("Human") {
+        tag "GRCh38"
+        tag "primary"
+        options "-stub-run"
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                read_type = "PE"
+                run_gvcf = true
+                gen_org = 'human'
+            }
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.fromList([
+                    tuple(
+                        'Sample_42',
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam', 
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam.bai'
+                    )
+                ])
+                """
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Mouse -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        options "-stub-run"
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                read_type = "PE"
+                run_gvcf = true
+                gen_org = 'mouse'
+                genome_build = 'GRCm38'
+            }
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.fromList([
+                    tuple(
+                        'Sample_42',
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam', 
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam.bai'
+                    )
+                ])
+                """
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        options "-stub-run"
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                read_type = "PE"
+                run_gvcf = true
+                gen_org = 'mouse'
+                genome_build = 'GRCm39'
+            }
+            workflow {
+                """
+                // define inputs of the workflow here. Example:
+                input[0] = Channel.fromList([
+                    tuple(
+                        'Sample_42',
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam', 
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam.bai'
+                    )
+                ])
+                """
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+}

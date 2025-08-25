@@ -16,14 +16,15 @@ isHighConfidence = function(x, cpmax) {
   multi.caller = grepl(',', x['tools'])
 
   ## Is either breakpoint close enough to a changepoint?
-  ## Changepoints are only annotated in the prior script if the 'nearest' neighbor is within a distance limit. 
-  if (x['cnv_changepoint_1'] == '' | is.na(x['cnv_changepoint_1'])) {
+  ## Changepoints are only annotated in the prior script if the 'nearest' neighbor is within a distance limit.
+  ## Check if one or the other (or both) CNV change points exist and not NA or empty string
+  if (is.null(x['cnv_changepoint_1']) || is.na(x['cnv_changepoint_1']) || x['cnv_changepoint_1'] == '') {
     near.ch1 = FALSE
   } else {
     near.ch1 = TRUE
   }
 
-  if (x['cnv_changepoint_2'] == '' | is.na(x['cnv_changepoint_1'])) {
+  if (is.null(x['cnv_changepoint_2']) || is.na(x['cnv_changepoint_2']) || x['cnv_changepoint_2'] == '') {
     near.ch2 = FALSE
   } else {
     near.ch2 = TRUE

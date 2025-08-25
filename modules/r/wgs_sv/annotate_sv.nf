@@ -38,7 +38,7 @@ process ANNOTATE_SV {
             --bedpe=${merged_sv_bed} \
             --out_file=${sampleID}.MDLS_sv_annotated_supplemental.bed
         """
-    else if ( params.gen_org == 'mouse' )
+    if ( params.gen_org == 'mouse' )
         if (suppl_switch == "main")
         """
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \

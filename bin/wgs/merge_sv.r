@@ -42,7 +42,7 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
 
     supp_string = paste(type, ft, gq, pl, gt, homseq, homlen, svlen, dhfc, dhbfc, dhffc, dhsp, sep=',')
 
-    svlen_string = paste0(caller,'_SVLEN=',svlen)
+    svlen_string = svlen
 
   } else if (caller == 'lumpy') {
     
@@ -66,7 +66,7 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
 
     supp_string = paste(type, ro, ao, dp, gt, svlen, dhfc, dhbfc, dhffc, dhsp, sep=',')
     
-    svlen_string = paste0(caller,'_SVLEN=',svlen)
+    svlen_string = svlen
 
   } else if (caller == 'delly') {
     ## Common info
@@ -91,7 +91,7 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
 
     supp_string = paste(type, dr, dv, rr, rv, gt, homlen, svlen, dhfc, dhbfc, dhffc, dhsp, sep=',')
 
-    svlen_string = paste0(caller,'_SVLEN=',svlen)
+    svlen_string = svlen
 
   } else if (caller == 'svaba') {
     
@@ -107,7 +107,7 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
     gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
     homseq = paste0(caller,'_HOMSEQ=', info(vcf)$HOMSEQ) 
     span = paste0(caller,'_SPAN=', info(vcf)$SPAN)
-    
+
     ### duphold specific.
     dhfc = paste0(caller,'_DHFC=', geno(vcf)$GT[, sample_id])
     dhbfc = paste0(caller,'_DHBFC=', geno(vcf)$GT[, sample_id])
@@ -116,13 +116,10 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
 
     supp_string = paste(ad, dp, lo, gt, homseq, span, dhfc, dhbfc, dhffc, dhsp, sep=',')
     
-    svlen_string = paste0(caller,'_SPAN=',span)
+    svlen_string = span
   }
 
-  ## Set NA to 0
-  ## TODO: Keep this? 
-  sr[is.na(sr)] = 0
-  pe[is.na(pe)] = 0
+
   
   # If SVLEN or SPAN is not NA, use it as the event length
   event_length = NA
@@ -133,6 +130,11 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
   }
 
   ## Build output string
+  # Ensure sr, pe, and svlen_string are always character vectors of the correct length
+  sr <- if (is.null(sr) || length(sr) == 0 || all(is.na(sr))) 0 else sr
+  pe <- if (is.null(pe) || length(pe) == 0 || all(is.na(pe))) 0 else pe
+  svlen_string <- if (is.null(svlen_string) || length(svlen_string) == 0) NA else svlen_string
+
   if (supplementary) {
     res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', supp_string, ']')
   } else {
@@ -414,6 +416,12 @@ for (i in 1:length(opt$vcf)) {
   # Filter VCF to contain only allowed chromosomes
   vcf = vcf[seqnames(rowRanges(vcf)) %in% opt$allowed_chr, ]
   ## Get read support
+
+  ## If there are no calls in the vcf (edge case), skip that VCF
+  if (length(rowRanges(vcf)) == 0) {
+    next
+  }
+
   rowRanges(vcf)$support = getReadSupport(vcf=vcf, caller=caller)
   rowRanges(vcf)$supplemental = getReadSupport(vcf=vcf, caller=caller, supplementary=T )
 
