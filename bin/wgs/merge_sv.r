@@ -8,7 +8,7 @@ SUPPORTED_CALLERS = c('manta', 'lumpy', 'delly', 'svaba')     ## Update this fla
 
 ## Callers have different names for the same pieces of evidence,
 ## For now handle each case separately
-getReadSupport = function(vcf, caller, sample_id, supplementary=FALSE, supported_callers=SUPPORTED_CALLERS) {
+getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SUPPORTED_CALLERS) {
   
   ## Don't try to process genotype info if we don't know how
   if (!caller %in% supported_callers) {
@@ -16,7 +16,7 @@ getReadSupport = function(vcf, caller, sample_id, supplementary=FALSE, supported
   }
     
   sample_id = colnames(geno(vcf)[[1]])
-  
+
   if (caller == 'manta') {
     ## Common info
     sr = geno(vcf)$SR[, sample_id]
@@ -30,28 +30,49 @@ getReadSupport = function(vcf, caller, sample_id, supplementary=FALSE, supported
     gq = paste0(caller,'_GQ=', geno(vcf)$GQ[, sample_id])
     pl = paste0(caller,'_PL=', geno(vcf)$PL[, sample_id])
     gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
-
-    supp_string = paste(type, ft, gq, pl, gt, sep=',')
+    homseq = paste0(caller,'_HOMSEQ=', info(vcf)$HOMSEQ)
+    homlen = paste0(caller,'_HOMLEN=', info(vcf)$HOMLEN)
+    svlen = paste0(caller,'_SVLEN=', info(vcf)$SVLEN)
     
+    ### duphold specific.
+    dhfc = paste0(caller,'_DHFC=', geno(vcf)$GT[, sample_id])
+    dhbfc = paste0(caller,'_DHBFC=', geno(vcf)$GT[, sample_id])
+    dhffc = paste0(caller,'_DHFFC=', geno(vcf)$GT[, sample_id])
+    dhsp = paste0(caller,'_DHSP=', geno(vcf)$GT[, sample_id])
+
+    supp_string = paste(type, ft, gq, pl, gt, homseq, homlen, svlen, dhfc, dhbfc, dhffc, dhsp, sep=',')
+
+    svlen_string = svlen
+
   } else if (caller == 'lumpy') {
     
     ## Common info
     sr = info(vcf)$SR
     pe = info(vcf)$PE
+
     ## Supplementary info
     type = paste0(caller,'_SVTYPE=', info(vcf)$SVTYPE) 
     ro = paste0(caller,'_RO=', geno(vcf)$RO[, sample_id])
     ao = paste0(caller,'_AO=', geno(vcf)$AO[, sample_id])
     dp = paste0(caller,'_DP=', geno(vcf)$DP[, sample_id])
     gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
-    supp_string = paste(type, ro, ao, dp, gt, sep=',')
+    svlen = paste0(caller,'_SVLEN=', info(vcf)$SVLEN)
+
+    ### duphold specific.
+    dhfc = paste0(caller,'_DHFC=', geno(vcf)$GT[, sample_id])
+    dhbfc = paste0(caller,'_DHBFC=', geno(vcf)$GT[, sample_id])
+    dhffc = paste0(caller,'_DHFFC=', geno(vcf)$GT[, sample_id])
+    dhsp = paste0(caller,'_DHSP=', geno(vcf)$GT[, sample_id])
+
+    supp_string = paste(type, ro, ao, dp, gt, svlen, dhfc, dhbfc, dhffc, dhsp, sep=',')
+    
+    svlen_string = svlen
 
   } else if (caller == 'delly') {
     ## Common info
     sr = info(vcf)$SR
-    # sr = sapply(sr, `[`, 2)
     pe = info(vcf)$PE
-    # pe = sapply(pe, `[`, 2)
+
     ## Supplementary info
     type = paste0(caller,'_SVTYPE=', info(vcf)$SVTYPE) 
     dr = paste0(caller,'_DR=', geno(vcf)$DR[, sample_id])
@@ -59,7 +80,18 @@ getReadSupport = function(vcf, caller, sample_id, supplementary=FALSE, supported
     rr = paste0(caller,'_RR=', geno(vcf)$RR[, sample_id])
     rv = paste0(caller,'_RV=', geno(vcf)$RV[, sample_id])
     gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
-    supp_string = paste(type, dr, dv, rr, rv, gt, sep=',')
+    homlen = paste0(caller,'_HOMLEN=', info(vcf)$HOMLEN)
+    svlen = paste0(caller,'_SVLEN=', info(vcf)$SVLEN)
+
+    ### duphold specific.
+    dhfc = paste0(caller,'_DHFC=', geno(vcf)$GT[, sample_id])
+    dhbfc = paste0(caller,'_DHBFC=', geno(vcf)$GT[, sample_id])
+    dhffc = paste0(caller,'_DHFFC=', geno(vcf)$GT[, sample_id])
+    dhsp = paste0(caller,'_DHSP=', geno(vcf)$GT[, sample_id])
+
+    supp_string = paste(type, dr, dv, rr, rv, gt, homlen, svlen, dhfc, dhbfc, dhffc, dhsp, sep=',')
+
+    svlen_string = svlen
 
   } else if (caller == 'svaba') {
     
@@ -73,20 +105,40 @@ getReadSupport = function(vcf, caller, sample_id, supplementary=FALSE, supported
     dp = paste0(caller,'_DP=', geno(vcf)$DP[, sample_id])
     lo = paste0(caller,'_LO=', geno(vcf)$LO[, sample_id])
     gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
-    supp_string = paste(ad, dp, lo, gt, sep=',')
+    homseq = paste0(caller,'_HOMSEQ=', info(vcf)$HOMSEQ) 
+    span = paste0(caller,'_SPAN=', info(vcf)$SPAN)
+
+    ### duphold specific.
+    dhfc = paste0(caller,'_DHFC=', geno(vcf)$GT[, sample_id])
+    dhbfc = paste0(caller,'_DHBFC=', geno(vcf)$GT[, sample_id])
+    dhffc = paste0(caller,'_DHFFC=', geno(vcf)$GT[, sample_id])
+    dhsp = paste0(caller,'_DHSP=', geno(vcf)$GT[, sample_id])
+
+    supp_string = paste(ad, dp, lo, gt, homseq, span, dhfc, dhbfc, dhffc, dhsp, sep=',')
     
+    svlen_string = span
   }
+
+
   
-  ## Set NA to 0
-  ## TODO: Keep this? 
-  sr[is.na(sr)] = 0
-  pe[is.na(pe)] = 0
-  
+  # If SVLEN or SPAN is not NA, use it as the event length
+  event_length = NA
+  if ("svlen" %in% ls() && !all(is.na(svlen))) {
+    event_length = svlen
+  } else if (exists("span") && !all(is.na(span))) {
+    event_length = span
+  }
+
   ## Build output string
+  # Ensure sr, pe, and svlen_string are always character vectors of the correct length
+  sr <- if (is.null(sr) || length(sr) == 0 || all(is.na(sr))) 0 else sr
+  pe <- if (is.null(pe) || length(pe) == 0 || all(is.na(pe))) 0 else pe
+  svlen_string <- if (is.null(svlen_string) || length(svlen_string) == 0) NA else svlen_string
+
   if (supplementary) {
-    res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe,',', supp_string,']')
+    res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', supp_string, ']')
   } else {
-    res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe,']')  
+    res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', svlen_string, ']')  
   }
   
   return(res)
@@ -364,8 +416,14 @@ for (i in 1:length(opt$vcf)) {
   # Filter VCF to contain only allowed chromosomes
   vcf = vcf[seqnames(rowRanges(vcf)) %in% opt$allowed_chr, ]
   ## Get read support
-  rowRanges(vcf)$support = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$sample_name)
-  rowRanges(vcf)$supplemental = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$sample_name, supplementary=T )
+
+  ## If there are no calls in the vcf (edge case), skip that VCF
+  if (length(rowRanges(vcf)) == 0) {
+    next
+  }
+
+  rowRanges(vcf)$support = getReadSupport(vcf=vcf, caller=caller)
+  rowRanges(vcf)$supplemental = getReadSupport(vcf=vcf, caller=caller, supplementary=T )
 
   ## Convert to breakpointRanges object, don't adjust for CIPOS uncertainty (i.e. keep nominalPosition). 
   ## For Manta, infer missing breakpoint is required as the caller does not insert the recip call in the VCF as the other calls do. 

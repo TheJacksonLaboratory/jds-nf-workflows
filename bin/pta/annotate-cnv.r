@@ -236,8 +236,8 @@ annotateEnsembl = function(x, ens, closest.max.distance=CLOSEST_MAX_DISTANCE) {
 option_list = list(
   make_option(c("-c", "--cnv"),                   type='character', help="Input CNV calles"),
   make_option(c("-a", "--caller"),                type='character', help="Name of tool used to call CNVs in --cnv (only bicseq2 is currently supported)"),
-  make_option(c("-t", "--tumor"),                 type='character', help="Comma-delimited list of database names corresponding to the order in --db_files"),
-  make_option(c("-n", "--normal"),                type='character', help="Comma-delimited list of database files corresponding to the order in --db_names"),
+  make_option(c("-t", "--tumor"),                 type='character', help="Name of the tumor sample"),
+  make_option(c("-n", "--normal"),                type='character', help="Name of the normal sample"),
   make_option(c("-b", "--cytoband"),              type='character', help="Cytoband file: headerless tab-delimited files with chr, start, end, cytoband, stain"),
   make_option(c("-d", "--db_names"),              type='character', help="Comma-delimited list of database names corresponding to the order in --db_files"),
   make_option(c("-s", "--db_files"),              type='character', help="Comma-delimited list of database files corresponding to the order in --db_names"),

@@ -9,6 +9,7 @@ process MULTIQC {
 
     publishDir "${params.pubdir}/multiqc", pattern: "*multiqc_report.html", mode:'copy'
     publishDir "${params.pubdir}/multiqc", pattern: "*_data", mode:'copy'
+    publishDir "${params.pubdir}/multiqc", pattern: "*_plots", mode:'copy'
 
     input:
     path multiqc_files

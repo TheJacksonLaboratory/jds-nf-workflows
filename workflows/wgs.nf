@@ -52,8 +52,10 @@ include {GATK_MERGEVCF;
          GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
          GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
 
-include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
+include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC;
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC;
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
 include {SNPEFF;
@@ -62,10 +64,14 @@ include {SNPEFF;
 include {SNPEFF_ONEPERLINE;
          SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
          SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
+include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP;
+         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
          SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
 include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+
+include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
 
 // help if needed
 if (params.help){
@@ -297,10 +303,17 @@ workflow WGS {
 
     } // END merge on individual
 
+    if (params.run_sv) {
+      // Run SV calling
+      WGS_SV(bam_file.join(index_file))
+    } // END run SV
+    // note that this comes after coverage cap and after ind merge happens. 
+
+
     // HaplotypeCaller does not have multithreading, and runs faster when scattered over chroms
     // Applies scatter intervals from above to the BQSR bam file
     chrom_channel = bam_file.join(index_file).combine(chroms)
-    
+  
     //Use Google DeepVariant to make vcfs and gvcfs if specified; makes gvcfs automatically
     if (params.deepvariant) {
       // Find X and Y chromosomes in chroms channel
@@ -331,10 +344,6 @@ workflow WGS {
       if (params.run_gvcf) {
         BCFTOOLS_MERGEDEEPVAR_GVCF(DEEPVARIANT.out.gvcf_channel.groupTuple(size: num_chroms), 'gvcf')
       }
-
-      // create select var channels
-      select_var_snp = BCFTOOLS_MERGEDEEPVAR_VCF.out.vcf_idx
-      select_var_indel = BCFTOOLS_MERGEDEEPVAR_VCF.out.vcf_idx
 
     } else {
       GATK_HAPLOTYPECALLER_INTERVAL(chrom_channel, '')
@@ -414,6 +423,13 @@ workflow WGS {
 
     } // END merge on individual
 
+    if (params.run_sv) {
+      // Run SV calling
+      WGS_SV(bam_file.join(index_file))
+    } // END run SV
+    // note that this comes after coverage cap is applied, and after ind merge happens.
+
+
 
     // Read a list of contigs from parameters to provide to GATK as intervals
     // for HaplotypeCaller variant regions
@@ -459,10 +475,6 @@ workflow WGS {
         BCFTOOLS_MERGEDEEPVAR_GVCF(DEEPVARIANT.out.gvcf_channel.groupTuple(size: num_chroms), 'gvcf')
       }
 
-      // create select var channels
-      select_var_snp = BCFTOOLS_MERGEDEEPVAR_VCF.out.vcf_idx
-      select_var_indel = BCFTOOLS_MERGEDEEPVAR_VCF.out.vcf_idx
-
     } else {
       GATK_HAPLOTYPECALLER_INTERVAL(chrom_channel, '')
       // Gather intervals from scattered HaplotypeCaller operations into one
@@ -483,70 +495,100 @@ workflow WGS {
     }
   }
 
-  // SNP
-  GATK_SELECTVARIANTS_SNP(select_var_snp, 'SNP', 'selected_SNP')
-  var_filter_snp = GATK_SELECTVARIANTS_SNP.out.vcf.join(GATK_SELECTVARIANTS_SNP.out.idx)
-  GATK_VARIANTFILTRATION_SNP(var_filter_snp, 'SNP')
-
-  // INDEL
-  GATK_SELECTVARIANTS_INDEL(select_var_indel, 'INDEL', 'selected_INDEL')
-  var_filter_indel = GATK_SELECTVARIANTS_INDEL.out.vcf.join(GATK_SELECTVARIANTS_INDEL.out.idx)
-  GATK_VARIANTFILTRATION_INDEL(var_filter_indel, 'INDEL')
-
-  // For other genome, expectation is that dbSNP will not exist.  
-  if (params.gen_org=='mouse' | params.gen_org=='human'){
-    SNPSIFT_ANNOTATE_SNP_DBSNP(GATK_VARIANTFILTRATION_SNP.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
-    SNPSIFT_ANNOTATE_INDEL_DBSNP(GATK_VARIANTFILTRATION_INDEL.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
-  }
-
-  // If Human
-  if (params.gen_org=='human'){
+  // If GATK HaplotypeCaller is used, then GATK SelectVariants and VariantFiltration
+  // are used to select SNPs and INDELs, and filter them.
+  // DeepVariant uses a different set of flags, which are not compatible with GATK VariantFiltration and must be annotated directly.
+  if (!params.deepvariant) {
 
     // SNP
-      SNPSIFT_ANNOTATE_SNP_COSMIC(SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
-      SNPEFF_SNP(SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf, 'SNP', 'vcf')
-      SNPSIFT_DBNSFP_SNP(SNPEFF_SNP.out.vcf, 'SNP')
-      SNPEFF_ONEPERLINE_SNP(SNPSIFT_DBNSFP_SNP.out.vcf, 'SNP')
+    GATK_SELECTVARIANTS_SNP(select_var_snp, 'SNP', 'selected_SNP')
+    var_filter_snp = GATK_SELECTVARIANTS_SNP.out.vcf.join(GATK_SELECTVARIANTS_SNP.out.idx)
+    GATK_VARIANTFILTRATION_SNP(var_filter_snp, 'SNP')
+
     // INDEL
-      SNPSIFT_ANNOTATE_INDEL_COSMIC(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
-      SNPEFF_INDEL(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf, 'INDEL', 'vcf')
-      SNPSIFT_DBNSFP_INDEL(SNPEFF_INDEL.out.vcf, 'INDEL')
-      SNPEFF_ONEPERLINE_INDEL(SNPSIFT_DBNSFP_INDEL.out.vcf, 'INDEL')
-      
-    // Merge SNP and INDEL and Aggregate Stats
-      vcf_files_unannotated = SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf)
-      GATK_MERGEVCF_UNANNOTATED(vcf_files_unannotated, 'SNP_INDEL_filtered_unannotated_final')
+    GATK_SELECTVARIANTS_INDEL(select_var_indel, 'INDEL', 'selected_INDEL')
+    var_filter_indel = GATK_SELECTVARIANTS_INDEL.out.vcf.join(GATK_SELECTVARIANTS_INDEL.out.idx)
+    GATK_VARIANTFILTRATION_INDEL(var_filter_indel, 'INDEL')
 
-      vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
-      GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
-      
-      SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf)
+    // For other genome, expectation is that dbSNP will not exist.  
+    if (params.gen_org=='mouse' | params.gen_org=='human'){
+      SNPSIFT_ANNOTATE_SNP_DBSNP(GATK_VARIANTFILTRATION_SNP.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+      SNPSIFT_ANNOTATE_INDEL_DBSNP(GATK_VARIANTFILTRATION_INDEL.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+    }
+
+    // If Human
+    if (params.gen_org=='human'){
+
+      // SNP
+        SNPSIFT_ANNOTATE_SNP_COSMIC(SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+        SNPEFF_SNP(SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf, 'SNP', 'vcf')
+        SNPSIFT_DBNSFP_SNP(SNPEFF_SNP.out.vcf, 'SNP')
+        SNPEFF_ONEPERLINE_SNP(SNPSIFT_DBNSFP_SNP.out.vcf, 'SNP')
+      // INDEL
+        SNPSIFT_ANNOTATE_INDEL_COSMIC(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+        SNPEFF_INDEL(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf, 'INDEL', 'vcf')
+        SNPSIFT_DBNSFP_INDEL(SNPEFF_INDEL.out.vcf, 'INDEL')
+        SNPEFF_ONEPERLINE_INDEL(SNPSIFT_DBNSFP_INDEL.out.vcf, 'INDEL')
+        
+      // Merge SNP and INDEL and Aggregate Stats
+        vcf_files_unannotated = SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf)
+        GATK_MERGEVCF_UNANNOTATED(vcf_files_unannotated, 'SNP_INDEL_filtered_unannotated_final')
+
+        vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
+        GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
+        
+        SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf)
+    }
+
+    // If Mouse
+    if (params.gen_org=='mouse'){
+      // Merge SNP and INDEL
+
+      vcf_files = SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf)
+
+      GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
+
+      SNPEFF(GATK_MERGEVCF.out.vcf, 'BOTH', 'vcf')
+
+      SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
+
+      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+    }
+
+
+    // If 'Other'
+    if (params.gen_org=='other'){
+    // For other genomes, there will likely not be SNP EFF annotations, but merge still needs to happen. 
+      vcf_files = GATK_VARIANTFILTRATION_SNP.out.vcf.join(GATK_VARIANTFILTRATION_INDEL.out.vcf)
+
+      GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
+    }
+
+  } else {
+    // If DeepVariant is used, then the VCFs are ready to annotate directly. 
+    // For other genome, expectation is that dbSNP will not exist.  
+    
+    if (params.gen_org == 'mouse' || params.gen_org == 'human') {
+        SNPSIFT_ANNOTATE_DBSNP(BCFTOOLS_MERGEDEEPVAR_VCF.out.vcf_idx.map { it -> [it[0], it[1]] }, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+    }
+
+    // If Human
+    if (params.gen_org == 'human') {
+        SNPSIFT_ANNOTATE_COSMIC(SNPSIFT_ANNOTATE_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+        SNPEFF(SNPSIFT_ANNOTATE_COSMIC.out.vcf, 'DEEPVAR', 'vcf')
+        SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'BOTH')
+        SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'BOTH')
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+    }
+
+    // If Mouse
+    if (params.gen_org == 'mouse') {
+        SNPEFF(SNPSIFT_ANNOTATE_DBSNP.out.vcf, 'DEEPVAR', 'vcf')
+        SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+    }
   }
-
-  // If Mouse
-  if (params.gen_org=='mouse'){
-    // Merge SNP and INDEL
-
-    vcf_files = SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf)
-
-    GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
-
-    SNPEFF(GATK_MERGEVCF.out.vcf, 'BOTH', 'vcf')
-
-    SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
-
-    SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
-  }
-
-
-  // If 'Other'
-  if (params.gen_org=='other'){
-  // For other genomes, there will likely not be SNP EFF annotations, but merge still needs to happen. 
-    vcf_files = GATK_VARIANTFILTRATION_SNP.out.vcf.join(GATK_VARIANTFILTRATION_INDEL.out.vcf)
-
-    GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
-  }
-
+  
   ch_multiqc_files = Channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))

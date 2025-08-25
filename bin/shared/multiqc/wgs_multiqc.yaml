@@ -26,6 +26,7 @@ extra_fn_clean_exts:
   - "_FilterTrim"
   - "_dedup"
   - "_fastp"
+  - "_aln.aln"
   - type: "truncate"
     pattern: ".fastq"
 
