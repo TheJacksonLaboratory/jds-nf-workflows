@@ -98,20 +98,29 @@ readEnsembl = function(f) {
 
 ## Annotate with cytoband
 annotateCytoband = function(cnv, cytoband) {
-  
-  ## Pull in cytoband info 
-  cnv = cnv %$% cytoband
-  
+  ## Find overlaps between CNVs and cytobands
+  hits = GenomicRanges::findOverlaps(cnv, cytoband)
+  cnv$cytoband = rep(NA_character_, length(cnv))
+  ## For each CNV, concatenate all overlapping cytobands
+  if (length(hits) > 0) {
+    by_query = split(subjectHits(hits), queryHits(hits))
+    for (i in names(by_query)) {
+      i_num = as.integer(i)
+      cyto_names = as.character(mcols(cytoband)$cytoband[by_query[[i]]])
+      cnv$cytoband[i_num] = paste(cyto_names, collapse = ', ')
+    }
+  } else {
+    cnv$cytoband = rep('-', length(cnv))
+  }
+
   ## Simplify comma-delimited representation to hyphenated if necessary
   cnv$cytoband = sapply(cnv$cytoband, .simplifyCytoband)
   
   ## Add chromosome information
-
   cnv$cytoband = paste0(as.character(seqnames(cnv)), cnv$cytoband)
   cnv$cytoband = gsub(".*character.*",'-',cnv$cytoband)
  
   return(cnv)
-  
 }
 
 ## Annotate with databases, subject to reciprocal overlap criteria
@@ -221,8 +230,7 @@ annotateEnsembl = function(x, ens, closest.max.distance=CLOSEST_MAX_DISTANCE) {
 option_list = list(
   make_option(c("-c", "--cnv"),                   type='character', help="Input CNV calls"),
   make_option(c("-a", "--caller"),                type='character', help="Name of tool used to call CNVs in --cnv (only delly is currently supported)"),
-  make_option(c("-t", "--tumor"),                 type='character', help="Name of the tumor sample"),
-  make_option(c("-n", "--normal"),                type='character', help="Name of the normal sample"),
+  make_option(c("-n", "--sample_name"),           type='character', help="Name of the sample"),
   make_option(c("-b", "--cytoband"),              type='character', help="Cytoband file: headerless tab-delimited files with chr, start, end, cytoband"),
   make_option(c("-d", "--db_names"),              type='character', help="Comma-delimited list of database names corresponding to the order in --db_files"),
   make_option(c("-s", "--db_files"),              type='character', help="Comma-delimited list of database files corresponding to the order in --db_names"),
@@ -246,7 +254,7 @@ cnv <- tryCatch(
       readCNV(opt$cnv, chr=opt$allowed_chr)
   },
   error = function(e) {
-    empty_df <- setNames(data.frame(matrix(ncol = 10, nrow = 0)), c('#chr', 'start', 'end', 'type', 'log2', 'tool', 'tumor--normal', 'info', 'focal', 'cytoband'))
+    empty_df <- setNames(data.frame(matrix(ncol = 10, nrow = 0)), c('#chr', 'start', 'end', 'type', 'log2', 'tool', 'sample_name', 'info', 'focal', 'cytoband'))
     
     write.table(empty_df, opt$out_file_main, row.names=F, col.names=T, sep='\t', quote=F)
     write.table(empty_df, opt$out_file_supplemental, row.names=F, col.names=T, sep='\t', quote=F)
@@ -254,14 +262,15 @@ cnv <- tryCatch(
     quit(status=0, save='no')
   }
 )
+
 cyto = readCytoband(opt$cytoband)
 ensembl = readEnsembl(opt$ensembl)
 
 ## Add cytoband annotation
 cnv = annotateCytoband(cnv=cnv, cytoband=cyto)
 
-## Add tumor-normal id, caller info
-cnv$`tumor--normal` = paste0(opt$tumor,'--',opt$normal)
+## Add sample_name, caller info
+cnv$sample_name = opt$sample_name
 cnv$tool = opt$caller
 
 
@@ -307,7 +316,7 @@ cnv$info[cnv$intergenic == 'yes'] = paste0(cnv$info[cnv$intergenic == 'yes'], ';
 ## Fields included in main/supplemental are slightly different 
 for (i in c('main', 'supplemental')) { 
   
-  cnv.i = cnv[, c('#chr', 'start', 'end', 'type', 'log2', 'tool', 'tumor..normal', 'info', 'focal', 'cytoband')]
+  cnv.i = cnv[, c('#chr', 'start', 'end', 'type', 'log2', 'tool', 'sample_name', 'info', 'focal', 'cytoband')]
   colnames(cnv.i) = gsub('..', '--', colnames(cnv.i), fixed=T)
   outfile = ifelse(i == 'main', opt$out_file_main, opt$out_file_supplemental)
   

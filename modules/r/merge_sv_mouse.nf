@@ -33,4 +33,4 @@ process MERGE_SV {
             --out_file=${sampleID}.manta_lumpy_delly_svaba_sv.bed \
             --out_file_supplemental=${sampleID}.manta_lumpy_delly_svaba_sv_supplemental.bed
         """
-    }
+}

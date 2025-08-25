@@ -185,7 +185,7 @@ workflow ILLUMINA {
     DELLY_CNV_GERMLINE(PICARD_MARKDUPLICATES.out.bam_and_index, fasta_index)
     REHEAD_SORT_CNV(DELLY_CNV_GERMLINE.out.delly_bcf, "delly_cnv", fasta_index)
     GATK_INDEXFEATUREFILE(REHEAD_SORT_CNV.out.vcf_sort)
-    VEP_GERMLINE_CNV(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx)) // THE OUTPUTS FROM THESE SHOULD BE SAVED AND ARE CURRENTLY NOT
+    VEP_GERMLINE_CNV(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx))
 
     // Duphold
     DUPHOLD_DELLY(PICARD_MARKDUPLICATES.out.bam_and_index.join(REHEAD_SORT_DELLY.out.vcf_sort), fasta_index, 'delly_sv') 
@@ -198,7 +198,7 @@ workflow ILLUMINA {
 
     // * Merge callers and annotate results
 
-    // Join VCFs together by sampleID and run SURVIVOR merge
+    // Join VCFs together by sampleID and run NYGC script based merge
 
     survivor_input = BCFTOOLS_DUPHOLD_FILTER_DELLY.out.vcf.join(BCFTOOLS_DUPHOLD_FILTER_LUMPY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_MANTA.out.vcf)
                      .map { it -> tuple(it[0], tuple(it[1], it[2], it[3]))}

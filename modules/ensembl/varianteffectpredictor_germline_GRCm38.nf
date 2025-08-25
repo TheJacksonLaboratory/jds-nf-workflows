@@ -7,8 +7,9 @@ process VEP_GERMLINE {
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'ensemblorg/ensembl-vep:release_102.0'
+    // GRCm38 required release_102 or earlier.
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.vcf", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID}", pattern: "*.vcf.gz*", mode:'copy'
 
     input:
     tuple val(sampleID), file(vcf), file(idx)
