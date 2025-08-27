@@ -35,6 +35,16 @@ include {PICARD_MT_COVERAGEATEVERYBASE} from "${projectDir}/modules/picard/picar
 include {MITY_RUNALL} from "${projectDir}/modules/mity/mity_runall"
 include {MUTSERVE} from "${projectDir}/modules/mutserve/mutserve"
 
+include {PREP_MTDNA_VCF} from "${projectDir}/modules/r/prep_mtdna_vcf"
+include {BCFTOOLS_MERGECALLERS} from "${projectDir}/modules/bcftools/bcftools_merge_mt_callers"
+
+include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+include {SNPEFF} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
+include {SNPEFF_ONEPERLINE} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
+include {SNPSIFT_DBNSFP} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
+include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+
 workflow MT_VARIANT_CALLING {
 
     take:
@@ -83,14 +93,23 @@ workflow MT_VARIANT_CALLING {
 
             PICARD_LIFTOVERVCF_MERGEVCF(vcf_for_join)
 
-            GATK_FILTERMUECTCALLS_PRIMARY(PICARD_LIFTOVERVCF_MERGEVCF.out.vcf.join(GATK_MERGEMUTECTSTATS.out.stats).map{it -> it[0], it[1], it[2], 'primary'})
+            primary_filter_input = PICARD_LIFTOVERVCF_MERGEVCF.out.vcf
+                                   .join(GATK_MERGEMUTECTSTATS.out.stats)
+                                   .map{ it -> [it[0], it[1], it[2], '/primary'] }
 
-            GATK_LEFTALIGNANDTRIMVARIANTS_PASS(GATK_FILTERMUECTCALLS_PRIMARY.out.vcf.join(GATK_FILTERMUECTCALLS_PRIMARY.out.tbi), 'pass-only')
+            GATK_FILTERMUECTCALLS_PRIMARY(primary_filter_input, 'primary')
 
-            HAPLOCHECK(GATK_LEFTALIGNANDTRIMVARIANTS_PASS.out.vcf)
+            GATK_LEFTALIGNANDTRIMVARIANTS_PASS(GATK_FILTERMUECTCALLS_PRIMARY.out.vcf_tbi, 'pass-only')
 
-            GATK_FILTERMUECTCALLS(GATK_FILTERMUECTCALLS_PRIMARY.out.vcf.join(GATK_MERGEMUTECTSTATS.out.stats).join(HAPLOCHECK.out.contamination))
-            
+            HAPLOCHECK(GATK_LEFTALIGNANDTRIMVARIANTS_PASS.out.interm_vcf_tbi)
+
+            contam_filter_input = GATK_FILTERMUECTCALLS_PRIMARY.out.vcf_tbi
+                                  .join(GATK_MERGEMUTECTSTATS.out.stats)
+                                  .join(HAPLOCHECK.out.contam_value)
+                                  .map{it -> [it[0], it[1], it[3], it[4]]}
+
+            GATK_FILTERMUECTCALLS(contam_filter_input, 'final')
+
         } else if (params.gen_org == 'mouse') {
 
             GATK_MUTECT2_MT(mt_alignment, 'mt', 'MT:1-15423')
@@ -103,8 +122,11 @@ workflow MT_VARIANT_CALLING {
 
             PICARD_LIFTOVERVCF_MERGEVCF(vcf_for_join)
 
-            filter_calls_input = PICARD_LIFTOVERVCF_MERGEVCF.out.vcf.join(GATK_MERGEMUTECTSTATS.out.stats).map{it -> [it[0], it[1], it[2], '/mouse']}
-            GATK_FILTERMUECTCALLS(filter_calls_input)
+            filter_calls_input = PICARD_LIFTOVERVCF_MERGEVCF.out.vcf
+                                .join(GATK_MERGEMUTECTSTATS.out.stats)
+                                .map{it -> [it[0], it[1], it[2], '/mouse']}
+            
+            GATK_FILTERMUECTCALLS(filter_calls_input, 'final')
             // Note: 'mouse' is a placeholder for path(contamination), which is not used in mouse
 
         }
@@ -112,41 +134,41 @@ workflow MT_VARIANT_CALLING {
         // for mouse the original positions are: MT:1-15423, and the shifted calling is done in MT:7423-8299.
         // Note that GRCm38 and GRCm39 use the same MT coordinates, so no need to check the genome version.
 
+        GATK_LEFTALIGNANDTRIMVARIANTS(GATK_FILTERMUECTCALLS.out.vcf_tbi, 'pass-only-final')
+
         PICARD_MT_COVERAGEATEVERYBASE(mt_alignment.join(shifted_mt_alignment))
 
-        GATK_LEFTALIGNANDTRIMVARIANTS(GATK_FILTERMUECTCALLS.out.mutect2_vcf_tbi, 'pass-only')
+        prep_input = GATK_LEFTALIGNANDTRIMVARIANTS.out.vcf_tbi.map { it -> [it[0], it[1], it[2], 'mutect2'] }
+                    .mix(MITY_RUNALL.out.vcf_tbi.map { it -> [it[0], it[1], it[2], 'mity'] })
+                    .mix(MUTSERVE.out.vcf_tbi.map { it -> [it[0], it[1], it[2], 'mutserve'] })
+        PREP_MTDNA_VCF(prep_input)
+        BCFTOOLS_MERGECALLERS(PREP_MTDNA_VCF.out.bcf_tbi.groupTuple(size: 3))
+
+        // Annotation of merged calls
+        if (params.gen_org == 'mouse' || params.gen_org == 'human') {
+            SNPSIFT_ANNOTATE_DBSNP(BCFTOOLS_MERGECALLERS.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+        }
+
+        // If Human
+        if (params.gen_org == 'human') {
+            SNPSIFT_ANNOTATE_COSMIC(SNPSIFT_ANNOTATE_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+            SNPEFF(SNPSIFT_ANNOTATE_COSMIC.out.vcf, 'MTDNA', 'vcf')
+            SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'MTDNA')
+            SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'MTDNA')
+            SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'mtdna')
+        }
+
+        // If Mouse
+        if (params.gen_org == 'mouse') {
+            SNPEFF(SNPSIFT_ANNOTATE_DBSNP.out.vcf, 'MTDNA', 'vcf')
+            SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'MTDNA')
+            SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'mtdna')
+        }
 
     emit:
         output_string = "nothing yet" // This is a placeholder;
 }
 
 // Punch list: 
-// Merge callers
-// Check Picard CollectWgsMetrics still works for WGS
-// Add annotation
 // Wiki page
 // Emit strings and connection to WGS and PTA workflows
-// Test human workflow
-// Write tests and add test BAM data
-
-
-//   output {
-//     File subset_bam = SubsetBamToChrM.output_bam
-//     File subset_bai = SubsetBamToChrM.output_bai
-//     File mt_aligned_bam = AlignAndCall.mt_aligned_bam
-//     File mt_aligned_bai = AlignAndCall.mt_aligned_bai
-//     File out_vcf = AlignAndCall.out_vcf
-//     File out_vcf_index = AlignAndCall.out_vcf_index
-//     File split_vcf = SplitMultiAllelicSites.split_vcf
-//     File split_vcf_index = SplitMultiAllelicSites.split_vcf_index
-//     File input_vcf_for_haplochecker = AlignAndCall.input_vcf_for_haplochecker
-//     File duplicate_metrics = AlignAndCall.duplicate_metrics
-//     File coverage_metrics = AlignAndCall.coverage_metrics
-//     File theoretical_sensitivity_metrics = AlignAndCall.theoretical_sensitivity_metrics
-//     File contamination_metrics = AlignAndCall.contamination_metrics
-//     File base_level_coverage_metrics = CoverageAtEveryBase.table
-//     Int mean_coverage = AlignAndCall.mean_coverage
-//     Float median_coverage = AlignAndCall.median_coverage
-//     String major_haplogroup = AlignAndCall.major_haplogroup
-//     Float contamination = AlignAndCall.contamination
-//   }

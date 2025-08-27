@@ -15,9 +15,10 @@ process GATK_LEFTALIGNANDTRIMVARIANTS {
     val(type)
 
     output:
-    tuple val(sampleID), file("*.split.vcf"), emit: split_vcf
-    tuple val(sampleID), file("*.splitAndPassOnly.vcf"), emit: vcf, optional: true
-    
+    tuple val(sampleID), path("*.split.vcf"), emit: split_vcf
+    tuple val(sampleID), path("*.splitAndPassOnly.vcf.gz"), path("*.splitAndPassOnly.vcf.gz.tbi"), emit: vcf_tbi, optional: true
+    tuple val(sampleID), path("*.mutect2.interm.vcf.gz"), path("*.mutect2.interm.vcf.gz.tbi"), emit: interm_vcf_tbi, optional: true
+
     script:
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
@@ -35,9 +36,15 @@ process GATK_LEFTALIGNANDTRIMVARIANTS {
     if [[ "${type}" == "pass-only" ]]; then
         gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" SelectVariants \
             -V ${sampleID}.split.vcf \
-            -O ${sampleID}.splitAndPassOnly.vcf \
+            -O ${sampleID}.mutect2.interm.vcf.gz \
             --exclude-filtered
     fi
 
+    if [[ "${type}" == "pass-only-final" ]]; then
+        gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" SelectVariants \
+            -V ${sampleID}.split.vcf \
+            -O ${sampleID}.mutect2.splitAndPassOnly.vcf.gz \
+            --exclude-filtered
+    fi
     """
 }

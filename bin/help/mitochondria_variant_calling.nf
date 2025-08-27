@@ -10,19 +10,25 @@ Parameter | Type | Description
 --gen_org | 'mouse' | The organism for the analysis.
 --genome_build | 'GRCm38' | The genome build version.
 --mt_contig_name | 'MT' | Name of the mitochondrial contig.
---mt_fasta | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/Mus_musculus.GRCm38.dna.MT.fa' | Path to the mitochondrial FASTA file.
---mt_genome | params.reference_cache+'/mouse/GRCm38/genome/sequence/ensembl/GRCm38.p6/Mus_musculus.GRCm38.dna.primary_assembly.genome' | Path to the full genome file.
---mt_shifted_fasta | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/Mus_musculus.GRCm38.dna.MT.shifted8k.fa' | Path to the shifted mitochondrial FASTA file.
---shift_back_chain | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/Mus_musculus.GRCm38.dna.MT.shiftback' | Path to the shift-back chain file.
---mt_fasta_index | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/bwa_index/Mus_musculus.GRCm38.dna.MT' | Path to the BWA index for the mitochondrial FASTA.
---mt_shifted_fasta_index | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/bwa_index/Mus_musculus.GRCm38.dna.MT.shifted8k' | Path to the BWA index for the shifted mitochondrial FASTA.
+--mt_fasta | </fasta> | Path to the mitochondrial FASTA file.
+--mt_genome | </.genome> | Path to the full genome file.
+--mt_shifted_fasta | </shifted_fasta> | Path to the shifted mitochondrial FASTA file.
+--shift_back_chain | </.shiftback> | Path to the shift-back chain file.
+--mt_fasta_index | </bwa_index> | Path to the BWA index for the mitochondrial FASTA.
+--mt_shifted_fasta_index | </shifted_bwa_index> | Path to the BWA index for the shifted mitochondrial FASTA.
 --max_allele_count | 4 | Maximum number of alleles to consider.
---blacklisted_sites | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/Mus_musculus.GRCm38.dna.MT.exclusion.bed' | BED file of blacklisted sites.
---non_control_region_interval_list | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/non_control_region.chrMT.GRCm38.interval_list' | Interval list for non-control region.
---control_region_shifted_interval_list | '/projects/compsci/omics_share/meta/benchmarking/mt_dna/shifted_ref/GRCm38/control_region_shifted.chrMT.GRCm38.interval_list' | Interval list for shifted control region.
+--exclusion_sites | </exclusion_sites> | BED file of exclusion sites.
+--non_control_region_interval_list | </non_control_region.interval_list> | Interval list for non-control region.
+--control_region_shifted_interval_list | </control_region_shifted.interval_list> | Interval list for shifted control region.
 --detection_limit | 0.01 | Detection limit for Mutserve.
 --mapQ | 20 | Minimum mapping quality.
 --baseQ | 20 | Minimum base quality.
---ref_fa | params.reference_cache+'/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.primary_assembly.fa' | Reference FASTA file (not used, but set for warning).
+--gen_ver | 'hg38' | Genome version for the analysis.
+--dbSNP | </dbsnp.vcf.gz> | Path to dbSNP annotation VCF file.
+--dbSNP_index | </dbsnp.vcf.gz.tbi> | Path to dbSNP annotation VCF index file.
+--snpEff_config | </snpEff.config> | Path to snpEff configuration file.
+--cosmic | </cosmic> | Path to COSMIC annotation VCF file. Used when `--gen_org == human`
+--cosmic_index | </cosmic_index> | Path to COSMIC annotation VCF index file. Used when `--gen_org == human`
+--dbNSFP | </dbNSFP> | Path to dbNSFP annotation file. Used when `--gen_org == human`
 '''
 }

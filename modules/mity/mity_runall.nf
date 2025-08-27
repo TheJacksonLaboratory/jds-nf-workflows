@@ -15,14 +15,14 @@ process MITY_RUNALL {
     tuple val(sampleID), path(bam), path(bai)
 
     output:
-    tuple val(sampleID), path("*.normalise.vcf.gz"), path("*.normalise.vcf.gz.tbi"), emit: vcf
+    tuple val(sampleID), path("*.normalise.vcf.gz"), path("*.normalise.vcf.gz.tbi"), emit: vcf_tbi
     tuple val(sampleID), path("*.mity.report.xlsx"), emit: report
 
     script:
     reference = params.gen_org == 'mouse' ? 'mm10' : 'hg38'
     """
     mity runall \
-    --prefix ${sampleID} \
+    --prefix ${sampleID}.mity \
     --reference ${reference} \
     --min_vaf 0.01 \
     --contig ${params.mt_contig_name} \

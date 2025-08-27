@@ -27,6 +27,6 @@ process GATK_PRINTREADS {
     --read-filter MateUnmappedAndUnmappedReadFilter \
     -I ${bam} \
     --read-index ${bai} \
-    -O ${bam.baseName}.MtExtracted.bam
+    -O ${bam.baseName}.MTExtracted.bam
     """
 }
