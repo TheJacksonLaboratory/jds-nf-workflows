@@ -7,6 +7,7 @@ include {param_log} from "${projectDir}/bin/log/wgs_long_read.nf"
 include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
 
+include {FASTP_LONG} from "${projectDir}/modules/fastp/fastp_long"
 include {PBMM2_CALL} from "${projectDir}/modules/pbmm2/pbmm2_call"
 
 include {SAMTOOLS_MERGE;
@@ -76,11 +77,14 @@ workflow wgs_long_read {
 
     // ADD A DEMUX STEP FOR DATA NOT IN FASTQ FORMAT??
 
+    // FASTP for quality control
+    FASTP_LONG(read_ch)
+
     // PBMM2 Alignment
     ch_minimap2_index = file("${params.minimap2_index}")
 
     // Map reads to indexed genome
-    PBMM2_CALL(read_ch, ch_minimap2_index)
+    PBMM2_CALL(FASTP_LONG.out.trimmed_fastq, ch_minimap2_index)
 
     if (params.split_fastq) {
         SAMTOOLS_MERGE(PBMM2_CALL.out.pbmm2_bam.map { it -> [it[0], it[1]] }.groupTuple(), 'merged_file')
@@ -198,9 +202,6 @@ workflow wgs_long_read {
     PBSV_DISCOVER(bam_file.join(index_file))
     ch_fasta = params.ref_fa
     PBSV_CALL(PBSV_DISCOVER.out.pbsv_svsig, ch_fasta)
-    
-    // Call SV with PAV
-    PAV(read_ch, ch_fasta)
 
     // Call SV with sniffles
     SNIFFLES(bam_file.join(index_file))
@@ -218,6 +219,7 @@ workflow wgs_long_read {
     SURVIVOR_TO_BED(bed_prep_input)
 
     ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it[1] }.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it[1] }.ifEmpty([]))
