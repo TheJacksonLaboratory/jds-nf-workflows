@@ -117,5 +117,24 @@ if (params.gen_org == 'human' && params.run_sv)
   --cnv_distance_limit | <INT> | Maximum distance allowed between SV and nearest CNV.
   --sv_slop | <INT> | Number of bases to extend SV breakpoints to merge.
   '''
+
+  if (params.run_mt_calling)
+    println '''
+  --mt_contig_name | 'MT' | Name of the mitochondrial contig.
+  --mt_fasta | <PATH> | Path to the mitochondrial fasta file.
+  --mt_genome | <PATH> | Path to the mitochondrial genome file.
+  --mt_shifted_fasta | <PATH> | Path to the shifted mitochondrial fasta file.
+  --shift_back_chain | <PATH> | Path to the shift back chain file.
+  --mt_fasta_index | <PATH> | Path to the mitochondrial fasta index.
+  --mt_shifted_fasta_index | <PATH> | Path to the shifted mitochondrial fasta index.
+  --max_allele_count | 4 | Maximum allele count for mitochondrial variant calling.
+  --exclusion_sites | <PATH> | BED file of exclusion sites for mitochondrial calling.
+  --non_control_region_interval_list | <PATH> | Interval list for non-control region of chrMT.
+  --control_region_shifted_interval_list | <PATH> | Interval list for shifted control region of chrMT.
+  --detection_limit | 0.01 | Mutserve detection limit.
+  --mapQ | 20 | Minimum mapping quality for Mutserve.
+  --baseQ | 20 | Minimum base quality for Mutserve.
+  '''
+  
 }
 

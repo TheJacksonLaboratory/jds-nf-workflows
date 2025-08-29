@@ -165,10 +165,7 @@ workflow MT_VARIANT_CALLING {
             SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'mtdna')
         }
 
-    emit:
-        output_string = "nothing yet" // This is a placeholder;
 }
 
 // Punch list: 
 // Wiki page
-// Emit strings and connection to WGS and PTA workflows
