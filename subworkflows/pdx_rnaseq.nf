@@ -36,20 +36,21 @@ workflow PDX_RNASEQ {
 
     main:
     // Step 1: Read trim, Get read group information, Run xengsort
-    FASTP(read_ch)
+    ch_FASTP_multiqc = Channel.empty() // optional log, depeding on skip trim
+    if (!params.skip_read_trimming) {
+      FASTP(read_ch)
+      reads = FASTP.out.trimmed_fastq
+      ch_FASTP_multiqc = FASTP.out.quality_json // set log file for multiqc
+    } else {
+      reads = read_ch
+    }
     
     GET_READ_LENGTH(read_ch)
     
-    if (params.read_type == 'PE') {
-      xengsort_input = FASTP.out.trimmed_fastq
-    } else {
-      xengsort_input = FASTP.out.trimmed_fastq
-    }
-
     // QC is assess on all reads. Mouse/human is irrelevant here. 
-    FASTQC(FASTP.out.trimmed_fastq)
+    FASTQC(reads)
 
-    CHECK_STRANDEDNESS(FASTP.out.trimmed_fastq)
+    CHECK_STRANDEDNESS(reads)
 
     // Generate Xengsort Index if needed
     if (params.xengsort_idx_path) {
@@ -60,7 +61,7 @@ workflow PDX_RNASEQ {
     }
 
     // Xengsort Classification
-    XENGSORT_CLASSIFY(xengsort_index, xengsort_input) 
+    XENGSORT_CLASSIFY(xengsort_index, reads) 
 
     human_reads = XENGSORT_CLASSIFY.out.xengsort_human_fastq
                   .join(CHECK_STRANDEDNESS.out.strand_setting)
@@ -131,7 +132,7 @@ workflow PDX_RNASEQ {
     PICARD_COLLECTRNASEQMETRICS_MOUSE(mouse_qc_input, params.ref_flat_mouse, params.ribo_intervals_mouse)
 
     ch_multiqc_files = Channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(XENGSORT_CLASSIFY.out.xengsort_log.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))

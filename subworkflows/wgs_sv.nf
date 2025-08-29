@@ -1,5 +1,6 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
+
 include {SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
 
 include {SMOOVE_CALL} from "${projectDir}/modules/smoove/smoove_call_germline"
