@@ -156,6 +156,7 @@ def param_log(){
         msg += "\n" + mtHeader + "\n"
         msg += mtParams
     }
+    
     msg += projectInfo
 
     log.info msg
