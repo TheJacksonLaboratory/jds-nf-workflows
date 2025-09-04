@@ -49,26 +49,24 @@ makeGRangesFromChangepoint = function(x) {
 
 ## Is variant x a high-confidence variant? 
 ## Meant to be used with apply(,2,)
-isHighConfidence = function(x, cpmax) {
+isHighConfidence = function(x) {
   
   ## Is there support from multiple callers?
   multi.caller = grepl(',', x['tools'])
 
-  ## Is either breakpoint close enough to its nearest changepoint?
-  if (x['cnv_changepoint_1'] == '' | is.na(x['cnv_changepoint_1'])) {
+  ## Is either breakpoint close enough to a changepoint?
+  ## Changepoints are only annotated in the prior script if the 'nearest' neighbor is within a distance limit.
+  ## Check if one or the other (or both) CNV change points exist and not NA or empty string
+  if (is.null(x['cnv_changepoint_1']) || is.na(x['cnv_changepoint_1']) || x['cnv_changepoint_1'] == '') {
     near.ch1 = FALSE
   } else {
-    x1.gr = GRanges(seqnames=x['#chr1'], ranges=IRanges(as.numeric(x['start1']), as.numeric(x['end1'])))
-    ch1.gr = makeGRangesFromChangepoint(x['cnv_changepoint_1'])
-    near.ch1 = any(GenomicRanges::distance(x1.gr, ch1.gr) <= cpmax)
+    near.ch1 = TRUE
   }
 
-  if (x['cnv_changepoint_2'] == '' | is.na(x['cnv_changepoint_1'])) {
+  if (is.null(x['cnv_changepoint_2']) || is.na(x['cnv_changepoint_2']) || x['cnv_changepoint_2'] == '') {
     near.ch2 = FALSE
   } else {
-    x2.gr = GRanges(seqnames=x['chr2'], ranges=IRanges(as.numeric(x['start2']), as.numeric(x['end2'])))
-    ch2.gr = makeGRangesFromChangepoint(x['cnv_changepoint_2'])
-    near.ch2 = any(GenomicRanges::distance(x2.gr, ch2.gr) <= cpmax)
+    near.ch2 = TRUE
   }
   
   return(multi.caller || near.ch1 || near.ch2)
@@ -80,7 +78,6 @@ isHighConfidence = function(x, cpmax) {
 ## Collect arguments
 option_list = list(
   make_option(c("-b", "--bedpe"),                     type='character',  help="Input BEDPE"),
-  make_option(c("-m", "--max_changepoint_distance"),  type='numeric',    help="Maximum distance a changepoint can be from a breakpoint to 'rescue' it into the high-confidence set"),
   make_option(c("-f", "--filter_databases"),          type='character',  help="Comma-separated list of databases to filter, looking in the info field"),
   make_option(c("-s", "--out_file_somatic"),          type='character',  help="Output somatic BEDPE"),
   make_option(c("-o", "--out_file_highconf"),         type='character',  help="Output high-confidence BEDPE"),
@@ -104,7 +101,7 @@ if (opt$genome == 'GRCh38') {
 write.table(x, opt$out_file_somatic, row.names=F, col.names=T, sep='\t', quote=F)
 
 ## Filter for high confidence
-x = x[apply(x, 1, isHighConfidence, opt$max_changepoint_distance), ]
+x = x[apply(x, 1, isHighConfidence), ]
 
 ## Write result
 write.table(x, opt$out_file_highconf, row.names=F, col.names=T, sep='\t', quote=F)
