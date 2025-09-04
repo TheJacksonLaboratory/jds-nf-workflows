@@ -34,14 +34,11 @@ include {SNPEFF_ONEPERLINE} from "${projectDir}/modules/snpeff_snpsift/snpeff_on
 include {SNPSIFT_DBNSFP} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
 include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
 
-include {PAV} from "${projectDir}/modules/pav/pav"
 include {PBSV_DISCOVER} from "${projectDir}/modules/pbsv/pbsv_discover"
 include {PBSV_CALL} from "${projectDir}/modules/pbsv/pbsv_call"
 include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
-include {SURVIVOR_MERGE} from "${projectDir}/modules/survivor/survivor_merge"
-include {SURVIVOR_VCF_TO_TABLE} from "${projectDir}/modules/survivor/survivor_vcf_to_table"
-include {SURVIVOR_SUMMARY} from "${projectDir}/modules/survivor/survivor_summary"
-include {SURVIVOR_TO_BED} from "${projectDir}/modules/survivor/survivor_to_bed"
+include {TRUVARI_BENCH} from "${projectDir}/modules/truvari/truvari_bench"
+
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 //help if needed
@@ -208,15 +205,12 @@ workflow wgs_long_read {
 
     // Merge caller results
 
-    // Join VCFs together by sampleID and run SURVIVOR merge
-    survivor_input = PBSV_CALL.out.pbsv_vcf.join(SNIFFLES.out.sniffles_vcf)
+    // Join VCFs together by sampleID and run truvari bench
+    truvari_input = PBSV_CALL.out.pbsv_vcf.join(SNIFFLES.out.sniffles_vcf)
         .map { it -> tuple(it[0], tuple(it[1], it[2])) }
-    SURVIVOR_MERGE(survivor_input)
-    SURVIVOR_VCF_TO_TABLE(SURVIVOR_MERGE.out.vcf)
-    SURVIVOR_SUMMARY(SURVIVOR_MERGE.out.vcf)
-
-    bed_prep_input = SURVIVOR_VCF_TO_TABLE.out.annotation.join(SURVIVOR_SUMMARY.out.csv)
-    SURVIVOR_TO_BED(bed_prep_input)
+    TRUVARI_BENCH(truvari_input)
+    TRUVARI_BENCH.out.vcf_ensemble.view()
+    
 
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))
