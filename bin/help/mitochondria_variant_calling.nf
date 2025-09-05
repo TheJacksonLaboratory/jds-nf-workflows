@@ -16,7 +16,7 @@ Parameter | Type | Description
 --shift_back_chain | </.shiftback> | Path to the shift-back chain file.
 --mt_fasta_index | </bwa_index> | Path to the BWA index for the mitochondrial FASTA.
 --mt_shifted_fasta_index | </shifted_bwa_index> | Path to the BWA index for the shifted mitochondrial FASTA.
---max_allele_count | 4 | Maximum number of alleles to consider.
+--max_allele_count | 4 | Maximum number of alleles to consider in Mutect2 calling.
 --exclusion_sites | </exclusion_sites> | BED file of exclusion sites.
 --non_control_region_interval_list | </non_control_region.interval_list> | Interval list for non-control region.
 --control_region_shifted_interval_list | </control_region_shifted.interval_list> | Interval list for shifted control region.

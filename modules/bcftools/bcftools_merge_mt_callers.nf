@@ -18,18 +18,23 @@ process BCFTOOLS_MERGECALLERS {
 
     script:
 
+    def mutect2_vcf = vcf.find { it.name.contains('mutect2') }
+    def mity_vcf = vcf.find { it.name.contains('mity') }
+    def mutserve_vcf = vcf.find { it.name.contains('mutserve') }
+    def ordered_vcfs = [mutect2_vcf, mity_vcf, mutserve_vcf].findAll { it != null }*.name.join(' ')
+
     """
     bcftools \
     merge \
     --force-samples \
     --no-version \
     --threads ${task.cpus} \
-    -f PASS,SUPPORT \
+    -f PASS \
     -F x \
     -m none \
     -o ${sampleID}_mtdna_mergedCallers.vcf \
     -i CALLER:join,SUPPORT:sum \
-    ${vcf}
+    ${ordered_vcfs}
     """
 }
 

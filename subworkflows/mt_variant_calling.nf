@@ -37,6 +37,7 @@ include {MUTSERVE} from "${projectDir}/modules/mutserve/mutserve"
 
 include {PREP_MTDNA_VCF} from "${projectDir}/modules/r/prep_mtdna_vcf"
 include {BCFTOOLS_MERGECALLERS} from "${projectDir}/modules/bcftools/bcftools_merge_mt_callers"
+include {COMPUTE_AVG_AF} from "${projectDir}/modules/r/compute_avg_af"
 
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
@@ -142,11 +143,13 @@ workflow MT_VARIANT_CALLING {
                     .mix(MITY_RUNALL.out.vcf_tbi.map { it -> [it[0], it[1], it[2], 'mity'] })
                     .mix(MUTSERVE.out.vcf_tbi.map { it -> [it[0], it[1], it[2], 'mutserve'] })
         PREP_MTDNA_VCF(prep_input)
+
         BCFTOOLS_MERGECALLERS(PREP_MTDNA_VCF.out.bcf_tbi.groupTuple(size: 3))
+        COMPUTE_AVG_AF(BCFTOOLS_MERGECALLERS.out.vcf)
 
         // Annotation of merged calls
         if (params.gen_org == 'mouse' || params.gen_org == 'human') {
-            SNPSIFT_ANNOTATE_DBSNP(BCFTOOLS_MERGECALLERS.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+            SNPSIFT_ANNOTATE_DBSNP(COMPUTE_AVG_AF.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
         }
 
         // If Human
@@ -165,10 +168,4 @@ workflow MT_VARIANT_CALLING {
             SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'mtdna')
         }
 
-    emit:
-        output_string = "nothing yet" // This is a placeholder;
 }
-
-// Punch list: 
-// Wiki page
-// Emit strings and connection to WGS and PTA workflows

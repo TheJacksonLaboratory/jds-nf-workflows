@@ -22,13 +22,13 @@ process FILTER_BEDPE {
         """
         Rscript ${projectDir}/bin/wgs/filter-bedpe.r \
             --bedpe=${sv_genes_cnv_bedpe} \
-            --outfile_highconf=${sampleID}_sv_annotated_high_confidence.bedpe
+            --outfile_highconf=${sampleID}_MDLS_sv_annotated_high_confidence.bedpe
         """
 
         else if (suppl_switch == "supplemental")
         """
         Rscript ${projectDir}/bin/wgs/filter-bedpe.r \
             --bedpe=${sv_genes_cnv_bedpe} \
-            --outfile_highconf=${sampleID}_sv_annotated_high_confidence_supplemental.bedpe
+            --outfile_highconf=${sampleID}_MDLS_sv_annotated_high_confidence_supplemental.bedpe
         """
 }

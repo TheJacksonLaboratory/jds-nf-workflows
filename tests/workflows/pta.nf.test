@@ -23,6 +23,26 @@ nextflow_workflow {
 
     }
 
+    test("Full Workflow -- Human -- MT variant calling") {
+        tag "GRCh38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/hs_test_withMT_input.csv'
+                bicseq2_no_scaling = true
+                pipeline = 'pta'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
     test("Full Workflow -- PDX") {
         tag "GRCh38"
         tag "pdx"

@@ -72,6 +72,7 @@ include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsi
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
+include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
 
 // help if needed
 if (params.help){
@@ -309,6 +310,11 @@ workflow WGS {
     } // END run SV
     // note that this comes after coverage cap and after ind merge happens. 
 
+    if (params.run_mt_calling) {
+      // Run MT Variant calling
+      MT_VARIANT_CALLING(bam_file.join(index_file))
+    } // END run MT Calling
+    // note that this comes after coverage cap is applied, and after ind merge happens.
 
     // HaplotypeCaller does not have multithreading, and runs faster when scattered over chroms
     // Applies scatter intervals from above to the BQSR bam file
@@ -429,6 +435,11 @@ workflow WGS {
     } // END run SV
     // note that this comes after coverage cap is applied, and after ind merge happens.
 
+    if (params.run_mt_calling) {
+      // Run MT Variant calling
+      MT_VARIANT_CALLING(bam_file.join(index_file))
+    } // END run MT Calling
+    // note that this comes after coverage cap is applied, and after ind merge happens.
 
 
     // Read a list of contigs from parameters to provide to GATK as intervals

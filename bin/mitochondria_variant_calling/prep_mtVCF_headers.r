@@ -41,7 +41,7 @@ if (!"CALLER" %in% rownames(info(hdr))) {
     info(hdr) <- rbind(
         info(hdr),
         DataFrame(
-            Number = "1",
+            Number = ".",
             Type = "String",
             Description = "Variant caller source",
             row.names = "CALLER"
@@ -72,6 +72,38 @@ if ("AF" %in% rownames(geno(hdr))) {
     }
     header(vcf) <- hdr
 }
+
+if (opt$caller == "mity" && "AF" %in% rownames(info(hdr))) {
+    # Remove AF from INFO header
+    info(hdr) <- info(hdr)[rownames(info(hdr)) != "AF", , drop = FALSE]
+    header(vcf) <- hdr
+    # Remove AF from INFO for all variants
+    info(vcf)$AF <- NULL
+    # If FORMAT VAF exists, rename to AF in header and data
+    if ("VAF" %in% rownames(geno(hdr))) {
+        geno(hdr) <- geno(hdr)[setdiff(rownames(geno(hdr)), "VAF"), , drop = FALSE]
+        geno(hdr) <- rbind(
+            geno(hdr),
+            DataFrame(
+                Number = "A",
+                Type = "Float",
+                Description = "Allele frequency in the range 0,1 - the ratio of the number of alternate reads to reference reads",
+                row.names = "AF"
+            )
+        )
+        header(vcf) <- hdr
+        # Copy VAF data to AF and remove VAF
+        geno(vcf)$AF <- geno(vcf)$VAF
+        geno(vcf)$VAF <- NULL
+    }
+} 
+## Note: This block throws a warning to the log: 
+# Warning messages:
+# 1: info fields with no header: AF
+# 2: geno fields with no header: VAF
+# 3: geno fields with no header: VAF
+## This message can safely be ignored because we are manipulating the header and geno() data
+
 
 # Add the caller name to the INFO field
 info(vcf)$CALLER <- opt$caller

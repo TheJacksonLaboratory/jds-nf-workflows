@@ -9,14 +9,14 @@ process ANNOTATE_SV {
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
     input:
-        tuple val(sampleID), file(merged_sv_bed)
+        tuple val(sampleID), path(merged_sv_bed)
         val(suppl_switch)
 
     output:
-        tuple val(sampleID), file("${sampleID}.MDLS_sv_annotated*.bed"), emit: annot_sv_bedpe
+        tuple val(sampleID), path("${sampleID}.MDLS_sv_annotated*.bed"), emit: annot_sv_bedpe
 
     script:
-    if ( params.gen_org == 'human' )
+    if (params.gen_org == "human")
         if (suppl_switch == "main")
         """
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
@@ -38,7 +38,7 @@ process ANNOTATE_SV {
             --bedpe=${merged_sv_bed} \
             --out_file=${sampleID}.MDLS_sv_annotated_supplemental.bed
         """
-    if ( params.gen_org == 'mouse' )
+    else if (params.gen_org == "mouse")
         if (suppl_switch == "main")
         """
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
