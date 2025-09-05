@@ -40,7 +40,9 @@ process SNPEFF{
     if (indel_snp == 'BOTH' && params.workflow == 'amplicon_generic' ){
         output_suffix = 'mergedCallers_filtered_annotated.vcf'
     }
-    
+    if (indel_snp == 'MTDNA'){
+        output_suffix = 'mtdna_mergedCallers_annotated.vcf'
+    }  
     """
     java -Djava.io.tmpdir=./ -Xmx${my_mem}G -jar /opt/snpEff/snpEff.jar \
     ${params.gen_ver} \

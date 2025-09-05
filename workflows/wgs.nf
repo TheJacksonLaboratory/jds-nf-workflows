@@ -261,7 +261,7 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
     // Begin Merge on Individuals
     if (params.merge_inds) {
@@ -381,7 +381,7 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
     // Begin Merge on Individuals
     if (params.merge_inds) {
@@ -537,7 +537,7 @@ workflow WGS {
         vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
         GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
         
-        SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'wgs')
     }
 
     // If Mouse
@@ -552,7 +552,7 @@ workflow WGS {
 
       SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
 
-      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
 
 
@@ -578,14 +578,14 @@ workflow WGS {
         SNPEFF(SNPSIFT_ANNOTATE_COSMIC.out.vcf, 'DEEPVAR', 'vcf')
         SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'BOTH')
         SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'BOTH')
-        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
 
     // If Mouse
     if (params.gen_org == 'mouse') {
         SNPEFF(SNPSIFT_ANNOTATE_DBSNP.out.vcf, 'DEEPVAR', 'vcf')
         SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
-        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
   }
   
