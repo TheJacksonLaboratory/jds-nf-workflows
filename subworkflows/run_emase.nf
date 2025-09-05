@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 include {BOWTIE} from "${projectDir}/modules/bowtie/bowtie"
-include {GBRS_BAM2EMASE} from "${projectDir}/modules/gbrs/gbrs_bam2emase"
+include {EMASE_BAM2EMASE} from "${projectDir}/modules/emase/emase_bam2emase"
 include {GBRS_COMPRESS as GBRS_COMPRESS_SE;
          GBRS_COMPRESS as GBRS_COMPRESS_PE} from "${projectDir}/modules/gbrs/gbrs_compress"
 include {EMASE_GET_COMMON_ALIGNMENT} from "${projectDir}/modules/emase/emase_get_common_alignment"
@@ -18,11 +18,11 @@ workflow RUN_EMASE {
         BOWTIE(read_ch)
 
         // Convert BAM to EMASE format. 
-        GBRS_BAM2EMASE(BOWTIE.out.bam)
+        EMASE_BAM2EMASE(BOWTIE.out.bam)
 
         // If PE, join R1 and R2 together with emase get-common-alignments. 
         if (params.read_type == 'PE'){
-            emase_common_align_pairedReads_input = GBRS_BAM2EMASE.out.emase_h5
+            emase_common_align_pairedReads_input = EMASE_BAM2EMASE.out.emase_h5
                                                 .groupTuple(size: 2)
                                                 .map { sampleID, reads -> tuple( sampleID, reads.sort{it.name} ) }
             // collect EMASE files by sample ID then map and sort tuple to [sampleID, [R1, R2]]
@@ -37,7 +37,7 @@ workflow RUN_EMASE {
             // Setting an input channel for next step, which catches PE or SE files. Here PE files. 
         } else {
             // Compress EMASE format file. 
-            GBRS_COMPRESS_SE(GBRS_BAM2EMASE.out.emase_h5, '')
+            GBRS_COMPRESS_SE(EMASE_BAM2EMASE.out.emase_h5, '')
             // Inputs required: (input_h5 tuple, suffix). Suffix is null except for PE merge. 
 
             gbrs_quantify_input = GBRS_COMPRESS_SE.out.compressed_emase_h5
