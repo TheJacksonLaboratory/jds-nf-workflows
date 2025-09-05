@@ -116,6 +116,7 @@ include {SOMATIC_VCF_FINALIZATION} from "${projectDir}/modules/python/python_som
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_GERMLINE;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
 include {ANNOTATE_BICSEQ2_CNV} from "${projectDir}/modules/r/annotate_bicseq2_cnv"
+
 include {MERGE_SV} from "${projectDir}/modules/r/merge_sv"
 include {ANNOTATE_SV;
          ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv"

@@ -10,7 +10,7 @@ options(width=200, scipen=999)
 
 ## Is variant x a high-confidence variant? 
 ## Meant to be used with apply(,2,)
-isHighConfidence = function(x, cpmax) {
+isHighConfidence = function(x) {
   
   ## Is there support from multiple callers?
   multi.caller = grepl(',', x['tools'])
@@ -44,7 +44,7 @@ opt = parse_args(OptionParser(option_list=option_list))
 x = read.csv(opt$bedpe, h=T, stringsAsFactors=F, sep='\t', check.names=F)
 
 ## Filter for high confidence
-x = x[apply(x, 1, isHighConfidence, opt$max_changepoint_distance), ]
+x = x[apply(x, 1, isHighConfidence), ]
 
 ## Write result
 write.table(x, opt$outfile_highconf, row.names=F, col.names=T, sep='\t', quote=F)
