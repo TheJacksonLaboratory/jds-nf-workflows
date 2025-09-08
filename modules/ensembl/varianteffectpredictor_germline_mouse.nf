@@ -9,7 +9,7 @@ process VEP_GERMLINE {
     container 'ensemblorg/ensembl-vep:release_110.1'
     // GRCm39 required release_110 or later.
 
-    publishDir "${params.pubdir}/${sampleID}/annotation", pattern: "*.vcf.gz*", mode: 'copy', enabled: (params.intermediate || workflow == 'germline_sv')
+    publishDir "${params.pubdir}/${sampleID}/annotation", pattern: "*.vcf.gz*", mode: 'copy', enabled: (params.keep_intermediate || workflow == 'germline_sv')
 
     input:
     tuple val(sampleID), file(vcf), file(idx)

@@ -106,6 +106,27 @@ nextflow_workflow {
 
     }
 
+    test("Full Workflow -- Mouse -- MT variant calling") {
+        tag "GRCm39"
+        tag "options"
+        options "-stub-run"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/mm_test_withMT_input.csv'
+                cnv_germline_prob = 1
+                pipeline = 'pta'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
     test("Full Workflow -- Mouse -- Split Fastq and Coverage Cap") {
         tag "GRCm39"
         tag "options"
