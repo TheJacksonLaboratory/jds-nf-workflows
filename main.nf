@@ -61,6 +61,9 @@ else if (params.workflow == "germline_sv") {
   // mmrsvd    
   include {GERMLINE_SV} from "./workflows/germline_sv"
 }
+else if (params.workflow == "smrnaseq"){
+  include {SMRNASEQ} from './workflows/smrnaseq'
+}
 else {
   // if workflow name is not supported: 
   exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
@@ -121,5 +124,8 @@ workflow{
   }
   if (params.workflow == "germline_sv") {
     GERMLINE_SV()
+  }
+  if (params.workflow == "smrnaseq"){
+    SMRNASEQ()
   }
 }
