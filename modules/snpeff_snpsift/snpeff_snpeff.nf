@@ -10,6 +10,7 @@ process SNPEFF{
 
     publishDir "${params.pubdir}/${sampleID}", pattern:"*.*", mode:'copy', enabled: params.gen_org=='mouse' ? true : params.keep_intermediate
     publishDir "${params.pubdir}/${sampleID}", pattern:"*.*", mode:'copy', enabled: params.workflow=='amplicon_generic' ? true : params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID}", pattern:"*mtdna_mergedCallers_annotated.vcf", mode:'copy'
 
     input:
     tuple val(sampleID),file(vcf)

@@ -31,7 +31,7 @@ if (!file.exists(vcf_files_vec)) {
 }
 
 # Read VCF
-vcf <- readVcf(opt$vcf)
+vcf <- readVcf(opt$vcf, row.names = FALSE)
 
 # Add a new INFO field to the header if not present
 hdr <- header(vcf)
@@ -105,10 +105,15 @@ if (opt$caller == "mity" && "AF" %in% rownames(info(hdr))) {
 ## This message can safely be ignored because we are manipulating the header and geno() data
 
 
+
 # Add the caller name to the INFO field
 info(vcf)$CALLER <- opt$caller
 info(vcf)$SUPPORT <- 1
 # Change genotype/sample name to opt$sampleID
 colnames(vcf) <- opt$sampleID
+
+cat("ID field values:\n")
+print(rowRanges(vcf))
+
 
 suppressWarnings(writeVcf(vcf, filename = opt$output, bgzip = TRUE, index = TRUE))

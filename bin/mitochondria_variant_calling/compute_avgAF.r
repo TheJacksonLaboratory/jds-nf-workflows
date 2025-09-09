@@ -27,7 +27,7 @@ if (!file.exists(vcf_files_vec)) {
 }
 
 # Read VCF
-vcf <- readVcf(opt$vcf)
+vcf <- readVcf(opt$vcf, row.names = FALSE)
 
 # Add a new INFO field to the header if not present
 hdr <- header(vcf)
