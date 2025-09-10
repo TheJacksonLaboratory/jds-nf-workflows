@@ -23,6 +23,9 @@ process SNPEFF_ONEPERLINE {
     if (indel_snp == 'BOTH'){
         output_suffix = 'snp_indel_snpeff.vcf'
     }
+    if (indel_snp == 'MTDNA'){
+        output_suffix = 'mtdna_snpeff.vcf'
+    }
     """
     cat ${vcf} | perl ${projectDir}/bin/shared/vcfEffOnePerLine.pl > ${sampleID}_oneperline_${output_suffix}
     """

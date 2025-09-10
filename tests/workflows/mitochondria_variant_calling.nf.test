@@ -1,0 +1,56 @@
+nextflow_workflow {
+
+    name "Test Workflow MITOCHONDRIA_VARIANT_CALLING"
+    script "workflows/mitochondria_variant_calling.nf"
+    workflow "MITOCHONDRIA_VARIANT_CALLING"
+
+    test("Full Workflow -- Mouse -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/mitochondria/mouse/mouse_mt_input.csv'
+                pipeline = 'mitochondria_variant_calling'
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Full Workflow -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/mitochondria/mouse/mouse_mt_input.csv'
+                pipeline = 'mitochondria_variant_calling'
+                genome_build = 'GRCm39'
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Full Workflow -- Human") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "human"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/mitochondria/human/human_mt_input.csv'
+                pipeline = 'mitochondria_variant_calling'
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+}

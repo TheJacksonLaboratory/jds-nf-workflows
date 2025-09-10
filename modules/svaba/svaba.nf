@@ -8,7 +8,8 @@ process SVABA {
 
     container 'quay.io/jaxcompsci/svaba:v0.2.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*gemline*.vcf.gz", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*germline*.vcf.gz", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*somatic*.vcf.gz", mode:'copy'
 
     input:
     tuple val(sampleID), val(meta), path(normal_bam), path(normal_bai), val(normal_name), path(tumor_bam), path(tumor_bai), val(tumor_name)

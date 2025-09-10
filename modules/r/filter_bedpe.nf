@@ -24,7 +24,6 @@ process FILTER_BEDPE {
         if(suppl_switch == "main")
         """
         Rscript ${projectDir}/bin/pta/filter-bedpe.r \
-            --max_changepoint_distance=1000 \
             --filter_databases=DGV,1000G,PON \
             --bedpe=${sv_genes_cnv_bedpe} \
             --out_file_somatic=${sampleID}_sv_annotated_somatic_final.bedpe \
@@ -34,7 +33,6 @@ process FILTER_BEDPE {
         else if (suppl_switch == "supplemental")
         """
         Rscript ${projectDir}/bin/pta/filter-bedpe.r \
-            --max_changepoint_distance=1000 \
             --filter_databases=DGV,1000G,PON \
             --bedpe=${sv_genes_cnv_bedpe} \
             --out_file_somatic=${sampleID}_sv_annotated_somatic_supplemental.bedpe \

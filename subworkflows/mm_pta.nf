@@ -17,6 +17,8 @@ include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
 include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
 include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
 
+include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
+
 include {GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_NORMAL;
          GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "${projectDir}/modules/gatk/gatk_getsamplename"
 
@@ -204,8 +206,12 @@ workflow MM_PTA {
 
         // ** Get alignment and WGS metrics
         PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-        PICARD_COLLECTWGSMETRICS(bam_file)
+        PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
+        // ** Run MT DNA variant calling.
+        if (params.run_mt_calling) {
+            MT_VARIANT_CALLING(bam_file.join(index_file))
+        }
 
         // ** NEXTFLOW OPERATORS::: Establish channels with sample pairs and individual input objects for downstream calling
 

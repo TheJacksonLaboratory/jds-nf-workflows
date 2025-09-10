@@ -4,7 +4,7 @@ invisible(suppressPackageStartupMessages(sapply(libs, require, character.only=T,
 options(width=200, scipen=999)
 
 
-SUPPORTED_CALLERS = c('manta', 'lumpy', 'delly')     ## Update this flag when adding support for new callers
+SUPPORTED_CALLERS = c('manta', 'lumpy', 'delly', 'svaba')     ## Update this flag when adding support for new callers
 
 ## Callers have different names for the same pieces of evidence,
 ## For now handle each case separately
@@ -60,6 +60,21 @@ getReadSupport = function(vcf, caller, sample_id, supplementary=FALSE, supported
     rv = paste0(caller,'_RV=', geno(vcf)$RV[, sample_id])
     gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
     supp_string = paste(type, dr, dv, rr, rv, gt, sep=',')
+
+  } else if (caller == 'svaba') {
+    
+    ## Common info
+    sr = geno(vcf)$SR[, sample_id]
+    pe = geno(vcf)$DR[, sample_id]
+    
+    ## Supplementary info
+    type = paste0(caller,'_SVTYPE=', info(vcf)$SVTYPE) 
+    ad = paste0(caller,'_AD=', geno(vcf)$AD[, sample_id])
+    dp = paste0(caller,'_DP=', geno(vcf)$DP[, sample_id])
+    lo = paste0(caller,'_LO=', geno(vcf)$LO[, sample_id])
+    gt = paste0(caller,'_GT=', geno(vcf)$GT[, sample_id])
+    supp_string = paste(ad, dp, lo, gt, sep=',')
+    
   }
   
   ## Set NA to 0
@@ -282,7 +297,7 @@ vcfToBedpe = function(vcf, supplemental=F) {
     ## Combine breakends in single line
     res.i = c(sqn[i], start(vcf)[i], end(vcf)[i],                                  ## chr1, start1, end1
               sqn[partner.idx], start(vcf)[partner.idx], end(vcf)[partner.idx],    ## chr2, start2, end 2
-              vcf$svtype[i], '.', strand[i], strand[partner.idx], support)                 ## type, score, strand1, strand2, support
+              vcf$svtype[i], '.', strand[i], strand[partner.idx], support)         ## type, score, strand1, strand2, support
     
     ## Add to result, keep track of processed breakends
     res = rbind(res, res.i)
@@ -344,7 +359,10 @@ res = NULL
 for (i in 1:length(opt$vcf)) {
   ## Read VCF
   caller = opt$caller[i]
+  print(caller)
   vcf = VariantAnnotation::readVcf(opt$vcf[i], genome=opt$build)
+  # Filter VCF to contain only allowed chromosomes
+  vcf = vcf[seqnames(rowRanges(vcf)) %in% opt$allowed_chr, ]
   ## Get read support
   rowRanges(vcf)$support = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$sample_name)
   rowRanges(vcf)$supplemental = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$sample_name, supplementary=T )
@@ -381,6 +399,8 @@ for (i in c('main','supplemental')) {
   res.i = res.i[res.i$type == 'TRA' | res.i$type == 'INS' | sv.lengths >= opt$min_sv_length, ]
   
   ## Filter SVs not occurring in allowed chromosomes (i.e. autosomes and sex chromosomes)
+  ## the back ticks are used here in chr1 because of the leading # in the column name. 
+  ## the # is to keep the bedpe file compatible with bedtools.
   res.i = res.i[res.i$`#chr1` %in% opt$allowed_chr & res.i$chr2 %in% opt$allowed_chr, ]
   
   ## Write result

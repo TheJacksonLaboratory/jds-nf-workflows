@@ -17,6 +17,10 @@ Parameter | Default | Description
 --gen_org | mouse | Options: mouse and human.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
 
+--bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
+
+--skip_read_trimming | false | Options: false, true. If specified, skip FastP read trimming.
+
 --quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
@@ -33,6 +37,9 @@ Parameter | Default | Description
 --rsem_ref_prefix | 'Mus_musculus.GRCm38.dna.toplevel' | Prefix for index files. JAX users should not change this, unless using STAR indices. Refers to human indices when --gen_org human.
 --seed_length | 25 | 'Seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie, it uses this value for Bowtie's seed length parameter.'
 --rsem_aligner | 'bowtie2' | Options: bowtie2 or star. The aligner algorithm used by RSEM. Note, if using STAR, point rsem_ref_files to STAR based indices.
+
+--fragment_length_mean | 280 | Used when --read_type == 'SE'. "The mean of the fragment length distribution, which is assumed to be a Gaussian."
+--fragment_length_sd | 50 | Used when --read_type == 'SE'. "The standard deviation of the fragment length distribution, which is assumed to be a Gaussian. "
 
 --merge_rna_counts | false | Options false, true. If specified, gene and transcript counts are merged across all samples. Typically used in multi-sample cases. 
 
@@ -61,5 +68,16 @@ Parameter| Default| Description
 
 --ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. JAX users should not change this parameter.
 --ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  JAX users should not change this parameter.
+
+--rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified, andr --ref_fa / --ref_gtf will be used to generate one. 
+--rsem_reference_name | null | User provided path to an RSEM reference name. If not provided, --ref_fa / --ref_gtf will be used to generate one. 
+--ref_fa | null | Genomic reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
+--ref_gtf | null | Transcript GTF reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
+--bam_strandedness | null | Used when --bam_input is specified. Must be set to 'forward', 'reverse' or 'none'
+
 '''
 }
+
+
+
+
