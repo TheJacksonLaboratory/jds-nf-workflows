@@ -1,5 +1,184 @@
 # RELEASE NOTES
 
+## Release 0.9.0
+
+In this release we:  
+
+* Add 1 new workflow  
+* Add 3 sub-workflows  
+* Correct a script in the PTA workflow that was preventing somatic structural variants from being annotated with copy number breakpoints (see notes below)  
+* Add the option to omit read-trimming in the RNAseq workflow  
+* Update to the version of GBRS in the Genetic Diversity Analysis Suite workflow  
+* Make the joint GVCF calling workflow more efficient  
+* Remove GATK based filtering for SNP and InDELs from Deepvariant calls when using `--workflow wgs --deepvariant`  
+* Make additional minor changes to modules and scripts    
+
+These changes are outlined in more detail in the notes that follow   
+
+### New Workflow Notes:
+
+The new workflow calls mitochondrial SNP and InDEL DNA variants `--workflow mitochondria_variant_calling` from pre-aligned read (BAM) input. This workflow follows [GATK best practice](https://gatk.broadinstitute.org/hc/en-us/community/posts/360056028651-GATK-Best-Practices-Mitochondrial-Analysis), and uses GATK Mutet2, Mity, and Muteserve for variant detection. The mitochondrial variant calling workflow can be run both stand-alone with pre-aligned BAM input, or it can be run as part of the `--workflow wgs` and `--workflow pta` workflows by using the flag `--run_mt_calling`. Please see the [wiki page](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Mitochondria-Variant-Calling-Pipeline-ReadMe) for more information.  
+
+### New Sub-Workflow Notes: 
+
+The first subworkflow (`wgs_sv`) calls structural variants from Illumina short read FASTQ sequence files as part of the `--workflow wgs` workflow by including the flag `--run_sv`. The `wgs_sv` subworkflow expands on the existing `--workflow germline_sv --data_type illumina` workflow to: provide the ability to run with either mouse or human data, include an additonal structural variant caller (Svaba), integrate copy number variation with structural variants, and nominate high quality candidate variants. Please see the [wiki page](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/WGS-SV-Subworkflow-ReadMe) for more information.  
+
+The second subworkflow (`--workflow rnaseq --bam_input`) adds the ability to run the RNAseq workflow from pre-aligned transcriptomic BAM input, rather than from raw FASTQ input. Running this subworkflow requires that the aligned reads by transcriptomic, and that either an RSEM reference or reference fasta and gtf are provided. Please see the [wiki page](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/RNA-Pipeline-ReadMe) for more details.  
+
+
+The third subworkflow (`--workflow reannotate_pta`) provides a way to re-annoatate final somatic strutural variant files with copy number variant breakpoints. Prior to this release, v0.9.0, annotation of structural variants (SV) with copy number variation (CNV) was potentially not being done in the `ANNOTATE_BEDPE_WITH_CNV` workflow step. The lack of CNV annotation, results in under counting of 'high confidence' somatic structural variants. High confidence structural variants are defined as being present in 2+ variant callers, or in 1+ caller with an adjacent copy number breakpoint. For samples run prior to release v0.9.0, it is recommended to regenerate the final somatic structural variant bedpe and high confidence structural variant bedpe files using `--workflow reannotate_pta`. Please see the [human](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Human-PTA-ReadMe#pta-reannotation) or [mouse](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Mouse-PTA-ReadMe#pta-reannotation) wiki pages for more information on re-annotating PTA samples.  
+
+### Additional Notes: 
+
+Read-trimming can now be omitted from `--workflow rnaseq` by using the flag `--skip_read_trimming`. While this option is not generally recommended, it is provided for use with inputs that have been quality trimmed prior to analysis.  
+
+The version of GBRS has been bumped to 1.1.0. This version now requires Python 3.12+, and makes numerous adjustments to memory and resource usage.
+
+The efficiency of the `--workflow joint_gvcf_calling` workflow has been improved by using merging GVCF files into the GATK GenomicsDB format. 
+
+We removed GATK based filtering of SNP and InDEL calls when using `--workflow wgs --deepvariant` as GATK filter flags do not apply to calls from Deepvariant. 
+
+
+### Pipelines Added:
+
+1. Mitochondria Variant Calling (`--workflow mitochondria_variant_calling` or `--workflow wgs --run_mt_calling` or `--workflow pta --run_mt_calling`)
+
+### Subworkflows Added:
+
+1. WGS Structural Variant (`--workflow wgs --run_sv`)
+1. RNAseq from BAM (`--workflow rnaseq --bam_input`)
+1. Re-annotate PTA somatic SV (`--workflow reannotate_pta`)
+
+### Pipeline Changes:
+
+1. workflows/joint_gvcf_calling.nf: Replaced `GATK_COMBINEGVCFS_INTERVALS` with `GATK_COMBINEGVCFS_INTERVALS` to increase efficiency.  
+1. workflows/pta/hs_pta.nf: Added `--run_mt_calling` option. 
+1. workflows/pta/mm_pta.nf: Added `--run_mt_calling` option. 
+
+1. workflows/rnaseq.nf: Added `--bam_input` and `--skip_read_trimming` options.
+1. workflows/wgs.nf: Added `--run_sv` and `--run_mt_calling` options. Removed GATK filtering steps from `--deepvariant` calls, as GATK filter flags do not apply. 
+
+
+### Subworkflows Changes:
+1. subworkflows/pdx_rnaseq.nf: Adjusted workflow to accept input BAM when `--bam_input` is specified
+1. subworkflows/run_emase.nf: Changed `GBRS_BAM2EMASE` to updated `EMASE_BAM2EMASE`
+
+### Modules Added:
+1. modules/bcftools/bcftools_merge_mt_callers.nf
+1. modules/bcftools/bcftools_query_delly_cnv_germline.nf
+1. modules/bwa/bwa_mem_mt.nf
+1. modules/delly/delly_classify_germline.nf
+1. modules/emase/emase_bam2emase.nf
+1. modules/gatk/gatk_filtermutectcalls_mt.nf
+1. modules/gatk/gatk_genomicsdbimport.nf
+1. modules/gatk/gatk_leftalignandtrimvariants.nf
+1. modules/gatk/gatk_mutect2_mt.nf
+1. modules/gatk/gatk_printreads_mt.nf
+1. modules/gatk/gatk_splitintervals.nf
+1. modules/gatk/gatk_updatevcfsequencedictionary_germline.nf
+1. modules/haplocheck/haplocheck.nf
+1. modules/mity/mity_runall.nf
+1. modules/mutserve/mutserve.nf
+1. modules/picard/picard_liftovervcf_mergevcf.nf
+1. modules/picard/picard_markduplicates_mt.nf
+1. modules/picard/picard_mergebamalignment.nf
+1. modules/picard/picard_mt_coverageateverybase.nf
+1. modules/picard/picard_revertsam.nf
+1. modules/picard/picard_samtofastq.nf
+1. modules/r/compute_avg_af.nf
+1. modules/r/prep_mtdna_vcf.nf
+1. modules/r/wgs_sv/annotate_delly_cnv.nf
+1. modules/r/wgs_sv/annotate_genes_sv.nf
+1. modules/r/wgs_sv/annotate_sv.nf
+1. modules/r/wgs_sv/annotate_sv_with_cnv.nf
+1. modules/r/wgs_sv/filter_bedpe.nf
+1. modules/r/wgs_sv/wgs_sv_merge.nf
+1. modules/rsem/convert_sam_for_rsem.nf
+1. modules/rsem/rsem_expression.nf
+1. modules/rsem/rsem_sam_validator.nf
+1. modules/samtools/samtools_faidx_to_bed.nf
+1. modules/svaba/svaba_germline.nf
+
+### Module Changes:
+1. modules/alntools/alntools_bam2emase.nf: Version bumped GBRS to v1.1.0
+1. modules/bcftools/bcftools_rehead_sort.nf: Added Svaba reheader case
+1. modules/delly/delly_cnv_germline.nf: Added human specific stub files for use with nf-test tests
+1. modules/emase/emase_create_hybrid.nf: Version bumped GBRS to v1.1.0
+1. modules/emase/emase_get_common_alignment.nf: Version bumped GBRS to v1.1.0
+1. modules/emase/emase_prepare_emase.nf: Version bumped GBRS to v1.1.0
+1. modules/emase/emase_run.nf: Version bumped GBRS to v1.1.0
+1. modules/ensembl/varianteffectpredictor_germline_GRCm38.nf: Corrected publishDir statement to allow output capture
+1. modules/ensembl/varianteffectpredictor_germline_mouse.nf: Corrected publishDir statement to allow output capture
+1. modules/gatk/gatk_applybqsr.nf: Increased memory reservation
+1. modules/gatk/gatk_combinegvcfs_intervals.nf: Increased memory reservation
+1. modules/gatk/gatk_gathervcfs.nf: Increased memory and wallclock reservation
+1. modules/gatk/gatk_genotypegvcf.nf: Adjusted module to use GATK GenomicsDB input
+1. modules/gbrs/gbrs_compress.nf: Version bumped GBRS to v1.1.0
+1. modules/gbrs/gbrs_export.nf: Version bumped GBRS to v1.1.0
+1. modules/gbrs/gbrs_interpolate.nf: Version bumped GBRS to v1.1.0
+1. modules/gbrs/gbrs_plot.nf: Version bumped GBRS to v1.1.0
+1. modules/gbrs/gbrs_quantify.nf: Version bumped GBRS to v1.1.0
+1. modules/gbrs/gbrs_quantify_genotype.nf: Version bumped GBRS to v1.1.0
+1. modules/gbrs/gbrs_reconstruct.nf: Version bumped GBRS to v1.1.0
+1. modules/illumina/manta_germline.nf: Increased memory reservation, and add callregions option
+1. modules/msisensor2/msisensor2_tumorOnly.nf: Removed a typo ("=") in file
+1. modules/multiqc/multiqc.nf: Add multiqc plots directory to final output
+1. modules/picard/picard_collectwgsmetrics.nf: Added flexibility to allow either wgs or mt_dna metric collection
+1. modules/r/annotate_sv_with_cnv.nf: Added CNV annotation `distance_limit`. This option replaces `max_changepoint_distance` filter_bedpe step, and allows for more accurate CNV annotation
+1. modules/r/annotate_sv_with_cnv_mouse.nf: Added CNV annotation `distance_limit`. This option replaces `max_changepoint_distance` filter_bedpe step, and allows for more accurate CNV annotation
+1. modules/r/filter_bedpe.nf: Removed `max_changepoint_distance`. This option was replaced with `distance_limit` in the annotate_sv_with_cnv step 
+1. modules/r/filter_bedpe_mouse.nf: Removed `max_changepoint_distance`. This option was replaced with `distance_limit` in the annotate_sv_with_cnv step 
+1. modules/rsem/rsem_alignment_expression.nf: Added new options `--fragment_length_mean` and `--fragment_length_sd` for use with single end read data
+1. modules/smoove/smoove_call_germline.nf: Added new option `--smoove_support` to allow flexible read support for caller
+1. modules/snpeff_snpsift/snpeff_oneperline.nf: Added MT DNA output option
+1. modules/snpeff_snpsift/snpeff_snpeff.nf: Added MT DNA output option, and corrected nextflow error when `--workflow wgs --deepvariant`
+1. modules/snpeff_snpsift/snpsift_dbnsfp.nf: Added MT DNA output option
+1. modules/snpeff_snpsift/snpsift_extractfields.nf: Added MT DNA specific fields, and corrected `--workflow somatic_wes` extracted fields
+1. modules/svaba/svaba.nf: Corrected spelling mistake in publishDir statement that prevented certain output from appearing in `--pubdir`
+1. modules/xengsort/xengsort_classify.nf: Version bumped to v2.0.9
+
+### Module Deleted:  
+
+1. modules/delly/delly_call.nf: Not used, and removed. 
+
+### Scripts Added:
+
+1. bin/mitochondria_variant_calling/compute_avgAF.r: Computes average allele frequency across the three mitochondiral variant callers
+1. bin/mitochondria_variant_calling/prep_mtVCF_headers.r: Adjusts VCF headers for consistency among the three mitochondiral variant callers
+1. bin/shared/extract_csv_bam.nf: Added groovy function for dealing with BAM input
+1. bin/wgs/annotate-bedpe-with-cnv.r: WGS_SV adapted version of pre-existing script
+1. bin/wgs/annotate-bedpe-with-databases.r: WGS_SV adapted version of pre-existing script
+1. bin/wgs/annotate-bedpe-with-genes.r: WGS_SV adapted version of pre-existing script
+1. bin/wgs/annotate-cnv-delly.r: WGS_SV adapted version of pre-existing script
+1. bin/wgs/filter-bedpe.r: WGS_SV adapted version of pre-existing script
+1. bin/wgs/merge_sv.r: WGS_SV adapted version of pre-existing script
+
+### Script Changes:
+
+1. bin/germline_sv/merge_sv.r: Added support for possible future use of Svaba in `--workflow germline_sv --data_type illumina`
+1. bin/pta/annotate-bedpe-with-cnv.r: CNV now annotate SV breakpoints as expected. Added the `distance_limit` option, which sets the distance at which a SV call can be annotated with a CNV breakpoint 
+1. bin/pta/annotate-cnv-delly.r: Fixed `-h` help text
+1. bin/pta/annotate-cnv.r: Fixed `-h` help text
+1. bin/pta/filter-bedpe.r: Removed `max_changepoint_distance` and logic associated with this option. This script now relies on `bin/pta/annotate-bedpe-with-cnv.r` for CNV / SV breakpoint distance comparisions
+
+
+### NF-Test Tests Added/Modified: 
+
+1. tests/workflows/mitochondria_variant_calling.nf.test: New tests added for new subworkflow
+1. tests/subworkflows/wgs_sv.nf.test: New tests added for new subworkflow
+1. tests/workflows/pta.nf.test: Test added for `--run_mt_calling`
+1. tests/workflows/rnaseq.nf.test: Tests added for `--read_type SE`, `--skip_read_trimming`, `--pdx --skip_read_trimming` and `--bam_input` with and without provided reference
+1. tests/workflows/wgs.nf.test: Test added for `--run_mt_calling` when `--gen_org human` and `--gen_org mouse`
+
+### [CS-NF-Test](https://github.com/TheJacksonLaboratory/cs-nf-test) Data Added: 
+1. Human and mouse MT BAM
+1. Human Delly PTA stub files (`WGS_SV` `-stub` run data)
+1. SE RNA input CSV
+1. RNA BAM input
+1. Mouse WGS test data increased coverage on chrMT
+1. Human MT coverage added to PTA via input CSV
+
+
 ## Release 0.8.2
 
 In this minor release, we update the STAR build step in `--workflow generate_rnaseq_index` to add a memory limit option, and increase the available memory provived to STAR by `rsem-prepare-reference`. This update corrects a reported error seen with larger genomes: `EXITING because of FATAL PARAMETER ERROR: limitGenomeGenerateRAM=31000000000 is too small`
