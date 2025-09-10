@@ -15,15 +15,15 @@ process ANNOTATE_GENES_SV {
     output:
         tuple val(sampleID), file("*.MDLS_sv_annotated_genes*.bed"), emit: annot_sv_genes_bedpe
 
-    script:    
-    if (suppl_switch == "main")
+    script:
+    if (suppl_switch == "main") {
         """
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-genes.r \
             --ensembl=${params.ensemblUniqueBed} \
             --bedpe=${annot_sv_bedpe} \
             --out_file=${sampleID}.MDLS_sv_annotated_genes.bed
         """
-    else if (suppl_switch == "supplemental")
+    } else if (suppl_switch == "supplemental") {
         """
         Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-genes.r \
             --ensembl=${params.ensemblUniqueBed} \
@@ -31,4 +31,5 @@ process ANNOTATE_GENES_SV {
             --out_file=${sampleID}.MDLS_sv_annotated_genes_supplemental.bed \
             --supplemental
         """
+    }
 }
