@@ -8,12 +8,12 @@ In this release we:
 * Add 3 sub-workflows  
 * Correct a script in the PTA workflow that was preventing somatic structural variants from being annotated with copy number breakpoints (see notes below)  
 * Add the option to omit read-trimming in the RNAseq workflow  
-* Update to the version of GBRS in the Genetic Diversity Analysis Suite workflow  
+* Update to the latest version of GBRS in the Genetic Diversity Analysis Suite workflow  
 * Make the joint GVCF calling workflow more efficient  
 * Remove GATK based filtering for SNP and InDELs from Deepvariant calls when using `--workflow wgs --deepvariant`  
 * Make additional minor changes to modules and scripts    
 
-These changes are outlined in more detail in the notes that follow   
+Detailed changes are outlined in the notes that follow:   
 
 ### New Workflow Notes:
 
@@ -25,8 +25,7 @@ The first subworkflow (`wgs_sv`) calls structural variants from Illumina short r
 
 The second subworkflow (`--workflow rnaseq --bam_input`) adds the ability to run the RNAseq workflow from pre-aligned transcriptomic BAM input, rather than from raw FASTQ input. Running this subworkflow requires that the aligned reads by transcriptomic, and that either an RSEM reference or reference fasta and gtf are provided. Please see the [wiki page](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/RNA-Pipeline-ReadMe) for more details.  
 
-
-The third subworkflow (`--workflow reannotate_pta`) provides a way to re-annoatate final somatic strutural variant files with copy number variant breakpoints. Prior to this release, v0.9.0, annotation of structural variants (SV) with copy number variation (CNV) was potentially not being done in the `ANNOTATE_BEDPE_WITH_CNV` workflow step. The lack of CNV annotation, results in under counting of 'high confidence' somatic structural variants. High confidence structural variants are defined as being present in 2+ variant callers, or in 1+ caller with an adjacent copy number breakpoint. For samples run prior to release v0.9.0, it is recommended to regenerate the final somatic structural variant bedpe and high confidence structural variant bedpe files using `--workflow reannotate_pta`. Please see the [human](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Human-PTA-ReadMe#pta-reannotation) or [mouse](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Mouse-PTA-ReadMe#pta-reannotation) wiki pages for more information on re-annotating PTA samples.  
+The third subworkflow (`--workflow reannotate_pta`) provides a way to re-annoatate final somatic strutural variant files with copy number variant breakpoints. Prior to this release, v0.9.0, annotation of structural variants (SV) with copy number variation (CNV) was potentially not being done in the `ANNOTATE_BEDPE_WITH_CNV` workflow step. The lack of CNV annotation results in under counting 'high confidence' somatic structural variants. High confidence structural variants are defined as being present in 2+ variant callers, or in 1+ caller with an adjacent copy number breakpoint. For samples run prior to release v0.9.0, it is recommended to regenerate the final somatic structural variant bedpe and high confidence structural variant bedpe files using `--workflow reannotate_pta`. **NOTE: The re-annotation of SV calls with CNV does not impact high confidence SNV calls in anyway, nor does it alter positions of SV/CNV calls in any way. This workflow simply reannotates SV with CNV, and the re-filters 'high confidence' SV calls based on the criteria list above.** Please see the [human](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Human-PTA-ReadMe#pta-reannotation) or [mouse](https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/Mouse-PTA-ReadMe#pta-reannotation) wiki pages for more information on re-annotating PTA samples.  
 
 ### Additional Notes: 
 
@@ -34,7 +33,7 @@ Read-trimming can now be omitted from `--workflow rnaseq` by using the flag `--s
 
 The version of GBRS has been bumped to 1.1.0. This version now requires Python 3.12+, and makes numerous adjustments to memory and resource usage.
 
-The efficiency of the `--workflow joint_gvcf_calling` workflow has been improved by using merging GVCF files into the GATK GenomicsDB format. 
+The efficiency of the `--workflow joint_gvcf_calling` workflow has been improved by merging GVCF files into the GATK GenomicsDB format and calling from this format. 
 
 We removed GATK based filtering of SNP and InDEL calls when using `--workflow wgs --deepvariant` as GATK filter flags do not apply to calls from Deepvariant. 
 
@@ -51,12 +50,12 @@ We removed GATK based filtering of SNP and InDEL calls when using `--workflow wg
 
 ### Pipeline Changes:
 
-1. workflows/joint_gvcf_calling.nf: Replaced `GATK_COMBINEGVCFS_INTERVALS` with `GATK_COMBINEGVCFS_INTERVALS` to increase efficiency.  
-1. workflows/pta/hs_pta.nf: Added `--run_mt_calling` option. 
-1. workflows/pta/mm_pta.nf: Added `--run_mt_calling` option. 
+1. workflows/joint_gvcf_calling.nf: Replaced `GATK_COMBINEGVCFS_INTERVALS` with `GATK_COMBINEGVCFS_INTERVALS` to increase efficiency    
+1. workflows/pta/hs_pta.nf: Added `--run_mt_calling` option   
+1. workflows/pta/mm_pta.nf: Added `--run_mt_calling` option  
 
-1. workflows/rnaseq.nf: Added `--bam_input` and `--skip_read_trimming` options.
-1. workflows/wgs.nf: Added `--run_sv` and `--run_mt_calling` options. Removed GATK filtering steps from `--deepvariant` calls, as GATK filter flags do not apply. 
+1. workflows/rnaseq.nf: Added `--bam_input` and `--skip_read_trimming` options  
+1. workflows/wgs.nf: Added `--run_sv` and `--run_mt_calling` options. Removed GATK filtering steps from `--deepvariant` calls, as GATK filter flags do not apply  
 
 
 ### Subworkflows Changes:
@@ -160,7 +159,6 @@ We removed GATK based filtering of SNP and InDEL calls when using `--workflow wg
 1. bin/pta/annotate-cnv-delly.r: Fixed `-h` help text
 1. bin/pta/annotate-cnv.r: Fixed `-h` help text
 1. bin/pta/filter-bedpe.r: Removed `max_changepoint_distance` and logic associated with this option. This script now relies on `bin/pta/annotate-bedpe-with-cnv.r` for CNV / SV breakpoint distance comparisions
-
 
 ### NF-Test Tests Added/Modified: 
 
