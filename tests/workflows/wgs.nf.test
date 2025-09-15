@@ -240,6 +240,44 @@ nextflow_workflow {
 
     }
 
+    test("Full Workflow -- Mouse -- GRCm38 -- MT Calling") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- MT Calling") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
 
 }
 

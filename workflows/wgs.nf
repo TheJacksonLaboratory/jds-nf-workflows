@@ -71,6 +71,9 @@ include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsi
 
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
+include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
+include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
+
 // help if needed
 if (params.help){
     help()
@@ -259,7 +262,7 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
     // Begin Merge on Individuals
     if (params.merge_inds) {
@@ -300,6 +303,18 @@ workflow WGS {
       index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
 
     } // END merge on individual
+
+    if (params.run_sv) {
+      // Run SV calling
+      WGS_SV(bam_file.join(index_file))
+    } // END run SV
+    // note that this comes after coverage cap and after ind merge happens. 
+
+    if (params.run_mt_calling) {
+      // Run MT Variant calling
+      MT_VARIANT_CALLING(bam_file.join(index_file))
+    } // END run MT Calling
+    // note that this comes after coverage cap is applied, and after ind merge happens.
 
     // HaplotypeCaller does not have multithreading, and runs faster when scattered over chroms
     // Applies scatter intervals from above to the BQSR bam file
@@ -372,7 +387,7 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
     // Begin Merge on Individuals
     if (params.merge_inds) {
@@ -413,6 +428,18 @@ workflow WGS {
       index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
 
     } // END merge on individual
+
+    if (params.run_sv) {
+      // Run SV calling
+      WGS_SV(bam_file.join(index_file))
+    } // END run SV
+    // note that this comes after coverage cap is applied, and after ind merge happens.
+
+    if (params.run_mt_calling) {
+      // Run MT Variant calling
+      MT_VARIANT_CALLING(bam_file.join(index_file))
+    } // END run MT Calling
+    // note that this comes after coverage cap is applied, and after ind merge happens.
 
 
     // Read a list of contigs from parameters to provide to GATK as intervals
@@ -521,7 +548,7 @@ workflow WGS {
         vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
         GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
         
-        SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'wgs')
     }
 
     // If Mouse
@@ -536,7 +563,8 @@ workflow WGS {
 
       SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
 
-      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+
     }
 
 
@@ -562,14 +590,14 @@ workflow WGS {
         SNPEFF(SNPSIFT_ANNOTATE_COSMIC.out.vcf, 'DEEPVAR', 'vcf')
         SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'BOTH')
         SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'BOTH')
-        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
 
     // If Mouse
     if (params.gen_org == 'mouse') {
         SNPEFF(SNPSIFT_ANNOTATE_DBSNP.out.vcf, 'DEEPVAR', 'vcf')
         SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
-        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
   }
   

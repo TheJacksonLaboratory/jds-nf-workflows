@@ -20,6 +20,11 @@ if (params.help){
 // log paramiter info
 param_log()
 
+if (!params.csv_input) {
+    exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` or the GitHub Wiki for information."
+}
+
+
 // main workflow
 workflow PTA {
 
@@ -27,7 +32,6 @@ workflow PTA {
         ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
         // Concat local Fastq files from CSV input if required.
             CONCATENATE_PTA_FASTQ(ch_input_sample)
-            
     }
 
     if (params.gen_org == "mouse") {

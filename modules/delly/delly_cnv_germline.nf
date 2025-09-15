@@ -25,9 +25,17 @@ process DELLY_CNV_GERMLINE {
 
     stub:
     """
-    wget -O ${sampleID}_Delly.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/mouse/fizzbang--t_bang.bcf
-    wget -O ${sampleID}_Delly.bcf.csi https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/mouse/fizzbang--t_bang.bcf.csi
-    wget -O ${sampleID}_Delly.cov.gz https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/mouse/fizzbang--t_bang.cov.gz
+    if [[ "${params.gen_org}" == "mouse" ]]; then
+        wget -O ${sampleID}_Delly.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42_Delly.bcf
+        wget -O ${sampleID}_Delly.bcf.csi https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42_Delly.bcf.csi
+        wget -O ${sampleID}_Delly.cov.gz https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42.cov.gz
+    fi
+
+    if [[ "${params.gen_org}" == "human" ]]; then
+        wget -O ${sampleID}_Delly.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_Delly.bcf
+        wget -O ${sampleID}_Delly.bcf.csi https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_Delly.bcf.csi
+        wget -O ${sampleID}_Delly.cov.gz https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_Delly.cov.gz
+    fi
     """
 }
 

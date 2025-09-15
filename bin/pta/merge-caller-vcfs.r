@@ -370,6 +370,11 @@ for (i in 1:length(opt$vcf)) {
   caller = opt$caller[i]
   vcf = VariantAnnotation::readVcf(opt$vcf[i], genome=opt$build)
 
+  ## If there are no calls in the vcf (edge case), skip that VCF
+  if (length(rowRanges(vcf)) == 0) {
+    next
+  }
+
   ## Get read support
   rowRanges(vcf)$support = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$tumor)
   rowRanges(vcf)$supplemental = getReadSupport(vcf=vcf, caller=caller, sample_id=opt$tumor, supplementary=T )

@@ -31,6 +31,9 @@ process SNPSIFT_DBNSFP{
     if (indel_snp == 'BOTH'){
         output_suffix = 'snp_indel_snpsift_dbNSFPanno.vcf'
     }  
+    if (indel_snp == 'MTDNA'){
+        output_suffix = 'mtdna_snpsift_dbNSFPanno.vcf'
+    }
 
     """
     java -Xmx${my_mem}G -jar /opt/snpEff/SnpSift.jar \

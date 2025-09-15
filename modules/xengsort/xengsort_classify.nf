@@ -9,7 +9,7 @@ process XENGSORT_CLASSIFY {
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     // load xengsort container
-    container 'quay.io/jaxcompsci/xengsort_gnu_utils:v2.0.5'
+    container 'quay.io/jaxcompsci/xengsort_gnu_utils:v2.0.9'
 
     // output directory
     // publishDir "${params.pubdir}/${sampleID + '/xengsort/xengsort_classify'}", pattern: "*.fq", mode: "copy"
@@ -18,7 +18,7 @@ process XENGSORT_CLASSIFY {
     // inputs
     input:
     path(xengsort_index)
-    tuple val(sampleID), path(trimmed)
+    tuple val(sampleID), path(reads)
 
     output:
     tuple val(sampleID), path("*graft_sorted.*.fq"), emit: xengsort_human_fastq
@@ -31,10 +31,9 @@ process XENGSORT_CLASSIFY {
     if (params.read_type == "SE")
 
         """
-        
         xengsort classify \
         --index ${xengsort_index}/${params.xengsort_idx_name} \
-        --fastq ${trimmed[0]} \
+        --fastq ${reads[0]} \
         --prefix ${sampleID} \
         --mode count \
         --threads ${task.cpus} \
@@ -43,17 +42,15 @@ process XENGSORT_CLASSIFY {
 
         cat ${sampleID}-host.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-host_sorted.1.fq
         cat ${sampleID}-graft.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.1.fq
-
         """
 
     else if (params.read_type == "PE")
 
         """
-
         xengsort classify \
         --index ${xengsort_index}/${params.xengsort_idx_name} \
-        --fastq ${trimmed[0]} \
-        --pairs ${trimmed[1]} \
+        --fastq ${reads[0]} \
+        --pairs ${reads[1]} \
         --prefix ${sampleID} \
         --mode count \
         --threads ${task.cpus} \
@@ -65,7 +62,6 @@ process XENGSORT_CLASSIFY {
 
         cat ${sampleID}-graft.1.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.1.fq
         cat ${sampleID}-graft.2.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.2.fq
-
         """
 
     else error "${params.read_type} is invalid, specify either SE or PE"

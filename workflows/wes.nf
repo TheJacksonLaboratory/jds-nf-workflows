@@ -221,7 +221,7 @@ workflow WES {
       vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
       GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
       
-      SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf)
+      SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'wes')
 
   } else if (params.gen_org=='mouse'){
 
@@ -261,7 +261,7 @@ workflow WES {
 
       SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
 
-      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wes')
 
   }
   

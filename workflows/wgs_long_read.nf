@@ -37,8 +37,6 @@ include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsi
 include {PBSV_DISCOVER} from "${projectDir}/modules/pbsv/pbsv_discover"
 include {PBSV_CALL} from "${projectDir}/modules/pbsv/pbsv_call"
 include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
-include {TRUVARI_BENCH} from "${projectDir}/modules/truvari/truvari_bench"
-
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 //help if needed
@@ -203,14 +201,6 @@ workflow wgs_long_read {
     // Call SV with sniffles
     SNIFFLES(bam_file.join(index_file))
 
-    // Merge caller results
-
-    // Join VCFs together by sampleID and run truvari bench
-    truvari_input = PBSV_CALL.out.pbsv_vcf.join(SNIFFLES.out.sniffles_vcf)
-        .map { it -> tuple(it[0], tuple(it[1], it[2])) }
-    TRUVARI_BENCH(truvari_input)
-    TRUVARI_BENCH.out.vcf_ensemble.view()
-    
 
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))

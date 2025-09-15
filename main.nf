@@ -70,10 +70,18 @@ else if (params.workflow == "generate_rnaseq_index"){
 else if (params.workflow == "joint_gvcf_calling"){
   include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
 }
+<<<<<<< HEAD
 else if (params.workflow == "wgs_long_read"){
   include {wgs_long_read} from './workflows/wgs_long_read'
 }
 else {
+=======
+else if (params.workflow == "mitochondria_variant_calling"){
+  include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
+} else if (params.workflow == "reannotate_pta"){
+  include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
+} else {
+>>>>>>> 777a4ebff4f4d2dc85f787bbdf1d1164add819ff
   // if workflow name is not supported: 
   exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
 }
@@ -143,7 +151,15 @@ workflow{
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
   }
+<<<<<<< HEAD
   if (params.workflow == "wgs_long_read"){
     wgs_long_read()
+=======
+  if (params.workflow == "mitochondria_variant_calling"){
+    MITOCHONDRIA_VARIANT_CALLING()
+  }
+  if (params.workflow == "reannotate_pta"){
+    REANNOTATE_PTA()
+>>>>>>> 777a4ebff4f4d2dc85f787bbdf1d1164add819ff
   }
 }
