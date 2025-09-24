@@ -37,6 +37,13 @@ include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsi
 include {PBSV_DISCOVER} from "${projectDir}/modules/pbsv/pbsv_discover"
 include {PBSV_CALL} from "${projectDir}/modules/pbsv/pbsv_call"
 include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
+
+include {SV_MERGE} from "${projectDir}/modules/r/wgs_sv/wgs_sv_merge"
+include {ANNOTATE_SV;
+         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_sv"
+include {ANNOTATE_GENES_SV;
+         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_genes_sv"
+
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 //help if needed
@@ -182,14 +189,14 @@ workflow wgs_long_read {
         SNPEFF(SNPSIFT_ANNOTATE_COSMIC.out.vcf, 'DEEPVAR', 'vcf')
         SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'BOTH')
         SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'BOTH')
-        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
 
     // If Mouse
     if (params.gen_org == 'mouse') {
         SNPEFF(SNPSIFT_ANNOTATE_DBSNP.out.vcf, 'DEEPVAR', 'vcf')
         SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
-        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
     }
 
     // SV Calling
@@ -201,6 +208,21 @@ workflow wgs_long_read {
     // Call SV with sniffles
     SNIFFLES(bam_file.join(index_file))
 
+    // Merge SV calls
+    sv_merge_input = SNIFFLES.out.sniffles_vcf.join(PBSV_CALL.out.pbsv_vcf).map{
+        it -> [it[0], [it[1], it[2]]]
+    }
+
+    // Get a list of primary chromosomes and exclude chrM (dropRight(1))
+    chrom_list = chroms.collect().dropRight(1)
+    SV_MERGE(sv_merge_input, chrom_list)
+
+    // Annotate SV calls
+    // ANNOTATE_SV(SV_MERGE.out.bedpe, "main")
+    // ANNOTATE_SV_SUPPLEMENTAL(SV_MERGE.out.supp_bedpe, "supplemental")
+
+    // ANNOTATE_GENES_SV(ANNOTATE_SV.out.annot_sv_bedpe, "main")
+    // ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
 
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))
