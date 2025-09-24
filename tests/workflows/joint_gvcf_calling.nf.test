@@ -9,7 +9,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/gvcf/bgzip/GVCF_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/gvcf/bgzip/GVCF_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'joint_gvcf_calling'
             }
@@ -26,7 +26,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/gvcf/unzip/GVCF_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/gvcf/unzip/GVCF_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'joint_gvcf_calling'
             }

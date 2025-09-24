@@ -44,8 +44,8 @@ process BICSEQ2_SEG_UNPAIRED {
 
     stub:
     """
-    wget -O ${sampleID}.bicseq2.png https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/human/fizzbang--t_bang--n_fizz.bicseq2.png
-    wget -O ${sampleID}.bicseq2.txt https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/human/fizzbang--t_bang--n_fizz.bicseq2.txt
+    wget -O ${sampleID}.bicseq2.png https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/pta/human/fizzbang--t_bang--n_fizz.bicseq2.png
+    wget -O ${sampleID}.bicseq2.txt https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/pta/human/fizzbang--t_bang--n_fizz.bicseq2.txt
     """
 }
 // Stub run is to test lower coverage sample data.

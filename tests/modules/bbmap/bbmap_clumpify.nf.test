@@ -14,7 +14,7 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/mouse/mm10_WGS_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/mouse/mm10_WGS_sample_R2.fastq.gz', checkIfExists: true)])
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/mouse/mm10_WGS_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/mouse/mm10_WGS_sample_R2.fastq.gz', checkIfExists: true)])
                 """
             }
         }
@@ -34,7 +34,7 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/mouse/mm10_WGS_sample_R1.fastq.gz', checkIfExists: true)])
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/mouse/mm10_WGS_sample_R1.fastq.gz', checkIfExists: true)])
                 """
             }
         }

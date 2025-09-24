@@ -10,7 +10,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wes/human/hg38_WES_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wes/human/hg38_WES_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'somatic_wes'
             }
@@ -28,7 +28,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wes/human/pdx_WES_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wes/human/pdx_WES_input.csv"
                 pubdir = "tests/results"
                 pdx = true
                 pipeline = 'somatic_wes'

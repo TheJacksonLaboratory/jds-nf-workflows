@@ -17,7 +17,7 @@ if (params.gen_org == 'mouse') {
 }
 
 if (!params.csv_input) {
-    exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See the GitHub wiki (https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki/PTA-Pipeline-ReadMe) for information."
+    exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See the GitHub wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki/PTA-Pipeline-ReadMe) for information."
 }
 
 workflow REANNOTATE_PTA {

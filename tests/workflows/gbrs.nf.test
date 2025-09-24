@@ -11,7 +11,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/gbrs_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/gbrs_input.csv"
                 sample_generation = 18
                 sample_sex = 'M'
                 pubdir = "tests/results"
@@ -33,7 +33,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 genome_build = "GRCm38"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/gbrs_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/gbrs_input.csv"
                 sample_generation = 18
                 sample_sex = 'M'
                 pubdir = "tests/results"

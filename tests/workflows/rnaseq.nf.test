@@ -10,7 +10,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
             }
@@ -28,7 +28,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input_SE.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input_SE.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
                 read_type = 'SE'
@@ -47,7 +47,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
                 skip_read_trimming = true
@@ -67,7 +67,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 genome_build = "GRCm39"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
             }
@@ -85,7 +85,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/human/hg38_RNA_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/hg38_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
             }
@@ -103,7 +103,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/human/pdx_RNA_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/pdx_RNA_input.csv"
                 pubdir = "tests/results"
                 pdx = true
                 pipeline = 'rnaseq'
@@ -122,7 +122,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/human/pdx_RNA_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/pdx_RNA_input.csv"
                 pubdir = "tests/results"
                 pdx = true
                 pipeline = 'rnaseq'
@@ -141,7 +141,7 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
                 bam_input = true
@@ -164,7 +164,7 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
                 bam_input = true
