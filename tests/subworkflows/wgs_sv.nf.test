@@ -22,8 +22,8 @@ nextflow_workflow {
                 input[0] = Channel.fromList([
                     tuple(
                         'Sample_42',
-                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam', 
-                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam.bai'
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam', 
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam.bai'
                     )
                 ])
                 """
@@ -53,8 +53,8 @@ nextflow_workflow {
                 input[0] = Channel.fromList([
                     tuple(
                         'Sample_42',
-                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam', 
-                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam.bai'
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam', 
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam.bai'
                     )
                 ])
                 """
@@ -84,8 +84,8 @@ nextflow_workflow {
                 input[0] = Channel.fromList([
                     tuple(
                         'Sample_42',
-                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam', 
-                        'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam.bai'
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam', 
+                        'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam.bai'
                     )
                 ])
                 """

@@ -10,7 +10,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
             }
@@ -28,7 +28,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 split_fastq = true
                 split_fastq_bin_size = 1000
@@ -51,7 +51,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 genome_build = "GRCm39"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
             }
@@ -69,7 +69,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
             }
@@ -88,7 +88,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 split_fastq = true
                 split_fastq_bin_size = 1000
@@ -110,7 +110,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 run_gvcf = true
@@ -129,7 +129,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 run_gvcf = true
@@ -149,7 +149,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 merge_inds = true
@@ -168,7 +168,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 merge_inds = true
@@ -187,7 +187,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 merge_inds = true
@@ -206,7 +206,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 deepvariant = true
@@ -226,7 +226,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 deepvariant = true
@@ -246,7 +246,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 run_mt_calling = true
@@ -265,7 +265,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 run_mt_calling = true

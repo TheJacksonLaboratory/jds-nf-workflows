@@ -1,5 +1,11 @@
 # RELEASE NOTES
 
+## Release 0.9.1
+
+We are now `jds-nf-workflows`!  
+
+This is a minor release to change the repostiory name from `cs-nf-pipelines` to `jds-nf-workflows`. 
+
 ## Release 0.9.0
 
 In this release we:  
