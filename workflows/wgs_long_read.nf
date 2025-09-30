@@ -218,11 +218,11 @@ workflow wgs_long_read {
     SV_MERGE(sv_merge_input, chrom_list)
 
     // Annotate SV calls
-    // ANNOTATE_SV(SV_MERGE.out.bedpe, "main")
-    // ANNOTATE_SV_SUPPLEMENTAL(SV_MERGE.out.supp_bedpe, "supplemental")
+    ANNOTATE_SV(SV_MERGE.out.bedpe, "main")
+    ANNOTATE_SV_SUPPLEMENTAL(SV_MERGE.out.supp_bedpe, "supplemental")
 
-    // ANNOTATE_GENES_SV(ANNOTATE_SV.out.annot_sv_bedpe, "main")
-    // ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
+    ANNOTATE_GENES_SV(ANNOTATE_SV.out.annot_sv_bedpe, "main")
+    ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
 
     ch_multiqc_files = Channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))
