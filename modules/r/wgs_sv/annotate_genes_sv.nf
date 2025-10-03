@@ -8,6 +8,8 @@ process ANNOTATE_GENES_SV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
+    publishDir "${params.pubdir}/${sampleID}/merged_sv", pattern:"*.MDLS_sv_annotated_genes*.bed", mode:'copy'
+
     input:
         tuple val(sampleID), file(annot_sv_bedpe)
         val(suppl_switch)

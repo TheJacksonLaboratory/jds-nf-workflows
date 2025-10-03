@@ -87,14 +87,8 @@ workflow wgs_long_read {
 
     // Map reads to indexed genome
     PBMM2_CALL(FASTP_LONG.out.trimmed_fastq, ch_minimap2_index)
-
-    if (params.split_fastq) {
-        SAMTOOLS_MERGE(PBMM2_CALL.out.pbmm2_bam.map { it -> [it[0], it[1]] }.groupTuple(), 'merged_file')
-        bam_file = SAMTOOLS_MERGE.out.bam
-    } else {
-        bam_file = PBMM2_CALL.out.pbmm2_bam.map { it -> [it[0], it[1]] }
-    }
-
+    bam_file = PBMM2_CALL.out.pbmm2_bam.map { it -> [it[0], it[1]] }
+    
     // Begin Merge on Individuals
     if (params.merge_inds) {
         merge_ch = bam_file.join(meta_ch, by: 0)
