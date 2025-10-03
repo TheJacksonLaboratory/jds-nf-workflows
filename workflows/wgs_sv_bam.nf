@@ -1,0 +1,26 @@
+#!/usr/bin/env nextflow
+nextflow.enable.dsl=2
+
+// import modules
+include {help} from "${projectDir}/bin/help/wgs_sv_bam.nf"
+include {param_log} from "${projectDir}/bin/log/wgs_sv_bam.nf"
+include {extract_csv_bam} from "${projectDir}/bin/shared/extract_csv_bam.nf"
+include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
+
+
+// help if needed
+if (params.help){
+    help()
+    exit 0
+}
+
+// log params
+param_log()
+
+bam_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
+
+// main workflow
+workflow WGS_SV_BAM {
+    WGS_SV(bam_ch)
+    // workflow found in: subworkflows/wgs_sv.nf
+}
