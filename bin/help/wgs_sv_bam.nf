@@ -4,7 +4,7 @@ def help(){
   Parameter | Default | Description
 
   --pubdir | /<PATH> | The directory that the saved outputs will be stored.
-  --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+  --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
   -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
   --csv_input | null | Provide a CSV manifest file with the header: "sampleID,lane,fastq_1,fastq_2". See the repository wiki for an example file. Fastq_2 is optional and used only in PE data. Fastq files can either be absolute paths to local files, or URLs to remote files. If remote URLs are provided, `--download_data` must be specified.
@@ -14,11 +14,11 @@ def help(){
 
   --ref_fa | Mouse: '/projects/omics_share/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.toplevel.fa' 
           | Human: '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.fasta'
-          | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. JAX users should not change this parameter.
+          | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. 
 
   --ref_fa_indices | Mouse: '/projects/omics_share/mouse/GRCm38/genome/indices/ensembl/v102/bwa/Mus_musculus.GRCm38.dna.toplevel.fa'
                   | Human: '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta'
-                  | Pre-compiled BWA index files, points to human reference when --gen_org human. JAX users should not change this parameter.
+                  | Pre-compiled BWA index files, points to human reference when --gen_org human. 
 
   --dbSNP | Mouse: '/projects/omics_share/mouse/GRCm38/genome/annotation/snps_indels/GCA_000001635.6_current_ids.vcf.gz' 
           | Human: '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/dbsnp_151.vcf.gz'
@@ -30,7 +30,7 @@ def help(){
 
   --snpEff_config | Mouse: '/projects/omics_share/mouse/GRCm38/genome/indices/snpEff_5_1/snpEff.config' 
                   | Human: '/projects/omics_share/human/GRCh38/genome/indices/snpEff_5_1/snpEff.config'
-                  | The configuration file used while running snpEff, points to human snpEff file when --gen_org human. JAX users should not change this parameter.
+                  | The configuration file used while running snpEff, points to human snpEff file when --gen_org human. 
   '''
 
   if (params.gen_org == 'mouse')
@@ -82,9 +82,9 @@ def help(){
     --svPon | /<PATH> | SV Panel of Normals BEDPE for SV annotation.
     --cosmicBedPe | /<PATH> | COSMIC SV BEDPE for SV annotation.
 
-    --gold_std_indels | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz’ | Used in GATK BaseRecalibrator. JAX users should not change this parameter.
-    --phase1_1000G | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/1000G_phase1.snps.high_confidence.hg38.vcf.gz' | Used in GATK BaseRecalibrator. JAX users should not change this parameter.
-    --dbNSFP | '/projects/omics_share/human/GRCh38/genome/annotation/function/dbNSFP4.2a.gatk_formatted.txt.gz' | Used in variant annotation.
-    --cosmic | '/projects/omics_share/human/GRCh38/genome/annotation/function/COSMICv95_Coding_Noncoding.gatk_formatted.vcf' | Used in variant annotation.
+    --gold_std_indels | /<PATH> | Used in GATK BaseRecalibrator. 
+    --phase1_1000G | /<PATH> | Used in GATK BaseRecalibrator. 
+    --dbNSFP | /<PATH> | Used in variant annotation.
+    --cosmic | /<PATH> | Used in variant annotation.
     '''
 }

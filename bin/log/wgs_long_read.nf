@@ -62,6 +62,12 @@ ________________________________________________________________________________
 --min_sv_length                 ${params.min_sv_length}
 --sv_slop                       ${params.sv_slop}
 --sizemargin                    ${params.sizemargin}
+--ensemblUniqueBed              ${params.ensemblUniqueBed}
+--gap                           ${params.gap}
+--dgvBedpe                      ${params.dgvBedpe}
+--thousandGVcf                  ${params.thousandGVcf}
+--svPon                         ${params.svPon}
+--cosmicBedPe                   ${params.cosmicBedPe}
 --multiqc_config                ${params.multiqc_config}
 
 
@@ -108,6 +114,12 @@ ________________________________________________________________________________
 --min_sv_length                 ${params.min_sv_length}
 --sv_slop                       ${params.sv_slop}
 --sizemargin                    ${params.sizemargin}
+--gap                           ${params.gap}
+--ensemblUniqueBed              ${params.ensemblUniqueBed}
+--exclude_regions               ${params.exclude_regions}
+--known_del                     ${params.known_del}
+--known_ins                     ${params.known_ins}
+--known_inv                     ${params.known_inv}
 --multiqc_config                ${params.multiqc_config}
 
 Project Directory: ${projectDir}
