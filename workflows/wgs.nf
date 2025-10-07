@@ -564,6 +564,7 @@ workflow WGS {
       SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
 
       SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+
     }
 
 

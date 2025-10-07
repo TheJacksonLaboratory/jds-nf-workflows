@@ -22,13 +22,32 @@ process SV_MERGE {
     
     listOfChroms = chrom_list.collect { "$it" }.join(',')
 
+    if (params.workflow == "wgs")
+
     """
         Rscript ${projectDir}/bin/wgs/merge_sv.r \
         --vcf=${vcf_tuple[0]},${vcf_tuple[1]},${vcf_tuple[2]},${vcf_tuple[3]} \
-        --caller=manta,delly,lumpy,svaba \
+        --callers=manta,delly,lumpy,svaba \
         --sample_name=${sampleID} \
         --build=${params.genome_build} \
-        --slop=1000 \
+        --slop=${params.sv_slop} \
+        --sizemargin=${params.sizemargin} \
+        --allowed_chr=${listOfChroms} \
+        --min_sv_length=${params.min_sv_length} \
+        --out_file=${sampleID}.mergedCall.MDLS.bedpe \
+        --out_file_supplemental=${sampleID}.mergedCall.MDLS.supplemental.bedpe
+    """
+
+    else if (params.workflow == "wgs_long_read")
+
+    """
+        Rscript ${projectDir}/bin/wgs/merge_sv.r \
+        --vcf=${vcf_tuple[0]},${vcf_tuple[1]} \
+        --callers=sniffles,pbsv \
+        --sample_name=${sampleID} \
+        --build=${params.genome_build} \
+        --slop=${params.sv_slop} \
+        --sizemargin=${params.sizemargin} \
         --allowed_chr=${listOfChroms} \
         --min_sv_length=${params.min_sv_length} \
         --out_file=${sampleID}.mergedCall.MDLS.bedpe \

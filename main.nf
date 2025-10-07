@@ -69,6 +69,9 @@ else if (params.workflow == "generate_rnaseq_index"){
 else if (params.workflow == "joint_gvcf_calling"){
   include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
 }
+else if (params.workflow == "wgs_long_read"){
+  include {wgs_long_read} from './workflows/wgs_long_read'
+}
 else if (params.workflow == "mitochondria_variant_calling"){
   include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
 }
@@ -147,6 +150,9 @@ workflow{
   }
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
+  }
+  if (params.workflow == "wgs_long_read"){
+    wgs_long_read()
   }
   if (params.workflow == "mitochondria_variant_calling"){
     MITOCHONDRIA_VARIANT_CALLING()

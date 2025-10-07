@@ -3,8 +3,7 @@ libs = c('optparse', 'StructuralVariantAnnotation', 'VariantAnnotation', 'rtrack
 invisible(suppressPackageStartupMessages(sapply(libs, require, character.only=T, quietly=T)))
 options(width=200, scipen=999)
 
-
-SUPPORTED_CALLERS = c('manta', 'lumpy', 'delly', 'svaba')     ## Update this flag when adding support for new callers
+SUPPORTED_CALLERS = c('manta', 'lumpy', 'delly', 'svaba', 'sniffles', 'pbsv')     ## Update this flag when adding support for new callers
 
 ## Callers have different names for the same pieces of evidence,
 ## For now handle each case separately
@@ -117,10 +116,43 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
     supp_string = paste(ad, dp, lo, gt, homseq, span, dhfc, dhbfc, dhffc, dhsp, sep=',')
     
     svlen_string = span
+    
+  } else if (caller == 'sniffles') {
+    
+    ## Read support info
+    rc = info(vcf)$SUPPORT
+    
+    # Supplementary Info
+    type = paste0(caller,'_SVTYPE=', info(vcf)$SVTYPE)
+    svlen = paste0(caller,'_SVLEN=', info(vcf)$SVLEN)
+    sv_end = paste0(caller,'_END=', info(vcf)$END)
+    gt = paste0(caller,'_GT=', geno(vcf)$GT)
+    imprecise = paste0(caller,'_SVTYPE=', info(vcf)$IMPRECISE)
+    mosaic = paste0(caller,'_SVTYPE=', info(vcf)$MOSAIC)
+  
+    supp_string = paste(type, svlen, sv_end, gt, imprecise, mosaic, sep=',')
+    
+    svlen_string = svlen
+    
+  } else if (caller == 'pbsv') {
+    
+    ## Read support info
+    rc = c(geno(vcf)$DP)
+    
+    # Supplementary Info
+    type = paste0(caller,'_SVTYPE=', info(vcf)$SVTYPE)
+    svlen = paste0(caller,'_SVLEN=', info(vcf)$SVLEN)
+    gt = paste0(caller,'_GT=', geno(vcf)$GT)
+    sv_end = paste0(caller,'_END=', info(vcf)$END)
+    imprecise = paste0(caller,'_SVTYPE=', info(vcf)$IMPRECISE)
+    mate = paste0(caller,'_SVTYPE=', info(vcf)$MATEID)
+    
+    supp_string = paste(type, svlen, sv_end, gt, imprecise, mate, sep=',')
+    
+    svlen_string = svlen
   }
 
 
-  
   # If SVLEN or SPAN is not NA, use it as the event length
   event_length = NA
   if ("svlen" %in% ls() && !all(is.na(svlen))) {
@@ -130,16 +162,31 @@ getReadSupport = function(vcf, caller, supplementary=FALSE, supported_callers=SU
   }
 
   ## Build output string
-  # Ensure sr, pe, and svlen_string are always character vectors of the correct length
-  sr <- if (is.null(sr) || length(sr) == 0 || all(is.na(sr))) 0 else sr
-  pe <- if (is.null(pe) || length(pe) == 0 || all(is.na(pe))) 0 else pe
-  svlen_string <- if (is.null(svlen_string) || length(svlen_string) == 0) NA else svlen_string
-
-  if (supplementary) {
-    res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', supp_string, ']')
+  
+  # short read callers use split reads and PE reads to assess structural variation, support is different
+  if(caller %in% c('manta', 'lumpy', 'delly', 'svaba')){
+    # Ensure sr, pe, and svlen_string are always character vectors of the correct length
+    sr <- if (is.null(sr) || length(sr) == 0 || all(is.na(sr))) 0 else sr
+    pe <- if (is.null(pe) || length(pe) == 0 || all(is.na(pe))) 0 else pe
+    svlen_string <- if (is.null(svlen_string) || length(svlen_string) == 0) NA else svlen_string
+    
+    if (supplementary) {
+      res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', supp_string, ']')
+    } else {
+      res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', svlen_string, ']')  
+    }
   } else {
-    res = paste0('[',caller,'_SR=',sr,',', caller,'_PE=', pe, ',', svlen_string, ']')  
+    # Ensure rc are always character vectors of the correct length
+    rc <- if (is.null(rc) || length(rc) == 0 || all(is.na(rc))) 0 else rc
+    svlen_string <- if (is.null(svlen_string) || length(svlen_string) == 0) NA else svlen_string
+    
+    if (supplementary) {
+      res = paste0('[',caller,'_RC=',rc,',', supp_string, ']')
+    } else {
+      res = paste0('[',caller,'_RC=',rc,',', svlen_string, ']')  
+    }
   }
+  
   
   return(res)
   
@@ -168,8 +215,8 @@ removeRedundantBreakpoints = function(x) {
   for (i in names(key.dup)) {
     
     ## Subset to breakends of interest
-    x.idx = grep(i, x$breakendPosID, fixed=T)
-    xi = x[x.idx]
+    x.idx = grep(i, x$breakendPosID, fixed=T) ## x.idx is the duplicated breakend ID row index
+    xi = x[x.idx] ## xi is the actual object
     
     ## Collect support
     xi$read.support = sumSupport(xi$support)
@@ -224,8 +271,6 @@ removeRedundantBreakpoints = function(x) {
   
 }
 
-
-
 ## Compute error between query and subject for a hits object
 computeError = function(query, subject, hits) {
   
@@ -249,19 +294,17 @@ computeError = function(query, subject, hits) {
     
 }
 
-
-
 ## Take the union of callsets a and b, both breakpointRanges objects
 ## If multiple hits found in b for a, choose the closest match, measured
 ## as the mean distance between breakends
-mergeCallsets = function(a, b, slop) {
+mergeCallsets = function(a, b, slop, margin) {
   
   ## Find overlaps
   overlaps = StructuralVariantAnnotation::findBreakpointOverlaps(query=a, 
-                                                                subject=b, 
-                                                                maxgap=slop, 
-                                                                sizemargin=0.8, 
-                                                                restrictMarginToSizeMultiple=0.8)
+                                                                 subject=b, 
+                                                                 maxgap=slop, 
+                                                                 sizemargin=margin, 
+                                                                 restrictMarginToSizeMultiple=0.8)
   
   
   ## If we have any duplicate query hits, choose hit based on match quality
@@ -395,6 +438,7 @@ option_list = list(
   make_option(c("-n", "--sample_name"),           type='character', help="Sample name"),
   make_option(c("-b", "--build"),                 type='character', help="Genome build"),
   make_option(c("-s", "--slop"),                  type='numeric',   help="Padding to use when comparing breakpoints"),
+  make_option(c("-m", "--sizemargin"),            type='numeric',   help="Minimum acceptable size fraction of two merged calls"),
   make_option(c("-l", "--min_sv_length"),         type='numeric',   help="Filter SVs shorter than this length"),
   make_option(c("-a", "--allowed_chr"),           type='character', help="Comma-delimited list of chromosomes to keep"),
   make_option(c("-o", "--out_file"),              type='character', help="Output BEDPE"), 
@@ -419,6 +463,7 @@ for (i in 1:length(opt$vcf)) {
 
   ## If there are no calls in the vcf (edge case), skip that VCF
   if (length(rowRanges(vcf)) == 0) {
+    print('in here')
     next
   }
 
@@ -428,40 +473,71 @@ for (i in 1:length(opt$vcf)) {
   ## Convert to breakpointRanges object, don't adjust for CIPOS uncertainty (i.e. keep nominalPosition). 
   ## For Manta, infer missing breakpoint is required as the caller does not insert the recip call in the VCF as the other calls do. 
   vcf = StructuralVariantAnnotation::breakpointRanges(vcf, nominalPosition=T, inferMissingBreakends=T)
-  ## Add breakendPosID for later redundancy checks
-  vcf$breakendPosID = paste0('[',caller,'=',as.character(seqnames(vcf)),':',start(vcf),':',strand(vcf),']')
-
+  
+  if(!caller %in% c("pbsv","sniffles")){
+    ## Add breakendPosID for later redundancy checks
+    vcf$breakendPosID = paste0('[',caller,'=',as.character(seqnames(vcf)),':',start(vcf),':',strand(vcf),']')
+  } else {
+    ## Add breakendPosID for later redundancy checks
+    vcf$breakendPosID = paste0('[',as.character(seqnames(vcf)),':',start(vcf),':*]')
+  }
+ 
   ## Overlap if this isn't the first callset
   if (i == 1) {
     res = vcf
   } else {
-    res = mergeCallsets(a=res, b=vcf, slop=opt$slop)
+    res = mergeCallsets(a=res, b=vcf, slop=opt$slop, margin=opt$sizemargin)
   }
 }
 
-## Handle breakpoints with duplicate start or end positions
-res = removeRedundantBreakpoints(res)
 
+## If res is empty, create an empty data.frame with the expected columns
+if (is.null(res) || length(res) == 0) {
+  res <- data.frame(
+    chr1 = character(),
+    start1 = numeric(),
+    end1 = numeric(),
+    chr2 = character(),
+    start2 = numeric(),
+    end2 = numeric(),
+    type = character(),
+    score = character(),
+    strand1 = character(),
+    strand2 = character(),
+    evidence = character(),
+    stringsAsFactors = FALSE
+  )
+  ## Convert to bedpe, apply some filters 
+  for (i in c('main','supplemental')) {
+    outfile = ifelse(i=='main', opt$out_file, opt$out_file_supplemental)
+    write.table(res, outfile, row.names=FALSE, col.names=TRUE, sep='\t', quote=FALSE)
+  }
 
-## Convert to bedpe, apply some filters 
-for (i in c('main','supplemental')) {
-  
-  outfile = ifelse(i=='main', opt$out_file, opt$out_file_supplemental)
-  
-  ## Convert to BEDPE format
-  res.i = vcfToBedpe(res, supplemental=i=='supplemental')
-  res.i$sampleID = opt$sample_name
-  
-  ## Filter non-TRA and non-INS variants for minimum length opt$min_sv_length
-  sv.lengths = abs(as.numeric(res.i$start2) - as.numeric(res.i$start1))
-  res.i = res.i[res.i$type == 'TRA' | res.i$type == 'INS' | sv.lengths >= opt$min_sv_length, ]
-  
-  ## Filter SVs not occurring in allowed chromosomes (i.e. autosomes and sex chromosomes)
-  ## the back ticks are used here in chr1 because of the leading # in the column name. 
-  ## the # is to keep the bedpe file compatible with bedtools.
-  res.i = res.i[res.i$`#chr1` %in% opt$allowed_chr & res.i$chr2 %in% opt$allowed_chr, ]
-  
-  ## Write result
-  write.table(res.i, outfile, row.names=F, col.names=T, sep='\t', quote=F)
-  
+} else {
+
+  ## Handle breakpoints with duplicate start or end positions
+  # length(res)
+  res = removeRedundantBreakpoints(res)
+
+  ## Convert to bedpe, apply some filters 
+  for (i in c('main','supplemental')) {
+    
+    outfile = ifelse(i=='main', opt$out_file, opt$out_file_supplemental)
+    
+    ## Convert to BEDPE format
+    res.i = vcfToBedpe(res, supplemental=i=='supplemental')
+    res.i$sampleID = opt$sample_name
+    
+    ## Filter non-TRA and non-INS variants for minimum length opt$min_sv_length
+    sv.lengths = abs(as.numeric(res.i$start2) - as.numeric(res.i$start1))
+    res.i = res.i[res.i$type == 'TRA' | res.i$type == 'INS' | sv.lengths >= opt$min_sv_length, ]
+    
+    ## Filter SVs not occurring in allowed chromosomes (i.e. autosomes and sex chromosomes)
+    ## the back ticks are used here in chr1 because of the leading # in the column name. 
+    ## the # is to keep the bedpe file compatible with bedtools.
+    res.i = res.i[res.i$`#chr1` %in% opt$allowed_chr & res.i$chr2 %in% opt$allowed_chr, ]
+    
+    ## Write result
+    write.table(res.i, outfile, row.names=F, col.names=T, sep='\t', quote=F)
+  }
 }
