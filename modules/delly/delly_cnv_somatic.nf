@@ -26,9 +26,9 @@ process DELLY_CNV_SOMATIC {
 
     stub:
     """
-    wget -O ${tumor_name}.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/mouse/fizzbang--n_fizz.bcf
-    wget -O ${normal_name}.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/mouse/fizzbang--t_bang.bcf
-    wget -O ${tumor_name}.cov.gz https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/pta/mouse/fizzbang--t_bang.cov.gz
+    wget -O ${tumor_name}.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/pta/mouse/fizzbang--n_fizz.bcf
+    wget -O ${normal_name}.bcf https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/pta/mouse/fizzbang--t_bang.bcf
+    wget -O ${tumor_name}.cov.gz https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/pta/mouse/fizzbang--t_bang.cov.gz
     """
 }
 

@@ -11,7 +11,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/mitochondria/mouse/mouse_mt_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/mouse/mouse_mt_input.csv'
                 pipeline = 'mitochondria_variant_calling'
             }
         }
@@ -27,7 +27,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/mitochondria/mouse/mouse_mt_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/mouse/mouse_mt_input.csv'
                 pipeline = 'mitochondria_variant_calling'
                 genome_build = 'GRCm39'
             }
@@ -44,7 +44,7 @@ nextflow_workflow {
             params {
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/mitochondria/human/human_mt_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/human/human_mt_input.csv'
                 pipeline = 'mitochondria_variant_calling'
             }
         }

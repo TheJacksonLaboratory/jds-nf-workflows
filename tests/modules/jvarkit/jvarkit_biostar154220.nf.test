@@ -14,7 +14,7 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = tuple('testSample_42', file('https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/ancestry/bam/pdx_WES_sample_realigned_BQSR.bam', checkIfExists: true))
+                input[0] = tuple('testSample_42', file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/ancestry/bam/pdx_WES_sample_realigned_BQSR.bam', checkIfExists: true))
                 """
             }
         }
