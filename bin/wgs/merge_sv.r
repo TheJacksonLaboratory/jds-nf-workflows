@@ -463,6 +463,7 @@ for (i in 1:length(opt$vcf)) {
 
   ## If there are no calls in the vcf (edge case), skip that VCF
   if (length(rowRanges(vcf)) == 0) {
+    print('in here')
     next
   }
 
@@ -480,7 +481,7 @@ for (i in 1:length(opt$vcf)) {
     ## Add breakendPosID for later redundancy checks
     vcf$breakendPosID = paste0('[',as.character(seqnames(vcf)),':',start(vcf),':*]')
   }
-  
+ 
   ## Overlap if this isn't the first callset
   if (i == 1) {
     res = vcf
@@ -489,34 +490,54 @@ for (i in 1:length(opt$vcf)) {
   }
 }
 
-## Handle breakpoints with duplicate start or end positions
-# length(res)
-res = removeRedundantBreakpoints(res)
 
-## Convert to bedpe, apply some filters 
-for (i in c('main','supplemental')) {
-  
-  outfile = ifelse(i=='main', opt$out_file, opt$out_file_supplemental)
-  
-  ## Convert to BEDPE format
-  res.i = vcfToBedpe(res, supplemental=i=='supplemental')
-  res.i$sampleID = opt$sample_name
-  
-  ## Filter non-TRA and non-INS variants for minimum length opt$min_sv_length
-  sv.lengths = abs(as.numeric(res.i$start2) - as.numeric(res.i$start1))
-  res.i = res.i[res.i$type == 'TRA' | res.i$type == 'INS' | sv.lengths >= opt$min_sv_length, ]
-  
-  ## Filter SVs not occurring in allowed chromosomes (i.e. autosomes and sex chromosomes)
-  ## the back ticks are used here in chr1 because of the leading # in the column name. 
-  ## the # is to keep the bedpe file compatible with bedtools.
-  res.i = res.i[res.i$`#chr1` %in% opt$allowed_chr & res.i$chr2 %in% opt$allowed_chr, ]
-  
-  
-  # res.i %>%
-  #   dplyr::filter(type == "TRA")
-  
-  
-  ## Write result
-  write.table(res.i, outfile, row.names=F, col.names=T, sep='\t', quote=F)
-  
+## If res is empty, create an empty data.frame with the expected columns
+if (is.null(res) || length(res) == 0) {
+  res <- data.frame(
+    chr1 = character(),
+    start1 = numeric(),
+    end1 = numeric(),
+    chr2 = character(),
+    start2 = numeric(),
+    end2 = numeric(),
+    type = character(),
+    score = character(),
+    strand1 = character(),
+    strand2 = character(),
+    evidence = character(),
+    stringsAsFactors = FALSE
+  )
+  ## Convert to bedpe, apply some filters 
+  for (i in c('main','supplemental')) {
+    outfile = ifelse(i=='main', opt$out_file, opt$out_file_supplemental)
+    write.table(res, outfile, row.names=FALSE, col.names=TRUE, sep='\t', quote=FALSE)
+  }
+
+} else {
+
+  ## Handle breakpoints with duplicate start or end positions
+  # length(res)
+  res = removeRedundantBreakpoints(res)
+
+  ## Convert to bedpe, apply some filters 
+  for (i in c('main','supplemental')) {
+    
+    outfile = ifelse(i=='main', opt$out_file, opt$out_file_supplemental)
+    
+    ## Convert to BEDPE format
+    res.i = vcfToBedpe(res, supplemental=i=='supplemental')
+    res.i$sampleID = opt$sample_name
+    
+    ## Filter non-TRA and non-INS variants for minimum length opt$min_sv_length
+    sv.lengths = abs(as.numeric(res.i$start2) - as.numeric(res.i$start1))
+    res.i = res.i[res.i$type == 'TRA' | res.i$type == 'INS' | sv.lengths >= opt$min_sv_length, ]
+    
+    ## Filter SVs not occurring in allowed chromosomes (i.e. autosomes and sex chromosomes)
+    ## the back ticks are used here in chr1 because of the leading # in the column name. 
+    ## the # is to keep the bedpe file compatible with bedtools.
+    res.i = res.i[res.i$`#chr1` %in% opt$allowed_chr & res.i$chr2 %in% opt$allowed_chr, ]
+    
+    ## Write result
+    write.table(res.i, outfile, row.names=F, col.names=T, sep='\t', quote=F)
+  }
 }

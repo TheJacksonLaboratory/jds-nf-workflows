@@ -15,6 +15,10 @@ if (params.pbmode != "CCS" && params.pbmode != "CLR") {
     error "'--pbmode': \"${params.pbmode}\" is not valid, supported options are 'CCS' or 'CLR'" 
 }
 
+if (params.deepvariant != true) {
+    error "'--deepvariant': \"${params.deepvariant}\" must be true. Workflow is currently only supports deepvariant." 
+}
+
 
 if (params.gen_org=='human')
 log.info """
@@ -34,20 +38,31 @@ ________________________________________________________________________________
 -c                              ${params.config}
 --pubdir                        ${params.pubdir}
 --data_type                     ${params.data_type}
---ref_fa                        ${params.ref_fa}
---ref_fa_indices                ${params.ref_fa_indices}
---split_fastq                   ${params.split_fastq}
---split_fastq_bin_size          ${params.split_fastq_bin_size}
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
+--ref_fa                        ${params.ref_fa}
+--chrom_contigs                 ${params.chrom_contigs}
+--minimap2_index                ${params.minimap2_index}
+--pbmode                        ${params.pbmode}
+--deepvariant                   ${params.deepvariant}
+--deepvariant_model_type        ${params.deepvariant_model_type}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
+--dbSNP_index                   ${params.dbSNP_index}
 --snpEff_config                 ${params.snpEff_config}
 --gold_std_indels               ${params.gold_std_indels}
 --phase1_1000G                  ${params.phase1_1000G}
 --dbNSFP                        ${params.dbNSFP}
 --cosmic                        ${params.cosmic}
---snpEff_config                 ${params.snpEff_config}
+--cosmic_index                  ${params.cosmic_index}
+--pbsv_tandem                   ${params.pbsv_tandem}
+--tandem_repeats                ${params.tandem_repeats}
+--vep_cache_directory           ${params.vep_cache_directory}
+--vep_fasta                     ${params.vep_fasta}
+--min_sv_length                 ${params.min_sv_length}
+--sv_slop                       ${params.sv_slop}
+--sizemargin                    ${params.sizemargin}
+--multiqc_config                ${params.multiqc_config}
 
 
 Project Directory: ${projectDir}
@@ -74,16 +89,26 @@ ________________________________________________________________________________
 -c                              ${params.config}
 --pubdir                        ${params.pubdir}
 --data_type                     ${params.data_type}
---ref_fa                        ${params.ref_fa}
---ref_fa_indices                ${params.ref_fa_indices}
---split_fastq                   ${params.split_fastq}
---split_fastq_bin_size          ${params.split_fastq_bin_size}
---coverage_cap                  ${params.coverage_cap}
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
+--ref_fa                        ${params.ref_fa}
+--chrom_contigs                 ${params.chrom_contigs}
+--minimap2_index                ${params.minimap2_index}
+--pbmode                        ${params.pbmode}
+--deepvariant                   ${params.deepvariant}
+--deepvariant_model_type        ${params.deepvariant_model_type}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
+--dbSNP_index                   ${params.dbSNP_index}
 --snpEff_config                 ${params.snpEff_config}
+--pbsv_tandem                   ${params.pbsv_tandem}
+--tandem_repeats                ${params.tandem_repeats}
+--vep_cache_directory           ${params.vep_cache_directory}
+--vep_fasta                     ${params.vep_fasta}
+--min_sv_length                 ${params.min_sv_length}
+--sv_slop                       ${params.sv_slop}
+--sizemargin                    ${params.sizemargin}
+--multiqc_config                ${params.multiqc_config}
 
 Project Directory: ${projectDir}
 
