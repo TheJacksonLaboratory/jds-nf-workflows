@@ -48,6 +48,7 @@ def help(){
     --cnv_min_size | 10000 | Minimum CNV size to report.
     --combined_reference_set | /<PATH> | Reference fasta for SVABA (must be in same directory as BWA index).
     --cytoband | /<PATH> | Cytoband annotation file for CNV annotation.
+    --sizemargin | 0.8 | Error margin in allowable size to prevent matching of SVs of different sizes.
     --known_del | /<PATH> | BED file of known deletions for annotation.
     --known_ins | /<PATH> | BED file of known insertions for annotation.
     --known_inv | /<PATH> | BED file of known inversions for annotation.
