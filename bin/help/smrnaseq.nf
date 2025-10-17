@@ -18,20 +18,20 @@ Parameter | Default | Description
 --gtf      | GFF/GTF file with coordinates positions of precursor and miRNAs. 
            | miRBase .gff3 file, typically downloaded from https://mirbase.org/ftp/CURRENT/genomes/                                                        
 
---ref_fa         | Mouse: '/projects/omics_share/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.primary_assembly.fa' 
-                 | Human: '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta'
---ref_fa_indices | Mouse: '/projects/omics_share/mouse/GRCm38/genome/indices/ensembl/v102/bwa/Mus_musculus.GRCm38.dna.primary_assembly.fa' | The default value for mm10. 
-                 | Human: '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta'
-                 | Pre-compiled BWA index files, points to human reference when --gen_org human.
+--ref_fa         | Mouse: '/projects/omics_share/mouse/GRCm38/genome/indices/ensembl/v102/bowtie/genome.fa' 
+                 | Human: '/projects/omics_share/human/GRCh38/genome/indices/ensembl/v109/bowtie/genome.fa'
+--ref_fa_indices | Mouse: '/projects/omics_share/mouse/GRCm38/genome/indices/ensembl/v102/bowtie/' | The default value for mm10. 
+                 | Human: '/projects/omics_share/human/GRCh38/genome/indices/ensembl/v109/bowtie/'
+                 | Pre-compiled BOWTIE index files, points to human reference when --gen_org human.
 
---bowtie_index_mature  | bowtie index for mature miRNAs
---formatted_mature     | <PATH> | The path to formatted mature miRNAs file
---bowtie_index_hairpin | bowtie index for miRNAs precursors
---formatted_hairpin    | <PATH> | The path to formatted miRNAs precursors file
+--bowtie2_index_mature  | bowtie2 index for mature miRNAs
+--formatted_mature      | <PATH> | The path to formatted mature miRNAs file
+--bowtie2_index_hairpin | <PATH> | bowtie2 index for miRNAs precursors
+--formatted_hairpin     | <PATH> | The path to formatted miRNAs precursors file
 
---bowtie_index_trna  | bowtie index for tRNA contamination database
---bowtie_index_cdna  | bowtie index for cDNA contamination database
---bowtie_index_ncrna | bowtie index for ncRNA contamination database
+--bowtie2_index_trna  | bowtie2 index for tRNA contamination database
+--bowtie2_index_cdna  | bowtie2 index for cDNA contamination database
+--bowtie2_index_ncrna | bowtie2 index for ncRNA contamination database
 
 --mirtrace_species | Species for miRTrace | Example values: hsa for human, mmu for mouse                           
 

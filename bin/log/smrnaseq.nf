@@ -25,9 +25,9 @@ ______________________________________________________
 --gtf                           ${params.gtf}
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
---bowtie_index_mature           ${params.bowtie_index_mature}
+--bowtie2_index_mature          ${params.bowtie2_index_mature}
 --formatted_mature              ${params.formatted_mature}
---bowtie_index_hairpin          ${params.bowtie_index_hairpin}
+--bowtie2_index_hairpin         ${params.bowtie2_index_hairpin}
 --formatted_hairpin             ${params.formatted_hairpin}
 --bowtie2_index_trna            ${params.bowtie2_index_trna}
 --bowtie2_index_cdna            ${params.bowtie2_index_cdna}
@@ -69,9 +69,9 @@ ______________________________________________________
 --gtf                           ${params.gtf}
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
---bowtie_index_mature           ${params.bowtie_index_mature}
+--bowtie2_index_mature          ${params.bowtie2_index_mature}
 --formatted_mature              ${params.formatted_mature}
---bowtie_index_hairpin          ${params.bowtie_index_hairpin}
+--bowtie2_index_hairpin         ${params.bowtie2_index_hairpin}
 --formatted_hairpin             ${params.formatted_hairpin}
 --bowtie2_index_trna            ${params.bowtie2_index_trna}
 --bowtie2_index_cdna            ${params.bowtie2_index_cdna}
