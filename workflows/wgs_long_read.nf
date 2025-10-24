@@ -13,6 +13,7 @@ include {PBMM2_CALL} from "${projectDir}/modules/pbmm2/pbmm2_call"
 include {SAMTOOLS_MERGE;
          SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
 include {SAMTOOLS_STATS} from "${projectDir}/modules/samtools/samtools_stats"
+include {PUBLISH_BAM} from "${projectDir}/modules/utility_modules/publish_bam_bai"
 include {MOSDEPTH} from "${projectDir}/modules/mosdepth/mosdepth"
 
 include {DEEPVARIANT} from "${projectDir}/modules/deepvariant/deepvariant"
@@ -134,8 +135,12 @@ workflow wgs_long_read {
         index_file = SAMTOOLS_INDEX_SINGLE.out.bai
     } // END merge on individual
 
-    // BAMs are split into two channels, one for SNP/INDEL calling and one for SV calling
-
+    // Publish individual level BAM and BAI files
+    if (params.publish_bams) {
+        PUBLISH_BAM(bam_file.join(index_file))
+    }
+    
+    // QC stats
     SAMTOOLS_STATS(bam_file)
     MOSDEPTH(bam_file.join(index_file))
 

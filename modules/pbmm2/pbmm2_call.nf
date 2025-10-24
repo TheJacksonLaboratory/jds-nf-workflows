@@ -9,8 +9,6 @@ process PBMM2_CALL {
 
     container 'quay.io/biocontainers/pbmm2:1.9.0--h9ee0642_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern:"*.bam", mode:'copy', enabled: (params.merge_inds == false) ? true : false
-
     input:
         tuple val(sampleID), path(fq)
         path(pbmm2_index)
