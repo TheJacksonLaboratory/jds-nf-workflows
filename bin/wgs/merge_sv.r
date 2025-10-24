@@ -197,101 +197,112 @@ sumSupport = function(x) {
 }
 
 removeRedundantBreakpoints = function(x) {
+  # Precompute support and multicaller for all breakends
+  read.support <- sumSupport(x$support)
+  multicaller.support <- grepl('],[', x$support, fixed = TRUE)
   
-  ## Find duplicates
-  key = unlist(strsplit(x$breakendPosID,','))
-  key.count = table(key)
-  key.dup = key.count[key.count > 1]
-  
-  
-  ## If there aren't duplicates we don't have anything to do
-  if (length(key.dup) == 0) {
-    return(x)
+  # Build a mapping from breakendPosID to indices
+  key.list <- strsplit(x$breakendPosID, ',')
+  key.to.idx <- list()
+  for (i in seq_along(key.list)) {
+    for (k in key.list[[i]]) {
+      key.to.idx[[k]] <- c(key.to.idx[[k]], i)
+    }
   }
   
+  # Find duplicate keys
+  key.count <- sapply(key.to.idx, length)
+  key.dup <- names(key.count[key.count > 1])
   
-  ## For each set of duplicate breakends, select the one with the higher score
-  x.idx.rm = c()
-  for (i in names(key.dup)) {
+  if (length(key.dup) == 0) return(x)
+  
+  idx.rm <- integer(0)
+  
+  for (k in key.dup) {
+    idx <- key.to.idx[[k]]
+    xi <- x[idx]
+    xi.read.support <- read.support[idx]
+    xi.multicaller <- multicaller.support[idx]
     
-    ## Subset to breakends of interest
-    x.idx = grep(i, x$breakendPosID, fixed=T) ## x.idx is the duplicated breakend ID row index
-    xi = x[x.idx] ## xi is the actual object
-    
-    ## Collect support
-    xi$read.support = sumSupport(xi$support)
-    xi$multicaller.support = grepl('],[',xi$support,fixed=T)
-    
-    ## Automatically keep breakends with multi-caller support
-    idx.multi = which(xi$multicaller.support)
+    # Keep multi-caller support if present
+    idx.multi <- which(xi.multicaller)
     if (length(idx.multi) > 0) {
-      x.idx.rm = c(x.idx.rm, x.idx[-idx.multi])
+      idx.rm <- c(idx.rm, idx[-idx.multi])
       next
     }
     
-    ## Automatically discard breakends with the lowest support
-    idx.max = which(xi$read.support %in% max(xi$read.support))
-    if (length(idx.max) > 0) {
-      x.idx.rm = c(x.idx.rm, x.idx[-idx.max])     
-      x.idx = x.idx[idx.max]
-      xi = xi[idx.max]
-    }
+    # Keep highest read support
+    idx.max <- which(xi.read.support == max(xi.read.support))
+    idx.keep <- idx[idx.max]
+    idx.rm.tmp <- setdiff(idx, idx.keep)
     
-    ## If there are multiple breakends tied for highest read support
-    if (length(xi) > 1) {
-      
-      if (all(!is.na(xi$svLen))) {
-        
-        ## If all are non-TRA take longest SV 
-        x.idx.rm = c(x.idx.rm, x.idx[-which.max(abs(xi$svLen))])
-        
-      } else if (all(is.na(xi$svLen)) && length(unique(as.character(seqnames(xi)))) == 1) {
-        
-        ## If all TRA to the same chr select rightmost coordinate
-        partners = x[names(x) %in% xi$partner]
-        partner.keep = names(partners)[which.max(start(partners))]
-        x.idx.rm = c(x.idx.rm, x.idx[!xi$partner %in% partner.keep])
-        
+    # If tie, use SV length or position
+    if (length(idx.keep) > 1) {
+      xi.keep <- xi[idx.max]
+      if (all(!is.na(xi.keep$svLen))) {
+        idx.keep.final <- idx.keep[which.max(abs(xi.keep$svLen))]
+        idx.rm.tmp <- setdiff(idx.keep, idx.keep.final)
+      } else if (all(is.na(xi.keep$svLen)) && length(unique(as.character(seqnames(xi.keep)))) == 1) {
+        partners <- x[names(x) %in% xi.keep$partner]
+        if (length(partners) > 0) {
+          partner.keep <- names(partners)[which.max(start(partners))]
+          idx.keep.final <- idx.keep[xi.keep$partner == partner.keep]
+          idx.rm.tmp <- setdiff(idx.keep, idx.keep.final)
+        }
       }
-      
-      ## Otherwise, just keep tied SVs
-      
+      # Otherwise, keep all tied SVs
     }
-    
+    idx.rm <- c(idx.rm, idx.rm.tmp)
   }
   
-  
-  ## Remove breakends and their partners if we have any to remove
-  if (length(x.idx.rm) > 0) {
-    x = x[-x.idx.rm]  
-    x = x[names(x) %in% x$partner]
+  idx.rm <- unique(idx.rm)
+  if (length(idx.rm) > 0) {
+    x <- x[-idx.rm]
+    x <- x[names(x) %in% x$partner]
   }
-  
   return(x)
-  
 }
+
 
 ## Compute error between query and subject for a hits object
 computeError = function(query, subject, hits) {
-  
-  ## Init result dataframe
-  error = data.frame(local=rep(NA, length(queryHits(hits))), 
-                     remote=rep(NA, length(queryHits(hits))))
-  
-  
-  ## For each hit
-  for (i in 1:length(queryHits(hits))) {
-    
-    ## Compute local error (error between breakends at hit i) and remote error (error between the partners of 
-    ## the breakends at hit i)
-    error$local[i] = StructuralVariantAnnotation:::.distance(query[queryHits(hits)[i]], subject[subjectHits(hits)[i]])$min
-    error$remote[i] = StructuralVariantAnnotation:::.distance(query[names(query) == query[queryHits(hits)[i]]$partner],
-                                                              subject[names(subject) == subject[subjectHits(hits)[i]]$partner]
-                                                              )$min
+  qh <- queryHits(hits)
+  sh <- subjectHits(hits)
+
+  # Vectorized local error
+  start_q <- start(query)[qh]
+  end_q   <- end(query)[qh]
+  start_s <- start(subject)[sh]
+  end_s   <- end(subject)[sh]
+
+  error_local_min <- pmax(0, pmax(start_q, start_s) - pmin(end_q, end_s))
+  error_local_max <- pmax(end_s - start_q, end_q - start_s)
+
+  # For remote error, get partner indices
+  query_partner_names   <- as.character(query[qh]$partner)
+  subject_partner_names <- as.character(subject[sh]$partner)
+  query_partner_idx     <- match(query_partner_names, names(query))
+  subject_partner_idx   <- match(subject_partner_names, names(subject))
+
+  # Only compute for valid pairs
+  valid <- !is.na(query_partner_idx) & !is.na(subject_partner_idx)
+  error_remote_min <- rep(NA_real_, length(qh))
+  error_remote_max <- rep(NA_real_, length(qh))
+  if (any(valid)) {
+    start_qp <- start(query)[query_partner_idx[valid]]
+    end_qp   <- end(query)[query_partner_idx[valid]]
+    start_sp <- start(subject)[subject_partner_idx[valid]]
+    end_sp   <- end(subject)[subject_partner_idx[valid]]
+
+    error_remote_min[valid] <- pmax(0, pmax(start_qp, start_sp) - pmin(end_qp, end_sp))
+    error_remote_max[valid] <- pmax(end_sp - start_qp, end_qp - start_sp)
   }
-  
+
+  error <- data.frame(
+    local  = error_local_min,
+    remote = error_remote_min
+  )
   return(error)
-    
 }
 
 ## Take the union of callsets a and b, both breakpointRanges objects
@@ -300,18 +311,20 @@ computeError = function(query, subject, hits) {
 mergeCallsets = function(a, b, slop, margin) {
   
   ## Find overlaps
+  cat('Finding overlaps\n')
   overlaps = StructuralVariantAnnotation::findBreakpointOverlaps(query=a, 
                                                                  subject=b, 
                                                                  maxgap=slop, 
                                                                  sizemargin=margin, 
                                                                  restrictMarginToSizeMultiple=0.8)
   
-  
   ## If we have any duplicate query hits, choose hit based on match quality
   if(anyDuplicated(queryHits(overlaps))) {
     
-    ## Compute local and remote breakend basepair error on matches  
+    ## Compute local and remote breakend basepair error on matches
+    cat('Computing error for duplicate hits\n')
     error = computeError(query=a, subject=b, hits=overlaps)
+
     ## Get duplicate hits  
     dup.query.hits = table(queryHits(overlaps))
     dup.query.hits = names(dup.query.hits[dup.query.hits > 1])
@@ -329,7 +342,6 @@ mergeCallsets = function(a, b, slop, margin) {
       idx.hits.rm = c(idx.hits.rm, idx.dup.query.hits[which.max(mean.error)])
       
     }
-    
     overlaps = overlaps[-idx.hits.rm]   
   }
   
@@ -357,76 +369,90 @@ sup_vector <- function(x) {
   return(sup_string)
 }
 
-## Convert breakpointRanges to BEDPE
-vcfToBedpe = function(vcf, supplemental=F) {
-  
-  sqn = as.character(seqnames(vcf))
-  strand = as.character(strand(vcf))
+## Convert breakpointRanges to BEDPE (optimized for speed)
+vcfToBedpe = function(vcf, supplemental=FALSE) {
+  n <- length(vcf)
+  if (n == 0) {
+    # Return empty data.frame with correct columns
+    res <- data.frame(
+      chr1=character(), start1=integer(), end1=integer(),
+      chr2=character(), start2=integer(), end2=integer(),
+      type=character(), score=character(),
+      strand1=character(), strand2=character(),
+      evidence=character(), tools=character(),
+      SUPP=integer(), SUPP_VEC=character(),
+      stringsAsFactors=FALSE
+    )
+    colnames(res)[1] <- "#chr1"
+    return(res)
+  }
 
-  res = c()
-  processed = c()
-  
-  for (i in 1:length(vcf)) {
-    bnd = names(vcf)[i]
-    partner = vcf$partner[i]
-    partner.idx = which(names(vcf) == partner)
-    
-    ## If we don't have exactly one partner, exclude this variant
-    if (length(partner.idx) != 1) {
-      warning('Missing partner for breakend ', bnd)
-      next
-    }
-    
-    ## Check to see if we've alrady processed this or it's partner
-    if (any(c(bnd, partner) %in% processed)) {
-      next
-    }
-    
-    ## Which support column should we use? 
-    if (supplemental) {
-      support = vcf$supplemental[i]
-    } else {
-      support = vcf$support[i] 
-    }
+  sqn <- as.character(seqnames(vcf))
+  strand <- as.character(strand(vcf))
+  names_vcf <- names(vcf)
+  partner <- vcf$partner
+  partner_idx <- match(partner, names_vcf)
+  valid <- !is.na(partner_idx) & partner_idx > 0 & partner_idx <= n
 
-    ## Combine breakends in single line
-    res.i = c(sqn[i], start(vcf)[i], end(vcf)[i],                                  ## chr1, start1, end1
-              sqn[partner.idx], start(vcf)[partner.idx], end(vcf)[partner.idx],    ## chr2, start2, end 2
-              vcf$svtype[i], '.', strand[i], strand[partner.idx], support)         ## type, score, strand1, strand2, support
-    
-    ## Add to result, keep track of processed breakends
-    res = rbind(res, res.i)
-    processed = c(processed, bnd, partner)
-  } 
-  
-  
-  ## Add colnames and fill in simple event classifications
-  colnames(res) = c('chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 'score', 'strand1', 'strand2', 'evidence')
-  res = as.data.frame(res, stringsAsFactors=F)
-  
-  # res$type[res$strand1 == '+' & res$strand2 == '-'] = 'DEL'
-  # res$type[res$strand1 == '-' & res$strand2 == '+'] = 'DUP'
-  # res$type[res$strand1 == '-' & res$strand2 == '-'] = 'INV'
-  # res$type[res$strand1 == '+' & res$strand2 == '+'] = 'INV'
-  res$type[res$chr1 != res$chr2] = 'TRA'
-  
-  ## Sort by chromosome 
-  res = res[order(factor(res$chr1, levels=levels(seqnames(vcf))), res$start1, res$end1, decreasing=F), ]
-  
-  ## Simplify coordinates
-  res$end1 = as.numeric(res$start1) + 1
-  res$end2 = as.numeric(res$start2) + 1
-  
-  
-  ## Extract tool info from read support column
-  res$tools = sapply(res$evidence, function(x) paste(unlist(stringr::str_extract_all(x, '(?<=\\[)[a-z]+(?=_)')), collapse=','))
-  res$SUPP = nchar(gsub('[^,]', '', res$tools)) + 1
-  res$SUPP_VEC = unlist(lapply(res$tools, sup_vector))
+  # Only process each pair once: i < partner_idx
+  process_mask <- valid & seq_len(n) < partner_idx
+  idx <- which(process_mask)
+  if (length(idx) == 0) {
+    res <- data.frame(
+      chr1=character(), start1=integer(), end1=integer(),
+      chr2=character(), start2=integer(), end2=integer(),
+      type=character(), score=character(),
+      strand1=character(), strand2=character(),
+      evidence=character(), tools=character(),
+      SUPP=integer(), SUPP_VEC=character(),
+      stringsAsFactors=FALSE
+    )
+    colnames(res)[1] <- "#chr1"
+    return(res)
+  }
 
-  colnames(res)[1] = paste0('#', colnames(res)[1])
-  
+  # Pre-allocate vectors
+  chr1 <- sqn[idx]
+  start1 <- start(vcf)[idx]
+  end1 <- end(vcf)[idx]
+  chr2 <- sqn[partner_idx[idx]]
+  start2 <- start(vcf)[partner_idx[idx]]
+  end2 <- end(vcf)[partner_idx[idx]]
+  type <- vcf$svtype[idx]
+  score <- rep(".", length(idx))
+  strand1 <- strand[idx]
+  strand2 <- strand[partner_idx[idx]]
+  support <- if (supplemental) vcf$supplemental[idx] else vcf$support[idx]
+
+  # Build data.frame
+  res <- data.frame(
+    chr1=chr1, start1=start1, end1=end1,
+    chr2=chr2, start2=start2, end2=end2,
+    type=type, score=score,
+    strand1=strand1, strand2=strand2,
+    evidence=support,
+    stringsAsFactors=FALSE
+  )
+
+  # Set TRA type for inter-chromosomal events
+  res$type[res$chr1 != res$chr2] <- "TRA"
+
+  # Sort by chromosome and coordinates
+  chr_levels <- levels(seqnames(vcf))
+  res <- res[order(factor(res$chr1, levels=chr_levels), res$start1, res$end1, decreasing=FALSE), , drop=FALSE]
+
+  # Simplify coordinates
+  res$end1 <- as.numeric(res$start1) + 1
+  res$end2 <- as.numeric(res$start2) + 1
+
+  # Extract tool info from read support column (vectorized)
+  tool_matches <- stringr::str_extract_all(res$evidence, "(?<=\\[)[a-z]+(?=_)")
+  res$tools <- vapply(tool_matches, function(x) paste(x, collapse=","), character(1))
+  res$SUPP <- lengths(tool_matches)
+  res$SUPP_VEC <- vapply(res$tools, sup_vector, character(1))
+
+  colnames(res)[1] <- paste0("#", colnames(res)[1])
   return(res)
-  
 }
 
 
@@ -445,17 +471,26 @@ option_list = list(
   make_option(c("-p", "--out_file_supplemental"), type='character', help="Output supplemental BEDPE"))
 opt = parse_args(OptionParser(option_list=option_list))
 
+# Check that all required options are not NULL
+required_opts <- c("vcf", "callers", "sample_name", "build", "slop", "sizemargin", "min_sv_length", "allowed_chr", "out_file", "out_file_supplemental")
+missing_opts <- required_opts[sapply(required_opts, function(optname) is.null(opt[[optname]]))]
+if (length(missing_opts) > 0) {
+  stop("Missing required options: ", paste(missing_opts, collapse = ", "))
+}
+
 ## Unpack arguments
 opt$vcf = unlist(strsplit(opt$vcf, ',', fixed=T))
 opt$callers = unlist(strsplit(opt$callers, ',', fixed=T))
 opt$allowed_chr = unlist(strsplit(opt$allowed_chr, ',', fixed=T))
 
+cat('Starting....\n')
+
 ## Iteratively merge VCFs
 res = NULL
 for (i in 1:length(opt$vcf)) {
   ## Read VCF
-  caller = opt$caller[i]
-  print(caller)
+  caller = opt$callers[i]
+  cat(paste('Loading calls from', caller, '\n'))
   vcf = VariantAnnotation::readVcf(opt$vcf[i], genome=opt$build)
   # Filter VCF to contain only allowed chromosomes
   vcf = vcf[seqnames(rowRanges(vcf)) %in% opt$allowed_chr, ]
@@ -463,7 +498,6 @@ for (i in 1:length(opt$vcf)) {
 
   ## If there are no calls in the vcf (edge case), skip that VCF
   if (length(rowRanges(vcf)) == 0) {
-    print('in here')
     next
   }
 
@@ -481,15 +515,17 @@ for (i in 1:length(opt$vcf)) {
     ## Add breakendPosID for later redundancy checks
     vcf$breakendPosID = paste0('[',as.character(seqnames(vcf)),':',start(vcf),':*]')
   }
- 
+
   ## Overlap if this isn't the first callset
   if (i == 1) {
     res = vcf
   } else {
+    cat(paste('Merging callset from', caller, 'with prior callsets\n'))
     res = mergeCallsets(a=res, b=vcf, slop=opt$slop, margin=opt$sizemargin)
   }
 }
 
+cat('VCF Processing complete\n')
 
 ## If res is empty, create an empty data.frame with the expected columns
 if (is.null(res) || length(res) == 0) {
@@ -517,7 +553,12 @@ if (is.null(res) || length(res) == 0) {
 
   ## Handle breakpoints with duplicate start or end positions
   # length(res)
+  cat('Removing redundant breakpoints\n')
+
   res = removeRedundantBreakpoints(res)
+
+  cat('Final callset contains', length(res), 'breakpoints\n')
+  cat('Writing output files\n')
 
   ## Convert to bedpe, apply some filters 
   for (i in c('main','supplemental')) {
@@ -541,3 +582,4 @@ if (is.null(res) || length(res) == 0) {
     write.table(res.i, outfile, row.names=F, col.names=T, sep='\t', quote=F)
   }
 }
+cat('Done\n')

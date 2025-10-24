@@ -76,6 +76,7 @@ if (params.gen_org == 'mouse' && params.run_sv)
   --min_sv_length | <INT> | Minimum length of SVs to report.
   --cnv_distance_limit | <INT> | Maximum distance allowed between SV and nearest CNV.
   --sv_slop | <INT> | Number of bases to extend SV breakpoints to merge.
+  --sizemargin | 0.8 | Error margin in allowable size to prevent matching of SVs of different sizes.
   --smoove_support | 3 | Minimum number of supporting reads for SV calling with smoove.
   --exclude_regions | /<PATH> | BED file of regions to exclude from SV calling.
   --callRegions | /<PATH> | BED file of regions to call SVs, used with MANTA.
@@ -98,7 +99,7 @@ if (params.gen_org == 'human' && params.run_sv)
   --min_sv_length | <INT> | Minimum length of SVs to report.
   --cnv_distance_limit | <INT> | Maximum distance allowed between SV and nearest CNV.
   --sv_slop | <INT> | Number of bases to extend SV breakpoints to merge.
-
+  --sizemargin | 0.8 | Error margin in allowable size to prevent matching of SVs of different sizes.
   --smoove_support | 3 | Minimum number of supporting reads for SV calling with smoove.
   --exclude_regions | /<PATH> | BED file of regions to exclude from SV calling.
   --ref_fa_dict | /<PATH> | Reference fasta dictionary file for SV calling.
@@ -113,7 +114,6 @@ if (params.gen_org == 'human' && params.run_sv)
   --thousandG | /<PATH> | 1000 Genomes CNV annotation file.
   --cosmicUniqueBed | /<PATH> | COSMIC unique intervals for CNV annotation.
   --ensemblUniqueBed | /<PATH> | Ensembl unique genes for CNV and SV annotation.
-
   --gap | /<PATH> | BED file with gap genomic regions for annotation.  
   --dgvBedpe | /<PATH> | Database of Genomic Variants BEDPE file for SV annotation.
   --thousandGVcf | /<PATH> | 1000 Genomes SV VCF for SV annotation.

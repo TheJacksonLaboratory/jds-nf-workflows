@@ -48,31 +48,28 @@ def param_log(){
     --callRegions                   ${params.callRegions}
     --combined_reference_set        ${params.combined_reference_set}
     --cytoband                      ${params.cytoband}
+    --sv_slop                       ${params.sv_slop}
+    --sizemargin                    ${params.sizemargin}
+    --min_sv_length                 ${params.min_sv_length}
+    --cnv_distance_limit            ${params.cnv_distance_limit}
+    --ensemblUniqueBed              ${params.ensemblUniqueBed}
     """
 
     def svHumanParams = """
     --dgv                           ${params.dgv}
     --thousandG                     ${params.thousandG}
     --cosmicUniqueBed               ${params.cosmicUniqueBed}
-    --ensemblUniqueBed              ${params.ensemblUniqueBed}
     --gap                           ${params.gap}
     --dgvBedpe                      ${params.dgvBedpe}
     --thousandGVcf                  ${params.thousandGVcf}
     --svPon                         ${params.svPon}
     --cosmicBedPe                   ${params.cosmicBedPe}
-    --min_sv_length                 ${params.min_sv_length}
-    --cnv_distance_limit            ${params.cnv_distance_limit}
-    --sv_slop                       ${params.sv_slop}
     """
 
     def svMouseParams = """
     --known_del                     ${params.known_del}
     --known_ins                     ${params.known_ins}
     --known_inv                     ${params.known_inv}
-    --ensemblUniqueBed              ${params.ensemblUniqueBed}
-    --min_sv_length                 ${params.min_sv_length}
-    --cnv_distance_limit            ${params.cnv_distance_limit}
-    --sv_slop                       ${params.sv_slop}
     """
 
     def logHeader = """
