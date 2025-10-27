@@ -52,10 +52,10 @@ process RSEM_ALIGNMENT_EXPRESSION {
         trimmedfq="${reads[0]} ${reads[1]}"
     }
     if (params.read_type == "SE"){
-        frag="--fragment-length-mean 280 --fragment-length-sd 50"
+        frag="--fragment-length-mean ${params.fragment_length_mean} --fragment-length-sd ${params.fragment_length_sd}"
         stype=""
         trimmedfq="${reads[0]}"
-    }
+    } 
     if (params.rsem_aligner == "bowtie2"){
         
         rsem_ref_files = file("${rsem_ref_path}/bowtie2/*").collect { "$it" }.join(' ')

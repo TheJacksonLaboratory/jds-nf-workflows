@@ -11,9 +11,9 @@ process BCFTOOLS_REHEAD_SORT {
     container "quay.io/biocontainers/bcftools:1.15--h0ea216a_2"
 
     input:
-        tuple val(sampleID), file(variants)
+        tuple val(sampleID), path(variants)
         val(caller)
-        tuple file(fasta), file(fai)
+        tuple path(fasta), path(fai)
 
     output:
         tuple val(sampleID), file("${sampleID}_${caller}_sorted.vcf"), emit: vcf_sort
@@ -36,7 +36,7 @@ process BCFTOOLS_REHEAD_SORT {
                 -o ${sampleID}_${caller}_sorted.vcf
             """
 
-        else if (caller == "delly_sv" | caller == "delly_cnv" | caller == "manta")
+        else if (caller == "delly_sv" | caller == "delly_cnv" | caller == "manta" | caller == "svaba")
             """
             printf "${sampleID}_${caller}\n" > rehead.txt
             bcftools reheader --samples rehead.txt \

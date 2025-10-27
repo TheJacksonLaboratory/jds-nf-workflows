@@ -10,7 +10,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/amplicon/human/hg38_amplicon_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/amplicon/human/hg38_amplicon_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'amplicon_generic'
             }

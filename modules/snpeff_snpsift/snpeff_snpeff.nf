@@ -10,6 +10,7 @@ process SNPEFF{
 
     publishDir "${params.pubdir}/${sampleID}", pattern:"*.*", mode:'copy', enabled: params.gen_org=='mouse' ? true : params.keep_intermediate
     publishDir "${params.pubdir}/${sampleID}", pattern:"*.*", mode:'copy', enabled: params.workflow=='amplicon_generic' ? true : params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID}", pattern:"*mtdna_mergedCallers_annotated.vcf", mode:'copy'
 
     input:
     tuple val(sampleID),file(vcf)
@@ -30,17 +31,17 @@ process SNPEFF{
 
     if (indel_snp == 'INDEL'){
         output_suffix = 'INDEL_snpeff.vcf'
-    }
-    if (indel_snp =='SNP'){
+    } else if (indel_snp =='SNP'){
         output_suffix = 'SNP_snpeff.vcf'
-    }
-    if (indel_snp == 'BOTH'){
-        output_suffix = 'SNP_INDEL_filtered_annotated_final.vcf'
-    }  
-    if (indel_snp == 'BOTH' && params.workflow == 'amplicon_generic' ){
+    } else if (indel_snp == 'BOTH' && params.workflow == 'amplicon_generic' ){
         output_suffix = 'mergedCallers_filtered_annotated.vcf'
+    } else if (indel_snp == 'BOTH'){
+        output_suffix = 'SNP_INDEL_filtered_annotated_final.vcf'
+    } else if (indel_snp == 'MTDNA'){
+        output_suffix = 'mtdna_mergedCallers_annotated.vcf'
+    } else if (indel_snp == 'DEEPVAR'){
+        output_suffix = 'deepvariant_snpeff.vcf'
     }
-    
     """
     java -Djava.io.tmpdir=./ -Xmx${my_mem}G -jar /opt/snpEff/snpEff.jar \
     ${params.gen_ver} \

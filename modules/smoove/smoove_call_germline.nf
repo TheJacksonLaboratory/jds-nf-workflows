@@ -24,7 +24,7 @@
         --exclude ${params.exclude_regions} \
         --fasta ${params.ref_fa} \
         --processes ${task.cpus} \
-        --support 3 \
+        --support ${params.smoove_support} \
         --duphold \
         --genotype ${bam}
 

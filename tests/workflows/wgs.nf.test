@@ -10,7 +10,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
             }
@@ -22,13 +22,13 @@ nextflow_workflow {
 
     }
 
-    test("Full Workflow -- Mouse -- GRCm38 -- Deduplicate Coverage Cap Split Fastqwm") {
+    test("Full Workflow -- Mouse -- GRCm38 -- Deduplicate Coverage Cap Split Fastq") {
         tag "GRCm38"
         tag "options"
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 split_fastq = true
                 split_fastq_bin_size = 1000
@@ -51,7 +51,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 genome_build = "GRCm39"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
             }
@@ -69,7 +69,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
             }
@@ -88,7 +88,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 split_fastq = true
                 split_fastq_bin_size = 1000
@@ -110,7 +110,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "mouse"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 run_gvcf = true
@@ -129,7 +129,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'wgs'
                 run_gvcf = true
@@ -142,4 +142,145 @@ nextflow_workflow {
 
     }
 
+
+    test("Full Workflow -- Mouse -- Individual Merge") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                merge_inds = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- Individual Merge") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                merge_inds = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- merge_ind Bad Input") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                merge_inds = true
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- Deepvariant -- GVCF") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                deepvariant = true
+                run_gvcf = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- Deepvariant -- GVCF") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                deepvariant = true
+                run_gvcf = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- GRCm38 -- MT Calling") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- MT Calling") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+
 }
+
+// NEW TESTS NEEDED: Merge ind with deepvariant
+
+// For sample merging, what if user provides mismatching information in one of the columns? 

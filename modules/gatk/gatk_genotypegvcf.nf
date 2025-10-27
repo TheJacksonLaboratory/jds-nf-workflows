@@ -9,13 +9,11 @@ process GATK_GENOTYPEGVCF {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    // publishDir "${params.pubdir}/${sampleID}", pattern: "*.vcf", mode:'copy'
-
     input:
-    tuple val(sampleID), path(gvcf), path(idx)
+    tuple val(sampleID), path(genomicsdb)
 
     output:
-    tuple val(sampleID), path("*.vcf"), emit: vcf
+    tuple val(sampleID), path("*.vcf.gz"), emit: vcf
 
     script:
     // memory needs to be set explicitly
@@ -26,7 +24,7 @@ process GATK_GENOTYPEGVCF {
     mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp -XX:ParallelGCThreads=${task.cpus}" GenotypeGVCFs \
     -R ${params.ref_fa} \
-    -V ${gvcf} \
-    -O ${gvcf.baseName}_genotyped.vcf
+    -V gendb://${genomicsdb} \
+    -O ${genomicsdb.baseName}_genotyped.vcf.gz
     """
 }

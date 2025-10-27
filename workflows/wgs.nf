@@ -19,15 +19,19 @@ include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
 include {BWA_MEM_HLA} from "${projectDir}/modules/bwa/bwa_mem_hla"
 include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {SAMTOOLS_MERGE} from "${projectDir}/modules/samtools/samtools_merge"
+include {SAMTOOLS_MERGE;
+         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
 include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
 
+include {DEEPVARIANT} from "${projectDir}/modules/deepvariant/deepvariant"
 include {GATK_BASERECALIBRATOR} from "${projectDir}/modules/gatk/gatk_baserecalibrator_interval"
 include {GATK_GATHERBQSRREPORTS} from "${projectDir}/modules/gatk/gatk_gatherbqsrreports"
 include {GATK_APPLYBQSR} from "${projectDir}/modules/gatk/gatk_applybqsr"
 
 include {JVARKIT_COVERAGE_CAP} from "${projectDir}/modules/jvarkit/jvarkit_biostar154220"
-include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
+include {SAMTOOLS_INDEX;
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_IND;
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "${projectDir}/modules/samtools/samtools_index"
 
 include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
 include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
@@ -36,6 +40,8 @@ include {GATK_HAPLOTYPECALLER_INTERVAL;
          GATK_HAPLOTYPECALLER_INTERVAL as GATK_HAPLOTYPECALLER_INTERVAL_GVCF} from "${projectDir}/modules/gatk/gatk_haplotypecaller_interval"
 include {MAKE_VCF_LIST} from "${projectDir}/modules/utility_modules/make_vcf_list"
 include {GATK_MERGEVCF_LIST} from "${projectDir}/modules/gatk/gatk_mergevcf_list"
+include {BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_VCF;
+         BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_GVCF} from "${projectDir}/modules/bcftools/bcftools_merge_deepvar_vcfs"
 include {GATK_COMBINEGVCFS} from "${projectDir}/modules/gatk/gatk_combinegvcfs"
 
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
@@ -46,8 +52,10 @@ include {GATK_MERGEVCF;
          GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
          GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
 
-include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
+include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC;
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC;
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
 include {SNPEFF;
@@ -56,10 +64,15 @@ include {SNPEFF;
 include {SNPEFF_ONEPERLINE;
          SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
          SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
+include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP;
+         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
          SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
 include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+
+include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
+include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
 
 // help if needed
 if (params.help){
@@ -116,12 +129,12 @@ if (params.csv_input) {
     read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
 }
 
-// main workflow
+
+// BEGIN main workflow
 workflow WGS {
   // Step 0: Download data and concat Fastq files if needed. 
   if (params.download_data){
       FILE_DOWNLOAD(ch_input_sample)
-
       FILE_DOWNLOAD.out.read_meta_ch.map{it -> [it[0], it[2]]}.set{read_ch}
       FILE_DOWNLOAD.out.read_meta_ch.map{it -> [it[0], it[1]]}.set{meta_ch}
   }
@@ -132,7 +145,7 @@ workflow WGS {
       CONCATENATE_LOCAL_FILES.out.read_meta_ch.map{it -> [it[0], it[2]]}.set{read_ch}
       CONCATENATE_LOCAL_FILES.out.read_meta_ch.map{it -> [it[0], it[1]]}.set{meta_ch}
   }
-  
+
   // Step 00: Concat local Fastq files if required.
   if (params.concat_lanes && !params.csv_input){
       if (params.read_type == 'PE'){
@@ -152,14 +165,15 @@ workflow WGS {
       trimmer_input = read_ch
   }
 
-  // Step 1: Read quality and adapter trimming
+  // Read quality and adapter trimming
   FASTP(trimmer_input)
     
   FASTQC(FASTP.out.trimmed_fastq)
 
-  // Step 2: Get Read Group Information
   READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
+  
 
+  // START Split FASTQ
   if (params.split_fastq) {
     if (params.read_type == 'PE') {
       split_fastq_files = FASTP.out.trimmed_fastq
@@ -169,7 +183,7 @@ workflow WGS {
                          .combine(READ_GROUPS.out.read_groups, by: 0)
                          // from fastp the naming convention will always be *R*.fastq. 
                          // splitFastq adds an increment between *R* and .fastq. 
-                         // This can be used to set an 'index' value to make file names unique. 
+                         // This can be used to set an 'index' value to make file names unique.
     } else {
       split_fastq_files = FASTP.out.trimmed_fastq
                          .map{it -> [it[0], it[1]]}
@@ -183,16 +197,17 @@ workflow WGS {
     split_fastq_count = split_fastq_files
                     .groupTuple()
                     .map{sample, reads, index, read_group -> [sample, groupKey(sample, index.size())]}
-                  
     bwa_mem_mapping = split_fastq_count
-                .combine(split_fastq_files, by:0)
+                .combine(split_fastq_files, by:0) 
                 .map{it -> [it[1], it[2], it[3], it[4]] }
+
   } else {
     bwa_mem_mapping = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
                       .map{it -> [it[0], it[1], 'aln', it[2]]}
-  }
+  } // END Split FASTQ
 
-  // Step 3: BWA-MEM Alignment
+
+  // BWA-MEM Alignment
   if (params.gen_org=='mouse' | params.gen_org=='other'){
     BWA_MEM(bwa_mem_mapping)
     PICARD_SORTSAM(BWA_MEM.out.sam, 'coordinate')
@@ -209,10 +224,12 @@ workflow WGS {
     bam_file = PICARD_SORTSAM.out.bam
   }
 
-  // Step 4: Variant Preprocessing - Part 1
+
+  // Mark Duplicates
   PICARD_MARKDUPLICATES(bam_file)
 
-  // If Human
+
+  // START Human Specific Calling
   ch_GATK_BASERECALIBRATOR_multiqc = Channel.empty() //optional log file for human only.
   if (params.gen_org=='human'){
 
@@ -231,7 +248,8 @@ workflow WGS {
     // Apply BQSR
     apply_bqsr = PICARD_MARKDUPLICATES.out.dedup_bam.join(GATK_GATHERBQSRREPORTS.out.table)
     GATK_APPLYBQSR(apply_bqsr)
-
+    
+    // If coverage cap is used, run it on the dedup bam file
     if (params.coverage_cap) {
         JVARKIT_COVERAGE_CAP(GATK_APPLYBQSR.out.bam)
         SAMTOOLS_INDEX(JVARKIT_COVERAGE_CAP.out.bam)
@@ -244,30 +262,119 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
-    // HaplotypeCaller does not have multithreading so it runs faster when individual chromosomes called instead of Whole Genome
+    // Begin Merge on Individuals
+    if (params.merge_inds) {
+      merge_ch = bam_file.join(meta_ch, by: 0)
+                          .map{it -> [it[2].ind, it[1]]}
+                          .groupTuple()
+                          .map{it -> [it[0], it[1], it[1].size()]}
+                          .branch{
+                                merge: it[2] > 1
+                                pass:  it[2] == 1
+                            }
+      // BAM files are joined to the meta_ch (which contains individual IDs in meta.ind)
+      // Individual IDs are taken from the meta_ch, and set to the '0' index of a tuple
+      // The '0' index defines the sampleID moving forward, which is `ind` in this case.
+      // The size of the group is taken from the 2nd index of the tuple, and used to branch
+      // the 'merge' and 'pass' channels.
+      // The 'merge' channel is passed to the merge step, and the 'pass' channel is used 
+      // to pass the single bam files through to the index step.
+    
+      merge_input = merge_ch.merge
+                          .map{it -> [it[0], it[1]]}
+
+      pass_input = merge_ch.pass
+                          .map{it -> [it[0], it[1][0]]}
+      // Adjust the tuples for input to merge and index. [sampleID, bam]
+      // This removes the 'size' taken above. For single samples, the '0' index of the BAM
+      // array is taken, as it was 'grouped' into an array above 
+      // and can't be an array going forward. 
+
+      SAMTOOLS_MERGE_IND(merge_input, 'ind_merged_file')
+      SAMTOOLS_INDEX_IND(SAMTOOLS_MERGE_IND.out.bam)
+
+      SAMTOOLS_INDEX_SINGLE(pass_input)
+
+      bam_file = SAMTOOLS_MERGE_IND.out.bam
+        .mix(pass_input)
+      
+      index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
+
+    } // END merge on individual
+
+    if (params.run_sv) {
+      // Run SV calling
+      WGS_SV(bam_file.join(index_file))
+    } // END run SV
+    // note that this comes after coverage cap and after ind merge happens. 
+
+    if (params.run_mt_calling) {
+      // Run MT Variant calling
+      MT_VARIANT_CALLING(bam_file.join(index_file))
+    } // END run MT Calling
+    // note that this comes after coverage cap is applied, and after ind merge happens.
+
+    // HaplotypeCaller does not have multithreading, and runs faster when scattered over chroms
     // Applies scatter intervals from above to the BQSR bam file
     chrom_channel = bam_file.join(index_file).combine(chroms)
-    
-    // Use the Channel in HaplotypeCaller
-    GATK_HAPLOTYPECALLER_INTERVAL(chrom_channel, '')
-    // Gather intervals from scattered HaplotypeCaller operations into one
-    // common stream for output
+  
+    //Use Google DeepVariant to make vcfs and gvcfs if specified; makes gvcfs automatically
+    if (params.deepvariant) {
+      // Find X and Y chromosomes in chroms channel
+      haploid_chroms = chroms.filter { it ==~ /(?i).*\b(chr)?X\b.*/ }.map{ it[0] }
+              .combine(chroms.filter { it ==~ /(?i).*\b(chr)?Y\b.*/ }.map{ it[0] })
+      // Filter the chrom channel to only X and Y. 
+      // Because of channel vs. value the filter produces a channel, 
+      // which must be manipulated with map to get the value of that channel. 
 
-    MAKE_VCF_LIST(GATK_HAPLOTYPECALLER_INTERVAL.out.vcf.groupTuple(size: num_chroms),chroms.toList())
-    GATK_MERGEVCF_LIST(MAKE_VCF_LIST.out.list)
+      if (params.merge_inds) {
+        meta_ch = meta_ch
+          .map{it -> [it[1].ind, it[1].sex]}
+          .unique()
+      } else {
+        meta_ch = meta_ch
+          .map{it -> [it[0], it[1].sex]}
+          .unique()
+      }
 
-    if (params.run_gvcf) {
-      // Use the Channel in HaplotypeCaller_GVCF
-      GATK_HAPLOTYPECALLER_INTERVAL_GVCF(chrom_channel,'gvcf')
-      GATK_COMBINEGVCFS(GATK_HAPLOTYPECALLER_INTERVAL_GVCF.out.vcf.groupTuple(size: num_chroms), 'raw')
+      deepvariant_channel = chrom_channel.combine(meta_ch, by: 0).combine(haploid_chroms)
+
+      // Use chrom channel with sex and haploid chrom information in DeepVariant
+      DEEPVARIANT(deepvariant_channel)
+
+      // Merge DeepVariant calls
+      BCFTOOLS_MERGEDEEPVAR_VCF(DEEPVARIANT.out.vcf_channel.groupTuple(size: num_chroms), 'vcf')
+
+      if (params.run_gvcf) {
+        BCFTOOLS_MERGEDEEPVAR_GVCF(DEEPVARIANT.out.gvcf_channel.groupTuple(size: num_chroms), 'gvcf')
+      }
+
+    } else {
+      GATK_HAPLOTYPECALLER_INTERVAL(chrom_channel, '')
+      // Gather intervals from scattered HaplotypeCaller operations into one
+      // common stream for output
+
+      MAKE_VCF_LIST(GATK_HAPLOTYPECALLER_INTERVAL.out.vcf.groupTuple(size: num_chroms),chroms.toList())
+      GATK_MERGEVCF_LIST(MAKE_VCF_LIST.out.list)
+
+      select_var_snp = GATK_MERGEVCF_LIST.out.vcf.join(GATK_MERGEVCF_LIST.out.idx)
+      select_var_indel = GATK_MERGEVCF_LIST.out.vcf.join(GATK_MERGEVCF_LIST.out.idx)
+
+      if (params.run_gvcf) {
+        // Use the Channel in HaplotypeCaller_GVCF
+        GATK_HAPLOTYPECALLER_INTERVAL_GVCF(chrom_channel,'gvcf')
+        GATK_COMBINEGVCFS(GATK_HAPLOTYPECALLER_INTERVAL_GVCF.out.vcf.groupTuple(size: num_chroms), 'raw')
+      }
     }
-  }
+  } // END Human Specfic Calling
 
-  // If Mouse
+
+  // If Mouse OR Other
   if (params.gen_org=='mouse' | params.gen_org=='other'){
 
+    // If coverage cap is used, run it on the dedup bam file
     if (params.coverage_cap) {
         JVARKIT_COVERAGE_CAP(PICARD_MARKDUPLICATES.out.dedup_bam)
         SAMTOOLS_INDEX(JVARKIT_COVERAGE_CAP.out.bam)
@@ -280,7 +387,60 @@ workflow WGS {
     }
 
     PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-    PICARD_COLLECTWGSMETRICS(bam_file)
+    PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
+
+    // Begin Merge on Individuals
+    if (params.merge_inds) {
+      merge_ch = bam_file.join(meta_ch, by: 0)
+                          .map{it -> [it[2].ind, it[1]]}
+                          .groupTuple()
+                          .map{it -> [it[0], it[1], it[1].size()]}
+                          .branch{
+                                merge: it[2] > 1
+                                pass:  it[2] == 1
+                            }
+      // BAM files are joined to the meta_ch (which contains individual IDs in meta.ind)
+      // Individual IDs are taken from the meta_ch, and set to the '0' index of a tuple
+      // The '0' index defines the sampleID moving forward, which is `ind` in this case.
+      // The size of the group is taken from the 2nd index of the tuple, and used to branch
+      // the 'merge' and 'pass' channels.
+      // The 'merge' channel is passed to the merge step, and the 'pass' channel is used 
+      // to pass the single bam files through to the index step.
+    
+      merge_input = merge_ch.merge
+                          .map{it -> [it[0], it[1]]}
+
+      pass_input = merge_ch.pass
+                          .map{it -> [it[0], it[1][0]]}
+      // Adjust the tuples for input to merge and index. [sampleID, bam]
+      // This removes the 'size' taken above. For single samples, the '0' index of the BAM
+      // array is taken, as it was 'grouped' into an array above 
+      // and can't be an array going forward. 
+
+      SAMTOOLS_MERGE_IND(merge_input, 'ind_merged_file')
+      SAMTOOLS_INDEX_IND(SAMTOOLS_MERGE_IND.out.bam)
+
+      SAMTOOLS_INDEX_SINGLE(pass_input)
+
+      bam_file = SAMTOOLS_MERGE_IND.out.bam
+        .mix(pass_input)
+      
+      index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
+
+    } // END merge on individual
+
+    if (params.run_sv) {
+      // Run SV calling
+      WGS_SV(bam_file.join(index_file))
+    } // END run SV
+    // note that this comes after coverage cap is applied, and after ind merge happens.
+
+    if (params.run_mt_calling) {
+      // Run MT Variant calling
+      MT_VARIANT_CALLING(bam_file.join(index_file))
+    } // END run MT Calling
+    // note that this comes after coverage cap is applied, and after ind merge happens.
+
 
     // Read a list of contigs from parameters to provide to GATK as intervals
     // for HaplotypeCaller variant regions
@@ -295,86 +455,151 @@ workflow WGS {
     // Applies scatter intervals from above to the markdup bam file
     chrom_channel = bam_file.join(index_file).combine(chroms)
 
-    // Use the Channel in HaplotypeCaller
-    GATK_HAPLOTYPECALLER_INTERVAL(chrom_channel, '')
-    // Gather intervals from scattered HaplotypeCaller operations into one
-    // common stream for output
-  
-    MAKE_VCF_LIST(GATK_HAPLOTYPECALLER_INTERVAL.out.vcf.groupTuple(size: num_chroms), chroms.toList())
-    // Sort VCF within MAKE_VCF_LIST
-    GATK_MERGEVCF_LIST(MAKE_VCF_LIST.out.list)
+    //Use Google DeepVariant to make vcfs and gvcfs if specified; makes gvcfs automatically
+    if (params.deepvariant) {
+      // Find X and Y chromosomes in chroms channel
+      haploid_chroms = chroms.filter { it ==~ /(?i).*\b(chr)?X\b.*/ }.map{ it[0] }
+              .combine(chroms.filter { it ==~ /(?i).*\b(chr)?Y\b.*/ }.map{ it[0] })
+      // Filter the chrom channel to only X and Y. 
+      // Because of channel vs. value the filter produces a channel, 
+      // which must be manipulated with map to get the value of that channel. 
 
-    if (params.run_gvcf) {
-      // Use the Channel in HaplotypeCaller_GVCF
-      GATK_HAPLOTYPECALLER_INTERVAL_GVCF(chrom_channel,'gvcf')
-      GATK_COMBINEGVCFS(GATK_HAPLOTYPECALLER_INTERVAL_GVCF.out.vcf.groupTuple(size: num_chroms), 'raw')
+      if (params.merge_inds) {
+        meta_ch = meta_ch
+          .map{it -> [it[1].ind, it[1].sex]}
+          .unique()
+      } else {
+        meta_ch = meta_ch
+          .map{it -> [it[0], it[1].sex]}
+          .unique()
+      }
+
+      deepvariant_channel = chrom_channel.combine(meta_ch, by: 0).combine(haploid_chroms)
+
+      // Use chrom channel with sex and haploid chrom information in DeepVariant
+      DEEPVARIANT(deepvariant_channel)
+
+      // Merge DeepVariant calls
+      BCFTOOLS_MERGEDEEPVAR_VCF(DEEPVARIANT.out.vcf_channel.groupTuple(size: num_chroms), 'vcf')
+
+      if (params.run_gvcf) {
+        BCFTOOLS_MERGEDEEPVAR_GVCF(DEEPVARIANT.out.gvcf_channel.groupTuple(size: num_chroms), 'gvcf')
+      }
+
+    } else {
+      GATK_HAPLOTYPECALLER_INTERVAL(chrom_channel, '')
+      // Gather intervals from scattered HaplotypeCaller operations into one
+      // common stream for output
+  
+      MAKE_VCF_LIST(GATK_HAPLOTYPECALLER_INTERVAL.out.vcf.groupTuple(size: num_chroms), chroms.toList())
+      // Sort VCF within MAKE_VCF_LIST
+      GATK_MERGEVCF_LIST(MAKE_VCF_LIST.out.list)
+
+      select_var_snp = GATK_MERGEVCF_LIST.out.vcf.join(GATK_MERGEVCF_LIST.out.idx)
+      select_var_indel = GATK_MERGEVCF_LIST.out.vcf.join(GATK_MERGEVCF_LIST.out.idx)
+
+      if (params.run_gvcf) {
+        // Use the Channel in HaplotypeCaller_GVCF
+        GATK_HAPLOTYPECALLER_INTERVAL_GVCF(chrom_channel,'gvcf')
+        GATK_COMBINEGVCFS(GATK_HAPLOTYPECALLER_INTERVAL_GVCF.out.vcf.groupTuple(size: num_chroms), 'raw')
+      }
     }
   }
 
-  // SNP
-    select_var_snp = GATK_MERGEVCF_LIST.out.vcf.join(GATK_MERGEVCF_LIST.out.idx)
+  // If GATK HaplotypeCaller is used, then GATK SelectVariants and VariantFiltration
+  // are used to select SNPs and INDELs, and filter them.
+  // DeepVariant uses a different set of flags, which are not compatible with GATK VariantFiltration and must be annotated directly.
+  if (!params.deepvariant) {
+
+    // SNP
     GATK_SELECTVARIANTS_SNP(select_var_snp, 'SNP', 'selected_SNP')
     var_filter_snp = GATK_SELECTVARIANTS_SNP.out.vcf.join(GATK_SELECTVARIANTS_SNP.out.idx)
     GATK_VARIANTFILTRATION_SNP(var_filter_snp, 'SNP')
 
-  // INDEL
-    select_var_indel = GATK_MERGEVCF_LIST.out.vcf.join(GATK_MERGEVCF_LIST.out.idx)
+    // INDEL
     GATK_SELECTVARIANTS_INDEL(select_var_indel, 'INDEL', 'selected_INDEL')
     var_filter_indel = GATK_SELECTVARIANTS_INDEL.out.vcf.join(GATK_SELECTVARIANTS_INDEL.out.idx)
     GATK_VARIANTFILTRATION_INDEL(var_filter_indel, 'INDEL')
 
-  // For other genome, expectation is that dbSNP will not exist.  
-  if (params.gen_org=='mouse' | params.gen_org=='human'){
-    SNPSIFT_ANNOTATE_SNP_DBSNP(GATK_VARIANTFILTRATION_SNP.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
-    SNPSIFT_ANNOTATE_INDEL_DBSNP(GATK_VARIANTFILTRATION_INDEL.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+    // For other genome, expectation is that dbSNP will not exist.  
+    if (params.gen_org=='mouse' | params.gen_org=='human'){
+      SNPSIFT_ANNOTATE_SNP_DBSNP(GATK_VARIANTFILTRATION_SNP.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+      SNPSIFT_ANNOTATE_INDEL_DBSNP(GATK_VARIANTFILTRATION_INDEL.out.vcf, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+    }
+
+    // If Human
+    if (params.gen_org=='human'){
+
+      // SNP
+        SNPSIFT_ANNOTATE_SNP_COSMIC(SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+        SNPEFF_SNP(SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf, 'SNP', 'vcf')
+        SNPSIFT_DBNSFP_SNP(SNPEFF_SNP.out.vcf, 'SNP')
+        SNPEFF_ONEPERLINE_SNP(SNPSIFT_DBNSFP_SNP.out.vcf, 'SNP')
+      // INDEL
+        SNPSIFT_ANNOTATE_INDEL_COSMIC(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+        SNPEFF_INDEL(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf, 'INDEL', 'vcf')
+        SNPSIFT_DBNSFP_INDEL(SNPEFF_INDEL.out.vcf, 'INDEL')
+        SNPEFF_ONEPERLINE_INDEL(SNPSIFT_DBNSFP_INDEL.out.vcf, 'INDEL')
+        
+      // Merge SNP and INDEL and Aggregate Stats
+        vcf_files_unannotated = SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf)
+        GATK_MERGEVCF_UNANNOTATED(vcf_files_unannotated, 'SNP_INDEL_filtered_unannotated_final')
+
+        vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
+        GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
+        
+        SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'wgs')
+    }
+
+    // If Mouse
+    if (params.gen_org=='mouse'){
+      // Merge SNP and INDEL
+
+      vcf_files = SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf)
+
+      GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
+
+      SNPEFF(GATK_MERGEVCF.out.vcf, 'BOTH', 'vcf')
+
+      SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
+
+      SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+    }
+
+
+    // If 'Other'
+    if (params.gen_org=='other'){
+    // For other genomes, there will likely not be SNP EFF annotations, but merge still needs to happen. 
+      vcf_files = GATK_VARIANTFILTRATION_SNP.out.vcf.join(GATK_VARIANTFILTRATION_INDEL.out.vcf)
+
+      GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
+    }
+
+  } else {
+    // If DeepVariant is used, then the VCFs are ready to annotate directly. 
+    // For other genome, expectation is that dbSNP will not exist.  
+    
+    if (params.gen_org == 'mouse' || params.gen_org == 'human') {
+        SNPSIFT_ANNOTATE_DBSNP(BCFTOOLS_MERGEDEEPVAR_VCF.out.vcf_idx.map { it -> [it[0], it[1]] }, params.dbSNP, params.dbSNP_index, 'dbsnpID')
+    }
+
+    // If Human
+    if (params.gen_org == 'human') {
+        SNPSIFT_ANNOTATE_COSMIC(SNPSIFT_ANNOTATE_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
+        SNPEFF(SNPSIFT_ANNOTATE_COSMIC.out.vcf, 'DEEPVAR', 'vcf')
+        SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'BOTH')
+        SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'BOTH')
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+    }
+
+    // If Mouse
+    if (params.gen_org == 'mouse') {
+        SNPEFF(SNPSIFT_ANNOTATE_DBSNP.out.vcf, 'DEEPVAR', 'vcf')
+        SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
+        SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+    }
   }
-
-  // If Human
-  if (params.gen_org=='human'){
-
-    // SNP
-      SNPSIFT_ANNOTATE_SNP_COSMIC(SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
-      SNPEFF_SNP(SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf, 'SNP', 'vcf')
-      SNPSIFT_DBNSFP_SNP(SNPEFF_SNP.out.vcf, 'SNP')
-      SNPEFF_ONEPERLINE_SNP(SNPSIFT_DBNSFP_SNP.out.vcf, 'SNP')
-    // INDEL
-      SNPSIFT_ANNOTATE_INDEL_COSMIC(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf, params.cosmic, params.cosmic_index, 'cosmicID')
-      SNPEFF_INDEL(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf, 'INDEL', 'vcf')
-      SNPSIFT_DBNSFP_INDEL(SNPEFF_INDEL.out.vcf, 'INDEL')
-      SNPEFF_ONEPERLINE_INDEL(SNPSIFT_DBNSFP_INDEL.out.vcf, 'INDEL')
-      
-    // Merge SNP and INDEL and Aggregate Stats
-      vcf_files_unannotated = SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf)
-      GATK_MERGEVCF_UNANNOTATED(vcf_files_unannotated, 'SNP_INDEL_filtered_unannotated_final')
-
-      vcf_files_annotated = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
-      GATK_MERGEVCF_ANNOTATED(vcf_files_annotated, 'SNP_INDEL_filtered_annotated_final')
-      
-      SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf)
-  }
-
-  // If Mouse
-  if (params.gen_org=='mouse'){
-    // Merge SNP and INDEL
-
-    vcf_files = SNPSIFT_ANNOTATE_SNP_DBSNP.out.vcf.join(SNPSIFT_ANNOTATE_INDEL_DBSNP.out.vcf)
-
-    GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
-
-    SNPEFF(GATK_MERGEVCF.out.vcf, 'BOTH', 'vcf')
-
-    SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
-
-    SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
-  }
-
-  if (params.gen_org=='other'){
-  // For other genomes, there will likely not be SNP EFF annotations, but merge still needs to happen. 
-    vcf_files = GATK_VARIANTFILTRATION_SNP.out.vcf.join(GATK_VARIANTFILTRATION_INDEL.out.vcf)
-
-    GATK_MERGEVCF(vcf_files, 'SNP_INDEL_filtered_unannotated_final')
-  }
-
+  
   ch_multiqc_files = Channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))

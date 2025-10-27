@@ -29,7 +29,7 @@ process NANOSV {
 
     stub:
         """
-        wget -O ${sampleID}.nanosv_sorted_prefix.vcf https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/main/germline_sv/ont/mouse/example.nanosv_sorted_prefix.vcf
+        wget -O ${sampleID}.nanosv_sorted_prefix.vcf https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/germline_sv/ont/mouse/example.nanosv_sorted_prefix.vcf
         """
 }
 

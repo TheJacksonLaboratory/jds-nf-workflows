@@ -253,7 +253,7 @@ workflow AMPLICON {
   SNPSIFT_DBNSFP(SNPEFF.out.vcf, 'BOTH')
   SNPEFF_ONEPERLINE(SNPSIFT_DBNSFP.out.vcf, 'BOTH')
 
-  SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf)
+  SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'amplicon_generic')
 
   // MultiQC
   ch_multiqc_files = Channel.empty()

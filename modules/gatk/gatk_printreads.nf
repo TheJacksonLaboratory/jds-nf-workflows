@@ -15,7 +15,6 @@ process GATK_PRINTREADS {
     tuple val(sampleID), val(meta), file("*.bam"), file("*.bai"), emit: bam_bai
 
     script:
-    //Estimate somatic variants using Mutect2
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 

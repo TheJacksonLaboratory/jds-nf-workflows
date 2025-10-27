@@ -9,7 +9,7 @@ The following are human specific parameters. To see help for mouse, add `--gen_o
 --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
---csv_input | /<FILE_PATH> | CSV delimited sample sheet that controls how samples are processed. The required input header is: patient,sex,status,sampleID,lane,fastq_1,fastq_2. See the repository wiki (https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki) for additional information. 
+--csv_input | /<FILE_PATH> | CSV delimited sample sheet that controls how samples are processed. The required input header is: patient,sex,status,sampleID,lane,fastq_1,fastq_2. See the repository wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki) for additional information. 
 
 --pdx | false | Options: false, true. If specified, 'Xengsort' is run on reads to deconvolute human and mouse reads. Human only reads are used in analysis. 
 --xengsort_host_fasta | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/imputed/rel_2112_v8/NOD_ShiLtJ.39.fa' | Xengsort host fasta file. Used by Xengsort Index when `--pdx` is run, and xengsort_idx_path is `null` or false.  
@@ -105,7 +105,7 @@ The following are mouse specific parameters. To see help for mouse, add `--gen_o
 --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
---csv_input | /<FILE_PATH> | CSV delimited sample sheet that controls how samples are processed. The required input header is: patient,sex,status,sampleID,lane,fastq_1,fastq_2. See the repository wiki (https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki) for additional information. 
+--csv_input | /<FILE_PATH> | CSV delimited sample sheet that controls how samples are processed. The required input header is: patient,sex,status,sampleID,lane,fastq_1,fastq_2. See the repository wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki) for additional information. 
 
 --deduplicate_reads | false | Options: false, true. If specified, run bbmap clumpify on input reads. Clumpify will deduplicate reads prior to trimming. This can help with mapping and downstream steps when analyzing high coverage WGS data. 
 
@@ -167,4 +167,27 @@ The following are mouse specific parameters. To see help for mouse, add `--gen_o
 
 --read_type | PE | Only 'PE' is accepted for this workflow. 
 '''
+if (params.run_mt_calling)
+println '''
+--mt_contig_name | 'MT' | Name of the mitochondrial contig.
+--mt_fasta | <PATH> | Path to the mitochondrial fasta file.
+--mt_genome | <PATH> | Path to the mitochondrial genome file.
+--mt_shifted_fasta | <PATH> | Path to the shifted mitochondrial fasta file.
+--shift_back_chain | <PATH> | Path to the shift back chain file.
+--mt_fasta_index | <PATH> | Path to the mitochondrial fasta index.
+--mt_shifted_fasta_index | <PATH> | Path to the shifted mitochondrial fasta index.
+--max_allele_count | 4 | Maximum allele count for mitochondrial variant calling.
+--exclusion_sites | <PATH> | BED file of exclusion sites for mitochondrial calling.
+--non_control_region_interval_list | <PATH> | Interval list for non-control region of chrMT.
+--control_region_shifted_interval_list | <PATH> | Interval list for shifted control region of chrMT.
+--detection_limit | 0.01 | Mutserve detection limit.
+--mapQ | 20 | Minimum mapping quality for Mutserve.
+--baseQ | 20 | Minimum base quality for Mutserve.
+--gen_ver | 'hg38' | Genome version for the analysis.
+--snpEff_config | </snpEff.config> | Path to snpEff configuration file.
+--cosmic | </cosmic> | Path to COSMIC annotation VCF file. Used when `--gen_org == human`
+--cosmic_index | </cosmic_index> | Path to COSMIC annotation VCF index file. Used when `--gen_org == human`
+--dbNSFP | </dbNSFP> | Path to dbNSFP annotation file. Used when `--gen_org == human`
+'''
+
 }

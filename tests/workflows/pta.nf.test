@@ -11,9 +11,29 @@ nextflow_workflow {
             params {
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/hs_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_input.csv'
                 bicseq2_no_scaling = true
                 pipeline = 'pta'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- MT variant calling") {
+        tag "GRCh38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_withMT_input.csv'
+                bicseq2_no_scaling = true
+                pipeline = 'pta'
+                run_mt_calling = true
             }
         }
 
@@ -30,7 +50,7 @@ nextflow_workflow {
             params {
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/hs_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_input.csv'
                 bicseq2_no_scaling = true
                 pdx = true
                 pipeline = 'pta'
@@ -51,7 +71,7 @@ nextflow_workflow {
             params {
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/hs_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_input.csv'
                 split_fastq = true
                 split_fastq_bin_size = 200000
                 bicseq2_no_scaling
@@ -74,9 +94,30 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/mm_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/mm_test_input.csv'
                 cnv_germline_prob = 1
                 pipeline = 'pta'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- MT variant calling") {
+        tag "GRCm39"
+        tag "options"
+        options "-stub-run"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/mm_test_withMT_input.csv'
+                cnv_germline_prob = 1
+                pipeline = 'pta'
+                run_mt_calling = true
             }
         }
 
@@ -94,7 +135,7 @@ nextflow_workflow {
             params {
                 gen_org = "mouse"
                 pubdir = "tests/results"
-                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/pta/mm_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/mm_test_input.csv'
                 cnv_germline_prob = 1
                 split_fastq = true
                 split_fastq_bin_size = 100000

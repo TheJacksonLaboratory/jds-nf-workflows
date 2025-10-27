@@ -10,7 +10,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/fusion/human/hg38_fusion_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/fusion/human/hg38_fusion_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rna_fusion'
             }
@@ -28,7 +28,7 @@ nextflow_workflow {
         when {
             params {
                 gen_org = "human"
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/cs-nf-test/refs/heads/main/fusion/human/pdx_fusion_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/fusion/human/pdx_fusion_input.csv"
                 pubdir = "tests/results"
                 pdx = true
                 pipeline = 'rna_fusion'

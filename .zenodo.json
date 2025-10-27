@@ -1,7 +1,7 @@
 {
     "upload_type": "software", 
-    "description": "See https://github.com/TheJacksonLaboratory/cs-nf-pipelines/wiki",
-    "title": "cs-nf-pipelines",
+    "description": "See https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki",
+    "title": "jds-nf-workflows",
     "creators": [
         {
             "affiliation": "The Jackson Laboratory",

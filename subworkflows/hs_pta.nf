@@ -25,6 +25,8 @@ include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
 include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
 include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
 
+include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
+
 include {CONPAIR_PILEUP as CONPAIR_TUMOR_PILEUP;
          CONPAIR_PILEUP as CONPAIR_NORMAL_PILEUP} from "${projectDir}/modules/conpair/conpair_pileup"
 include {CONPAIR} from "${projectDir}/modules/conpair/conpair"
@@ -114,6 +116,7 @@ include {SOMATIC_VCF_FINALIZATION} from "${projectDir}/modules/python/python_som
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_GERMLINE;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
 include {ANNOTATE_BICSEQ2_CNV} from "${projectDir}/modules/r/annotate_bicseq2_cnv"
+
 include {MERGE_SV} from "${projectDir}/modules/r/merge_sv"
 include {ANNOTATE_SV;
          ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv"
@@ -282,7 +285,12 @@ workflow HS_PTA {
 
         // ** Get alignment and WGS metrics
         PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-        PICARD_COLLECTWGSMETRICS(bam_file)
+        PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
+
+        // ** Run MT DNA variant calling.
+        if (params.run_mt_calling) {
+            MT_VARIANT_CALLING(bam_file.join(index_file))
+        }
 
         // ** NEXTFLOW OPERATORS::: Establish channels with sample pairs and individual input objects for downstream calling
 

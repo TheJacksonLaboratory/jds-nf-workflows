@@ -25,6 +25,6 @@ process MSISENSOR2_MSI {
 
     cp -rf ${params.msisensor_model} models
 
-    msisensor2 msi -M models/models_hg38 -t ${bam} -o ${sampleID}_msisensor=
+    msisensor2 msi -M models/models_hg38 -t ${bam} -o ${sampleID}_msisensor
     """
 }

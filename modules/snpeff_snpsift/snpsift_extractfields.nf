@@ -12,6 +12,7 @@ process SNPSIFT_EXTRACTFIELDS {
 
     input:
     tuple val(sampleID), path(vcf)
+    val(type)
 
     output:
     tuple val(sampleID), path("*.txt"), emit: txt, optional: true
@@ -23,20 +24,25 @@ process SNPSIFT_EXTRACTFIELDS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    if (params.workflow == 'amplicon_generic'){
+    if (type == 'amplicon_generic'){
         fields = "CHROM POS ID REF ALT QUAL FILTER CALLER ALT_AF DP_HQ GEN[${sampleID}_haplotypecaller].AD GEN[${sampleID}_freebayes].AD 'ANN[*].ALLELE' 'ANN[*].EFFECT' 'ANN[*].IMPACT' 'ANN[*].GENE' 'ANN[*].GENEID' 'ANN[*].FEATURE' 'ANN[*].FEATUREID' 'ANN[*].BIOTYPE' 'ANN[*].RANK' 'ANN[*].HGVS_C' 'ANN[*].HGVS_P' 'ANN[*].CDNA_POS' 'ANN[*].CDNA_LEN' 'ANN[*].CDS_POS' 'ANN[*].CDS_LEN' 'ANN[*].AA_POS' 'ANN[*].AA_LEN' 'ANN[*].DISTANCE' 'LOF[*].GENE' 'LOF[*].GENEID' 'LOF[*].NUMTR' 'LOF[*].PERC' 'NMD[*].GENE' 'NMD[*].GENEID' 'NMD[*].NUMTR' 'NMD[*].PERC' 'dbNSFP_SIFT_score' 'dbNSFP_SIFT_pred' 'dbNSFP_Polyphen2_HDIV_score' 'dbNSFP_MutationAssessor_score'"
         suffix = 'txt'
-    } else if (params.gen_org=='human'){
-        fields = 'CHROM POS ID REF ALT QUAL FILTER AF "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE" "LOF[*].GENE" "LOF[*].GENEID" "LOF[*].NUMTR" "LOF[*].PERC" "NMD[*].GENE" "NMD[*].GENEID" "NMD[*].NUMTR" "NMD[*].PERC" "dbNSFP_SIFT_score" "dbNSFP_SIFT_pred" "dbNSFP_Polyphen2_HDIV_score" "dbNSFP_MutationAssessor_score" "dbNSFP_phyloP100way_vertebrate" "dbNSFP_1000Gp3_AF" "dbNSFP_1000Gp3_AFR_AF" "dbNSFP_1000Gp3_EUR_AF" "dbNSFP_1000Gp3_AMR_AF" "dbNSFP_1000Gp3_EAS_AF" "dbNSFP_ESP6500_AA_AF" "dbNSFP_ESP6500_EA_AF"'
-        suffix = 'txt'
-    } else if (params.gen_org=='human' && params.workflow == 'somatic_wes' || params.workflow == 'somatic_wes_pta'){
+    } else if (params.gen_org == 'human' && (type == 'somatic_wes' || type == 'somatic_wes_pta')){
         fields = 'CHROM POS ID REF ALT QUAL FILTER "GEN[*].AF" "GEN[*].DP" "GEN[*].AD" "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE" "LOF[*].GENE" "LOF[*].GENEID" "LOF[*].NUMTR" "LOF[*].PERC" "NMD[*].GENE" "NMD[*].GENEID" "NMD[*].NUMTR" "NMD[*].PERC" "dbNSFP_SIFT_score" "dbNSFP_SIFT_pred" "dbNSFP_Polyphen2_HDIV_score" "dbNSFP_MutationAssessor_score" "dbNSFP_phyloP100way_vertebrate" "dbNSFP_1000Gp3_AF" "dbNSFP_1000Gp3_AFR_AF" "dbNSFP_1000Gp3_EUR_AF" "dbNSFP_1000Gp3_AMR_AF" "dbNSFP_1000Gp3_EAS_AF" "dbNSFP_ESP6500_AA_AF" "dbNSFP_ESP6500_EA_AF"'
         suffix = 'txt'
-    } else if (params.gen_org=='mouse'){
+    } else if (params.gen_org == 'human' && (type == 'wgs' || type == 'wes')){
+        fields = 'CHROM POS ID REF ALT QUAL FILTER AF "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE" "LOF[*].GENE" "LOF[*].GENEID" "LOF[*].NUMTR" "LOF[*].PERC" "NMD[*].GENE" "NMD[*].GENEID" "NMD[*].NUMTR" "NMD[*].PERC" "dbNSFP_SIFT_score" "dbNSFP_SIFT_pred" "dbNSFP_Polyphen2_HDIV_score" "dbNSFP_MutationAssessor_score" "dbNSFP_phyloP100way_vertebrate" "dbNSFP_1000Gp3_AF" "dbNSFP_1000Gp3_AFR_AF" "dbNSFP_1000Gp3_EUR_AF" "dbNSFP_1000Gp3_AMR_AF" "dbNSFP_1000Gp3_EAS_AF" "dbNSFP_ESP6500_AA_AF" "dbNSFP_ESP6500_EA_AF"'
+        suffix = 'txt'
+    } else if (params.gen_org == 'mouse' && (type == 'wgs' || type == 'wes')){
         fields = 'CHROM POS ID REF ALT QUAL FILTER AF "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE"'
         suffix = 'txt'
+    } else if (params.gen_org == 'human' && type == 'mtdna') {
+        fields = 'CHROM POS ID REF ALT QUAL FILTER AF CALLER SUPPORT "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE" "LOF[*].GENE" "LOF[*].GENEID" "LOF[*].NUMTR" "LOF[*].PERC" "NMD[*].GENE" "NMD[*].GENEID" "NMD[*].NUMTR" "NMD[*].PERC" "dbNSFP_SIFT_score" "dbNSFP_SIFT_pred" "dbNSFP_Polyphen2_HDIV_score" "dbNSFP_MutationAssessor_score" "dbNSFP_phyloP100way_vertebrate" "dbNSFP_1000Gp3_AF" "dbNSFP_1000Gp3_AFR_AF" "dbNSFP_1000Gp3_EUR_AF" "dbNSFP_1000Gp3_AMR_AF" "dbNSFP_1000Gp3_EAS_AF" "dbNSFP_ESP6500_AA_AF" "dbNSFP_ESP6500_EA_AF"'
+        suffix = 'mtdna.txt'
+    } else if (params.gen_org == 'mouse' && type == 'mtdna') {
+        fields = 'CHROM POS ID REF ALT QUAL FILTER AVG_AF CALLER SUPPORT "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE"'
+        suffix = 'mtdna.txt'
     }
-
     """
     java -Xmx${my_mem}G -jar /opt/snpEff/SnpSift.jar \
     extractFields ${vcf} ${fields} \
