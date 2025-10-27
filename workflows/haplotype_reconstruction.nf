@@ -38,7 +38,7 @@ consensus_files = founder_genos.concat(gmaps)
 // QC and Haplotype Reconstruction Workflow
 workflow HAPLOTYPE_RECONSTRUCTION {
 
-    project_ch = extract_csv(params.csv)
+    project_ch = extract_csv(params.csv_input)
 
     if(params.rerun){
         // If rerun is true, we need to reprocess final report files

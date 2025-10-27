@@ -11,17 +11,13 @@ cat(paste0(" -- R/qtl2 version: ",qtl2::qtl2version(),"\n"))
 cat(paste0(" -- R/qtl2convert version: ",packageVersion("qtl2convert"),"\n"))
 
 # allele codes
-# codefile <- args[1]
-codefile <- "/projects/omics_share/mouse/GRCm39/supporting_files/muga_annotation/gigamuga/GM_allelecodes.csv"
-
+codefile <- args[1]
 
 # metadata file indicating which mice should be retained from array files
-# metadata_path <- args[2]
-metadata_path <- "/projects/compsci/vmp/USERS/widmas/haplotype_reconstruction_qtl-nf/sample_sheets/20250616_attie_covar.csv"
+metadata_path <- args[2]
 
 # FinalReport files
-# ifile <- args[3]
-ifile <- "/projects/compsci/vmp/USERS/widmas/attie_500/data/genotypes/old/Univ_of_Wisconsin_Scheuler_GIGMUGV01_20150416/Univ_of_Wisconsin_Scheuler_GIGMUGV01_20150416_FinalReport.zip"
+ifile <- args[3]
 
 cat("Reading covar file")
 metadata <- read.csv(metadata_path, tryLogical = F)

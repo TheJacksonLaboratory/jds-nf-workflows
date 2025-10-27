@@ -81,8 +81,7 @@ else if (params.workflow == "mitochondria_variant_calling"){
 } 
 else if (params.workflow == "reannotate_pta"){
   include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
-} 
-else {
+} else {
   // if workflow name is not supported: 
   exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
 }
@@ -152,18 +151,16 @@ workflow{
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
   }
-<<<<<<< HEAD
   if (params.workflow == "qtl_mapping"){
     QTL_MAPPING()
   }
   if (params.workflow == "haplotype_reconstruction"){
     HAPLOTYPE_RECONSTRUCTION()
-=======
+  }
   if (params.workflow == "mitochondria_variant_calling"){
     MITOCHONDRIA_VARIANT_CALLING()
   }
   if (params.workflow == "reannotate_pta"){
     REANNOTATE_PTA()
->>>>>>> origin/main
   }
 }
