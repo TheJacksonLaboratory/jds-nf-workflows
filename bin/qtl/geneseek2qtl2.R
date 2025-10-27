@@ -6,23 +6,22 @@ library(vroom)
 library(parallel)
 library(dplyr)
 library(fst)
-library(purrr)
 args <- commandArgs(trailingOnly = TRUE)
 cat(paste0(" -- R/qtl2 version: ",qtl2::qtl2version(),"\n"))
 cat(paste0(" -- R/qtl2convert version: ",packageVersion("qtl2convert"),"\n"))
 
 # allele codes
-codefile <- args[1]
-# codefile <- "/projects/compsci/vmp/USERS/widmas/haplotype_reconstruction_qtl-nf/bin/CC_DO_data/GM_allelecodes.csv"
+# codefile <- args[1]
+codefile <- "/projects/omics_share/mouse/GRCm39/supporting_files/muga_annotation/gigamuga/GM_allelecodes.csv"
 
 
 # metadata file indicating which mice should be retained from array files
-metadata_path <- args[2]
-# metadata_path <- "/projects/compsci/vmp/USERS/widmas/haplotype_reconstruction_qtl-nf/sample_sheets/20250509_attie_covar.csv"
+# metadata_path <- args[2]
+metadata_path <- "/projects/compsci/vmp/USERS/widmas/haplotype_reconstruction_qtl-nf/sample_sheets/20250616_attie_covar.csv"
 
 # FinalReport files
-ifile <- args[3]
-# ifile <- "/projects/compsci/vmp/USERS/widmas/attie_500/data/genotypes/Univ_of_Wisconsin_Schueler_MURGIGV01_20221021/Univ_of_Wisconsin_Schueler_MURGIGV01_20221021_FinalReport.zip"
+# ifile <- args[3]
+ifile <- "/projects/compsci/vmp/USERS/widmas/attie_500/data/genotypes/old/Univ_of_Wisconsin_Scheuler_GIGMUGV01_20150416/Univ_of_Wisconsin_Scheuler_GIGMUGV01_20150416_FinalReport.zip"
 
 cat("Reading covar file")
 metadata <- read.csv(metadata_path, tryLogical = F)

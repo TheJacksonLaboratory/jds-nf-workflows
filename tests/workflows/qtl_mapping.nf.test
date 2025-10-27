@@ -4,13 +4,16 @@ nextflow_workflow {
     script "workflows/qtl_mapping.nf"
     workflow "QTL_MAPPING"
 
-    test("Full Workflow -- TEST TO BE ADDED") {
-
+    test("Full Workflow -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
         when {
             params {
-                gen_org = "mouse"
+                gen_org = 'mouse'
+                genome_build = 'GRCm39'
                 pubdir = "tests/results"
                 pipeline = 'qtl_mapping'
+                n_perms = 5
             }
         }
 
