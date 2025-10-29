@@ -20,7 +20,7 @@ process CONCAT_GENOPROBS {
   tuple val(project_id), file(crosses), file(genoprobs)
 
   output:
-  tuple val(project_id), file("*_genoprobs.rds"), file("*_alleleprobs.rds"), file("*_cross.rds"), file("*_maxmarg.rds"), file("*_kinship.rds"), emit: qtl2_files
+  tuple val(project_id), file("*_genoprobs.rds"), file("*_alleleprobs.rds"), file("*_cross.rds"), file("*_pmap.rds"), file("*_gmap.rds") ,file("*_maxmarg.rds"), file("*_kinship.rds"), emit: qtl2_files
   tuple val(project_id), file("*_genotyping_errors.rds"), file("*_bad_markers.rds"), emit: qc_files
 
   script:
@@ -32,6 +32,8 @@ process CONCAT_GENOPROBS {
   mv genoprobs.rds ${project_id}_genoprobs.rds
   mv alleleprobs.rds ${project_id}_alleleprobs.rds
   mv cross.rds ${project_id}_cross.rds
+  mv pmap.rds ${project_id}_pmap.rds
+  mv gmap.rds ${project_id}_gmap.rds
   mv maxmarg.rds ${project_id}_maxmarg.rds
   mv bad_markers.rds ${project_id}_bad_markers.rds
   mv genotyping_errors.rds ${project_id}_genotyping_errors.rds

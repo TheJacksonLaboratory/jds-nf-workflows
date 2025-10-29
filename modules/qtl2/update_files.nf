@@ -11,6 +11,8 @@ process UPDATE_FILES {
   publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_genoprobs.rds", mode:'copy'
   publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_alleleprobs.rds", mode:'copy'
   publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_cross.rds", mode:'copy'
+  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_pmap.rds", mode:'copy'
+  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_gmap.rds", mode:'copy'
   publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_maxmarg.rds", mode:'copy'
   publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_updated_kinship.rds", mode:'copy'
 
@@ -18,7 +20,7 @@ process UPDATE_FILES {
   tuple val(project_id), path(covar_file), path(cross_file), path(genoprobs_file), path(alleleprobs_file), path(viterbi_file), path(kinship_file), path(marker_file), val(cross_type)
                                 
   output:
-  tuple val(project_id), file("${project_id}_updated_genoprobs.rds"), file("${project_id}_updated_alleleprobs.rds"), file("${project_id}_updated_cross.rds"), file("${project_id}_updated_maxmarg.rds"), file("${project_id}_updated_kinship.rds"), emit: qtl2_files
+  tuple val(project_id), file("${project_id}_updated_genoprobs.rds"), file("${project_id}_updated_alleleprobs.rds"), file("${project_id}_updated_cross.rds"), file("${project_id}_updated_pmap.rds"), file("${project_id}_updated_gmap.rds"), file("${project_id}_updated_maxmarg.rds"), file("${project_id}_updated_kinship.rds"), emit: qtl2_files
 
   script:
   

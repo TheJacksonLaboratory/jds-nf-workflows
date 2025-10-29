@@ -9,12 +9,8 @@ library(dplyr)
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250721
+# 20251029
 ################################################################################
-
-# # testing
-# test_dir <- "/flashscratch/widmas/HR_QC_outputDir/work/88/c6ee71e4f7c91e94491e64f99873b8"
-# setwd(test_dir)
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -121,6 +117,8 @@ if(correct_ids == TRUE){
         message("IDs corrected.")
         message("Saving updated cross, genotype probabilities, allele probabilities, and viterbi files...")
         saveRDS(cross, file = paste(project_id,"updated_cross.rds", sep = "_"))
+        saveRDS(cross$pmap, file = paste(project_id,"updated_pmap.rds", sep = "_"))
+        saveRDS(cross$gmap, file = paste(project_id,"updated_gmap.rds", sep = "_"))
         saveRDS(genoprobs, file = paste(project_id,"updated_genoprobs.rds",sep = "_"), compress = TRUE)
         saveRDS(alleleprobs, file = paste(project_id,"updated_alleleprobs.rds",sep = "_"), compress = TRUE)
         saveRDS(m, file = paste(project_id,"updated_maxmarg.rds",sep = "_"), compress = TRUE)
@@ -132,6 +130,8 @@ if(correct_ids == TRUE){
         message("rerun = FALSE, remove_markers = FALSE, and correct_ids = FALSE. No changes required to haplotype reconstructions.")
         message("Saving updated cross, genotype probabilities, allele probabilities, and viterbi files...")
         saveRDS(cross, file = paste(project_id,"updated_cross.rds", sep = "_"))
+        saveRDS(cross$pmap, file = paste(project_id,"updated_pmap.rds", sep = "_"))
+        saveRDS(cross$gmap, file = paste(project_id,"updated_gmap.rds", sep = "_"))
         saveRDS(genoprobs, file = paste(project_id,"updated_genoprobs.rds",sep = "_"), compress = TRUE)
         saveRDS(alleleprobs, file = paste(project_id,"updated_alleleprobs.rds",sep = "_"), compress = TRUE)
         saveRDS(m, file = paste(project_id,"updated_maxmarg.rds",sep = "_"), compress = TRUE)

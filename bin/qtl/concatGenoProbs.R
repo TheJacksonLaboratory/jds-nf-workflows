@@ -8,7 +8,7 @@ library(parallel)
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250721
+# 20251029
 ################################################################################ 
 
 # # testing
@@ -89,6 +89,8 @@ bad_markers <- names(percent_missing_marker[which(percent_missing_marker > 10)])
 e <- calc_errorlod(cross, genoprobs, cores = parallel::detectCores())
 
 # save
+saveRDS(cross$pmap, file = "pmap.rds")
+saveRDS(cross$gmap, file = "gmap.rds")
 saveRDS(cross, file = "cross.rds")
 saveRDS(genoprobs, file = "genoprobs.rds", compress = TRUE)
 saveRDS(alleleprobs, file = "alleleprobs.rds", compress = TRUE)

@@ -20,8 +20,8 @@ nextflow ../main.nf \
 -profile sumner2 \
 --pubdir "/flashscratch/widmas/hr_outputDir" \
 -w "/flashscratch/widmas/hr_outputDir/work" \
---csv_input "/projects/compsci/vmp/USERS/widmas/haplotype_reconstruction_qtl-nf/sample_sheets/haplotype_reconstruction_input.csv" \
---rerun true \
---correct_ids false \
---remove_markers false \
+--csv_input "/projects/compsci/vmp/USERS/widmas/jds-nf-test/haplotype_reconstruction/mouse/haplotype_reconstruction_input_remove_markers.csv" \
+--rerun false \
+--correct_ids true \
+--remove_markers true \
 --comment "This script will run haplotype reconstruction on mouse genotyped using GigaMUGA on default mm10 coordinates"

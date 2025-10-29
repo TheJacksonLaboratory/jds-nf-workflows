@@ -13,7 +13,7 @@ HAPLOTYPE RECONSTRUCTION PARAMETER LOG
 Results Published to: ${params.pubdir}
 ______________________________________________________
 --workflow                      ${params.workflow}
---csv                           ${params.csv}
+--csv_input                     ${params.csv_input}
 --rerun                         ${params.rerun}
 --correct_ids                   ${params.correct_ids}
 --remove_markers                ${params.remove_markers}

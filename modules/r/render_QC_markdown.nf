@@ -9,7 +9,7 @@ process QC_REPORT {
   publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*", mode:'copy'
 
   input:
-  tuple val(project_id), path(genoprobs), path(alleleprobs), path(cross), path(viterbi), path(kinship), path(genotyping_errors), path(bad_markers), path(x_intensities), path(y_intensities), path(all_marker_intensities)
+  tuple val(project_id), path(genoprobs), path(alleleprobs), path(cross), path(pmap), path(gmap), path(viterbi), path(kinship), path(genotyping_errors), path(bad_markers), path(x_intensities), path(y_intensities), path(all_marker_intensities)
 
   output:
   tuple path("sample_QC.csv"), path("QC_markdown.html"), path("QC_markdown.Rmd"), emit: qc_markdown
