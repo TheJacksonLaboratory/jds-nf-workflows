@@ -279,9 +279,6 @@ workflow WGS {
           index_file = GATK_APPLYBQSR.out.bai
         }
 
-        PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
-        PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
-         // END merge on individual
 
     }
 
