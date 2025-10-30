@@ -1,6 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+// Adapted from: nf-core/smrnaseq 2.2.4 and 2.4.0 workflows
+
 // import modules
 include {help} from "${projectDir}/bin/help/smrnaseq.nf"
 include {param_log} from "${projectDir}/bin/log/smrnaseq.nf"
@@ -17,7 +19,7 @@ include {MIRTRACE_RUN} from "${projectDir}/modules/mirtrace/mirtrace"
 include { BOWTIE_MAP_CONTAMINANTS as MAP_TRNA
           BOWTIE_MAP_CONTAMINANTS as MAP_CDNA
           BOWTIE_MAP_CONTAMINANTS as MAP_NCRNA
-          BOWTIE_MAP_CONTAMINANTS as MAP_OTHER } from "${projectDir}/modules/bowtie2/bowtie_map_contaminants"
+          BOWTIE_MAP_CONTAMINANTS as MAP_OTHER } from "${projectDir}/modules/bowtie2/bowtie2_map_contaminants"
 
 include {BOWTIE_MAP_SEQ  as BOWTIE_MAP_MATURE;
          BOWTIE_MAP_SEQ  as BOWTIE_MAP_HAIRPIN;
@@ -323,7 +325,4 @@ workflow SMRNASEQ {
       ch_multiqc_files.collect()
   )
 
-
 }
-
-

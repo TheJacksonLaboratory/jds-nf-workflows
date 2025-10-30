@@ -67,4 +67,46 @@ nextflow_workflow {
         }
     }
 
+    test("Invalid Param -- Mouse") {
+        tag "failure"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "mouse"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                genome_build = "GRCm38"
+                mirtrace_species = "hsa"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+
+        test("Invalid Param -- Mouse") {
+        tag "failure"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "human"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                genome_build = "GRCm38"
+                mirtrace_species = "mmu"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+
 }
