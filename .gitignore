@@ -1,10 +1,8 @@
-*_RNASeq_Output/
 output/
 .nextflow*
 cache/
 work/
 .nextflow/
-*trace*
 *.out
 .DS_Store
 design.csv
