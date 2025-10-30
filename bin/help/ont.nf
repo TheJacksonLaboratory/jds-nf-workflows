@@ -2,7 +2,7 @@ def help(){
   println '''
   Parameter | Default | Description
   --pubdir | /<PATH> | The directory that the saved outputs will be stored.
-  --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+  --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
   -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /fastscratch or other directory with ample storage.
   --keep_intermediate
   --sampleID | <STRING> | The sample ID for the input data.
@@ -31,7 +31,6 @@ def help(){
   --genome_build | "GRCm38" | Parameter that controls reference data used for alignment and annotation. GRCm38 is the default value, GRCm39 is an accepted alternate value.
   --ref_fa | /<PATH> | Path to the reference genome in FASTA format.
   --fasta_index | /<PATH> | Optional paramter to specify index for reference genome. If not provided, pipeline will generate an index.
-  --bwa_index | /<PATH> | Optional paramter to specify BWA indices for alignment. If not provided, pipeline will generate these indices.
   --tandem_repeats | /ref_data/ucsc_mm10_trf_chr_sorted.bed | BED file that lists the coorinates of tandem repeats
   --sv_ins_ref | /ref_data/variants_freeze5_sv_INS_mm39_to_mm10_sorted.bed.gz | BED file that lists previously indentified insertion SVs
   --sv_del_ref | /ref_data/variants_freeze5_sv_DEL_mm39_to_mm10_sorted.bed.gz | BED file that lists previously indentified deletion SVs
@@ -47,6 +46,5 @@ def help(){
   --surv_type | 1 | Boolean (0/1) that requires SVs to be the same type for merging.
   --surv_strand | 1 | Boolean (0/1) that requires SVs to be on the same strand for merging.
   --surv_min | 30 | Minimum length (bp) to output SVs.
-
 '''
 }

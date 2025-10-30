@@ -8,13 +8,13 @@ process SV_MERGE {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'bedpe' }", pattern:"*.bedpe", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID}", pattern:"*.bedpe", mode:'copy'
 
     input:
         tuple val(sampleID), file(vcf_tuple)
     output:
-        tuple val(sampleID), file("*.mergedCall.bedpe"), emit: bedpe
-        tuple val(sampleID), file("*.supplemental.bedpe"), emit: supp_bedpe
+        tuple val(sampleID), file("*.mergedCall.DLM.bedpe"), emit: bedpe
+        tuple val(sampleID), file("*.mergedCall.DLM.supplemental.bedpe"), emit: supp_bedpe
     script:
     """
         Rscript ${projectDir}/bin/germline_sv/merge_sv.r \

@@ -3,8 +3,7 @@ def help(){
 Parameter | Default | Description
 
 --pubdir | /<PATH> | The directory that the saved outputs will be stored.
---organize_by | sample | How to organize the output folder structure. Options: sample or analysis
---cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+--cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
 --sample_folder | /<PATH> | The path to the folder that contains all the samples to be run by the pipeline. The files in this path can also be symbolic links. 
@@ -18,8 +17,9 @@ Parameter | Default | Description
 --gen_org | mouse | Options: mouse and human.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
 
---pdx | false | Options: true or false. If 'true' Xenome is run to remove mouse reads from samples. 
---xenome_prefix | '/projects/compsci/omics_share/human/GRCh38/supporting_files/xenome/trans_human_GRCh38_84_NOD_based_on_mm10_k25' | Pre-compiled Xenome classification index files. Used if PDX analysis is specified. 
+--bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
+
+--skip_read_trimming | false | Options: false, true. If specified, skip FastP read trimming.
 
 --quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
@@ -38,26 +38,46 @@ Parameter | Default | Description
 --seed_length | 25 | 'Seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie, it uses this value for Bowtie's seed length parameter.'
 --rsem_aligner | 'bowtie2' | Options: bowtie2 or star. The aligner algorithm used by RSEM. Note, if using STAR, point rsem_ref_files to STAR based indices.
 
+--fragment_length_mean | 280 | Used when --read_type == 'SE'. "The mean of the fragment length distribution, which is assumed to be a Gaussian."
+--fragment_length_sd | 50 | Used when --read_type == 'SE'. "The standard deviation of the fragment length distribution, which is assumed to be a Gaussian. "
+
+--merge_rna_counts | false | Options false, true. If specified, gene and transcript counts are merged across all samples. Typically used in multi-sample cases. 
+
 --picard_dict | Mouse: '/projects/omics_share/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.toplevel.dict' 
               | Human: '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.dict'
-              | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. JAX users should not change this parameter.
+              | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ref_flat | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.refFlat.txt' 
            | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.refFlat.txt'
-           | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. JAX users should not change this parameter.
+           | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ribo_intervals | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.rRNA.interval_list' 
                  | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.rRNA.interval_list'
-                 | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. JAX users should not change this parameter.
+                 | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
---pdx | false | Options: false, true. If specified, 'Xenome' is run on reads to deconvolute human and mouse reads. Human only reads are used in analysis. 
+--pdx | false | Options: false, true. If specified, 'Xengsort' is run on reads to deconvolute human and mouse reads. Human only reads are used in analysis. 
 --classifier_table | '/projects/compsci/omics_share/human/GRCh38/supporting_files/rna_ebv_classifier/EBVlym_classifier_table_48.txt' | EBV expected gene signatures used in EBV classifier. Only used when '--pdx' is run. 
+--ref_fa | '/projects/compsci/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.fasta'| Xengsort graft fasta file. Used by Xengsort Index when `--pdx` is run, and xengsort_idx_path is `null` or false.  
+--xengsort_host_fasta | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/imputed/rel_2112_v8/NOD_ShiLtJ.39.fa' | Xengsort host fasta file. Used by Xengsort Index when `--pdx` is run, and xengsort_idx_path is `null` or false.  
+--xengsort_idx_path | '/projects/compsci/omics_share/human/GRCh38/supporting_files/xengsort' | Xengsort index for deconvolution of human and mouse reads. Used when `--pdx` is run. If `null`, Xengsort Index is run using ref_fa and host_fa.  
+--xengsort_idx_name | 'hg38_GRCm39-NOD_ShiLtJ' | Xengsort index name associated with files located in `xengsort_idx_path` or name given to outputs produced by Xengsort Index
 
 There are two additional parameters that are human specific. They are: 
 
 Parameter| Default| Description
 
---ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. JAX users should not change this parameter.
---ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  JAX users should not change this parameter.
+--ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. 
+--ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  
+
+--rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified, andr --ref_fa / --ref_gtf will be used to generate one. 
+--rsem_reference_name | null | User provided path to an RSEM reference name. If not provided, --ref_fa / --ref_gtf will be used to generate one. 
+--ref_fa | null | Genomic reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
+--ref_gtf | null | Transcript GTF reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
+--bam_strandedness | null | Used when --bam_input is specified. Must be set to 'forward', 'reverse' or 'none'
+
 '''
 }
+
+
+
+

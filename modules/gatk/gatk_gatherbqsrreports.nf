@@ -8,7 +8,7 @@ process GATK_GATHERBQSRREPORTS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'gatk' }", pattern: "*.table", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.table", mode:'copy'
 
     input:
     tuple val(sampleID), path(reports)
@@ -23,7 +23,7 @@ process GATK_GATHERBQSRREPORTS {
     inputs = reports.collect { "-I $it" }.join(' ')
 
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" GatherBQSRReports \
     ${inputs} \
     -O ${sampleID}_recal_data.table

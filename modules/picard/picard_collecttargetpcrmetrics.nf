@@ -8,7 +8,7 @@ process PICARD_COLLECTTARGETPCRMETRICS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'picard' }", pattern: "*.txt", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.txt", mode:'copy'
 
     input:
     tuple val(sampleID), file(bam)
@@ -21,7 +21,7 @@ process PICARD_COLLECTTARGETPCRMETRICS {
     my_mem =  my_mem[0..-4]
 
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" CollectTargetedPcrMetrics \
     --INPUT ${bam} \
     --OUTPUT ${sampleID}_CollectTargetedPcrMetrics.txt \

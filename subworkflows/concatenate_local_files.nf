@@ -10,14 +10,34 @@ workflow CONCATENATE_LOCAL_FILES {
         ch_input_sample
 
     main:
+    /* 
+        General note: 
 
+        Input tuple expected from the CSV sheet: 
+            it[0] is sample ID. 
+            it[1] is metadata information. meta includes: [sampleID:'testSample_42', lane:'lane1', replicate:'NA', id:'testSample_42', size:1]. This comes from `extract_csv.nf`
+            it[2] and it[3] are R1 and R2 if PE. it[3] is empty if SE. 
+
+        All steps expect that sampleID is in position [0] of tuples. 
+
+        merge_replicates is used in the ATAC workflow and is used to merge replicates of one sample.
+
+    */
         if (params.read_type == 'PE') {
             temp_map = ch_input_sample
             .multiMap { it ->
                 def meta = [:]
-                meta.sampleID   = it[1].sampleID
-                R1: tuple(it[0], it[1].lane, meta, 'R1', it[2])
-                R2: tuple(it[0], it[1].lane, meta, 'R2', it[3])
+                if (params.merge_replicates) {
+                    meta.sampleID   = it[1].replicate != 'NA' ? it[1].sampleID+'_'+it[1].replicate : it[1].sampleID
+                    meta.replicate  = it[1].replicate
+                    meta.baseSampleID = it[1].sampleID
+                } else {
+                    meta.sampleID   = it[1].sampleID
+                    meta.ind        = it[1].ind
+                    meta.sex        = it[1].sex
+                }
+                R1: tuple(meta.sampleID, meta.lane, meta, 'R1', it[2])
+                R2: tuple(meta.sampleID, meta.lane, meta, 'R2', it[3])
             }
             .mix()
             .groupTuple(by: [0,2,3])
@@ -30,12 +50,19 @@ workflow CONCATENATE_LOCAL_FILES {
             }
             group_size = 2
         } else {
-
             temp_map = ch_input_sample
             .multiMap { it ->
                 def meta = [:]
-                meta.sampleID   = it[1].sampleID
-                R1: tuple(it[0], it[1].lane, meta, 'R1', it[2])
+                if (params.merge_replicates) {
+                    meta.sampleID   = it[1].replicate != 'NA' ? it[1].sampleID+'_'+it[1].replicate : it[1].sampleID
+                    meta.replicate  = it[1].replicate
+                    meta.baseSampleID = it[1].sampleID
+                } else {
+                    meta.sampleID   = it[1].sampleID
+                    meta.ind        = it[1].ind
+                    meta.sex        = it[1].sex
+                }
+                R1: tuple(meta.sampleID, meta.lane, meta, 'R1', it[2])
             }
             .groupTuple(by: [0,2,3])
             .map{ it -> tuple(it[0], it[1].size(), it[2], it[3], it[4]) } // sampleID, num_lanes, meta, read_ID:[R1], file

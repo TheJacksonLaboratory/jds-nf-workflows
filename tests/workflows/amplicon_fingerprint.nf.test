@@ -1,6 +1,6 @@
 nextflow_workflow {
 
-    name "Test Workflow AMPLICON"
+    name "Test Workflow AMPLICON Fingerprint"
     script "workflows/amplicon_fingerprint.nf"
     workflow "AMPLICON"
 
@@ -9,9 +9,8 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "human"
-                sample_folder = "${baseDir}/test/amplicon/human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/amplicon/human/hg38_amplicon_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'amplicon'
             }

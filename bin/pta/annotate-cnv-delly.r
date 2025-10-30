@@ -219,10 +219,10 @@ annotateEnsembl = function(x, ens, closest.max.distance=CLOSEST_MAX_DISTANCE) {
 
 ## Collect arguments
 option_list = list(
-  make_option(c("-c", "--cnv"),                   type='character', help="Input CNV calles"),
+  make_option(c("-c", "--cnv"),                   type='character', help="Input CNV calls"),
   make_option(c("-a", "--caller"),                type='character', help="Name of tool used to call CNVs in --cnv (only delly is currently supported)"),
-  make_option(c("-t", "--tumor"),                 type='character', help="Comma-delimited list of database names corresponding to the order in --db_files"),
-  make_option(c("-n", "--normal"),                type='character', help="Comma-delimited list of database files corresponding to the order in --db_names"),
+  make_option(c("-t", "--tumor"),                 type='character', help="Name of the tumor sample"),
+  make_option(c("-n", "--normal"),                type='character', help="Name of the normal sample"),
   make_option(c("-b", "--cytoband"),              type='character', help="Cytoband file: headerless tab-delimited files with chr, start, end, cytoband"),
   make_option(c("-d", "--db_names"),              type='character', help="Comma-delimited list of database names corresponding to the order in --db_files"),
   make_option(c("-s", "--db_files"),              type='character', help="Comma-delimited list of database files corresponding to the order in --db_names"),
@@ -241,7 +241,19 @@ opt$allowed_chr = unlist(strsplit(opt$allowed_chr, ',', fixed=T))
 
 
 ## Read files
-cnv = readCNV(opt$cnv, chr=opt$allowed_chr)
+cnv <- tryCatch( 
+  {
+      readCNV(opt$cnv, chr=opt$allowed_chr)
+  },
+  error = function(e) {
+    empty_df <- setNames(data.frame(matrix(ncol = 10, nrow = 0)), c('#chr', 'start', 'end', 'type', 'log2', 'tool', 'tumor--normal', 'info', 'focal', 'cytoband'))
+    
+    write.table(empty_df, opt$out_file_main, row.names=F, col.names=T, sep='\t', quote=F)
+    write.table(empty_df, opt$out_file_supplemental, row.names=F, col.names=T, sep='\t', quote=F)
+
+    quit(status=0, save='no')
+  }
+)
 cyto = readCytoband(opt$cytoband)
 ensembl = readEnsembl(opt$ensembl)
 

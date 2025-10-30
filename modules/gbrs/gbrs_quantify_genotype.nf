@@ -6,14 +6,14 @@ process GBRS_QUANTIFY_GENOTYPES {
     time 5.hour
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    container 'quay.io/jaxcompsci/gbrs_py3:v1.0.1'
+    container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/gbrs' : 'gbrs' }", pattern: "*.diploid.isoforms.tpm", mode: 'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/gbrs' : 'gbrs' }", pattern: "*.diploid.isoforms.expected_read_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/gbrs' : 'gbrs' }", pattern: "*.diploid.isoforms.alignment_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/gbrs' : 'gbrs' }", pattern: "*.diploid.genes.tpm", mode: 'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/gbrs' : 'gbrs' }", pattern: "*.diploid.genes.expected_read_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/gbrs' : 'gbrs' }", pattern: "*.diploid.genes.alignment_counts", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.isoforms.tpm", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.isoforms.expected_read_counts", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.isoforms.alignment_counts", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.genes.tpm", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.genes.expected_read_counts", mode: 'copy'
+    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.genes.alignment_counts", mode: 'copy'
 
     input:
     tuple val(sampleID), path(h5), path(genotype_tsv)

@@ -5,6 +5,9 @@ println '\n'
 println logo.show()
 
 def param_log(){
+if (params.gen_org != "human") {
+    error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 
+}
 log.info """
 WES PARAMETER LOG
 
@@ -20,9 +23,10 @@ ______________________________________________________
 --keep_intermediate             ${params.keep_intermediate}
 -c                              ${params.config}
 --pubdir                        ${params.pubdir}
---organize_by                   ${params.organize_by}
 --pdx                           ${params.pdx}
---xenome_index                  ${params.xenome_prefix}
+--xengsort_host_fasta           ${params.xengsort_host_fasta}
+--xengsort_idx_path             ${params.xengsort_idx_path}
+--xengsort_idx_name             ${params.xengsort_idx_name}
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
 --quality_phred                 ${params.quality_phred}
@@ -45,7 +49,6 @@ ______________________________________________________
 --bait_picard                   ${params.bait_picard}
 --snpEff_config                 ${params.snpEff_config}
 --mismatch_penalty              ${params.mismatch_penalty}
---call_val                      ${params.call_val}
 --gen_ver                       ${params.gen_ver}
 --gold_std_indels               ${params.gold_std_indels}
 --phase1_1000G                  ${params.phase1_1000G}

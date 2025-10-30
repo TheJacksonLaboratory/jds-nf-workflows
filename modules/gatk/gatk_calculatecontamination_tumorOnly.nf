@@ -8,7 +8,7 @@ process GATK_CALCULATECONTAMINATION {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'gatk' }", pattern: "*_somatic.vcf.gz", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID}", pattern: "*_somatic.vcf.gz", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), path(pileup_table)
@@ -21,7 +21,7 @@ process GATK_CALCULATECONTAMINATION {
     my_mem =  my_mem[0..-4]
 
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" CalculateContamination \
     -I ${pileup_table} \
     --tumor-segmentation ${sampleID}.segments.txt \

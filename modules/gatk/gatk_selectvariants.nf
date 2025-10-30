@@ -8,8 +8,8 @@ process GATK_SELECTVARIANTS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'gatk' }", pattern: "*.vcf", mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'gatk' }", pattern: "*filtered_dbsnpID.vcf", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID}", pattern: "*.vcf", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID}", pattern: "*filtered_dbsnpID.vcf", mode:'copy'
 
     input:
     tuple val(sampleID), file(vcf), file(idx)
@@ -24,7 +24,7 @@ process GATK_SELECTVARIANTS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" SelectVariants \
     -R ${params.ref_fa} \
     -V ${vcf} \

@@ -8,7 +8,7 @@ process GATK_MUTECT2 {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'gatk' }", pattern: "*_somatic.vcf.gz", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID}", pattern: "*_somatic.vcf.gz", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), val(meta), path(normal_bam), path(normal_bai), val(normal_name), path(tumor_bam), path(tumor_bai), val(tumor_name)
@@ -26,7 +26,7 @@ process GATK_MUTECT2 {
     pon_genotype = params.genotype_pon ? '--genotype-pon-sites true' : ''
 
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" Mutect2 \
     -R ${params.ref_fa} \
     -I ${tumor_bam} \

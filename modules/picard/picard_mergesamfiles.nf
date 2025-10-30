@@ -9,15 +9,15 @@ process PICARD_MERGESAMFILES {
 
     publishDir {
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${ params.organize_by=='sample' ? type+sampleID+'/bam' : 'picard'}"
+        "${params.pubdir}/${type + sampleID + '/bam'}"
     }, pattern: "*.bam", mode: 'copy', enabled: params.keep_intermediate
 
 
     input:
-    tuple val(sampleID), file(bam)
+    tuple val(sampleID), path(bam)
 
     output:
-    tuple val(sampleID), file("*.bam"), emit: bam
+    tuple val(sampleID), path("*.bam"), emit: bam
 
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -39,5 +39,4 @@ process PICARD_MERGESAMFILES {
         ln -s ${bam_files[0]} ${prefix}.bam
         """
     }
-
 }

@@ -8,8 +8,8 @@ process GATK_FILTERMUECTCALLS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/callers' : 'gatk' }", pattern: "*_mutect2_somatic.filtered.vcf.gz", mode:'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/stats'  : 'gatk' }", pattern: "*.filteringStats.tsv", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*_mutect2_somatic.filtered.vcf.gz", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.filteringStats.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(tbi), val(meta), val(normal_name), val(tumor_name), val(tool), path(stats)
@@ -23,7 +23,7 @@ process GATK_FILTERMUECTCALLS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" FilterMutectCalls \
     -R ${params.ref_fa} \
     -V ${vcf} \

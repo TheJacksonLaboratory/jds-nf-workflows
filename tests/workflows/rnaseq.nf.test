@@ -9,11 +9,48 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "mouse"
-                sample_folder = "${baseDir}/test/rna/mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- GRCm38 -- SE") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input_SE.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                read_type = 'SE'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Option -- Skip Read Trimming") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                skip_read_trimming = true
             }
         }
 
@@ -28,10 +65,9 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "mouse"
                 genome_build = "GRCm39"
-                sample_folder = "${baseDir}/test/rna/mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
             }
@@ -48,9 +84,8 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "human"
-                sample_folder = "${baseDir}/test/rna/human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/hg38_RNA_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'rnaseq'
             }
@@ -67,9 +102,8 @@ nextflow_workflow {
         tag "pdx"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "human"
-                sample_folder = "${baseDir}/test/rna/human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/pdx_RNA_input.csv"
                 pubdir = "tests/results"
                 pdx = true
                 pipeline = 'rnaseq'
@@ -81,4 +115,71 @@ nextflow_workflow {
         }
 
     }
+
+    test("Full Workflow -- PDX -- skip-read-trimming") {
+        tag "GRCh38"
+        tag "pdx"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/pdx_RNA_input.csv"
+                pubdir = "tests/results"
+                pdx = true
+                pipeline = 'rnaseq'
+                skip_read_trimming = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("BAM Input -- No Reference") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                bam_input = true
+                reference_cache='/projects/omics_share'
+                ref_fa = params.reference_cache+'/mouse/GRCm38/genome/sequence/ensembl/GRCm38.p6/Mus_musculus.GRCm38.dna.primary_assembly.fa'
+                ref_gtf = params.reference_cache+'/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.gtf'
+                bam_strandedness = "forward"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+
+    test("BAM Input -- Provided Reference") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                bam_input = true
+                reference_cache='/projects/omics_share'
+                rsem_reference_path = params.reference_cache+'/mouse/GRCm38/transcriptome/indices/ensembl/v102/bowtie2/'
+                rsem_reference_name = 'Mus_musculus.GRCm38.dna.primary_assembly'
+                bam_strandedness = "forward"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
 }
+

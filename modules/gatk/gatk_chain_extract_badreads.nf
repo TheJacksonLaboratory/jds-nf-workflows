@@ -6,10 +6,9 @@ process CHAIN_EXTRACT_BADREADS {
     time = '04:00:00'
     errorStrategy { [0,3,4].contains(task.exitStatus) ? 'ignore' : 'terminate' } 
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats' : 'gatk' }", pattern: "*.log", mode: 'copy' 
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.log", mode: 'copy' 
 
     container 'broadinstitute/gatk:4.2.4.1'
-
 
     input:
     tuple val(sampleID), file(bam_sort_mm10)
@@ -22,7 +21,7 @@ process CHAIN_EXTRACT_BADREADS {
 
     script:
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Djava.io.tmpdir=`pwd`/tmp" ValidateSamFile \
     -I ${bam_sort_mm10[0]} \
     -MODE VERBOSE -MO 10000000 \

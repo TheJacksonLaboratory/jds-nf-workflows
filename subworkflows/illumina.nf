@@ -29,15 +29,21 @@ include {GATK_INDEXFEATUREFILE;
 include {GATK_HAPLOTYPECALLER_INTERVAL} from "${projectDir}/modules/gatk/gatk_haplotypecaller_interval"
 include {MAKE_VCF_LIST} from "${projectDir}/modules/utility_modules/make_vcf_list"
 include {GATK_MERGEVCF_LIST} from "${projectDir}/modules/gatk/gatk_mergevcf_list"
-include {GATK_COMBINEGVCFS} from "${projectDir}/modules/gatk/gatk_combinegvcfs"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
          GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "${projectDir}/modules/gatk/gatk_selectvariants"
 include {GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_SNP;
          GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "${projectDir}/modules/gatk/gatk_variantfiltration"
 include {GATK_MERGEVCF} from "${projectDir}/modules/gatk/gatk_mergevcf"
 
-include {VEP_GERMLINE as VEP_GERMLINE_GATK;
-         VEP_GERMLINE as VEP_GERMLINE_CNV} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_mouse"
+if (params.genome_build == 'GRCm39'){
+    include {VEP_GERMLINE as VEP_GERMLINE_GATK;
+            VEP_GERMLINE as VEP_GERMLINE_CNV} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_mouse"
+} 
+
+if (params.genome_build == 'GRCm38'){
+    include {VEP_GERMLINE as VEP_GERMLINE_GATK;
+            VEP_GERMLINE as VEP_GERMLINE_CNV} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_GRCm38"
+} 
 
 include {BCFTOOLS_VCF_TO_BCF} from "${projectDir}/modules/bcftools/bcftools_vcf_to_bcf"
 include {DUPHOLD as DUPHOLD_DELLY;
@@ -122,7 +128,7 @@ workflow ILLUMINA {
                             .collect()
                             .map { it -> tuple(it[0], it[1])}
     } else {
-        exit 1, "Both FASTQ and BAM inputs were specified. Use either FASTQ or BAM as workflow input."
+        exit 1, "FASTQ: fastq1 '${params.fastq1}'; fastq2 '${params.fastq2}' and BAM: '${params.bam}' inputs either were both specified, or both null. Use FASTQ, BAM or csv_input as workflow input."
     }
 
     // Index reference fasta
@@ -140,6 +146,8 @@ workflow ILLUMINA {
 
         // Map reads to reference
         bwa_mem_input = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
+                    .map{it -> [it[0], it[1], 'aln', it[2]]}
+
         BWA_MEM(bwa_mem_input)
 
         // Sort and compress to BAM
@@ -177,7 +185,7 @@ workflow ILLUMINA {
     DELLY_CNV_GERMLINE(PICARD_MARKDUPLICATES.out.bam_and_index, fasta_index)
     REHEAD_SORT_CNV(DELLY_CNV_GERMLINE.out.delly_bcf, "delly_cnv", fasta_index)
     GATK_INDEXFEATUREFILE(REHEAD_SORT_CNV.out.vcf_sort)
-    VEP_GERMLINE_CNV(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx)) // THE OUTPUTS FROM THESE SHOULD BE SAVED AND ARE CURRENTLY NOT
+    VEP_GERMLINE_CNV(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx))
 
     // Duphold
     DUPHOLD_DELLY(PICARD_MARKDUPLICATES.out.bam_and_index.join(REHEAD_SORT_DELLY.out.vcf_sort), fasta_index, 'delly_sv') 
@@ -190,7 +198,7 @@ workflow ILLUMINA {
 
     // * Merge callers and annotate results
 
-    // Join VCFs together by sampleID and run SURVIVOR merge
+    // Join VCFs together by sampleID and run NYGC script based merge
 
     survivor_input = BCFTOOLS_DUPHOLD_FILTER_DELLY.out.vcf.join(BCFTOOLS_DUPHOLD_FILTER_LUMPY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_MANTA.out.vcf)
                      .map { it -> tuple(it[0], tuple(it[1], it[2], it[3]))}

@@ -11,22 +11,22 @@ process SAMTOOLS_STATS {
         def sample   = sampleID.split("_")
         def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${ params.organize_by=='sample' ? type+sampleID+'/samtools' : 'samtools'}"
-    }, pattern: "*.flagstat", mode: 'copy', enabled: params.keep_intermediate
+        "${params.pubdir}/${type + sampleID + '/samtools'}"
+    }, pattern: "*.flagstat", mode: 'copy'
 
     publishDir {
         def sample   = sampleID.split("_")
         def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${ params.organize_by=='sample' ? type+sampleID+'/samtools' : 'samtools'}"
-    }, pattern: "*.idxstats", mode: 'copy', enabled: params.keep_intermediate
+        "${params.pubdir}/${type + sampleID + '/samtools'}"
+    }, pattern: "*.idxstats", mode: 'copy'
 
     publishDir {
         def sample   = sampleID.split("_")
         def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${ params.organize_by=='sample' ? type+sampleID+'/samtools' : 'samtools'}"
-    }, pattern: "*.stats", mode: 'copy', enabled: params.keep_intermediate
+        "${params.pubdir}/${type + sampleID + '/samtools'}"
+    }, pattern: "*.stats", mode: 'copy'
 
 
     input:
@@ -39,9 +39,11 @@ process SAMTOOLS_STATS {
 
     script:
 
+    def prefix = params.workflow == 'chipseq' ? bam[0].baseName : sampleID
+
     """
-    samtools flagstat ${bam[0]} > ${bam[0]}.flagstat
-    samtools idxstats ${bam[0]} > ${bam[0]}.idxstats
-    samtools stats ${bam[0]} > ${bam[0]}.stats
+    samtools flagstat ${bam[0]} > ${prefix}.flagstat
+    samtools idxstats ${bam[0]} > ${prefix}.idxstats
+    samtools stats ${bam[0]} > ${prefix}.stats
     """
 }

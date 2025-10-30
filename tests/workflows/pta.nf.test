@@ -9,12 +9,31 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = '${baseDir}/test/pta/hs_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_input.csv'
                 bicseq2_no_scaling = true
                 pipeline = 'pta'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- MT variant calling") {
+        tag "GRCh38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_withMT_input.csv'
+                bicseq2_no_scaling = true
+                pipeline = 'pta'
+                run_mt_calling = true
             }
         }
 
@@ -29,10 +48,9 @@ nextflow_workflow {
         tag "pdx"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = '${baseDir}/test/pta/hs_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_input.csv'
                 bicseq2_no_scaling = true
                 pdx = true
                 pipeline = 'pta'
@@ -45,21 +63,19 @@ nextflow_workflow {
 
     }
     
-    test("Full Workflow -- Human -- Deduplicate and Coverage Cap") {
+    test("Full Workflow -- Human -- Split Fastq and Coverage Cap") {
         tag "GRCh38"
-        tag "pdx"
         tag "options"
+        options "-stub-run"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "human"
                 pubdir = "tests/results"
-                csv_input = '${baseDir}/test/pta/hs_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/hs_test_input.csv'
                 split_fastq = true
-                split_fastq_bin_size = 1000000
+                split_fastq_bin_size = 200000
                 bicseq2_no_scaling
-                deduplicate_reads
-                coverage_cap = 50
+                coverage_cap = 300
                 pipeline = 'pta'
             }
         }
@@ -73,12 +89,12 @@ nextflow_workflow {
     test("Full Workflow -- Mouse") {
         tag "GRCm39"
         tag "primary"
+        options "-stub-run"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "mouse"
                 pubdir = "tests/results"
-                csv_input = '${baseDir}/test/pta/mm_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/mm_test_input.csv'
                 cnv_germline_prob = 1
                 pipeline = 'pta'
             }
@@ -90,20 +106,40 @@ nextflow_workflow {
 
     }
 
-    test("Full Workflow -- Mouse -- Deduplicate and Coverage Cap") {
+    test("Full Workflow -- Mouse -- MT variant calling") {
         tag "GRCm39"
         tag "options"
+        options "-stub-run"
         when {
             params {
-                outdir = "tests/results"
                 gen_org = "mouse"
                 pubdir = "tests/results"
-                csv_input = '${baseDir}/test/pta/mm_test_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/mm_test_withMT_input.csv'
+                cnv_germline_prob = 1
+                pipeline = 'pta'
+                run_mt_calling = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- Split Fastq and Coverage Cap") {
+        tag "GRCm39"
+        tag "options"
+        options "-stub-run"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/mm_test_input.csv'
                 cnv_germline_prob = 1
                 split_fastq = true
-                split_fastq_bin_size = 10000000
-                deduplicate_reads
-                coverage_cap = 50
+                split_fastq_bin_size = 100000
+                coverage_cap = 300
                 pipeline = 'pta'
             }
         }
@@ -115,3 +151,4 @@ nextflow_workflow {
     }
 
 }
+// Additional tests to add: tumor-only for mouse and human

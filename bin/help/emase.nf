@@ -3,8 +3,7 @@ def help(){
 Parameter | Type | Description
 
 --pubdir | /<PATH> | The directory that the saved outputs will be stored.
---organize_by | sample | How to organize the output folder structure. Options: sample or analysis.
---cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+--cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
 --sample_folder | /<PATH> | The path to the folder that contains all the samples to be run by the pipeline. The files in this path can also be symbolic links. 
@@ -23,6 +22,8 @@ NOTE: When `--concat_lanes` is used. Unique Sample IDs must be parsed from FASTQ
 Examples: 
     Given the input file name "SAMPLE_NAME_1_OTHER_STUFF-WeDont_WANT.txt" if this `concat_sampleID_delim` = '_' and `concat_sampleID_positions` = "3" the sample ID would be assigned as `SAMPLE_NAME_1`
     Given the input file name "SAMPLE_NAME_1_OTHER_STUFF-WeDont_WANT.txt" if this `concat_sampleID_delim` = '-' and `concat_sampleID_positions` = "1" the sample ID would be assigned as `SAMPLE_NAME_1_OTHER_STUFF`
+
+--genome_build | 'GRCm39' | Options: GRCm39 or GRCm38.
 
 --bowtie_index | /<PATH> | Path to the bowtie index. Include the bowtie prefix in this path (e.g., `/path/to/bowtie.transcripts` where bowtie.transcripts.* are the full set of index files in the directory.  
 --transcripts_info | /<PATH> | A file containing all transcript IDs. NOTE: These IDs must not contain haplotype IDs. This file must also have a 'length' column. Note that 'length' is not used in this context. ONLY IDs are used from this file. Can be obtained from `prepare_emase` workflow (emase.fullTranscripts.info)

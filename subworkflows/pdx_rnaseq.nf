@@ -8,11 +8,16 @@ include {READ_GROUPS as READ_GROUPS_HUMAN;
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
 include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
-include {XENOME_CLASSIFY} from "${projectDir}/modules/xenome/xenome"
+include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
+include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
 // include {GZIP as GZIP_HUMAN;
 //          GZIP as GZIP_MOUSE} from "${projectDir}/modules/utility_modules/gzip"
 include {RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_HUMAN;
          RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_MOUSE} from "${projectDir}/modules/rsem/rsem_alignment_expression"
+include {SEX_DETERMINATION as SEX_DETERMINATION_HUMAN;
+         SEX_DETERMINATION as SEX_DETERMINATION_MOUSE} from "${projectDir}/modules/r/sex_determination"
+include {MERGE_RSEM_COUNTS as MERGE_RSEM_COUNTS_HUMAN;
+         MERGE_RSEM_COUNTS as MERGE_RSEM_COUNTS_MOUSE} from "${projectDir}/modules/utility_modules/merge_rsem_counts"
 include {LYMPHOMA_CLASSIFIER} from "${projectDir}/modules/python/python_lymphoma_classifier"
 include {PICARD_ADDORREPLACEREADGROUPS as PICARD_ADDORREPLACEREADGROUPS_HUMAN;
          PICARD_ADDORREPLACEREADGROUPS as PICARD_ADDORREPLACEREADGROUPS_MOUSE} from "${projectDir}/modules/picard/picard_addorreplacereadgroups"
@@ -30,41 +35,55 @@ workflow PDX_RNASEQ {
         read_ch
 
     main:
-    // Step 1: Read trim, Get read group information, Run Xenome
-    FASTP(read_ch)
+    // Step 1: Read trim, Get read group information, Run xengsort
+    ch_FASTP_multiqc = Channel.empty() // optional log, depeding on skip trim
+    if (!params.skip_read_trimming) {
+      FASTP(read_ch)
+      reads = FASTP.out.trimmed_fastq
+      ch_FASTP_multiqc = FASTP.out.quality_json // set log file for multiqc
+    } else {
+      reads = read_ch
+    }
     
     GET_READ_LENGTH(read_ch)
     
-    if (params.read_type == 'PE') {
-      xenome_input = FASTP.out.trimmed_fastq
+    // QC is assess on all reads. Mouse/human is irrelevant here. 
+    FASTQC(reads)
+
+    CHECK_STRANDEDNESS(reads)
+
+    // Generate Xengsort Index if needed
+    if (params.xengsort_idx_path) {
+        xengsort_index = params.xengsort_idx_path
     } else {
-      xenome_input = FASTP.out.trimmed_fastq
+        XENGSORT_INDEX(params.xengsort_host_fasta, params.ref_fa)
+        xengsort_index = XENGSORT_INDEX.out.xengsort_index
     }
 
-    // QC is assess on all reads. Mouse/human is irrelevant here. 
-    FASTQC(FASTP.out.trimmed_fastq)
+    // Xengsort Classification
+    XENGSORT_CLASSIFY(xengsort_index, reads) 
 
-    CHECK_STRANDEDNESS(FASTP.out.trimmed_fastq)
-
-    // Xenome Classification
-    XENOME_CLASSIFY(xenome_input)
-
-    human_reads = XENOME_CLASSIFY.out.xenome_human_fastq
+    human_reads = XENGSORT_CLASSIFY.out.xengsort_human_fastq
                   .join(CHECK_STRANDEDNESS.out.strand_setting)
                   .join(GET_READ_LENGTH.out.read_length)
                   .map{it -> tuple(it[0]+'_human', it[1], it[2], it[3])}
 
-    mouse_reads = XENOME_CLASSIFY.out.xenome_mouse_fastq
+    mouse_reads = XENGSORT_CLASSIFY.out.xengsort_mouse_fastq
                   .join(CHECK_STRANDEDNESS.out.strand_setting)
                   .join(GET_READ_LENGTH.out.read_length)
                   .map{it -> tuple(it[0]+'_mouse', it[1], it[2], it[3])}
 
-    // GZIP_HUMAN(XENOME_CLASSIFY.out.xenome_human_fastq)
-    // GZIP_MOUSE(XENOME_CLASSIFY.out.xenome_mouse_fastq)
-
     // Step 2: RSEM Human and Stats: 
 
     RSEM_ALIGNMENT_EXPRESSION_HUMAN(human_reads, params.rsem_ref_files_human, params.rsem_star_prefix_human, params.rsem_ref_prefix_human)
+    
+    SEX_DETERMINATION_HUMAN(RSEM_ALIGNMENT_EXPRESSION_HUMAN.out.rsem_genes)
+
+    if (params.merge_rna_counts) {
+      MERGE_RSEM_COUNTS_HUMAN(RSEM_ALIGNMENT_EXPRESSION_HUMAN.out.rsem_genes.collect{it[1]},
+                              RSEM_ALIGNMENT_EXPRESSION_HUMAN.out.rsem_isoforms.collect{it[1]},
+                              'humanSamples')
+    }
     
     LYMPHOMA_CLASSIFIER(RSEM_ALIGNMENT_EXPRESSION_HUMAN.out.rsem_genes)
 
@@ -88,6 +107,14 @@ workflow PDX_RNASEQ {
 
     RSEM_ALIGNMENT_EXPRESSION_MOUSE(mouse_reads, params.rsem_ref_files_mouse, params.rsem_star_prefix_mouse, params.rsem_ref_prefix_mouse)
     
+    SEX_DETERMINATION_MOUSE(RSEM_ALIGNMENT_EXPRESSION_MOUSE.out.rsem_genes)
+
+    if (params.merge_rna_counts) {
+      MERGE_RSEM_COUNTS_MOUSE(RSEM_ALIGNMENT_EXPRESSION_MOUSE.out.rsem_genes.collect{it[1]},
+                              RSEM_ALIGNMENT_EXPRESSION_MOUSE.out.rsem_isoforms.collect{it[1]},
+                              'mouseSamples')
+    }
+
     // Step 4: Picard Alignment Metrics
     READ_GROUPS_MOUSE(mouse_reads.map{it -> tuple(it[0], it[1])}, "picard")
 
@@ -105,9 +132,10 @@ workflow PDX_RNASEQ {
     PICARD_COLLECTRNASEQMETRICS_MOUSE(mouse_qc_input, params.ref_flat_mouse, params.ribo_intervals_mouse)
 
     ch_multiqc_files = Channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(XENOME_CLASSIFY.out.xenome_stats.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(XENGSORT_CLASSIFY.out.xengsort_log.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION_HUMAN.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION_HUMAN.out.star_log.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS_HUMAN.out.picard_metrics.collect{it[1]}.ifEmpty([]))

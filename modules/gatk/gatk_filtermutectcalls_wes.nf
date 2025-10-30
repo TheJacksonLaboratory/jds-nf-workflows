@@ -8,8 +8,8 @@ process GATK_FILTERMUECTCALLS {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID : 'gatk' }", pattern: "*_mutect2_somatic.filtered.vcf.gz", mode:'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID+'/stats'  : 'gatk' }", pattern: "*.filteringStats.tsv", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID}", pattern: "*_mutect2_somatic.filtered.vcf.gz", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.filteringStats.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(tbi), path(stats), path(contam_table), path(segments), file(read_orientation_model) //note: file() is used here on purpose. This is an optional input. 
@@ -26,7 +26,7 @@ process GATK_FILTERMUECTCALLS {
     read_model_setting = params.ffpe ? "--orientation-bias-artifact-priors ${read_orientation_model}" : ""
 
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp" FilterMutectCalls \
     -R ${params.ref_fa} \
     -V ${vcf} \

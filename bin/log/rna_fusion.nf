@@ -5,6 +5,9 @@ println '\n'
 println logo.show()
 
 def param_log(){
+if (params.gen_org != "human") {
+    error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 
+}
 log.info """
 RNA FUSION PARAMETER LOG
 
@@ -21,13 +24,15 @@ ______________________________________________________
 --concat_lanes                      ${params.concat_lanes}
 --csv_input                         ${params.csv_input}
 --download_data                     ${params.download_data}
---organize_by                       ${params.organize_by}
 --pubdir                            ${params.pubdir}
 -w                                  ${workDir}
 --keep_intermediate                 ${params.keep_intermediate}
 -c                                  ${params.config}
 --multiqc_config                    ${params.multiqc_config}
---xenome_prefix                     ${params.xenome_prefix}
+--ref_fa                            ${params.ref_fa}
+--xengsort_host_fasta               ${params.xengsort_host_fasta}
+--xengsort_idx_path                 ${params.xengsort_idx_path}
+--xengsort_idx_name                 ${params.xengsort_idx_name}
 --read_length                       ${params.read_length}
 --star_index                        ${params.star_index}
 --star_fusion_star_index            ${params.star_fusion_star_index}

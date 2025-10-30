@@ -9,8 +9,8 @@ process JAFFA {
 
     container 'quay.io/jaxcompsci/jaffa:d1587c9'
 
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/fusions': 'jaffa' }", pattern: "*_jaffa_fusions.csv", mode:'copy'
-    publishDir "${params.pubdir}/${ params.organize_by=='sample' ? sampleID + '/fusions': 'jaffa' }", pattern: "*_jaffa_fusions.fasta", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/${sampleID + '/fusions'}", pattern: "*_jaffa_fusions.csv", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID + '/fusions'}", pattern: "*_jaffa_fusions.fasta", mode:'copy', enabled: params.keep_intermediate
 
     input:
         tuple val(sampleID), path(reads)
@@ -26,7 +26,7 @@ process JAFFA {
 
     bpipe run -v \
     -n ${task.cpus} \
-    -p fastqInputFormat='%_*.${ext}' \
+    -p fastqInputFormat='*.${ext}' \
     -p refBase=${params.jaffa_ref_dir} \
     -p genome=hg38 \
     -p annotation=genCode22 \

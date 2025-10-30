@@ -15,12 +15,11 @@ process GATK_PRINTREADS {
     tuple val(sampleID), val(meta), file("*.bam"), file("*.bai"), emit: bam_bai
 
     script:
-    //Estimate somatic variants using Mutect2
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
     """
-    mkdir tmp
+    mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -XX:ParallelGCThreads=${task.cpus} -Djava.io.tmpdir=`pwd`/tmp" PrintReads \
     -L ${params.target_gatk} \
     -I ${bam} \
