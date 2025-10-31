@@ -27,7 +27,7 @@ args <- commandArgs(trailingOnly = TRUE)
 # covar_file        <- "attie_500_test_covar.csv"
 # genoprobs_file    <- "attie_500_test_genoprobs.rds"
 # alleleprobs_file  <- "attie_500_test_alleleprobs.rds"
-# cross_file        <- "attie_500_test_cross.rds"
+# map_file          <- 
 # kinship_file      <- "attie_500_test_kinship.rds"
 # pheno_file        <- "attie_test_pheno.csv"
 # covar_info_file    <- "attie_test_transform.csv"
@@ -36,12 +36,11 @@ args <- commandArgs(trailingOnly = TRUE)
 
 args <- commandArgs(trailingOnly = TRUE)
 covar_file              <- args[1]
-cross_file              <- args[2]
-genoprobs_file          <- args[3]
-alleleprobs_file        <- args[4]
-kinship_file            <- args[5]
-pheno_file              <- args[6]
-covar_info_file         <- args[7]
+genoprobs_file          <- args[2]
+alleleprobs_file        <- args[3]
+kinship_file            <- args[4]
+pheno_file              <- args[5]
+covar_info_file         <- args[6]
 
 # Read in the phenotype data
 pheno <- read.csv(pheno_file)
@@ -135,10 +134,6 @@ genoprobs <- subset(genoprobs, ind = covar$id)
 alleleprobs <- readRDS(alleleprobs_file)
 alleleprobs <- subset(alleleprobs, ind = covar$id)
 
-# Read in the cross object
-cross <- readRDS(cross_file)
-cross <- subset(cross, ind = covar$id)
-
 # Read in the kinship matrix
 kinship <- readRDS(kinship_file)
 stopifnot(unique(unlist(lapply(kinship, dim))) == nrow(covar))
@@ -175,6 +170,5 @@ for(i in pheno_cols){
 # Save the updated files
 saveRDS(genoprobs, file = "pr.rds")
 saveRDS(alleleprobs, file = "apr.rds")
-saveRDS(cross, file = "cross.rds")
 saveRDS(kinship, file = "kinship.rds")
 write.csv(covar, file = "covar.csv", row.names = FALSE, quote = FALSE)

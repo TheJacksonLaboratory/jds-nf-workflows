@@ -26,7 +26,7 @@ def extract_csv(csv_file) {
             meta_map.marker_file = row.marker_file ?: 'NA'
             meta_map.genoprobs_file = row.genoprobs_file ?: 'NA'
             meta_map.alleleprobs_file = row.alleleprobs_file ?: 'NA'
-            meta_map.cross_file = row.cross_file ?: 'NA'
+            meta_map.map_file = row.map_file ?: 'NA'
             meta_map.viterbi_file = row.viterbi_file ?: 'NA'
             meta_map.kinship_file = row.kinship_file ?: 'NA'
             meta_map.pheno_file = row.pheno_file ?: 'NA'
@@ -75,10 +75,10 @@ def extract_csv(csv_file) {
             System.exit(1)
             }
 
-            if (!(params.rerun) && params.correct_ids && (meta_map.genoprobs_file == 'NA' || meta_map.alleleprobs_file == 'NA' || meta_map.cross_file == 'NA')) {
+            if (!(params.rerun) && params.correct_ids && (meta_map.genoprobs_file == 'NA' || meta_map.alleleprobs_file == 'NA' || meta_map.map_file == 'NA')) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "`rerun` is false and `correct_ids` is true, but one or more required fields are missing in the CSV manifest." + ANSI_RESET)
-            System.err.println(ANSI_RED + "Required fields: genoprobs_file, alleleprobs_file, cross_file" + ANSI_RESET)
+            System.err.println(ANSI_RED + "Required fields: genoprobs_file, alleleprobs_file, map_file" + ANSI_RESET)
             System.err.println(ANSI_RED + "Please add these fields to the manifest and restart the run." + ANSI_RESET)
             System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)

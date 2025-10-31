@@ -20,7 +20,6 @@ nextflow ../main.nf \
 -profile sumner2 \
 --pubdir "/flashscratch/widmas/qtl_mapping_outputDir" \
 -w "/flashscratch/widmas/qtl_mapping_outputDir/work" \
---csv_input "" \
+--csv_input "/projects/compsci/vmp/USERS/widmas/jds-nf-test/qtl_mapping/mouse/qtl_mapping_input.csv" \
 --n_perms 5 \
---comment "This script will run QTL mapping on mouse samples using default mm10 coordinates" \
--resume
+--comment "This script will run QTL mapping on mouse samples using default mm10 coordinates"

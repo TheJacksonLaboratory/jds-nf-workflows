@@ -23,13 +23,14 @@ param_log()
 
 workflow QTL_MAPPING {
     
-    project_ch = extract_csv(params.csv)
-    project_ch.map{it -> [  it[0], 
-                            it[1].covar_file, it[1].cross_file, it[1].genoprobs_file, it[1].alleleprobs_file, it[1].kinship_file, 
+    project_ch = extract_csv(params.csv_input)
+    project_ch.map{it -> [  it[0],
+                            it[1].covar_file, it[1].map_file, it[1].genoprobs_file, it[1].alleleprobs_file, it[1].kinship_file, 
                             it[1].pheno_file, it[1].covar_info_file] }set{data_qc_ch}
-
+    data_qc_ch.map{it -> [  it[0], it[2] ] }.set{map_file_ch}
+    
     // Data quality control
-    DATA_QC(data_qc_ch)
+    DATA_QC(data_qc_ch.map{it -> [  it[0], it[1], it[3], it[4], it[5], it[6], it[7] ] })
     prob_files = DATA_QC.out.probs_files
     
     // Extract phenotype from file name
@@ -42,6 +43,7 @@ workflow QTL_MAPPING {
     
     // Combine phenotype files and covar info files across prob files to do QTL mapping in parallel
     map_perm_ch = prob_files.combine(pheno_covar_info_ch)
+    map_perm_ch = map_perm_ch.combine(map_file_ch, by: 0)
     
     // Map QTL
     MAP_QTL(map_perm_ch)
@@ -49,7 +51,7 @@ workflow QTL_MAPPING {
     // Run permutations
     RUN_PERMS(map_perm_ch)
 
-    // Collect results
+    // // Collect results
     perm_ch =   RUN_PERMS.out.perm_files.groupTuple()
     map_ch  =   MAP_QTL.out.scan1_files.groupTuple()
     harvest_ch = perm_ch.join(map_ch, by: 0)
@@ -69,7 +71,7 @@ workflow QTL_MAPPING {
     // Join peaks with probs files for effect estimation
     MAP_QTL.out.probs_files
                .map{
-                    it -> [ [it[0], it[6]], [it[1], it[2], it[3], it[4], it[5], it[7], it[8]] ] // sets the project id and phenotype as combine key
+                    it -> [ [it[0], it[5]], [it[1], it[2], it[3], it[4], it[6], it[7], it[8]] ] // sets the project id and phenotype as combine key
                }.combine(peaks_ch, by: 0)
                .combine(scan1_ch, by: 0)
                .map{
@@ -83,5 +85,5 @@ workflow QTL_MAPPING {
     QTL_EFFECTS(probs_peaks_ch)
     
     // Summarize QTL effects
-    SUMMARIZE_QTL_EFFECTS(QTL_EFFECTS.out.peaks_file.groupTuple())
+    SUMMARIZE_QTL_EFFECTS(QTL_EFFECTS.out.qtl_effects_files.groupTuple())
 }

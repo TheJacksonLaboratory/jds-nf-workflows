@@ -10,17 +10,16 @@ process RUN_PERMS {
     publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1perms.rds", mode:'copy'
 
     input:
-    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file)
+    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), path(map_file)
 
     output:
-    tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(cross_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), emit: probs_files
     tuple val(id), path('*_scan1perms.rds'), emit: perm_files
 
     script:
 
     """
     Rscript ${projectDir}/bin/qtl/run_perms.R ${covar_file} \
-            ${cross_file} \
+            ${map_file} \
             ${genoprobs_file} \
             ${alleleprobs_file} \
             ${kinship_file} \

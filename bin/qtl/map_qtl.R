@@ -7,14 +7,14 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250716
+# 20251031
 ################################################################################
 
 library(qtl2)
 library(dplyr)
 args <- commandArgs(trailingOnly = TRUE)
 covar_file        <- args[1]
-cross_file        <- args[2]
+map_file          <- args[2]
 genoprobs_file    <- args[3]
 alleleprobs_file  <- args[4]
 kinship_file      <- args[5]
@@ -22,10 +22,11 @@ pheno_file        <- args[6]
 covar_info_file   <- args[7]
 
 # # Test files
-# testDir <- "/flashscratch/widmas/qtl_mapping_outputDir/work/4d/29dabfc985762e9992360a89f26f2b"
+# testDir <- "/flashscratch/widmas/qtl_mapping_outputDir/work/90/54b0d7d2c9714ec1697580b56feecd"
 # setwd(testDir)
+# covar_file        <- "covar.csv"
 # alleleprobs_file  <- "apr.rds"
-# cross_file        <- list.files(testDir, pattern = "cross.rds")
+# map_file          <- "mm10_pmap.rds"
 # kinship_file      <- "kinship.rds"
 # pheno_file        <- list.files(testDir, pattern = "pheno.csv")
 # covar_info_file   <- list.files(testDir, pattern = "covar_info.csv")
@@ -33,10 +34,11 @@ covar_info_file   <- args[7]
 
 # Read in files
 alleleprobs <- readRDS(alleleprobs_file)
-cross <- readRDS(cross_file)
+map <- readRDS(map_file)
 kinship <- readRDS(kinship_file)
 pheno <- read.csv(pheno_file, row.names = 1)
 covar_info <- read.csv(covar_info_file)
+covar <- read.csv(covar_file)
 
 # end if the phenotypes listed in different files don't match
 stopifnot(colnames(pheno) == unique(covar_info$phenotype))
@@ -46,7 +48,7 @@ covar_formula <- paste0(covar_info$covar, collapse="+")
 covar_formula <- paste0("~", covar_formula)
 covar_matrix <- stats::model.matrix.lm(
   stats::as.formula(covar_formula),
-  data = cross$covar,
+  data = covar,
   na.action = stats::na.pass
 )
 
@@ -55,6 +57,7 @@ covar_matrix <- covar_matrix[, -1, drop = FALSE]
 
 # drop the covar column if it has all identical values
 covar_matrix <- covar_matrix[, apply(covar_matrix, 2, function(col) length(unique(col)) > 1), drop = FALSE]
+rownames(covar_matrix) <- covar$id
 
 # detect any interactive covariates
 if(any(covar_info$interactive)){
@@ -84,9 +87,9 @@ if(any(covar_info$interactive)){
 
 # Plot LODs
 png(paste0(colnames(pheno),"_scan1.png"))
-qtl2::plot_scan1(x = scan1out, map = cross$pmap, main = colnames(pheno))
+qtl2::plot_scan1(x = scan1out, map = map, main = colnames(pheno))
 dev.off()
 
 # Save the files
 saveRDS(scan1out, file = paste0(colnames(pheno),"_scan1out.rds"))
-saveRDS(cross, file = paste0(colnames(pheno),"_cross.rds"))
+saveRDS(map, file = paste0(colnames(pheno),"_map.rds"))
