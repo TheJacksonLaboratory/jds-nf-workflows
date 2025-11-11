@@ -36,9 +36,9 @@ if (params.gen_org == 'human') {
   --gtf                           ${params.gtf}
   --ref_fa                        ${params.ref_fa}
   --ref_fa_indices                ${params.ref_fa_indices}
-  --bowtie2_index_mature          ${params.bowtie2_index_mature}
+  --bowtie_index_mature           ${params.bowtie_index_mature}
   --formatted_mature              ${params.formatted_mature}
-  --bowtie2_index_hairpin         ${params.bowtie2_index_hairpin}
+  --bowtie_index_hairpin          ${params.bowtie_index_hairpin}
   --formatted_hairpin             ${params.formatted_hairpin}
   --bowtie2_index_trna            ${params.bowtie2_index_trna}
   --bowtie2_index_cdna            ${params.bowtie2_index_cdna}
@@ -51,7 +51,6 @@ if (params.gen_org == 'human') {
   --fastp_min_length              ${params.fastp_min_length}
   --fastp_max_length              ${params.fastp_max_length}
   --adapter_fasta                 ${params.adapter_fasta}
-  --multiqc_config              	${params.multiqc_config}
   --tmpdir                        ${params.tmpdir}
 
   Project Directory: ${projectDir}
@@ -85,9 +84,9 @@ if (params.gen_org == 'human') {
   --gtf                           ${params.gtf}
   --ref_fa                        ${params.ref_fa}
   --ref_fa_indices                ${params.ref_fa_indices}
-  --bowtie2_index_mature          ${params.bowtie2_index_mature}
+  --bowtie_index_mature           ${params.bowtie_index_mature}
   --formatted_mature              ${params.formatted_mature}
-  --bowtie2_index_hairpin         ${params.bowtie2_index_hairpin}
+  --bowtie_index_hairpin          ${params.bowtie_index_hairpin}
   --formatted_hairpin             ${params.formatted_hairpin}
   --bowtie2_index_trna            ${params.bowtie2_index_trna}
   --bowtie2_index_cdna            ${params.bowtie2_index_cdna}
@@ -100,7 +99,6 @@ if (params.gen_org == 'human') {
   --fastp_min_length              ${params.fastp_min_length}
   --fastp_max_length              ${params.fastp_max_length}
   --adapter_fasta                 ${params.adapter_fasta}
-  --multiqc_config                ${params.multiqc_config}
   --tmpdir                        ${params.tmpdir}
 
   Project Directory: ${projectDir}

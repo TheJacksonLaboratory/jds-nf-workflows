@@ -13,8 +13,13 @@ library("methods")
 
 # Put mature and hairpin count files in separated file lists
 filelist<-list()
-filelist[[1]]<-input[grep(".mature.sorted",input)]
-filelist[[2]]<-input[grep(".hairpin.sorted",input)]
+# filelist[[1]]<-input[grep(".mature.sorted",input)]
+# filelist[[2]]<-input[grep(".hairpin.sorted",input)]
+
+# Modified to fit samtools_stats output file naming convention
+filelist[[1]]<-input[grep(".mature.idxstats",input)]
+filelist[[2]]<-input[grep(".hairpin.idxstats",input)]
+
 names(filelist)<-c("mature","hairpin")
 print(filelist)
 

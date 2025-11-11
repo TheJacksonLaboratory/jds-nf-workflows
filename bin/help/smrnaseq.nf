@@ -7,7 +7,7 @@ Parameter | Default | Description
 --cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
---input | /<PATH> | The path to the design file that contains all the samples to be run by the pipeline. - For design file format, please see : 'https://nf-co.re/chipseq/1.2.1/usage'   
+--input | /<PATH> | The path to the samplesheet file that contains all the samples to be run by the pipeline. - For samplesheet file format, please see : 'https://nf-co.re/smrnaseq/2.2.4/docs/usage'   
 --extension | .fastq.gz | The expected extension for the input read files.
 --pattern | '*_R{1,2}*' | The expected R1 / R2 matching pattern. The default value will match reads with names like this READ_NAME_R1_MoreText.fastq.gz or READ_NAME_R1.fastq.gz
 --read_type | PE | Options: PE and SE. Default: PE. Type of reads: paired end (PE) or single end (SE).
@@ -24,10 +24,10 @@ Parameter | Default | Description
                  | Human: '/projects/omics_share/human/GRCh38/genome/indices/ensembl/v109/bowtie/'
                  | Pre-compiled BOWTIE index files, points to human reference when --gen_org human.
 
---bowtie2_index_mature  | bowtie2 index for mature miRNAs
---formatted_mature      | <PATH> | The path to formatted mature miRNAs file
---bowtie2_index_hairpin | <PATH> | bowtie2 index for miRNAs precursors
---formatted_hairpin     | <PATH> | The path to formatted miRNAs precursors file
+--bowtie_index_mature  | <PATH> | bowtie index for mature miRNAs
+--formatted_mature     | <PATH> | The path to formatted mature miRNAs file
+--bowtie_index_hairpin | <PATH> | bowtie index for miRNAs precursors
+--formatted_hairpin    | <PATH> | The path to formatted miRNAs precursors file
 
 --bowtie2_index_trna  | bowtie2 index for tRNA contamination database
 --bowtie2_index_cdna  | bowtie2 index for cDNA contamination database
@@ -42,10 +42,6 @@ Parameter | Default | Description
 --fastp_min_length | 17 | Minimum filter length for raw reads
 --fastp_max_length | 100 | Maximum filter length for raw reads 
 --adapter_fasta | known_adapters.fa | Fasta with known miRNA adapter sequences for adapter trimming
-
---multiqc_config | /<PATH> | The path to chipseq.yaml
-                 | The configuration file used while running MultiQC
-
 --tmpdir  | /<PATH> | Temporary directory to store temp files.  
 '''
 }
