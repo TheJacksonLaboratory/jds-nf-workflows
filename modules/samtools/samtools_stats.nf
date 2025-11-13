@@ -8,16 +8,22 @@ process SAMTOOLS_STATS {
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
     publishDir {
+        def sample   = sampleID.split("_")
+        def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
     }, pattern: "*.flagstat", mode: 'copy'
 
     publishDir {
+        def sample   = sampleID.split("_")
+        def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
     }, pattern: "*.idxstats", mode: 'copy'
 
     publishDir {
+        def sample   = sampleID.split("_")
+        def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
     }, pattern: "*.stats", mode: 'copy'

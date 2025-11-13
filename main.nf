@@ -60,6 +60,9 @@ else if (params.workflow == "ancestry"){
 else if (params.workflow == "germline_sv") { // MMRSVDB
   include {GERMLINE_SV} from "./workflows/germline_sv"
 }
+else if (params.workflow == "smrnaseq"){
+  include {SMRNASEQ} from './workflows/smrnaseq'
+}
 else if (params.workflow == "cnv_array"){
   include {CNV_ARRAY} from './workflows/cnv_array'
 }
@@ -141,6 +144,9 @@ workflow{
   }
   if (params.workflow == "germline_sv"){
     GERMLINE_SV()
+  }
+  if (params.workflow == "smrnaseq"){
+    SMRNASEQ()
   }
   if (params.workflow == "cnv_array"){
     CNV_ARRAY()
