@@ -6,7 +6,7 @@ Parameter | Default | Description
 The following are human specific parameters. To see help for mouse, add `--gen_org mouse` to your command. 
 
 --pubdir | /<PATH> | The directory that the saved outputs will be stored.
---cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+--cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
 --csv_input | /<FILE_PATH> | CSV delimited sample sheet that controls how samples are processed. The required input header is: patient,sex,status,sampleID,lane,fastq_1,fastq_2. See the repository wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki) for additional information. 
@@ -28,17 +28,17 @@ The following are human specific parameters. To see help for mouse, add `--gen_o
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
 
---ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.fasta' | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. JAX users should not change this parameter.
---ref_fa_indices | '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta' | Pre-compiled BWA index files. JAX users should not change this parameter.
+--ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.fasta' | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. 
+--ref_fa_indices | '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta' | Pre-compiled BWA index files. 
 
---ref_fa_dict | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.dict' | FASTA dictonary file. JAX users should not change this parameter. 
+--ref_fa_dict | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.dict' | FASTA dictonary file.  
 --combined_reference_set | '/projects/compsci/omics_share/human/GRCh38/supporting_files/PTA_inputs/combined_ref_set/Homo_sapiens_assembly38.fasta' | Several tools (GRIDSS, SVABA) requires reference and bwa index files in same directory. Links used within this directory to avoid duplication of fasta and bwa indicies. See note in directory. 
 
 --mismatch_penalty | 8 | The BWA penalty for a mismatch.
 
---gold_std_indels | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz’ | Used in GATK BaseRecalibrator and variant tranche recalibration derived from the GATK resource bundle. JAX users should not change this parameter.
---phase1_1000G | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/1000G_phase1.snps.high_confidence.hg38.vcf.gz' | Used in GATK BaseRecalibrator derived from the GATK resource bundle. JAX users should not change this parameter.
---dbSNP | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/dbsnp_151.vcf.gz' | Used in variant annotation, GATK BaseRecalibrator, variant tranche recalibration, and by SVABA. JAX users should not change this parameter.
+--gold_std_indels | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz’ | Used in GATK BaseRecalibrator and variant tranche recalibration derived from the GATK resource bundle. 
+--phase1_1000G | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/1000G_phase1.snps.high_confidence.hg38.vcf.gz' | Used in GATK BaseRecalibrator derived from the GATK resource bundle. 
+--dbSNP | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/dbsnp_151.vcf.gz' | Used in variant annotation, GATK BaseRecalibrator, variant tranche recalibration, and by SVABA. 
 --dbSNP_index | '/projects/omics_share/human/GRCh38/genome/annotation/snps_indels/dbsnp_151.vcf.gz.tbi' | Index associated with the dbsnp file. 
 
 --chrom_contigs | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.primaryChr.contig_list' | Contig list used for scatter / gather in calling and annotation. 
@@ -102,7 +102,7 @@ println '''
 The following are mouse specific parameters. To see help for mouse, add `--gen_org human` to your command. 
 
 --pubdir | /<PATH> | The directory that the saved outputs will be stored.
---cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+--cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
 --csv_input | /<FILE_PATH> | CSV delimited sample sheet that controls how samples are processed. The required input header is: patient,sex,status,sampleID,lane,fastq_1,fastq_2. See the repository wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki) for additional information. 
@@ -116,14 +116,14 @@ The following are mouse specific parameters. To see help for mouse, add `--gen_o
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
 
---ref_fa | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/ensembl/GRCm39.p0/Mus_musculus.GRCm39.dna.primary_assembly.fa' | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. JAX users should not change this parameter.
---ref_fa_indices | '/projects/compsci/omics_share/mouse/GRCm39/genome/indices/ensembl/v105/bwa/Mus_musculus.GRCm39.dna.primary_assembly.fa' | Pre-compiled BWA index files. JAX users should not change this parameter.
---ref_fa_dict | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/ensembl/GRCm39.p0/Mus_musculus.GRCm39.dna.primary_assembly.dict' | FASTA dictonary file. JAX users should not change this parameter. 
+--ref_fa | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/ensembl/GRCm39.p0/Mus_musculus.GRCm39.dna.primary_assembly.fa' | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. 
+--ref_fa_indices | '/projects/compsci/omics_share/mouse/GRCm39/genome/indices/ensembl/v105/bwa/Mus_musculus.GRCm39.dna.primary_assembly.fa' | Pre-compiled BWA index files. 
+--ref_fa_dict | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/ensembl/GRCm39.p0/Mus_musculus.GRCm39.dna.primary_assembly.dict' | FASTA dictonary file.  
 --combined_reference_set | '/projects/compsci/omics_share/mouse/GRCm39/supporting_files/PTA_inputs/combined_ref_set/Mus_musculus.GRCm39.dna.primary_assembly.fa' | Several tools (GRIDSS, SVABA) requires reference and bwa index files in same directory. Links used within this directory to avoid duplication of fasta and bwa indicies. See note in directory. 
 
 --mismatch_penalty | 8 | The BWA penalty for a mismatch.
 
---dbSNP | '/projects/omics_share/mouse/GRCm39/genome/annotation/snps_indels/GCA_000001635.9_current_ids.vcf.gz' | Used in variant annotation and by SVABA. JAX users should not change this parameter.
+--dbSNP | '/projects/omics_share/mouse/GRCm39/genome/annotation/snps_indels/GCA_000001635.9_current_ids.vcf.gz' | Used in variant annotation and by SVABA. 
 --dbSNP_index | '/projects/omics_share/mouse/GRCm39/genome/annotation/snps_indels/GCA_000001635.9_current_ids.vcf.gz.tbi' | Index associated with the dbsnp file. 
 
 --chrom_contigs | '/projects/compsci/omics_share/mouse/GRCm39/genome/sequence/ensembl/GRCm39.p0/Mus_musculus.GRCm39.dna.primary_assembly.primaryChr.contig_list' | Contig list used for scatter / gather in calling and annotation. 

@@ -304,6 +304,11 @@ workflow WGS {
 
     } // END merge on individual
 
+    // Publish individual level BAM and BAI files
+    if (params.publish_bams) {
+        PUBLISH_BAM(bam_file.join(index_file))
+    }
+
     if (params.run_sv) {
       // Run SV calling
       WGS_SV(bam_file.join(index_file))
@@ -564,6 +569,7 @@ workflow WGS {
       SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
 
       SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+
     }
 
 

@@ -1,10 +1,101 @@
 # RELEASE NOTES
 
+## Release 0.9.2
+
+In this release we add three new workflows. 
+
+1. Small RNA sequencing.  
+2. Long-Read (PacBio) Whole genome sequencing.  
+3. Whole genome sequencing structural variant and copy number variation calling from pre-exisiting BAM file.  
+
+Please see the respective wiki pages for each workflow for more details. 
+
+Additionally, we made a few minor changes to scripts in the WGS SV workflow. These changes 1. improve the speed of SV call merging and 2. properly catch edge cases in SV annotation scripts when no variants are called.
+
+### Workflows Added:
+
+1. Small RNA Sequencing (`--workflow smrnaseq`)
+1. Long-Read (PacBio) Whole Genome Sequencing (`--workflow wgs_long_read`)
+1. Whole genome structural variant calling from pre-exisiting BAM file (`--workflow wgs_sv_bam`)
+
+### Subworkflows Added:
+
+1. subworkflows/input_check.nf: Used in `--workflow smrnaseq` to validate input CSV files
+
+### Workflow Changes:
+
+None
+
+### Subworkflows Changes:
+
+None
+
+### Modules Added:
+
+1. modules/bowtie/bowtie_map_mirna.nf
+1. modules/bowtie2/bowtie2_map_contaminants.nf
+1. modules/fastp/fastp_long.nf
+1. modules/fastp/fastp_smrna.nf
+1. modules/mirdeep2/mirdeep2_mapper.nf
+1. modules/mirdeep2/mirdeep2_prepare.nf
+1. modules/mirdeep2/mirdeep2_run.nf
+1. modules/mirtop/mirtop_quant.nf
+1. modules/mirtrace/mirtrace.nf
+1. modules/mosdepth/mosdepth.nf
+1. modules/r/datatable_merge.nf
+1. modules/r/edger_qc.nf
+1. modules/seqcluster/seqcluster_collapse.nf
+1. modules/utility_modules/publish_bam_bai.nf
+1. modules/utility_modules/samplesheet_check.nf
+
+### Module Changes:
+
+1. modules/deepvariant/deepvariant.nf: The model type parameter was added for illumina vs. pacbio data
+1. modules/pbmm2/pbmm2_call.nf: Increased wallclock reservation
+1. modules/pbsv/pbsv_discover.nf: Increased memory reservation
+1. modules/r/wgs_sv/annotate_genes_sv.nf: Included publish statement to capture output
+1. modules/r/wgs_sv/wgs_sv_merge.nf: Added logic blocks to account for wgs, wgs_sv_bam and wgs_long_read workflow requirements
+1. modules/samtools/samtools_stats.nf: Adjust output naming convention to 'sampleID' rather than BAM name. All outputs saved by default now
+1. modules/sniffles/sniffles.nf: Version bumped 2.0.7 to 2.7.1. See [sniffles release notes](https://github.com/fritzsedlazeck/Sniffles/releases) for changes
+1. modules/snpeff_snpsift/snpsift_annotate.nf: Adjusted output naming logic for increased flexibility
+1. modules/survivor/survivor_merge.nf: Added output capture for MMRDB SV output
+1. modules/survivor/survivor_summary.nf: Added output capture for MMRDB SV data output 
+1. modules/survivor/survivor_to_bed.nf: Added output capture for MMRDB SV data output 
+1. modules/survivor/survivor_vcf_to_table.nf: Added output capture for MMRDB SV data output 
+
+### Module Deleted:  
+
+None
+
+### Scripts Added:
+
+1. bin/germline_sv/find-tandem-repeats.py
+1. bin/smrnaseq/check_samplesheet.py
+1. bin/smrnaseq/collapse_mirtop.r
+1. bin/smrnaseq/edgeR_miRBase.r
+
+### Script Changes:
+
+1. bin/wgs/annotate-bedpe-with-databases.r: Corrected edge case logic when an empty call files is passes as input.
+1. bin/wgs/annotate-bedpe-with-genes.r: Corrected edge case logic when an empty call files is passes as input.
+1. bin/wgs/merge_sv.r: Added logic for callers: sniffles and pbsv. Altered looping structures and reduced repetitive to increased the efficiency of the script.
+
+### NF-Test Tests Added/Modified: 
+
+1. tests/workflows/smrnaseq.nf.test: Test added for `--workflow smrnaseq`
+1. tests/workflows/wgs_long_read.nf.test: Test added for `--workflow wgs_long_read`
+1. tests/workflows/wgs_sv_bam.nf.test: Test added for `--workflow wgs_sv_bam`
+1. tests/modules/samtools/samtools_merge.nf.test: Added test for file save logic
+
+### [CS-NF-Test](https://github.com/TheJacksonLaboratory/cs-nf-test) Data Added: 
+1. Human and mouse WGS BAMs
+1. Small RNA fastqs 
+
 ## Release 0.9.1
 
 We are now `jds-nf-workflows`!  
 
-This is a minor release to change the repostiory name from `cs-nf-pipelines` to `jds-nf-workflows`. 
+This is a minor release to change the repository name from `cs-nf-pipelines` to `jds-nf-workflows`. 
 
 ## Release 0.9.0
 
@@ -59,7 +150,6 @@ We removed GATK based filtering of SNP and InDEL calls when using `--workflow wg
 1. workflows/joint_gvcf_calling.nf: Replaced `GATK_COMBINEGVCFS_INTERVALS` with `GATK_COMBINEGVCFS_INTERVALS` to increase efficiency    
 1. workflows/pta/hs_pta.nf: Added `--run_mt_calling` option   
 1. workflows/pta/mm_pta.nf: Added `--run_mt_calling` option  
-
 1. workflows/rnaseq.nf: Added `--bam_input` and `--skip_read_trimming` options  
 1. workflows/wgs.nf: Added `--run_sv` and `--run_mt_calling` options. Removed GATK filtering steps from `--deepvariant` calls, as GATK filter flags do not apply  
 

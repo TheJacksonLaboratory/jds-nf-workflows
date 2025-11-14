@@ -33,8 +33,9 @@ ______________________________________________________
 --pubdir                        ${params.pubdir}
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
---min_pct_hq_reads              ${params.min_pct_hq_reads}
---hq_pct                        ${params.hq_pct}
+--quality_phred                 ${params.quality_phred}
+--unqualified_perc              ${params.unqualified_perc}
+--detect_adapter_for_pe         ${params.detect_adapter_for_pe}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
 --target_gatk                   ${params.target_gatk}
@@ -81,8 +82,9 @@ ______________________________________________________
 --pubdir                        ${params.pubdir}
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
---min_pct_hq_reads              ${params.min_pct_hq_reads}
---hq_pct                        ${params.hq_pct}
+--quality_phred                 ${params.quality_phred}
+--unqualified_perc              ${params.unqualified_perc}
+--detect_adapter_for_pe         ${params.detect_adapter_for_pe}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
 --target_gatk                   ${params.target_gatk}

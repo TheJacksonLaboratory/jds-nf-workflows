@@ -8,6 +8,8 @@ process SURVIVOR_MERGE {
 
     container 'quay.io/biocontainers/survivor:1.0.7--he513fc3_0'
 
+    publishDir "${params.pubdir}/${sampleID}", mode:'copy', enabled: params.data_type == 'ont' ? false : true
+    
     input:
         tuple val(sampleID), file(vcf_tuple)
     output:

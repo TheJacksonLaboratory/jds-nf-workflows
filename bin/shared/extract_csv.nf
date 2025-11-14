@@ -24,16 +24,16 @@ def extract_csv(csv_file) {
         def headers = headerLine.split(',').collect { it.trim() }
         def requiredHeaders = ['sampleID', 'fastq_1']
 
-        if (params.read_type == 'PE') {
+        if (params.containsKey('read_type') && params.read_type == 'PE') {
             requiredHeaders << 'fastq_2'
         }
-        if (params.merge_inds) {
+        if (params.containsKey('merge_inds') && params.merge_inds) {
             requiredHeaders << 'ind'
         }
-        if (params.deepvariant) {
+        if (params.containsKey('deepvariant') && params.deepvariant) {
             requiredHeaders << 'sex'
         }
-        if (params.merge_replicates) {
+        if (params.containsKey('merge_replicates') && params.merge_replicates) {
             requiredHeaders << 'replicate'
         }
 
