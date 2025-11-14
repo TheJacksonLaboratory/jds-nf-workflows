@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --mail-user=samuel.widmayer@jax.org
+#SBATCH --mail-user=first.last@jax.org
 #SBATCH --job-name=haplotype_reconstruction
 #SBATCH --mail-type=END,FAIL
 #SBATCH -p compute
 #SBATCH -q batch
-#SBATCH -t 36:00:00
-#SBATCH --mem=10G
+#SBATCH -t 72:00:00
+#SBATCH --mem=5G
 #SBATCH --ntasks=1
 
 cd $SLURM_SUBMIT_DIR
@@ -16,12 +16,9 @@ module load nextflow/24.10.6
 
 # RUN PIPELINE
 nextflow ../main.nf \
---workflow haplotype_reconstruction \
 -profile sumner2 \
---pubdir "/flashscratch/widmas/hr_outputDir" \
--w "/flashscratch/widmas/hr_outputDir/work" \
---csv_input "/projects/compsci/vmp/USERS/widmas/jds-nf-test/haplotype_reconstruction/mouse/haplotype_reconstruction_input_remove_markers.csv" \
---rerun false \
---correct_ids true \
---remove_markers true \
+--workflow haplotype_reconstruction \
+--csv_input <PATH_TO_YOUR_CSV> \
+--pubdir "/flashscratch/${USER}/outputDir" \
+-w "/flashscratch/${USER}/outputDir/work" \
 --comment "This script will run haplotype reconstruction on mouse genotyped using GigaMUGA on default mm10 coordinates"

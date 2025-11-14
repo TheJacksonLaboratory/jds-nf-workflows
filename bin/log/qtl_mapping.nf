@@ -13,7 +13,7 @@ QTL MAPPING PARAMETER LOG
 Results Published to: ${params.pubdir}
 ______________________________________________________
 --workflow                      ${params.workflow}
---csv                           ${params.csv}
+--csv_input                     ${params.csv_input}
 --n_perms                       ${params.n_perms}
 """
 }

@@ -9,7 +9,7 @@ nextflow_workflow {
         tag "primary"
         when {
             params {
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/haplotype_reconstruction/mouse/haplotype_reconstruction/mouse/haplotype_reconstruction_input.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/haplotype_reconstruction/mouse/haplotype_reconstruction_input.csv"
                 pubdir = "tests/results"
                 pipeline = 'haplotype_reconstruction'
             }
@@ -26,7 +26,7 @@ nextflow_workflow {
         tag "no-rerun"
         when {
             params {
-                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/haplotype_reconstruction/mouse/haplotype_reconstruction/mouse//projects/compsci/vmp/USERS/widmas/jds-nf-test/haplotype_reconstruction/mouse/haplotype_reconstruction_input_remove_markers.csv"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/haplotype_reconstruction/mouse/haplotype_reconstruction_input_remove_markers.csv"
                 pubdir = "tests/results"
                 rerun = false
                 correct_ids = true
@@ -41,7 +41,3 @@ nextflow_workflow {
 
     }
 }
-
-// NEW TESTS NEEDED: Merge ind with deepvariant
-
-// For sample merging, what if user provides mismatching information in one of the columns? 
