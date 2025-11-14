@@ -26,22 +26,6 @@ pos_start <- as.numeric(args[10])
 pos_end <- as.numeric(args[11])
 scan1out_file <- args[12]
 
-
-# # Assign argument values directly (for testing or debugging)
-# phenotype <- "log_phe2"
-# genoprobs_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/pr.rds"
-# alleleprobs_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/apr.rds"
-# kinship_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/kinship.rds"
-# covar_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/covar.csv"
-# phenotype_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/log_phe2_pheno.csv"
-# covar_info_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/log_phe2_covar_info.csv"
-# map_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/mm10_pmap.rds"
-# chrom <- "X"
-# pos_peak <- 132.926984
-# pos_start <- 5.692316
-# pos_end <- 135.155167
-# scan1out_file <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3c/53c2e99740ef87e1beb7d89096fa3b/log_phe2_scan1out.rds"
-
 # Read in the files
 alleleprobs <- readRDS(alleleprobs_file)
 kinship <- readRDS(kinship_file)
@@ -125,7 +109,7 @@ if(any(covar_info$interactive)){
 
 # make peak info matrix
 qtl_coord <- data.frame(phenotype, pos_start, pos_peak, pos_end)
-peaks <- cbind(qtl_coord,fit1_out$lod,t(fit1_out$coef))
+peaks <- cbind(chrom,qtl_coord,fit1_out$lod,t(fit1_out$coef))
 colnames(peaks)[colnames(peaks) == "fit1_out$lod"] <- "LOD"
 
 # Plot effects
@@ -144,10 +128,9 @@ qtl2::plot_coefCC(x = scan1blup_out,
                   scan1_output = scan1out)
 dev.off()
 
-# Save scan1blup
-saveRDS(scan1coef_out, file = paste0(phenotype,"_scan1coef.rds"))
-saveRDS(scan1blup_out, file = paste0(phenotype,"_scan1blup.rds"))
-saveRDS(fit1_out, file = paste0(phenotype,"_fit1.rds"))
-write.csv(peaks, file = paste(phenotype, chrom, round(pos_start,2), round(pos_end,2),"peaks.csv",sep = "_"))
+# Save effect files and peak info
+save(scan1coef_out, scan1blup_out, fit1_out, 
+     file = paste(phenotype, chrom, round(pos_start,2), round(pos_end,2),"qtl_effect_files.RData",sep = "_"))
+write.csv(peaks, file = paste(phenotype, chrom, round(pos_start,2), round(pos_end,2),"peaks.csv",sep = "_"), row.names = FALSE, quote = FALSE)
 
 

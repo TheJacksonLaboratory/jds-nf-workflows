@@ -10,7 +10,7 @@ include {MAP_QTL} from "${projectDir}/modules/qtl2/map_qtl.nf"
 include {RUN_PERMS} from "${projectDir}/modules/qtl2/run_perms.nf"
 include {HARVEST_QTL} from "${projectDir}/modules/qtl2/harvest_qtl.nf"
 include {QTL_EFFECTS} from "${projectDir}/modules/qtl2/qtl_effects.nf"
-include {SUMMARIZE_QTL_EFFECTS} from "${projectDir}/modules/r/summarize_qtl_effects.nf"
+include {SUMMARIZE_QTL_EFFECTS} from "${projectDir}/modules/qtl2/summarize_qtl_effects.nf"
 
 // help if needed
 if (params.help){
@@ -85,5 +85,5 @@ workflow QTL_MAPPING {
     QTL_EFFECTS(probs_peaks_ch)
     
     // Summarize QTL effects
-    SUMMARIZE_QTL_EFFECTS(QTL_EFFECTS.out.qtl_effects_files.groupTuple())
+    SUMMARIZE_QTL_EFFECTS(QTL_EFFECTS.out.qtl_peaks_files.groupTuple())
 }

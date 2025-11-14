@@ -7,17 +7,16 @@ process QTL_EFFECTS {
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1coef.rds", mode:'copy'
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1blup.rds", mode:'copy'
     publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1coef.png", mode:'copy'
     publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1blup.png", mode:'copy'
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_fit1.rds", mode:'copy'
-
+    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_qtl_effect_files.RData", mode:'copy'
+    
     input:
     tuple val(id), val(phenotype), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(covar_file), path(pheno_file), path(covar_info_file), path(map_file), val(chrom), val(peak_pos), val(start_pos), val(end_pos), path(scan1out_file)
 
     output:
-    tuple val(id), path("*_scan1coef.rds"), path("*_scan1blup.rds"), path("*_fit1.rds"), path("*_peaks.csv"), emit: qtl_effects_files
+    tuple val(id), path("*_peaks.csv"), emit: qtl_peaks_files
+    tuple val(id), path("*_qtl_effect_files.RData"), emit: qtl_effects_files
     tuple val(id), path("*_scan1coef.png"), path("*_scan1blup.png"), emit: qtl_effects_plots
     
 
