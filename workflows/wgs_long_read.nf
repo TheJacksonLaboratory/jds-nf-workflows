@@ -60,7 +60,7 @@ if (!params.csv_input) {
     exit 1, "No input CSV file was specified with `--csv_input`. This workflow requires an input CSV file. See `--help` for information."
 }
 
-if (params.concat_lanes) {
+if (params.containsKey('concat_lanes') && params.concat_lanes) {
     exit 1, "Concatenation of lanes was specified with `--concat_lanes`. However, this is not applicable for PacBio long read data. Please remove `--concat_lanes` from your command."
 }
 

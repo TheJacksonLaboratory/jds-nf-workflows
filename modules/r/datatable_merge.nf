@@ -1,6 +1,5 @@
 process TABLE_MERGE {
-    tag "$sampleID"
-
+    
     cpus 6
     memory 85.GB
     time '24:00:00'
@@ -8,13 +7,11 @@ process TABLE_MERGE {
     
     container 'quay.io/biocontainers/r-data.table:1.12.2'
 
-
     input:
     path mirtop
 
     output:
     path "mirna.tsv"   , emit: mirna_tsv
-
 
     script:
     """

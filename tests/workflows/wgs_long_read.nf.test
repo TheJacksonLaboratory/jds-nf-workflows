@@ -222,8 +222,6 @@ nextflow_workflow {
     }
     // Note that only 1 split test is needed, as it is not specific to gen_org.
 
-
-
 // GVCF TEST.
 
 }

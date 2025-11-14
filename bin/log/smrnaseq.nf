@@ -32,7 +32,6 @@ if (params.gen_org == 'human') {
   -w                              ${workDir}
   -c                              ${params.config}
   --pubdir                        ${params.pubdir}
-  --organize_by                   ${params.organize_by}
   --gtf                           ${params.gtf}
   --ref_fa                        ${params.ref_fa}
   --ref_fa_indices                ${params.ref_fa_indices}
@@ -80,7 +79,6 @@ if (params.gen_org == 'human') {
   -w                              ${workDir}
   -c                              ${params.config}
   --pubdir                        ${params.pubdir}
-  --organize_by                   ${params.organize_by}
   --gtf                           ${params.gtf}
   --ref_fa                        ${params.ref_fa}
   --ref_fa_indices                ${params.ref_fa_indices}

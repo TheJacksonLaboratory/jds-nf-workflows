@@ -1,5 +1,4 @@
 process EDGER_QC {
-    tag "$sampleID"
 
     cpus 6
     memory 85.GB

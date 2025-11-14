@@ -18,7 +18,6 @@ Parameter | Default | Description
 
 --read_length | 150 | Options: 75, 100, 150. Changed relative to sample read length.
 --star_index | /projects/omics_share/human/GRCh38/transcriptome/indices/rna_fusion/star/star-2.7.4a-150bp | STAR index used by several tools. Change the index relative to sample read length. Read length options: 75, 100, 150. 
---star_fusion_star_index | /projects/omics_share/human/GRCh38/transcriptome/indices/rna_fusion/starfusion/star-150 | STAR-fusion index. Change the index relative to sample read length. Read length options: 75, 100, 150. 
 
 --gencode_gtf | /projects/compsci/omics_share/human/GRCh38/transcriptome/indices/rna_fusion/gencode/gencode.v37.annotation.gtf.revised.custom.gtf | GTF file used by several callers (Arriba, Pizzly, Squid, StarFusion). This file is used to build STAR refrences for these callers and it should not be changed unless other indicies are also updated. 
 --ensembl_gtf | /projects/omics_share/human/GRCh38/transcriptome/indices/rna_fusion/ensembl/Homo_sapiens.GRCh38.102.gtf | GTF file used by JAFFA. Jaffa uses a slightly different implmentation of calling etc., and this is the recommended GTF. 

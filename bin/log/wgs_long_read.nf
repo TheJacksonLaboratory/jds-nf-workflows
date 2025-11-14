@@ -57,8 +57,6 @@ ________________________________________________________________________________
 --cosmic_index                  ${params.cosmic_index}
 --pbsv_tandem                   ${params.pbsv_tandem}
 --tandem_repeats                ${params.tandem_repeats}
---vep_cache_directory           ${params.vep_cache_directory}
---vep_fasta                     ${params.vep_fasta}
 --min_sv_length                 ${params.min_sv_length}
 --sv_slop                       ${params.sv_slop}
 --sizemargin                    ${params.sizemargin}
@@ -109,8 +107,6 @@ ________________________________________________________________________________
 --snpEff_config                 ${params.snpEff_config}
 --pbsv_tandem                   ${params.pbsv_tandem}
 --tandem_repeats                ${params.tandem_repeats}
---vep_cache_directory           ${params.vep_cache_directory}
---vep_fasta                     ${params.vep_fasta}
 --min_sv_length                 ${params.min_sv_length}
 --sv_slop                       ${params.sv_slop}
 --sizemargin                    ${params.sizemargin}

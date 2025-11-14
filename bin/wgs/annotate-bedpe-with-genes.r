@@ -288,7 +288,7 @@ sv <- tryCatch(
   error = function(e) {
 
       res <- as.data.frame(matrix(ncol = 16, nrow = 0))
-      colnames(res) = c('chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 
+      colnames(res) = c('#chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 
                 'score', 'strand1', 'strand2', 'evidence', 'tools', 'support',
                 'support_vector', 'sampleID', 'info')
       

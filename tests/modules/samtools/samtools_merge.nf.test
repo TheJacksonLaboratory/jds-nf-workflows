@@ -1,0 +1,53 @@
+nextflow_process {
+
+    name "Test Process SAMTOOLS_MERGE"
+    script "modules/samtools/samtools_merge.nf"
+    process "SAMTOOLS_MERGE"
+
+    test("Merge with output") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                gen_org = "human"
+                merge_inds = true
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/ancestry/bam/pdx_WES_sample_realigned_BQSR.bam', checkIfExists: true))
+                input[1] = 'sample_42'
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert file("$launchDir/tests/results/testSample_42/bam/testSample_42_sample_42.bam").exists()
+        }
+
+    }
+
+    test("Merge without output") {
+
+        when {
+            params {
+                pipeline = 'pta'
+                pubdir = "tests/results"
+                gen_org = "human"
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/ancestry/bam/pdx_WES_sample_realigned_BQSR.bam', checkIfExists: true))
+                input[1] = 'sample_42'
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert !file("$launchDir/tests/results/testSample_42/bam/testSample_42_sample_42.bam").exists()
+        }
+
+    }
+}
