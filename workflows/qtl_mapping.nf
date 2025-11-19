@@ -80,7 +80,7 @@ workflow QTL_MAPPING {
                            it[2][0], it[2][1], it[2][2], it[2][3], // peak info
                            it[3]] // scan1 file
                }.set{probs_peaks_ch}
-    
+
     // Estimate QTL effects
     QTL_EFFECTS(probs_peaks_ch)
     

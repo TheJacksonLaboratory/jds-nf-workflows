@@ -13,6 +13,8 @@ library(dplyr)
 
 # Test files
 args <- commandArgs(trailingOnly = TRUE)
+# setwd("/flashscratch/widmas/qtl_mapping_outputDir/work/a9/9ff0a6f474939adb04c2678c42de87")
+
 phenotype <- args[1]
 alleleprobs_file <- args[2]
 kinship_file <- args[3]
@@ -25,6 +27,20 @@ pos_peak <- as.numeric(args[9])
 pos_start <- as.numeric(args[10])
 pos_end <- as.numeric(args[11])
 scan1out_file <- args[12]
+
+# testing
+# phenotype <- "e_phe2"
+# alleleprobs_file <- "apr.rds"
+# kinship_file <- "kinship.rds"
+# covar_file <-  "covar.csv"
+# phenotype_file <- "e_phe2_pheno.csv"
+# covar_info_file <- "e_phe2_covar_info.csv"
+# map_file <- "mm10_pmap.rds"
+# chrom <- "X"
+# pos_peak <- as.numeric(53.216506)
+# pos_start <- as.numeric(52.774515)
+# pos_end <- as.numeric(54.708012)
+# scan1out_file <- "e_phe2_scan1out.rds"
 
 # Read in the files
 alleleprobs <- readRDS(alleleprobs_file)
@@ -113,15 +129,15 @@ peaks <- cbind(chrom,qtl_coord,fit1_out$lod,t(fit1_out$coef))
 colnames(peaks)[colnames(peaks) == "fit1_out$lod"] <- "LOD"
 
 # Plot effects
-png(paste0(phenotype,"_scan1coef.png"))
+png(paste(phenotype, chrom, round(pos_start,2), round(pos_end,2),"scan1coef.png",sep = "_"), width = 9, height = 9, units = "in", res = 300)
 qtl2::plot_coefCC(x = scan1coef_out, 
-                  map = map, 
-                  columns = LETTERS[1:8], 
-                  scan1_output = scan1out)
+          map = map,
+          columns = LETTERS[1:8], 
+          scan1_output = scan1out)
 dev.off()
 
 # Plot blups
-png(paste0(phenotype,"_scan1blup.png"))
+png(paste(phenotype, chrom, round(pos_start,2), round(pos_end,2),"scan1blup.png",sep = "_"), width = 9, height = 9, units = "in", res = 300)
 qtl2::plot_coefCC(x = scan1blup_out, 
                   map = map, 
                   columns = LETTERS[1:8], 

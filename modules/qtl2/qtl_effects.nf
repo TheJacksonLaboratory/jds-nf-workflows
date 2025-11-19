@@ -5,7 +5,7 @@ process QTL_EFFECTS {
     cpus 8
     memory '50 GB'
     
-    container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
+    container 'docker://sjwidmay/lcgbs_hr:latest'
 
     publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1coef.png", mode:'copy'
     publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1blup.png", mode:'copy'

@@ -5,9 +5,8 @@ process MAP_QTL {
     cpus 8
     memory '50 GB'
     
-    container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
+    container 'docker://sjwidmay/lcgbs_hr:latest'
 
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1.png", mode:'copy'
     publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1out.rds", mode:'copy'
 
     input:
