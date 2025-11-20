@@ -21,8 +21,16 @@ include {SAMTOOLS_MERGE;
          SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
 include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
 include {SAMTOOLS_STATS} from "${projectDir}/modules/samtools/samtools_stats"
-include {create_bamlist} from "${projectDir}/bin/lcwgs/create_bamlist.nf"
 include {MOSDEPTH} from "${projectDir}/modules/mosdepth/mosdepth"
+
+include {SEX_CHECK} from "${projectDir}/modules/r/lcwgs_sex_check"
+
+include {CREATE_BAMLIST} from "${projectDir}/modules/utility_modules/create_bamlist"
+
+include {QUILT} from "${projectDir}/modules/quilt/run_quilt"
+include {QUILT_TO_QTL2} from "${projectDir}/modules/quilt/quilt_to_qtl2"
+include {QTL2_GENOPROBS} from "${projectDir}/modules/qtl2/genoprobs_lcwgs"
+
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 // help if needed
@@ -130,15 +138,49 @@ workflow LCWGS_HR{
   SAMTOOLS_STATS(bam_file)
   MOSDEPTH(bam_file.join(index_file))
 
+  // Sex check
+  coverage_files_channel=MOSDEPTH.out.mosdepth.collect()
+  SEX_CHECK(coverage_files_channel)
+
+
   // Prepare for QUILT
   bams = bam_file.map {tuple -> tuple[1]}
                  .collect()
                  .map{bamlist -> [bamlist, "no_downsample"]}
-  bamlist_ch = create_bamlist(bams)
-  bamlist_ch.view()
+                 .map { bam_paths, downsample_to_cov ->
+                        def bam_files = bam_paths.collect { file(it) }
+                        tuple(bam_files, bam_paths, downsample_to_cov)
+                      }
+                 .set { bam_input_ch }
+  CREATE_BAMLIST(bam_input_ch)
+  chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_type}/chromosome_chunks.csv")
+                    .splitCsv(header: true)
+                    .map {row -> 
+                            [ chr         = row.chr,
+                              chunk_start = row.start,
+                              chunk_stop  = row.stop] }
+                    .map {it -> [ it[0].toString(), it[1], it[2] ]}
+
+  // Run QUILT
+  quilt_inputs = CREATE_BAMLIST.out.bam_list.combine(chrChunks).combine(SEX_CHECK.out.sex_checked_covar)
+  QUILT(quilt_inputs)
+
+  // Convert QUILT outputs to qtl2 files by chromosome
+  quilt_for_qtl2 = QUILT.out.quilt_vcf.groupTuple()
+                                      .map {tuple -> [ tuple[0], tuple[1][0], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6][0] ]}
+  QUILT_TO_QTL2(quilt_for_qtl2)
+  
+  // Reconstruct haplotypes with qtl2
+  QTL2_GENOPROBS(QUILT_TO_QTL2.out.qtl2files)
+
+  // Concatenate chromosome-level genotype probs and generate whole-genome objects at 1M and 250k resolution
+  collected_probs = GENOPROBS.out.geno_probs_out.groupTuple(by: [1,2]).combine("${params.interp_250k_gridfile}")
+  CONCATENATE_GENOPROBS(collected_probs)
+
+
 
     
-
+  // MultiQC report
   ch_multiqc_files = Channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
@@ -147,7 +189,6 @@ workflow LCWGS_HR{
   ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it[1] }.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
-
   MULTIQC (
       ch_multiqc_files.collect()
   )
