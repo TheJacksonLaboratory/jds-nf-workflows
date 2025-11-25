@@ -30,6 +30,7 @@ include {CREATE_BAMLIST} from "${projectDir}/modules/utility_modules/create_baml
 include {QUILT} from "${projectDir}/modules/quilt/run_quilt"
 include {QUILT_TO_QTL2} from "${projectDir}/modules/quilt/quilt_to_qtl2"
 include {QTL2_GENOPROBS} from "${projectDir}/modules/qtl2/genoprobs_lcwgs"
+include {CONCATENATE_GENOPROBS} from "${projectDir}/modules/qtl2/concat_genoprobs_lcwgs"
 
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
@@ -139,7 +140,8 @@ workflow LCWGS_HR{
   MOSDEPTH(bam_file.join(index_file))
 
   // Sex check
-  coverage_files_channel=MOSDEPTH.out.mosdepth.collect()
+  coverage_files_channel = MOSDEPTH.out.mosdepth.map{it -> it[1]}
+                                                .collect()
   SEX_CHECK(coverage_files_channel)
 
 
@@ -174,12 +176,9 @@ workflow LCWGS_HR{
   QTL2_GENOPROBS(QUILT_TO_QTL2.out.qtl2files)
 
   // Concatenate chromosome-level genotype probs and generate whole-genome objects at 1M and 250k resolution
-  collected_probs = GENOPROBS.out.geno_probs_out.groupTuple(by: [1,2]).combine("${params.interp_250k_gridfile}")
+  collected_probs = QTL2_GENOPROBS.out.geno_probs_out.groupTuple(by: 1)
   CONCATENATE_GENOPROBS(collected_probs)
 
-
-
-    
   // MultiQC report
   ch_multiqc_files = Channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))

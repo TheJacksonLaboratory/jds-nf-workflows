@@ -6,8 +6,10 @@ process SEX_CHECK {
 
   container 'docker://sjwidmay/lcgbs_hr:latest'
 
+  publishDir "${params.pubdir}", pattern:"sex_check_covar.csv", mode:'copy'
+
   input:
-  tuple val(sampleID), path(mosdepth_files)
+  path(mosdepth_files)
 
   output:
   path('sex_check_covar.csv'), emit: sex_checked_covar

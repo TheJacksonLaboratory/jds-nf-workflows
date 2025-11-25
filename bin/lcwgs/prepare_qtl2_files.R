@@ -6,6 +6,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
+# 20251124
 ################################################################################
 
 library(qtl2convert)
@@ -28,35 +29,26 @@ args = commandArgs(trailingOnly = TRUE)
 
 # Founder genotypes and marker positions
 founder_file = args[1]
-# founder_file = "chr19_fg.txt"
 
 # Sample genotypes from QUILT.
 sample_file = args[2]
-# sample_file = "chr19_sg.txt"
 
 # Sample metadata file.
 meta_file = args[3]
-# meta_file = "sex_check_covar.csv"
 
 # Cross type
 cross_type = args[4]
-# cross_type = "do"
 
 # Marker map.
 marker_file = args[5]
-# marker_file = "/projects/omics_share/mouse/GRCm39/supporting_files/lcwgs_hr/do/chr19_gen_map.txt"
 
 # Chromosome
 chr = args[6]
-# chr = "19"
 
 # Grid file
 gridfile <- args[7]
-# gridfile = "/projects/omics_share/mouse/GRCm39/supporting_files/interp_1M_physical_grid.csv"
 
-
-###### MAIN #####
-
+# ##### MAIN #####
 
 message("Read in metadata")
 meta <- read.csv(meta_file)
@@ -69,8 +61,7 @@ if("original_sex" %in% colnames(meta) & all(meta$original_sex == FALSE)){
 }
 
 # can't have duplicate sample ids in the metadata for qtl2
-meta <- meta[which(!duplicated(meta$id)),] %>%
-  dplyr::select(id, sex, gen)
+meta <- meta[which(!duplicated(meta$id)),]
 
 # can't have any missing values in the covariate file and/or cross info columns
 meta <- meta[complete.cases(meta),]
@@ -178,8 +169,8 @@ recoded_sample_genos <- apply(sample_gt_renamed, 1, function(x){
   g[g %in% c(10,1)] <- paste0(REF, ALT)
   return(g)
 })
-recoded_sample_genos <- matrix(data = recoded_sample_genos, nrow = nrow(sample_gt_genos), ncol = ncol(sample_gt_genos), 
-                               dimnames = list(rownames(sample_gt_genos), colnames(sample_gt_genos)))
+recoded_sample_genos <- t(recoded_sample_genos)
+colnames(recoded_sample_genos) <- colnames(sample_gt_genos)
 sample_gt_renamed <- cbind(sample_gt_meta, recoded_sample_genos)
 
 # recode founder genotypes
@@ -193,8 +184,8 @@ recoded_founder_genos <- apply(founder_gt, 1, function(x){
   g[g %in% c(10,1)] <- paste0(REF, ALT)
   return(g)
 })
-recoded_founder_genos <- matrix(data = recoded_founder_genos, nrow = nrow(founder_gt), ncol = ncol(founder_gt[-c(1:4)]), 
-                               dimnames = list(rownames(founder_gt), colnames(founder_gt[-c(1:4)])))
+recoded_founder_genos <- t(recoded_founder_genos)
+colnames(recoded_founder_genos) <- colnames(founder_gt)[-c(1:4)]
 founder_gt_renamed <- cbind(founder_gt[,1:4], recoded_founder_genos)
 
 # filter metadata down to samples in the genotype file
