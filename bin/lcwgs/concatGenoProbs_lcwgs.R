@@ -132,3 +132,21 @@ message("Saving interpolated allele probabilities and pmap")
 saveRDS(object = pr_interp, file = "interp_250k_genoprobs.rds")
 saveRDS(object = apr_interp, file = "interp_250k_alleleprobs.rds")
 saveRDS(object = grid_map, file = "grid_pmap.rds")
+
+# Make kinship matrix
+message("Calculating kinship matrix...")
+kinship <- qtl2::calc_kinship(probs = apr_interp, 
+                              type = "loco", 
+                              use_allele_probs = TRUE, 
+                              cores = parallel::detectCores()/1.2)
+message("Saving kinship matrix...")
+saveRDS(object = kinship, file = "interp_250k_kinship_loco.rds")
+
+# Make viterbi object
+message("Calculating maxmarg...")
+m <- qtl2::maxmarg(probs = pr_interp,
+                   minprob = 0.5, 
+                   quiet = TRUE, 
+                   cores = parallel::detectCores()/1.2)
+message("Saving viterbi...")
+saveRDS(object = m, file = "interp_250k_viterbi.rds")
