@@ -63,9 +63,6 @@ if("original_sex" %in% colnames(meta) & all(meta$original_sex == FALSE)){
 # can't have duplicate sample ids in the metadata for qtl2
 meta <- meta[which(!duplicated(meta$id)),]
 
-# can't have any missing values in the covariate file and/or cross info columns
-meta <- meta[complete.cases(meta),]
-
 # Read in founder genotypes.
 message("Read in founder genotypes")
 founder_gt = read.delim(founder_file, check.names = F)
