@@ -30,8 +30,6 @@ def param_log(){
     --pubdir                        ${params.pubdir}
     --ref_fa                        ${params.ref_fa}
     --ref_fa_indices                ${params.ref_fa_indices}
-    --split_fastq                   ${params.split_fastq}
-    --split_fastq_bin_size          ${params.split_fastq_bin_size}
     --unqualified_perc              ${params.unqualified_perc}
     --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
     --mismatch_penalty              ${params.mismatch_penalty}
