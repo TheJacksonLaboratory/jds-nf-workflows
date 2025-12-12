@@ -456,6 +456,7 @@ workflow WGS {
       SNPEFF(GATK_MERGEVCF.out.vcf, 'BOTH', 'vcf')
       SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'BOTH')
       SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'wgs')
+
     }
 
 

@@ -278,8 +278,10 @@ dta <- tryCatch(
       readBEDPE(opt$bedpe)
   },
   error = function(e) {
-      res <- data.frame('a'=character(), 'b'=numeric(), 'c'=numeric(), 'd'=character(), 'e'=numeric(), 'f'=numeric(), 'g'=character(), 'h'=character(), 'i'=character(), 'j'=character(), 'k'=character(), 'l'=character(), 'm'=character(), 'n'=character())
-      colnames(res) = c('#chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 'score', 'strand1', 'strand2', 'evidence', 'tools', 'support', 'support_vector', 'sampleID', 'info')
+      res <- as.data.frame(matrix(ncol = 16, nrow = 0))
+      colnames(res) <- c('#chr1', 'start1', 'end1', 'chr2', 'start2', 'end2', 'type', 'score', 'strand1', 'strand2', 'evidence', 'tools', 'support', 'support_vector', 'sampleID', 'info')
+      colnames(res)[1] <- paste0('#', colnames(res)[1])
+      
       write.table(res, opt$out_file, row.names=F, col.names=T, sep='\t', quote=F)
       quit(save = "no", status = 0)
   }

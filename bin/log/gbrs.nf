@@ -29,9 +29,6 @@ def param_log(){
     --workflow                      ${params.workflow}
     -w                              ${workDir}
     -c                              ${params.config}
-    --sample_folder                 ${params.sample_folder}
-    --extension                     ${params.extension}
-    --pattern                       ${params.pattern}
     --read_type                     ${params.read_type}
     --csv_input                     ${params.csv_input}
     --download_data                 ${params.download_data}
