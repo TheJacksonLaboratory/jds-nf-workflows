@@ -181,5 +181,70 @@ nextflow_workflow {
 
     }
 
+    test("Full Workflow -- Mouse -- UMI -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "/projects/compsci/omics_share/meta/benchmarking/umi-rna/sample_data/mouse/Mm_RNA_UMI_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                umi = true
+                umitools_extract_method "regex" 
+                umitools_bc_pattern "^(?P<umi_1>.{6})(?P<discard_1>.{4}).*"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- UMI-skipExtract -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "/projects/compsci/omics_share/meta/benchmarking/umi-rna/sample_data/mouse/other_RNA_UMI_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                umi = true
+                skip_umi_extract = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- UMI -- SE") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "/projects/compsci/omics_share/meta/benchmarking/umi-rna/sample_data/human/hg38_RNA_UMI_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                read_type = 'SE'
+                strandedness = 'forward_stranded'
+                umi = true
+                umitools_extract_method "regex" 
+                umitools_bc_pattern "^(?P<umi_1>.{6})(?P<discard_1>.{4}).*"
+            }
+        }
+    
+        then {
+            assert workflow.success
+        }
+
+    }
+
+
 }
 

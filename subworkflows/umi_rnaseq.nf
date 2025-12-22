@@ -62,10 +62,13 @@ workflow UMI_RNASEQ {
         UMITOOLS_DEDUP_GENOME(STAR_ALIGN.out.sorted_genomic_bam_bai)
         UMITOOLS_DEDUP_TRANSCRIPT(STAR_ALIGN.out.sorted_transcript_bam_bai)
 
-        UMITOOLS_PREPAREFORRSEM(UMITOOLS_DEDUP_TRANSCRIPT.out.bam)
-
         // RSEM Quantification
-        rsem_input = UMITOOLS_PREPAREFORRSEM.out.bam.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
+        if (params.read_type == 'PE') {
+            UMITOOLS_PREPAREFORRSEM(UMITOOLS_DEDUP_TRANSCRIPT.out.bam)
+            rsem_input = UMITOOLS_PREPAREFORRSEM.out.bam.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
+        } else {
+            rsem_input = UMITOOLS_DEDUP_TRANSCRIPT.out.bam.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
+        }
 
         RSEM_EXPRESSION(rsem_input, params.rsem_ref_files, params.rsem_star_prefix)
         

@@ -30,8 +30,8 @@ def param_log(){
     error "Use of `--umi` data requires alignment with STAR. Specify `--rsem_aligner star` in your command." 
   }
 
-  if (params.umi && !params.umitools_bc_pattern && !params.umitools_bc_pattern2) {
-    error "When `--umi` is specified, at least one of `--umitools_bc_pattern` or `--umitools_bc_pattern2` must also be provided. See workflow Wiki for details." 
+  if (params.umi && !params.skip_umi_extract && !params.umitools_bc_pattern && !params.umitools_bc_pattern2) {
+    error "When `--umi` is specified and `--skip_umi_extract` is not set, at least one of `--umitools_bc_pattern` or `--umitools_bc_pattern2` must also be provided. See workflow Wiki for details."
   }
 
   if (params.bam_input && params.rsem_reference_path && params.rsem_reference_name == null) {

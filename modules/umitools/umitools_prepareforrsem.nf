@@ -28,6 +28,30 @@ process UMITOOLS_PREPAREFORRSEM {
 }
 
 /*
+'''
+==============================================================================
+prepare_for_rsem - make the output from dedup or group compatible with RSEM
+===============================================================================
+The SAM format specification states that the mnext and mpos fields should point
+to the primary alignment of a read's mate. However, not all aligners adhere to
+this standard. In addition, the RSEM software requires that the mate of a read1
+appears directly after it in its input BAM. This requires that there is exactly
+one read1 alignment for every read2 and vice versa.
+
+In general (except in a few edge cases) UMI tools outputs only the read2 to that 
+corresponds to the read specified in the mnext and mpos positions of a selected
+read1, and only outputs this read once, even if multiple read1s point to it. 
+This makes UMI-tools outputs incompatible with RSEM. This script takes the output
+from dedup or groups and ensures that each read1 has exactly one read2 (and vice
+versa), that read2 always appears directly after read1,and that pairs point to 
+each other (note this is technically not valid SAM format). Copy any specified
+tags from read1 to read2 if they are present (by default, UG and BX, the unique
+group and correct UMI tags added by _group_)
+
+Input must to name sorted.
+
+'''
+
 prepare_for_rsem - make output from dedup or group compatible with RSEM
 
 Usage: umi_tools prepare_for_rsem [OPTIONS] [--stdin=IN_BAM] [--stdout=OUT_BAM]
