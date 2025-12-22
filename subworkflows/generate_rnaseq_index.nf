@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/generate_rnaseq_index.nf"
 include {param_log} from "${projectDir}/bin/log/generate_rnaseq_index.nf"
+include {AGAT_GFFTOGTF} from "${projectDir}/modules/agat/agat_gfftogtf"
 include {MAKE_CUSTOM_TRANSCRIPTOME} from "${projectDir}/modules/utility_modules/make_custom_transcriptome"
 include {RSEM_PREPAREREFERENCE as RSEM_PREPAREREFERENCE_BOWTIE2;
          RSEM_PREPAREREFERENCE as RSEM_PREPAREREFERENCE_STAR} from "${projectDir}/modules/rsem/rsem_preparereference"
@@ -28,17 +29,43 @@ def checkFileExists(filePath, name) {
     }
 }
 
+if (!params.ref_gtf && !params.ref_gff) {
+    log.error "Either `--ref_gtf` or `--ref_gff` must be provided."
+    exit 1
+}
+
+if ((params.ref_gtf != null && params.ref_gtf != '') && (params.ref_gff != null && params.ref_gff != '')) {
+    log.error "Both `--ref_gtf` and `--ref_gff` were provided. Please provide only one."
+    exit 1
+}
+
+if (params.ref_gff) {
+    checkFileExists(params.ref_gff, "ref_gff")
+}
+
+if (params.ref_gtf) {
+    checkFileExists(params.ref_gtf, "ref_gtf")
+}
+
 checkFileExists(params.ref_fa, "ref_fa")
-checkFileExists(params.ref_gtf, "ref_gtf")
+
 if (params.custom_gene_fasta) {
     checkFileExists(params.custom_gene_fasta, "custom_gene_fasta")
 }
 
+
 workflow GENERATE_RNASEQ_INDEX {
+
+    if (params.ref_gff) {
+        AGAT_GFFTOGTF(params.ref_gff)
+        proc_gtf = AGAT_GFFTOGTF.out.gtf
+    } else {
+        proc_gtf = Channel.fromPath(params.ref_gtf)
+    }
 
     if (params.custom_gene_fasta) {
     
-        MAKE_CUSTOM_TRANSCRIPTOME(Channel.of([params.ref_fa, params.ref_gtf, params.custom_gene_fasta]))
+        MAKE_CUSTOM_TRANSCRIPTOME(Channel.of([params.ref_fa, gtf, params.custom_gene_fasta]))
 
         bowtie2_input = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).map{it -> [it[0], it[1], 'bowtie2', '']}
         star_build_set = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).combine(Channel.of(75, 100, 125, 150)).map{it -> [it[0], it[1], 'STAR', it[2]]}
@@ -47,11 +74,14 @@ workflow GENERATE_RNASEQ_INDEX {
         gtf = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf
     
     } else {
-        bowtie2_input = Channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
-        star_build_set = Channel.of([params.ref_fa, params.ref_gtf, 'STAR']).combine(Channel.of(75, 100, 125, 150))
+        bowtie2_input = proc_gtf
+        .map{ it -> [params.ref_fa, it, 'bowtie2', ''] }
+
+        star_build_set = proc_gtf
+        .map{ it -> [params.ref_fa, it, 'star'] }.combine(Channel.of(75, 100, 125, 150))
         
         fasta = params.ref_fa
-        gtf = params.ref_gtf
+        gtf = proc_gtf
     }
 
     RSEM_PREPAREREFERENCE_BOWTIE2(bowtie2_input)

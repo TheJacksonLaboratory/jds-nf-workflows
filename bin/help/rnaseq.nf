@@ -19,6 +19,13 @@ Parameter | Default | Description
 
 --bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
 
+--umi | false | Options: false, true. If specified, UMI-tools will be used to extract and deduplicate UMIs from reads prior to transcript/gene quantification.
+--skip_umi_extract | false | Options: false, true. If specified, UMI extraction step will be skipped. Used in cases when UMIs have already been extracted from reads and placed in read headers (assumes ":" delimiter).
+--umitools_extract_method | 'regex' | Options: regex, string. Method used by UMI-tools to extract UMIs from reads. 'regex' allows for flexible UMI extraction using regular expressions. 'string' requires a fixed position for UMI extraction. See UMI-tools documentation for details.
+--umitools_bc_pattern | null | Pattern used for read 1 UMI extraction. See UMI-tools documentation, and the jds-workflows RNAseq Wiki page for details on how to set this parameter.
+--umitools_bc_pattern2 | null | Pattern used for read 2 UMI extraction. See UMI-tools documentation, and the jds-workflows RNAseq Wiki page for details on how to set this parameter.
+--umitools_grouping_method | 'unique' | Method used by UMI-tools to group UMIs. Options include 'unique', 'adjacency', 'directional', etc. See UMI-tools documentation for details.
+
 --skip_read_trimming | false | Options: false, true. If specified, skip FastP read trimming.
 
 --quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
