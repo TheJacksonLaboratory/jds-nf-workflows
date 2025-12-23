@@ -24,6 +24,10 @@ def extract_csv_bam(csv_file) {
         def headers = headerLine.split(',').collect { it.trim() }
         def requiredHeaders = ['sampleID', 'bam', 'bai']
 
+        if (params.deepvariant) {
+            requiredHeaders << 'sex'
+        }
+
         def requiredHeadersStr = requiredHeaders.collect { "'${it}'" }.join(', ')
   
         def missingHeaders = requiredHeaders.findAll { !headers.contains(it) }
@@ -58,6 +62,10 @@ def extract_csv_bam(csv_file) {
         // Meta data to identify samplesheet
         if (row.sampleID) meta.sampleID = row.sampleID.toString()
 
+        // Parse optional "sex" field
+        if (row.sex) meta.sex = row.sex.toString()
+        else meta.sex = 'NA'
+        
         // Define the ID field for the sample.
         meta.id = row.sampleID.toString()
         
@@ -83,7 +91,8 @@ def extract_csv_bam(csv_file) {
             System.exit(1)
         }
 
-        return [row.sampleID, row.bam, row.bai]
+
+        return [meta.id, meta, row.bam, row.bai]
 
     }
 }
@@ -160,7 +169,7 @@ def extract_csv_bam_rnaseq(csv_file) {
             System.exit(1)
         }
 
-        return [row.sampleID, row.bam]
+        return [meta.id, row.bam]
 
     }
 }
