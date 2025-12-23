@@ -65,7 +65,10 @@ workflow GENERATE_RNASEQ_INDEX {
 
     if (params.custom_gene_fasta) {
     
-        MAKE_CUSTOM_TRANSCRIPTOME(Channel.of([params.ref_fa, gtf, params.custom_gene_fasta]))
+        make_custom_input = proc_gtf
+                            .map{it -> [params.ref_fa, it, params.custom_gene_fasta]}
+
+        MAKE_CUSTOM_TRANSCRIPTOME(make_custom_input)
 
         bowtie2_input = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).map{it -> [it[0], it[1], 'bowtie2', '']}
         star_build_set = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).combine(Channel.of(75, 100, 125, 150)).map{it -> [it[0], it[1], 'STAR', it[2]]}
