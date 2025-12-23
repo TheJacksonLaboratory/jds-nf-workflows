@@ -53,7 +53,7 @@ nextflow_workflow {
                 pipeline = 'generate_rnaseq_index'
                 ref_fa = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/test.fasta"
                 ref_gtf = FALSE
-                ref_gff = "/projects/compsci/omics_share/meta/benchmarking/jds-nf-test/rna/index/test.gff"
+                ref_gff = "https://github.com/TheJacksonLaboratory/jds-nf-test/raw/refs/heads/main/rna/index/test.gff"
                 custom_gene_fasta = null
             }
         }
@@ -73,7 +73,7 @@ nextflow_workflow {
                 pipeline = 'generate_rnaseq_index'
                 ref_fa = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/test.fasta"
                 ref_gtf = FALSE
-                ref_gff = "/projects/compsci/omics_share/meta/benchmarking/jds-nf-test/rna/index/test.gff"
+                ref_gff = "https://github.com/TheJacksonLaboratory/jds-nf-test/raw/refs/heads/main/rna/index/test.gff"
                 custom_gene_fasta = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/extra_gene.fasta"
             }
         }
