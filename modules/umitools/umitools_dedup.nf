@@ -28,7 +28,7 @@ process UMITOOLS_DEDUP {
     umi_tools dedup \
         -I ${bam} \
         -S ${bam.baseName}.dedup.bam \
-        --umi-separator=":" \
+        --umi-separator=${params.umi_separator} \
         --multimapping-detection-method=NH \
         --output-stats=${sampleID}.dedup_stats \
         --log=${sampleID}.dedup_log.txt \

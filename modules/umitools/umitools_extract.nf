@@ -30,7 +30,7 @@ process UMITOOLS_EXTRACT {
 
     """
     umi_tools extract \
-        --umi-separator=":" \
+        --umi-separator=${params.umi_separator} \
         -L ${sampleID}.umi.log \
         --extract-method=${params.umitools_extract_method} \
         ${pattern_1} \
