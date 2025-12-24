@@ -20,12 +20,13 @@ process DEEPVARIANT {
     
     def haploid_contigs = "--haploid_contigs=${chrom_x},${chrom_y}"
     def gvcf_output = params.run_gvcf ? "--output_gvcf ${sampleID}_${chrom}.gvcf.gz" : ""
+    def model_type = params.deepvariant_model_type == 'WGS' ? 'WGS' : 'PACBIO'
 
 
     """
     if [ ${sex} == "M" ]; then
         run_deepvariant \
-        --model_type WGS \
+        --model_type ${model_type} \
         --ref ${params.ref_fa} \
         ${haploid_contigs} \
         --reads ${bam} \
@@ -39,7 +40,7 @@ process DEEPVARIANT {
 
     if [[ ${sex} == "F" || ${sex} == "U" || ${sex} == "NA" ]]; then 
         run_deepvariant \
-        --model_type WGS \
+        --model_type ${model_type} \
         --ref ${params.ref_fa} \
         --reads ${bam} \
         --output_vcf ${sampleID}_${chrom}.vcf.gz \

@@ -20,44 +20,43 @@ workflow RNA_FROM_BAM {
         // [sampleID, bam]
     
     main:
+        if (!params.rsem_reference_path || params.rsem_reference_path == '' || params.rsem_reference_path == null) {
+            bowtie2_input = Channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
+            RSEM_PREPAREREFERENCE(bowtie2_input)
 
-    if (!params.rsem_reference_path || params.rsem_reference_path == '' || params.rsem_reference_path == null) {
-        bowtie2_input = Channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
-        RSEM_PREPAREREFERENCE(bowtie2_input)
+            rsem_ref_files = RSEM_PREPAREREFERENCE.out.all_files.toList()
 
-        rsem_ref_files = RSEM_PREPAREREFERENCE.out.all_files.toList()
+            rsem_ref_name = file(params.ref_fa).baseName
 
-        rsem_ref_name = file(params.ref_fa).baseName
+        } else {
 
-    } else {
+            rsem_ref_files = Channel
+            .fromPath( "${params.rsem_reference_path}/**" )
+            .collect()
+            .toList()
 
-        rsem_ref_files = Channel
-        .fromPath( "${params.rsem_reference_path}/**" )
-        .collect()
-        .toList()
+            rsem_ref_name = params.rsem_reference_name
+        
+        }
 
-        rsem_ref_name = params.rsem_reference_name
-    
-    }
+        RSEM_SAM_VALIDATOR(bam_ch)
+        
+        bam_ch
+        .join(RSEM_SAM_VALIDATOR.out.validation)
+        .branch { it ->
+            failed: it[2] == "FALSE"
+                return [it[0], it[1]]
+            passed: it[2] == "TRUE"
+                return [it[0], it[1]]
+        }
+        .set { validation_result }
 
-    RSEM_SAM_VALIDATOR(bam_ch)
-    
-    bam_ch
-    .join(RSEM_SAM_VALIDATOR.out.validation)
-    .branch { it ->
-        failed: it[2] == "FALSE"
-            return [it[0], it[1]]
-        passed: it[2] == "TRUE"
-            return [it[0], it[1]]
-    }
-    .set { validation_result }
+        CONVERT_SAM_FOR_RSEM(validation_result.failed)
 
-    CONVERT_SAM_FOR_RSEM(validation_result.failed)
+        rsem_input = CONVERT_SAM_FOR_RSEM.out.rsem_bam
+                    .mix(validation_result.passed)
+                    .combine(rsem_ref_files)
+                    .map{ it -> [it[0], it[1], it[2], rsem_ref_name] }
 
-    rsem_input = CONVERT_SAM_FOR_RSEM.out.rsem_bam
-                 .mix(validation_result.passed)
-                 .combine(rsem_ref_files)
-                 .map{ it -> [it[0], it[1], it[2], rsem_ref_name] }
-
-    RSEM_EXPRESSION(rsem_input)
+        RSEM_EXPRESSION(rsem_input)
 }

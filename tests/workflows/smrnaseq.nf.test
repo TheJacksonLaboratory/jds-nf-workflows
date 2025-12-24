@@ -1,0 +1,112 @@
+nextflow_workflow {
+
+    name "Test Workflow SMRNASEQ"
+    script "workflows/smrnaseq.nf"
+    workflow "SMRNASEQ"
+
+    test("Full Workflow -- Mouse -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "mouse"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                genome_build = "GRCm38"
+                mirtrace_species = "mmu"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "mouse"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                genome_build = "GRCm39"
+                mirtrace_species = "mmu"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.success
+
+        }
+
+    }
+
+    test("Full Workflow -- Human") {
+        tag "GRCh38"
+        tag "primary"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "human"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/human/hg_smrna_input.csv'
+                genome_build = "GRCh38"
+                mirtrace_species = "hsa"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Invalid Param -- Mouse") {
+        tag "failure"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "mouse"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                genome_build = "GRCm38"
+                mirtrace_species = "hsa"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+
+        test("Invalid Param -- Mouse") {
+        tag "failure"
+        when {
+            params {
+                outdir = "tests/results"
+                gen_org = "human"
+                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                genome_build = "GRCm38"
+                mirtrace_species = "mmu"
+                pubdir = "tests/results"
+                pipeline = 'smrnaseq'
+            }
+        }
+
+        then {
+            assert workflow.failed
+        }
+
+    }
+
+
+}

@@ -57,9 +57,11 @@ else if (params.workflow == "amplicon_generic"){
 else if (params.workflow == "ancestry"){
   include {ANCESTRY_RUN} from './workflows/ancestry'
 }
-else if (params.workflow == "germline_sv") {
-  // mmrsvd    
+else if (params.workflow == "germline_sv") { // MMRSVDB
   include {GERMLINE_SV} from "./workflows/germline_sv"
+}
+else if (params.workflow == "smrnaseq"){
+  include {SMRNASEQ} from './workflows/smrnaseq'
 }
 else if (params.workflow == "cnv_array"){
   include {CNV_ARRAY} from './workflows/cnv_array'
@@ -79,9 +81,16 @@ else if (params.workflow == "haplotype_reconstruction"){
 else if (params.workflow == "mitochondria_variant_calling"){
   include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
 } 
+else if (params.workflow == "wgs_long_read"){
+  include {wgs_long_read} from './workflows/wgs_long_read'
+}
 else if (params.workflow == "reannotate_pta"){
   include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
-} else {
+}
+else if (params.workflow == "wgs_sv_bam"){
+  include {WGS_SV_BAM} from './workflows/wgs_sv_bam'
+}
+else {
   // if workflow name is not supported: 
   exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
 }
@@ -142,6 +151,9 @@ workflow{
   if (params.workflow == "germline_sv"){
     GERMLINE_SV()
   }
+  if (params.workflow == "smrnaseq"){
+    SMRNASEQ()
+  }
   if (params.workflow == "cnv_array"){
     CNV_ARRAY()
   }
@@ -151,16 +163,22 @@ workflow{
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
   }
+  if (params.workflow == "wgs_long_read"){
+    wgs_long_read()
+  }
+  if (params.workflow == "mitochondria_variant_calling"){
+    MITOCHONDRIA_VARIANT_CALLING()
+  }
   if (params.workflow == "qtl_mapping"){
     QTL_MAPPING()
   }
   if (params.workflow == "haplotype_reconstruction"){
     HAPLOTYPE_RECONSTRUCTION()
   }
-  if (params.workflow == "mitochondria_variant_calling"){
-    MITOCHONDRIA_VARIANT_CALLING()
-  }
   if (params.workflow == "reannotate_pta"){
     REANNOTATE_PTA()
+  }
+  if (params.workflow == "wgs_sv_bam"){
+    WGS_SV_BAM()
   }
 }

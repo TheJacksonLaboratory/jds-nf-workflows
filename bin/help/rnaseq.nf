@@ -3,7 +3,7 @@ def help(){
 Parameter | Default | Description
 
 --pubdir | /<PATH> | The directory that the saved outputs will be stored.
---cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. JAX users should not change this parameter.
+--cacheDir | /projects/omics_share/meta/containers | This is directory that contains cached Singularity containers. 
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
 --sample_folder | /<PATH> | The path to the folder that contains all the samples to be run by the pipeline. The files in this path can also be symbolic links. 
@@ -18,6 +18,14 @@ Parameter | Default | Description
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
 
 --bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
+
+--umi | false | Options: false, true. If specified, UMI-tools will be used to extract and deduplicate UMIs from reads prior to transcript/gene quantification.
+--skip_umi_extract | false | Options: false, true. If specified, UMI extraction step will be skipped. Used in cases when UMIs have already been extracted from reads and placed in read headers.
+--umi_separator | ':' | The character that separates the UMI from the read name in FASTQ files. Default is ':' (e.g., @READ_NAME:UMI_SEQUENCE).
+--umitools_extract_method | 'regex' | Options: regex, string. Method used by UMI-tools to extract UMIs from reads. 'regex' allows for flexible UMI extraction using regular expressions. 'string' requires a fixed position for UMI extraction. See UMI-tools documentation for details.
+--umitools_bc_pattern | null | Pattern used for read 1 UMI extraction. See UMI-tools documentation, and the jds-workflows RNAseq Wiki page for details on how to set this parameter.
+--umitools_bc_pattern2 | null | Pattern used for read 2 UMI extraction. See UMI-tools documentation, and the jds-workflows RNAseq Wiki page for details on how to set this parameter.
+--umitools_grouping_method | 'unique' | Method used by UMI-tools to group UMIs. Options include 'unique', 'adjacency', 'directional', etc. See UMI-tools documentation for details.
 
 --skip_read_trimming | false | Options: false, true. If specified, skip FastP read trimming.
 
@@ -45,15 +53,15 @@ Parameter | Default | Description
 
 --picard_dict | Mouse: '/projects/omics_share/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.toplevel.dict' 
               | Human: '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.dict'
-              | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. JAX users should not change this parameter.
+              | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ref_flat | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.refFlat.txt' 
            | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.refFlat.txt'
-           | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. JAX users should not change this parameter.
+           | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ribo_intervals | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.rRNA.interval_list' 
                  | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.rRNA.interval_list'
-                 | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. JAX users should not change this parameter.
+                 | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --pdx | false | Options: false, true. If specified, 'Xengsort' is run on reads to deconvolute human and mouse reads. Human only reads are used in analysis. 
 --classifier_table | '/projects/compsci/omics_share/human/GRCh38/supporting_files/rna_ebv_classifier/EBVlym_classifier_table_48.txt' | EBV expected gene signatures used in EBV classifier. Only used when '--pdx' is run. 
@@ -66,8 +74,8 @@ There are two additional parameters that are human specific. They are:
 
 Parameter| Default| Description
 
---ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. JAX users should not change this parameter.
---ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  JAX users should not change this parameter.
+--ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. 
+--ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  
 
 --rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified, andr --ref_fa / --ref_gtf will be used to generate one. 
 --rsem_reference_name | null | User provided path to an RSEM reference name. If not provided, --ref_fa / --ref_gtf will be used to generate one. 

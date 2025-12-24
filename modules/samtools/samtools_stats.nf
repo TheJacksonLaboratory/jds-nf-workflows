@@ -8,19 +8,25 @@ process SAMTOOLS_STATS {
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
     publishDir {
+        def sample   = sampleID.split("_")
+        def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
-    }, pattern: "*.flagstat", mode: 'copy', enabled: params.keep_intermediate
+    }, pattern: "*.flagstat", mode: 'copy' // Save flagstat outputs to appropriate pubdir
 
     publishDir {
+        def sample   = sampleID.split("_")
+        def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
-    }, pattern: "*.idxstats", mode: 'copy', enabled: params.keep_intermediate
+    }, pattern: "*.idxstats", mode: 'copy' // Save idxstats outputs to appropriate pubdir
 
     publishDir {
+        def sample   = sampleID.split("_")
+        def sampleID = sample[0]
         def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
         "${params.pubdir}/${type + sampleID + '/samtools'}"
-    }, pattern: "*.stats", mode: 'copy', enabled: params.keep_intermediate
+    }, pattern: "*.stats", mode: 'copy' // Save stats outputs to appropriate pubdir
 
 
     input:
@@ -32,9 +38,12 @@ process SAMTOOLS_STATS {
     tuple val(sampleID), file("*.stats"), emit: stats
 
     script:
+
+    def prefix = params.workflow == 'chipseq' ? bam[0].baseName : sampleID
+
     """
-    samtools flagstat ${bam[0]} > ${bam[0]}.flagstat
-    samtools idxstats ${bam[0]} > ${bam[0]}.idxstats
-    samtools stats ${bam[0]} > ${bam[0]}.stats
+    samtools flagstat ${bam[0]} > ${prefix}.flagstat
+    samtools idxstats ${bam[0]} > ${prefix}.idxstats
+    samtools stats ${bam[0]} > ${prefix}.stats
     """
 }

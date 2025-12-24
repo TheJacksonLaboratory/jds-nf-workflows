@@ -14,6 +14,7 @@ include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/conca
 include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
 include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
 include {PDX_RNASEQ} from "${projectDir}/subworkflows/pdx_rnaseq"
+include {UMI_RNASEQ} from "${projectDir}/subworkflows/umi_rnaseq"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
@@ -131,77 +132,87 @@ workflow RNASEQ {
         }
     }
 
+    if (params.umi) {
+      // UMI analysis requires a different enough process
+      //  that it is run as a separate subworkflow.
       
-    // ** MAIN workflow starts: 
-
-    // If samples are PDX, run the PDX RNAseq workflow. 
-    // Otherwise, run the standard workflow. 
-
-    if (params.pdx){
-      // PDX data requires very different considerations. 
-      // Mouse and human reads are disambiguated, and then 
-      // mapped and quantified separately. 
-      // Therefore, a subworkflow is used.
-
-      PDX_RNASEQ(read_ch)
+      UMI_RNASEQ(read_ch)
 
     } else {
-      // Step 1: Read Trim
-      ch_FASTP_multiqc = Channel.empty() // optional log, depeding on skip trim
-      if (!params.skip_read_trimming) {
-        FASTP(read_ch)
-        reads = FASTP.out.trimmed_fastq
-        ch_FASTP_multiqc = FASTP.out.quality_json // set log file for multiqc
+
+      // ** MAIN workflow starts: 
+
+      // If samples are PDX, run the PDX RNAseq workflow. 
+      // Otherwise, run the standard workflow. 
+
+      if (params.pdx){
+        // PDX data requires very different considerations. 
+        // Mouse and human reads are disambiguated, and then 
+        // mapped and quantified separately. 
+        // Therefore, a subworkflow is used.
+
+        PDX_RNASEQ(read_ch)
+
       } else {
-        reads = read_ch
+        // Step 1: Read Trim
+        ch_FASTP_multiqc = Channel.empty() // optional log, depeding on skip trim
+        if (!params.skip_read_trimming) {
+          FASTP(read_ch)
+          reads = FASTP.out.trimmed_fastq
+          ch_FASTP_multiqc = FASTP.out.quality_json // set log file for multiqc
+        } else {
+          reads = read_ch
+        }
+        
+        GET_READ_LENGTH(read_ch) // set to full reads, regardless of trim state.
+        
+        FASTQC(reads)
+
+        // Check strand setting
+        CHECK_STRANDEDNESS(reads)
+
+        rsem_input = reads.join(CHECK_STRANDEDNESS.out.strand_setting).join(GET_READ_LENGTH.out.read_length)
+
+        // Step 2: RSEM
+        RSEM_ALIGNMENT_EXPRESSION(rsem_input, params.rsem_ref_files, params.rsem_star_prefix, params.rsem_ref_prefix)
+
+        if (params.gen_org == "human" || params.gen_org == "mouse") {
+          SEX_DETERMINATION(RSEM_ALIGNMENT_EXPRESSION.out.rsem_genes)
+        }
+
+        if (params.merge_rna_counts) {
+          MERGE_RSEM_COUNTS(RSEM_ALIGNMENT_EXPRESSION.out.rsem_genes.collect{it[1]},
+                            RSEM_ALIGNMENT_EXPRESSION.out.rsem_isoforms.collect{it[1]},
+                            'allSamples')
+        }
+
+        //Step 3: Get Read Group Information
+        READ_GROUPS(reads, "picard")
+
+        // Step 4: Picard Alignment Metrics
+        add_replace_groups = READ_GROUPS.out.read_groups.join(RSEM_ALIGNMENT_EXPRESSION.out.bam)
+        PICARD_ADDORREPLACEREADGROUPS(add_replace_groups)
+
+        PICARD_REORDERSAM(PICARD_ADDORREPLACEREADGROUPS.out.bam, params.picard_dict)
+
+        // Step 5: Picard Alignment Metrics
+        PICARD_SORTSAM(PICARD_REORDERSAM.out.bam, 'coordinate')
+        
+        PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam.join(CHECK_STRANDEDNESS.out.strand_setting), params.ref_flat, params.ribo_intervals)
+
+        // Step 6: Summary Stats
+        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
+
+        MULTIQC (
+            ch_multiqc_files.collect()
+        )
       }
-      
-      GET_READ_LENGTH(read_ch) // set to full reads, regardless of trim state.
-      
-      FASTQC(reads)
-
-      // Check strand setting
-      CHECK_STRANDEDNESS(reads)
-
-      rsem_input = reads.join(CHECK_STRANDEDNESS.out.strand_setting).join(GET_READ_LENGTH.out.read_length)
-
-      // Step 2: RSEM
-      RSEM_ALIGNMENT_EXPRESSION(rsem_input, params.rsem_ref_files, params.rsem_star_prefix, params.rsem_ref_prefix)
-
-      SEX_DETERMINATION(RSEM_ALIGNMENT_EXPRESSION.out.rsem_genes)
-
-      if (params.merge_rna_counts) {
-        MERGE_RSEM_COUNTS(RSEM_ALIGNMENT_EXPRESSION.out.rsem_genes.collect{it[1]},
-                          RSEM_ALIGNMENT_EXPRESSION.out.rsem_isoforms.collect{it[1]},
-                          'allSamples')
-      }
-
-      //Step 3: Get Read Group Information
-      READ_GROUPS(reads, "picard")
-
-      // Step 4: Picard Alignment Metrics
-      add_replace_groups = READ_GROUPS.out.read_groups.join(RSEM_ALIGNMENT_EXPRESSION.out.bam)
-      PICARD_ADDORREPLACEREADGROUPS(add_replace_groups)
-
-      PICARD_REORDERSAM(PICARD_ADDORREPLACEREADGROUPS.out.bam, params.picard_dict)
-
-      // Step 5: Picard Alignment Metrics
-      PICARD_SORTSAM(PICARD_REORDERSAM.out.bam, 'coordinate')
-      
-      PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam.join(CHECK_STRANDEDNESS.out.strand_setting), params.ref_flat, params.ribo_intervals)
-
-      // Step 6: Summary Stats
-      ch_multiqc_files = Channel.empty()
-      ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
-      ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
-
-      MULTIQC (
-          ch_multiqc_files.collect()
-      )
     }
   }
 }
