@@ -11,7 +11,9 @@ Parameter | Type | Description
 
 --ref_gtf | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.gtf' or GRCm39: '/projects/omics_share/mouse/GRCm39/transcriptome/annotation/ensembl/v105/Mus_musculus.GRCm39.105.gtf
           | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.gtf'
-          | The reference fasta to be used in index generation.
+          | The reference gtf to be used in index generation.
+
+--ref_gff | null | Used in cases where no GTF is available. When specifiying GFF, set `--ref_gtf FALSE` in the Nextflow command when using this param. The workflow first converts to GTF using AGAT_GFFTOGTF before continuing.
 
 --custom_gene_fasta | null | The path to a fasta file with additonal transcript sequences to add to the index. Will be annotated based on the name provided in the sequnece name field. For example: ">New_Gene_42", where New_Gene_42 will be the name of the gene, transcript, and exon. 
 

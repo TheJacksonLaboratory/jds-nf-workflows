@@ -278,9 +278,106 @@ nextflow_workflow {
 
     }
 
+    test("Full Workflow -- Mouse -- Deepvariant -- Individual Merge") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                deepvariant = true
+                merge_ind = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- Deepvariant -- Individual Merge") {
+        tag "GRCh38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_inds_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                deepvariant = true
+                merge_ind = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Human -- GRCh38-- BAM Input") {
+        tag "GRCh38"
+        tag "options"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/human/hg38_WGS_bam_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                bam_input = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- GRCm38-- BAM Input") {
+        tag "GRCm38"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm10_WGS_bam_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                bam_input = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- GRCm39-- BAM Input") {
+        tag "GRCm39"
+        tag "options"
+        when {
+            params {
+                gen_org = "mouse"
+                genome_build = "GRCm39"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/mouse/mm39_WGS_bam_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'wgs'
+                bam_input = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
 
 }
 
-// NEW TESTS NEEDED: Merge ind with deepvariant
 
 // For sample merging, what if user provides mismatching information in one of the columns? 
