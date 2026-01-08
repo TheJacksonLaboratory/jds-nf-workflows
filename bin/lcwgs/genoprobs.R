@@ -12,19 +12,6 @@
 library(dplyr)
 library(qtl2)
 
-# test_dir
-# test_dir <- "/flashscratch/widmas/QUILT/work/e7/b25b26fc4d81239f8e71d96c7d2958"
-# setwd(test_dir)
-# chrom <- "19"
-# sample_genos <- list.files(pattern = "sample_geno")
-# founder_genos <- list.files(pattern = "founder_geno")
-# pmap <- list.files(pattern = "pmap")
-# gmap <- list.files(pattern = "gmap")
-# metadata <- "covar.csv"
-# cross_type <- "do"
-# smooth_function <- "/projects/compsci/vmp/USERS/widmas/quilt-nf/bin/quilt/smooth_genoprobs.R"
-# smooth_window <- 100
-
 # take arguments
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -54,6 +41,10 @@ smooth_function <- args[8]
 
 # smoothing window
 smooth_window <- as.numeric(args[9])
+
+# Number of cores from Nextflow
+n_cores <- as.numeric(args[10])
+message(paste("Using", n_cores, "cores for parallel operations"))
 
 ## RUN ##
 
@@ -190,7 +181,8 @@ cat("Calculating genotype probabilities...\n")
 pr <- qtl2::calc_genoprob(cross = cross, 
                           map = cross$pmap, 
                           error_prob = 0.002, 
-                          cores = (parallel::detectCores()/1.2), quiet = F)
+                          cores = n_cores, 
+                          quiet = F)
 
 # Smooth genotype probs
 cat("Smoothing genotype probabilities...\n")

@@ -7,13 +7,13 @@ process QUILT_TO_QTL2 {
   maxRetries 1
 
   
-  container 'docker://sjwidmay/bcftools_qtl2:latest'
+  container 'docker://sjwidmay/bcftools_qtl2:1.0.0'
 
   publishDir "${params.pubdir}/quilt_vcfs", pattern:"*_merged.vcf.gz", mode:'copy'
   publishDir "${params.pubdir}/quilt_vcfs", pattern:"*_resolution_summary.csv", mode:'copy'
 
   input:
-  tuple val(chr), val(downsample_to_cov), val(start), val(stop), file(sample_genos), file(sample_genos_index), path(covar_file)
+  tuple val(chr), val(downsample_to_cov), val(start), val(stop), path(sample_genos), path(sample_genos_index), path(covar_file)
 
   output:
   tuple val(chr), val(downsample_to_cov), path("*_founder_geno.csv"), path("*_sample_geno.csv"), path("*_pmap.csv"), path("*_gmap.csv"), path("covar.csv"), path("pheno.csv"), emit: qtl2files

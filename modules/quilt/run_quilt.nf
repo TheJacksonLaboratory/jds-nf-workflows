@@ -7,7 +7,7 @@ process QUILT {
   maxRetries 1
 
   
-  container 'docker://sjwidmay/quilt-nf:latest'
+  container 'docker://sjwidmay/quilt:1.0.0'
 
   input:
   tuple path(bamlist), val(downsample_to_cov), val(chr), val(start), val(stop), path(covar_file)

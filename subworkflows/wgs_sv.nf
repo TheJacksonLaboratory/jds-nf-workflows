@@ -105,21 +105,21 @@ workflow WGS_SV {
 
         // * Merge callers and annotate results
 
-        // Join VCFs together by sampleID and merge via NYGC based script
-        merge_input = BCFTOOLS_DUPHOLD_FILTER_MANTA.out.vcf.join(BCFTOOLS_DUPHOLD_FILTER_DELLY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_LUMPY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_SVABA.out.vcf)
-                        .map { it -> tuple(it[0], tuple(it[1], it[2], it[3], it[4])) }
-        SV_MERGE(merge_input, chrom_list)
-        ANNOTATE_SV(SV_MERGE.out.bedpe, "main")
-        ANNOTATE_SV_SUPPLEMENTAL(SV_MERGE.out.supp_bedpe, "supplemental")
+        // // Join VCFs together by sampleID and merge via NYGC based script
+        // merge_input = BCFTOOLS_DUPHOLD_FILTER_MANTA.out.vcf.join(BCFTOOLS_DUPHOLD_FILTER_DELLY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_LUMPY.out.vcf).join(BCFTOOLS_DUPHOLD_FILTER_SVABA.out.vcf)
+        //                 .map { it -> tuple(it[0], tuple(it[1], it[2], it[3], it[4])) }
+        // SV_MERGE(merge_input, chrom_list)
+        // ANNOTATE_SV(SV_MERGE.out.bedpe, "main")
+        // ANNOTATE_SV_SUPPLEMENTAL(SV_MERGE.out.supp_bedpe, "supplemental")
 
-        ANNOTATE_GENES_SV(ANNOTATE_SV.out.annot_sv_bedpe, "main")
-        ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
+        // ANNOTATE_GENES_SV(ANNOTATE_SV.out.annot_sv_bedpe, "main")
+        // ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
         
-        annot_sv_cnv_input = ANNOTATE_DELLY_CNV.out.delly_annot.join(ANNOTATE_GENES_SV.out.annot_sv_genes_bedpe)
-        ANNOTATE_SV_WITH_CNV(annot_sv_cnv_input, "main")
-        FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
+        // annot_sv_cnv_input = ANNOTATE_DELLY_CNV.out.delly_annot.join(ANNOTATE_GENES_SV.out.annot_sv_genes_bedpe)
+        // ANNOTATE_SV_WITH_CNV(annot_sv_cnv_input, "main")
+        // FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
 
-        annot_sv_cnv_suppl_input = ANNOTATE_DELLY_CNV.out.delly_annot.join(ANNOTATE_GENES_SV_SUPPLEMENTAL.out.annot_sv_genes_bedpe)
-        ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL(annot_sv_cnv_suppl_input, "supplemental")
-        FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")   
+        // annot_sv_cnv_suppl_input = ANNOTATE_DELLY_CNV.out.delly_annot.join(ANNOTATE_GENES_SV_SUPPLEMENTAL.out.annot_sv_genes_bedpe)
+        // ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL(annot_sv_cnv_suppl_input, "supplemental")
+        // FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")   
 }

@@ -20,6 +20,13 @@ cross_type <- args[1]
 # interpolation gridfile
 interp_gridfile <- args[2]
 
+# interpolation script
+interp_script <- args[3]
+
+# Number of cores from Nextflow
+n_cores <- as.numeric(args[4])
+message(paste("Using", n_cores, "cores for parallel operations"))
+
 # cross type
 # cross_type <- args[1]
 if(cross_type == "het3" | cross_type == "cc" | cross_type == "genail4"){
@@ -50,6 +57,8 @@ for(i in 1:length(names(probs))){
   message(genoprobs[i])
   load(genoprobs[i])
   probs[[names(probs)[i]]] <- pr[[1]]
+  rm(pr)  # Remove intermediate object immediately
+  gc()    # Force garbage collection
 }
 
 # assign attributes
@@ -70,6 +79,8 @@ names(new_pmaps) <- chroms
 for(i in 1:length(names(new_pmaps))){
   load(pmaps[i])
   new_pmaps[[names(new_pmaps)[i]]] <- cross$pmap[[1]]
+  rm(cross)  # Remove intermediate object immediately
+  gc()       # Force garbage collection
 }
 message("Saving genotype probabilities")
 saveRDS(object = probs, file = "complete_genoprobs.rds")
@@ -78,14 +89,12 @@ saveRDS(object = new_pmaps, file = "complete_pmap.rds")
 
 # make allele probs object
 message("Generating allele probabilities")
-pr <- probs
-rm(probs)
-apr <- qtl2::genoprob_to_alleleprob(probs = pr, quiet = F, cores = parallel::detectCores()/1.2)
+# CHANGE: Use probs directly instead of copying to pr
+apr <- qtl2::genoprob_to_alleleprob(probs = probs, quiet = F, cores = n_cores)
 message("Saving allele probabilities")
 saveRDS(object = apr, file = "complete_alleleprobs.rds")
 
 # interpolate
-interp_script <- args[3]
 source(interp_script)
 grid <- read.csv(interp_gridfile)
 
@@ -100,12 +109,22 @@ names(grid_map) <- chroms
 
 # multiply the map to make the ranges work
 interp_pmap <- lapply(new_pmaps, function(x) x*1e6)
-pr_interp <- interpolate_genoprobs(probs1 = pr,
+
+# CHANGE: Interpolate and clean up sequentially
+message("Interpolating genotype probabilities...")
+pr_interp <- interpolate_genoprobs(probs1 = probs,
                                     markers1 = interp_pmap,
                                     markers2 = grid_map)
+rm(probs)  # Remove original probs after interpolation
+gc()
+
+message("Interpolating allele probabilities...")
 apr_interp <- interpolate_genoprobs(probs1 = apr,
                                     markers1 = interp_pmap,
                                     markers2 = grid_map)
+rm(apr, interp_pmap)  # Clean up
+gc()
+
 # divide to get it back to Mb
 grid_map <- lapply(grid_map, function(x) x/1e6)
 
@@ -138,15 +157,17 @@ message("Calculating kinship matrix...")
 kinship <- qtl2::calc_kinship(probs = apr_interp, 
                               type = "loco", 
                               use_allele_probs = TRUE, 
-                              cores = parallel::detectCores()/1.2)
+                              cores = n_cores)
 message("Saving kinship matrix...")
 saveRDS(object = kinship, file = "interp_250k_kinship_loco.rds")
+rm(kinship)  # Clean up after saving
+gc()
 
 # Make viterbi object
 message("Calculating maxmarg...")
 m <- qtl2::maxmarg(probs = pr_interp,
                    minprob = 0.5, 
                    quiet = TRUE, 
-                   cores = parallel::detectCores()/1.2)
+                   cores = n_cores)
 message("Saving viterbi...")
 saveRDS(object = m, file = "interp_250k_viterbi.rds")

@@ -13,16 +13,15 @@ Parameter | Default | Description
 --concat_lanes | false | Options: false and true. Default: false. If this boolean is specified, FASTQ files will be concatenated by sample. This option is used in cases where samples are divided across individual sequencing lanes.
 --csv_input | null | Provide a CSV manifest file with the header: "sampleID,lane,fastq_1,fastq_2". See the repository wiki for an example file. Fastq_2 is optional and used only in PE data. Fastq files can either be absolute paths to local files, or URLs to remote files. If remote URLs are provided, `--download_data` must be specified.
 --download_data | null | Requires `--csv_input`. When specified, read data in the CSV manifest will be downloaded from provided URLs. 
---merge_inds | false | In some use cases, samples are structured by a higher organizational level. If specified, `merge_ind` merges of BAMs to the ind level prior to calling (e.g., Ind_42 <-- sampleA, sampleB, sampleC).
 --gen_org | mouse | Options: mouse
 --genome_build | 'GRCm39' | Mouse specific. Options: GRCm39
-
+--library_type | 'seqwell' | Type of DNA sequencing library prep used. Options: 'seqwell', 'ddRADseq'. This parameter is used to select the appropriate sequence QC process.
 --ref_fa | Mouse: '/projects/omics_share/mouse/GRCm39/genome/sequence/ensembl/v105/Mus_musculus.GRCm39.dna.primary_assembly.fa' 
          | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. 
-
 --ref_fa_indices | Mouse: '/projects/omics_share/mouse/GRCm39/genome/indices/ensembl/v105/bwa/Mus_musculus.GRCm39.dna.primary_assembly.fa'
-                 | Pre-compiled BWA index files, points to mouse reference files. 
-
+                 | Pre-compiled BWA index files, points to mouse reference files.
+--ref_haps_dir | '/projects/omics_share/mouse/GRCm39/supporting_files/lcwgs_hr'
+               | Directory containing reference haplotypes for genotype imputation with QUILT.
 --quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
@@ -34,7 +33,7 @@ Parameter | Default | Description
              | See https://kbroman.org/qtl2/assets/vignettes/input_files.html#Detailed_specifications_for_each_cross_type for formatting covariates for different cross types.
 --cross_type | 'do' | Options: do, cc, het3, bxd, genail4, genail8. Parameter specifying the cross type for R/qtl2 QTL mapping.
 --smooth_window | 200 | Number of markers to smooth over when calculating genotype probabilities in R/qtl2.
---interp_250k_gridfile | 200 | '/projects/omics_share/mouse/GRCm39/supporting_files/lcwgs_hr/interp_0.25M_physical_grid.csv'
+--interp_250k_gridfile | '/projects/omics_share/mouse/GRCm39/supporting_files/lcwgs_hr/interp_0.25M_physical_grid.csv'
                              | Uniformly spaced marker grid used to interpolate genotype probabilities to a standard 250k marker grid for R/qtl2 QTL mapping.
 '''  
 }

@@ -3,7 +3,9 @@ process CREATE_BAMLIST {
   cpus 1
   memory 15.GB
   time '00:30:00'
-  
+
+  container 'ubuntu:20.04'
+
   input:
   tuple path(bams), val(bam_paths), val(downsample_to_cov)
 

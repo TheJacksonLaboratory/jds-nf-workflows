@@ -4,7 +4,7 @@ process SEX_CHECK {
   memory 10.GB
   time '00:30:00'
 
-  container 'docker://sjwidmay/lcgbs_hr:latest'
+  container 'docker://sjwidmay/jds_lcwgs_hr:1.0.0'
 
   publishDir "${params.pubdir}", pattern:"sex_check_covar.csv", mode:'copy'
 

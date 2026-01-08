@@ -10,8 +10,6 @@
 
 cd $SLURM_SUBMIT_DIR
 
-QUILT_DIR=/projects/compsci/vmp/USERS/widmas/quilt-nf
-
 # LOAD NEXTFLOW
 module use --append /projects/omics_share/meta/modules
 module load nextflow/24.10.6
@@ -25,5 +23,4 @@ nextflow ../main.nf \
 --pubdir "/flashscratch/${USER}/outputDir" \
 --pubdir "/flashscratch/${USER}/outputDir/work" \
 --covar_file <PATH_TO_YOUR_COVAR_FILE> \
---comment "This script will run haplotype inference on lcWGS data from complex mouse crosses" \
--resume
+--comment "This script will run haplotype inference on lcWGS data from complex mouse crosses"
