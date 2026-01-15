@@ -19,22 +19,6 @@ library(dplyr)
 
 # Read in the data
 args <- commandArgs(trailingOnly = TRUE)
-
-# # Inputs (for testing):
-# baseDir           <- "/flashscratch/widmas/qtl_mapping_outputDir/work/3d/52883ff42ddafa870f93cadf526e8d/"
-# setwd(baseDir)
-# pheno_file        <- "attie_test_pheno.csv"
-# covar_file        <- "attie_500_test_covar.csv"
-# genoprobs_file    <- "attie_500_test_genoprobs.rds"
-# alleleprobs_file  <- "attie_500_test_alleleprobs.rds"
-# map_file          <- 
-# kinship_file      <- "attie_500_test_kinship.rds"
-# pheno_file        <- "attie_test_pheno.csv"
-# covar_info_file    <- "attie_test_transform.csv"
-# outdir            <- "/flashscratch/widmas/qtl_mapping_qc"
-# dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
-
-args <- commandArgs(trailingOnly = TRUE)
 covar_file              <- args[1]
 genoprobs_file          <- args[2]
 alleleprobs_file        <- args[3]
@@ -136,7 +120,6 @@ alleleprobs <- subset(alleleprobs, ind = covar$id)
 
 # Read in the kinship matrix
 kinship <- readRDS(kinship_file)
-stopifnot(unique(unlist(lapply(kinship, dim))) == nrow(covar))
 kinship <- lapply(kinship, function(x){
   new_k <- x[covar$id,covar$id]
   str(x)
