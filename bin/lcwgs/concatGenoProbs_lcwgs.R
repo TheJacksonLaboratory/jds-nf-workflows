@@ -5,7 +5,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250327
+# 20260120
 ################################################################################
 
 library(qtl2)
@@ -43,11 +43,9 @@ if(cross_type == "het3" | cross_type == "cc" | cross_type == "genail4"){
 
 # chromosomes
 chroms <- c(as.character(c(1:19)),"X")
-# chroms <- c(as.character(c(18:19)),"X")
 
 # genotype prob objects
 genoprobs <- paste0("chr_",chroms,"_36_state_probs.RData")
-# genoprobs <- unlist(lapply(genoprobs, function(x) list.files(rundir, pattern = x, recursive = T, full.names = T)))
 print(genoprobs)
 
 # read probs in
@@ -93,7 +91,6 @@ saveRDS(object = new_pmaps, file = "complete_pmap.rds")
 
 # make allele probs object
 message("Generating allele probabilities")
-# CHANGE: Use probs directly instead of copying to pr
 apr <- qtl2::genoprob_to_alleleprob(probs = probs, quiet = F, cores = n_cores)
 message("Saving allele probabilities")
 saveRDS(object = apr, file = "complete_alleleprobs.rds")
@@ -114,7 +111,6 @@ names(grid_map) <- chroms
 # multiply the map to make the ranges work
 interp_pmap <- lapply(new_pmaps, function(x) x*1e6)
 
-# CHANGE: Interpolate and clean up sequentially
 message("Interpolating genotype probabilities...")
 pr_interp <- interpolate_genoprobs(probs1 = probs,
                                     markers1 = interp_pmap,
