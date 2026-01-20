@@ -73,7 +73,6 @@ attr(probs, "alleles") <- unique(unlist(lapply(dimnames(probs[[1]])[[2]],
 # combine physical maps
 message("Combining physical maps...")
 pmaps <-  paste0("chr_",chroms,"_cross.RData")
-# pmaps <- unlist(lapply(pmaps, function(x) list.files(rundir, pattern = x, recursive = T, full.names = T)))
 new_pmaps <- vector(mode = "list", length = length(pmaps))
 names(new_pmaps) <- chroms
 for(i in 1:length(names(new_pmaps))){
@@ -82,6 +81,11 @@ for(i in 1:length(names(new_pmaps))){
   rm(cross)  # Remove intermediate object immediately
   gc()       # Force garbage collection
 }
+is_x_chr <- vector("logical",length = length(new_pmaps))
+names(is_x_chr) <- names(new_pmaps)
+is_x_chr[which(names(is_x_chr) == "X")] <- TRUE
+attr(new_pmaps, "is_x_chr") <- is_x_chr
+
 message("Saving genotype probabilities")
 saveRDS(object = probs, file = "complete_genoprobs.rds")
 saveRDS(object = new_pmaps, file = "complete_pmap.rds")
@@ -127,6 +131,10 @@ gc()
 
 # divide to get it back to Mb
 grid_map <- lapply(grid_map, function(x) x/1e6)
+is_x_chr <- vector("logical",length = length(grid_map))
+names(is_x_chr) <- names(grid_map)
+is_x_chr[which(names(is_x_chr) == "X")] <- TRUE
+attr(grid_map, "is_x_chr") <- is_x_chr
 
 # assign interpolated attributes
 message("Assigning interpolated genoprob attributes...")
