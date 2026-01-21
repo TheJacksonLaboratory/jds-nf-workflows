@@ -20,6 +20,7 @@ kinship_file      <- args[5]
 pheno_file        <- args[6]
 covar_info_file   <- args[7]
 n_perms           <- as.numeric(args[8])
+n_cores          <- as.numeric(args[9])
 
 # Read in files
 covar <- read.csv(covar_file)
@@ -65,7 +66,7 @@ if(any(covar_info$interactive)){
                            addcovar = covar_matrix, 
                            intcovar = interactive_covariate,
                            n_perm = n_perms,
-                           cores = parallel::detectCores())
+                           cores = n_cores)
   
 } else {
   
@@ -75,7 +76,7 @@ if(any(covar_info$interactive)){
                            kinship = kinship,
                            addcovar = covar_matrix,
                            n_perm = n_perms,
-                           cores = parallel::detectCores())
+                           cores = n_cores)
   
 }
 

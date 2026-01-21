@@ -7,7 +7,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20251031
+# 20260121
 ################################################################################
 
 library(qtl2)
@@ -38,14 +38,14 @@ for(i in phenotypes){
   qtl2::plot_scan1(scan1, map, main = i)
   qtl2::add_threshold(map, 
                       thresholdA = summary(perms)[[1]], 
-                      thresholdX = summary(perms)[[2]], col = "red")
+                      thresholdX = summary(perms)[[1]], col = "red")
   dev.off()
   
   # find peaks
   peaks[[i]] <-  qtl2::find_peaks(scan1_output = scan1, 
                                   map = map,
                                   threshold = summary(perms)[[1]], drop = 3, peakdrop = 3,
-                                  thresholdX = summary(perms)[[2]], dropX = 3, peakdropX = 3,
+                                  thresholdX = summary(perms)[[1]], dropX = 3, peakdropX = 3,
                                   expand2markers = TRUE,
                                   sort_by = "pos")
   

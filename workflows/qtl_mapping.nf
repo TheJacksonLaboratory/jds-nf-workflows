@@ -34,15 +34,23 @@ workflow QTL_MAPPING {
     prob_files = DATA_QC.out.probs_files
     
     // Extract phenotype from file name
-    pheno_ch        = DATA_QC.out.pheno_files.flatten().map {  file_path -> def name = file_path.name.replaceFirst(/_pheno\.csv$/, '')
-                                                        [file_path, name] }
-    covar_info_ch   = DATA_QC.out.covar_info_files.flatten().map {  file_path -> def name = file_path.name.replaceFirst(/_covar_info\.csv$/, '')
-                                                        [file_path, name] }
+    pheno_ch = DATA_QC.out.pheno_files
+                     .transpose()
+                     .map { id, file_path -> 
+                         def name = file_path.name.replaceFirst(/_pheno\.csv$/, '')
+                         [id, name, file_path]
+                     }
     
-    pheno_covar_info_ch = pheno_ch.join(covar_info_ch, by: 1)
+    covar_info_ch = DATA_QC.out.covar_info_files
+                          .transpose()
+                          .map { id, file_path -> 
+                              def name = file_path.name.replaceFirst(/_covar_info\.csv$/, '')
+                              [id, name, file_path]
+                          }
+    pheno_covar_info_ch = pheno_ch.join(covar_info_ch, by: [0, 1])
     
     // Combine phenotype files and covar info files across prob files to do QTL mapping in parallel
-    map_perm_ch = prob_files.combine(pheno_covar_info_ch)
+    map_perm_ch = prob_files.combine(pheno_covar_info_ch, by: 0)
     map_perm_ch = map_perm_ch.combine(map_file_ch, by: 0)
     
     // Map QTL
@@ -52,9 +60,9 @@ workflow QTL_MAPPING {
     RUN_PERMS(map_perm_ch)
 
     // // Collect results
-    perm_ch =   RUN_PERMS.out.perm_files.groupTuple()
-    map_ch  =   MAP_QTL.out.scan1_files.groupTuple()
-    harvest_ch = perm_ch.join(map_ch, by: 0)
+    perm_ch = RUN_PERMS.out.perm_files.groupTuple(by: 0)
+    map_ch  = MAP_QTL.out.scan1_files.groupTuple(by: 0)
+    harvest_ch = perm_ch.join(map_ch, by: 0).map{it -> [it[0], it[1], it[2], it[4], it[5]]}
     HARVEST_QTL(harvest_ch)
 
     // Make channels for each QTL

@@ -2,7 +2,7 @@ process MAP_QTL {
 
     tag "$phenotype"
     
-    cpus 8
+    cpus 32
     memory '50 GB'
     
     container 'docker://sjwidmay/lcgbs_hr:latest'
@@ -26,7 +26,8 @@ process MAP_QTL {
             ${alleleprobs_file} \
             ${kinship_file} \
             ${pheno_file} \
-            ${covar_info_file}
+            ${covar_info_file} \
+            ${task.cpus}
     """
 
 }

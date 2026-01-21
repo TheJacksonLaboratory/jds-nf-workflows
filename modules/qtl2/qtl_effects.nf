@@ -2,7 +2,7 @@ process QTL_EFFECTS {
 
     tag "$phenotype"
     
-    cpus 8
+    cpus 32
     memory '50 GB'
     
     container 'docker://sjwidmay/lcgbs_hr:latest'

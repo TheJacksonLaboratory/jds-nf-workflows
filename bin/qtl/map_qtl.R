@@ -7,7 +7,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20251031
+# 20260121
 ################################################################################
 
 library(qtl2)
@@ -20,17 +20,7 @@ alleleprobs_file  <- args[4]
 kinship_file      <- args[5]
 pheno_file        <- args[6]
 covar_info_file   <- args[7]
-
-# # Test files
-# testDir <- "/flashscratch/widmas/qtl_mapping_outputDir/work/90/54b0d7d2c9714ec1697580b56feecd"
-# setwd(testDir)
-# covar_file        <- "covar.csv"
-# alleleprobs_file  <- "apr.rds"
-# map_file          <- "mm10_pmap.rds"
-# kinship_file      <- "kinship.rds"
-# pheno_file        <- list.files(testDir, pattern = "pheno.csv")
-# covar_info_file   <- list.files(testDir, pattern = "covar_info.csv")
-
+n_cores           <- as.numeric(args[8])
 
 # Read in files
 alleleprobs <- readRDS(alleleprobs_file)
@@ -71,7 +61,7 @@ if(any(covar_info$interactive)){
                           kinship = kinship,
                           addcovar = covar_matrix,
                           intcovar = interactive_covariate,
-                          cores = parallel::detectCores())
+                          cores = n_cores)
   
 } else {
   
@@ -80,7 +70,7 @@ if(any(covar_info$interactive)){
                           pheno = pheno, 
                           kinship = kinship,
                           addcovar = covar_matrix,
-                          cores = parallel::detectCores())
+                          cores = n_cores)
   
 }
 

@@ -2,7 +2,7 @@ process RUN_PERMS {
 
     tag "$phenotype"
     
-    cpus 8
+    cpus 32
     memory '50 GB'
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
@@ -13,7 +13,7 @@ process RUN_PERMS {
     tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), path(map_file)
 
     output:
-    tuple val(id), path('*_scan1perms.rds'), emit: perm_files
+    tuple val(id), val(phenotype), path('*_scan1perms.rds'), emit: perm_files
 
     script:
 
@@ -25,7 +25,8 @@ process RUN_PERMS {
             ${kinship_file} \
             ${pheno_file} \
             ${covar_info_file} \
-            ${params.n_perms}
+            ${params.n_perms} \
+            ${task.cpus}
     """
 
 }
