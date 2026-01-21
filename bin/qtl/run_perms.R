@@ -7,7 +7,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20251031
+# 20260121
 ################################################################################
 
 library(qtl2)
@@ -20,16 +20,6 @@ kinship_file      <- args[5]
 pheno_file        <- args[6]
 covar_info_file   <- args[7]
 n_perms           <- as.numeric(args[8])
-
-# Test files
-# workdir <- "/flashscratch/widmas/qtl_mapping_outputDir/work/90/54b0d7d2c9714ec1697580b56feecd"
-# covar_file        <- "covar.csv"
-# alleleprobs_file  <- "apr.rds"
-# map_file          <- "mm10_pmap.rds"
-# kinship_file      <- "kinship.rds"
-# pheno_file        <- list.files(workdir, pattern = "pheno.csv")
-# covar_info_file   <- list.files(workdir, pattern = "covar_info.csv")
-# n_perms <- 5
 
 # Read in files
 covar <- read.csv(covar_file)
@@ -57,6 +47,10 @@ covar_matrix <- covar_matrix[, -1, drop = FALSE]
 # drop the covar column if it has all identical values
 covar_matrix <- covar_matrix[, apply(covar_matrix, 2, function(col) length(unique(col)) > 1), drop = FALSE]
 rownames(covar_matrix) <- covar$id
+attr(map, "is_x_chr") <- unname(attr(map, "is_x_chr"))
+attr(alleleprobs, "is_x_chr") <- unname(attr(alleleprobs, "is_x_chr"))
+
+
 
 # detect any interactive covariates
 if(any(covar_info$interactive)){
@@ -71,8 +65,6 @@ if(any(covar_info$interactive)){
                            addcovar = covar_matrix, 
                            intcovar = interactive_covariate,
                            n_perm = n_perms,
-                           perm_Xsp=TRUE,
-                           chr_lengths=chr_lengths(map),
                            cores = parallel::detectCores())
   
 } else {
@@ -83,8 +75,6 @@ if(any(covar_info$interactive)){
                            kinship = kinship,
                            addcovar = covar_matrix,
                            n_perm = n_perms,
-                           perm_Xsp=TRUE,
-                           chr_lengths=chr_lengths(map),
                            cores = parallel::detectCores())
   
 }
