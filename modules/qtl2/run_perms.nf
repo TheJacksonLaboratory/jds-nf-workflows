@@ -4,6 +4,7 @@ process RUN_PERMS {
     
     cpus 32
     memory '50 GB'
+    time 24.hour
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 

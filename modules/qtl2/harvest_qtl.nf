@@ -4,6 +4,7 @@ process HARVEST_QTL {
     
     cpus 2
     memory '50 GB'
+    time 12.h
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 

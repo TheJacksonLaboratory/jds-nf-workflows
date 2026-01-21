@@ -4,6 +4,7 @@ process MAP_QTL {
     
     cpus 32
     memory '50 GB'
+    time 8.hour
     
     container 'docker://sjwidmay/lcgbs_hr:latest'
 
