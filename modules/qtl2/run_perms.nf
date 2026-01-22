@@ -3,7 +3,7 @@ process RUN_PERMS {
     tag "$phenotype"
     
     cpus 32
-    memory '50 GB'
+    memory '200 GB'
     time 24.hour
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
