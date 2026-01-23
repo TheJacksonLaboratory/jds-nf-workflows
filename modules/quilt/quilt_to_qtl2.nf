@@ -9,8 +9,14 @@ process QUILT_TO_QTL2 {
   
   container 'docker://sjwidmay/bcftools_qtl2:1.0.0'
 
-  publishDir "${params.pubdir}/quilt_vcfs", pattern:"*_merged.vcf.gz", mode:'copy'
-  publishDir "${params.pubdir}/quilt_vcfs", pattern:"*_resolution_summary.csv", mode:'copy'
+  publishDir path: { params.downsample ? "${params.pubdir}/quilt_vcfs/${downsample_to_cov}" : "${params.pubdir}/quilt_vcfs" }, 
+             pattern: "*_merged.vcf.gz", 
+             mode: 'copy'
+  
+  publishDir path: { params.downsample ? "${params.pubdir}/quilt_vcfs/${downsample_to_cov}" : "${params.pubdir}/quilt_vcfs" }, 
+             pattern: "*_resolution_summary.csv", 
+             mode: 'copy'
+  
 
   input:
   tuple val(chr), val(downsample_to_cov), val(start), val(stop), path(sample_genos), path(sample_genos_index), path(covar_file)

@@ -6,7 +6,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20250402
+# 20260123
 ################################################################################
 
 library(dplyr)
@@ -61,6 +61,12 @@ if(all(covar$sex == FALSE)){
 }
 if("original_sex" %in% colnames(covar) & all(covar$original_sex == FALSE)){
   covar$original_sex <- "F"
+}
+if(cross_type != "do"){
+  revised_covar <- covar %>%
+    dplyr::select(-original_sex, -gw_ratio, -sex_ratio)
+  write.csv(revised_covar, file = "covar.csv", row.names = F, quote = F)
+  covar <- read.csv(metadata, tryLogical = F)
 }
 
 

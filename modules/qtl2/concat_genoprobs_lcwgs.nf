@@ -1,14 +1,17 @@
 process CONCATENATE_GENOPROBS {
 
-  cpus 8 
+  cpus 16 
   memory {600.GB * task.attempt}
   time {6.hour * task.attempt}
   errorStrategy 'retry' 
   maxRetries 2 
 
   container 'docker://sjwidmay/jds_lcwgs_hr:1.0.0'
-
-  publishDir "${params.pubdir}/geno_probs", pattern:"*.rds", mode:'copy'
+  
+  publishDir path: { params.downsample ? "${params.pubdir}/geno_probs/${downsample_to_cov}" : "${params.pubdir}/geno_probs" }, 
+             pattern: "*.rds", 
+             mode: 'copy'
+  
   
   input:
   tuple val(chrs), val(downsample_to_cov), path(genoprobs), path(crosses)

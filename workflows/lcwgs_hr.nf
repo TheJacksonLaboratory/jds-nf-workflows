@@ -25,6 +25,8 @@ include {MOSDEPTH} from "${projectDir}/modules/mosdepth/mosdepth"
 
 include {SEX_CHECK} from "${projectDir}/modules/r/lcwgs_sex_check"
 
+include {SAMTOOLS_DEPTH_VALUE} from "${projectDir}/modules/samtools/samtools_depth_value"
+include {SAMTOOLS_DOWNSAMPLE_BAM} from "${projectDir}/modules/samtools/samtools_downsample"
 include {CREATE_BAMLIST} from "${projectDir}/modules/utility_modules/create_bamlist"
 
 include {QUILT} from "${projectDir}/modules/quilt/run_quilt"
@@ -144,16 +146,40 @@ workflow LCWGS_HR{
                                                 .collect()
   SEX_CHECK(coverage_files_channel)
 
+  if (params.downsample){
+  
+    // Extract samtools depth estimate    
+    SAMTOOLS_DEPTH_VALUE(bam_file.join(index_file))
+    coverageFilesChannel = SAMTOOLS_DEPTH_VALUE.out.depth_coef.map { 
+        tuple -> [tuple[0], tuple[1].splitText()[0].replaceAll("\\n", "").toFloat()]
+    }
+    
+    // Use full coverage estimate and specified downsampling levels to subset the bam file
+    downsampleChannel = Channel.fromPath("${params.downsampling_coverage_csv}").splitCsv()
+    downsampled_bams = coverageFilesChannel.join(SAMTOOLS_DEPTH_VALUE.out.bam_out).combine(downsampleChannel)
+    SAMTOOLS_DOWNSAMPLE_BAM(downsampled_bams)
+    bams = SAMTOOLS_DOWNSAMPLE_BAM.out.downsampled_bam.groupTuple(by: 1)
+                                                      .map { bam_files, downsample_to_cov ->
+                                                      def bam_paths = bam_files.collect { it.toString() }
+                                                      tuple(bam_files, bam_paths, downsample_to_cov)
+                                                      }
+                                                      .set { bam_input_ch }
 
-  // Prepare for QUILT
-  bams = bam_file.map {tuple -> tuple[1]}
-                 .collect()
-                 .map{bamlist -> [bamlist, "no_downsample"]}
-                 .map { bam_paths, downsample_to_cov ->
+
+  } else {
+  
+    // Prepare for QUILT
+    bams = bam_file.map {tuple -> tuple[1]}
+                   .collect()
+                   .map{bamlist -> [bamlist, "no_downsample"]}
+                   .map { bam_paths, downsample_to_cov ->
                         def bam_files = bam_paths.collect { file(it) }
                         tuple(bam_files, bam_paths, downsample_to_cov)
                       }
-                 .set { bam_input_ch }
+                   .set { bam_input_ch }
+  }
+
+  
   CREATE_BAMLIST(bam_input_ch)
   chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_type}/chromosome_chunks.csv")
                     .splitCsv(header: true)
@@ -168,7 +194,7 @@ workflow LCWGS_HR{
   QUILT(quilt_inputs)
 
   // Convert QUILT outputs to qtl2 files by chromosome
-  quilt_for_qtl2 = QUILT.out.quilt_vcf.groupTuple()
+  quilt_for_qtl2 = QUILT.out.quilt_vcf.groupTuple(by: [0,1])
                                       .map {tuple -> [ tuple[0], tuple[1][0], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6][0] ]}
   QUILT_TO_QTL2(quilt_for_qtl2)
   
