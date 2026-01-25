@@ -14,6 +14,10 @@ if (params.covar_file == null) {
         error "'--covar_file': \"${params.covar_file}\" is not valid for lcwgs_hr workflow." 
 }
 
+if (params.downsample && params.downsampling_coverage_csv == null) {
+        error "'--downsampling_coverage_csv': \"${params.downsampling_coverage_csv}\" is required when '--downsample' is set to true for lcwgs_hr workflow."
+}
+
     def baseParams = """
     --workflow                      ${params.workflow}
     --gen_org                       ${params.gen_org}
@@ -30,6 +34,8 @@ if (params.covar_file == null) {
     --covar_file                    ${params.covar_file}
     --cross_type                    ${params.cross_type}
     --smooth_window                 ${params.smooth_window}
+    --downsample                    ${params.downsample}
+    --downsampling_coverage_csv     ${params.downsampling_coverage_csv}
     -w                              ${workDir}
     -c                              ${params.config}
     --pubdir                        ${params.pubdir}

@@ -155,15 +155,17 @@ workflow LCWGS_HR{
     }
     
     // Use full coverage estimate and specified downsampling levels to subset the bam file
-    downsampleChannel = Channel.fromPath("${params.downsampling_coverage_csv}").splitCsv()
+    downsampleChannel = Channel.fromPath("${params.downsampling_coverage_csv}")
+                           .splitCsv()
+                           .flatten()
     downsampled_bams = coverageFilesChannel.join(SAMTOOLS_DEPTH_VALUE.out.bam_out).combine(downsampleChannel)
+
     SAMTOOLS_DOWNSAMPLE_BAM(downsampled_bams)
     bams = SAMTOOLS_DOWNSAMPLE_BAM.out.downsampled_bam.groupTuple(by: 1)
                                                       .map { bam_files, downsample_to_cov ->
                                                       def bam_paths = bam_files.collect { it.toString() }
                                                       tuple(bam_files, bam_paths, downsample_to_cov)
-                                                      }
-                                                      .set { bam_input_ch }
+                                                      }.set { bam_input_ch }
 
 
   } else {
@@ -195,7 +197,7 @@ workflow LCWGS_HR{
 
   // Convert QUILT outputs to qtl2 files by chromosome
   quilt_for_qtl2 = QUILT.out.quilt_vcf.groupTuple(by: [0,1])
-                                      .map {tuple -> [ tuple[0], tuple[1][0], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6][0] ]}
+                                      .map {tuple -> [ tuple[0], tuple[1], tuple[2], tuple[3], tuple[4], tuple[5], tuple[6][0] ]}                      
   QUILT_TO_QTL2(quilt_for_qtl2)
   
   // Reconstruct haplotypes with qtl2
@@ -216,7 +218,7 @@ workflow LCWGS_HR{
   ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
   MULTIQC (
       ch_multiqc_files.collect()
-  )
+ )
 
 }
 

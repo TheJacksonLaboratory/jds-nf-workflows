@@ -32,6 +32,8 @@ Parameter | Default | Description
 --covar_file | /<PATH> | The path to the .csv file used specify covariates in an R/qtl2 QTL mapping experiment
              | See https://kbroman.org/qtl2/assets/vignettes/input_files.html#Detailed_specifications_for_each_cross_type for formatting covariates for different cross types.
 --cross_type | 'do' | Options: do, cc, het3, bxd, genail4, genail8. Parameter specifying the cross type for R/qtl2 QTL mapping.
+--downsample | 'false' | Options: true, false. If true, downsample the aligned reads to coverage specified.
+--downsampling_coverage_csv | /<PATH> | Path to a CSV file specifying the target coverage for downsampling each sample. The CSV file is just one unheadered column with numeric values (X coverage) in each row.
 --smooth_window | 200 | Number of markers to smooth over when calculating genotype probabilities in R/qtl2.
 --interp_250k_gridfile | '/projects/omics_share/mouse/GRCm39/supporting_files/lcwgs_hr/interp_0.25M_physical_grid.csv'
                              | Uniformly spaced marker grid used to interpolate genotype probabilities to a standard 250k marker grid for R/qtl2 QTL mapping.
