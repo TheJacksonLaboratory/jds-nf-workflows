@@ -18,13 +18,6 @@ library(dplyr)
 
 # ##### VARIABLES #####
 
-# Arguments:
-# founder_file: path to founder VCF.
-# sample_file:  path to sample VCF produced by QUILT.
-# meta_file:    path to sample metadata file.
-# marker_file:  path to QUILT marker file with bp and cM values.
-# cross_type:   cross type according to wrt qtl2 preferences
-
 args = commandArgs(trailingOnly = TRUE)
 
 # Founder genotypes and marker positions
