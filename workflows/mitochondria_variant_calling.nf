@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/mitochondria_variant_calling.nf"
 include {param_log} from "${projectDir}/bin/log/mitochondria_variant_calling.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {extract_csv_bam} from "${projectDir}/bin/shared/extract_csv_bam.nf"
 include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
 
@@ -15,7 +16,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 bam_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
 input_ch = bam_input_ch.map{it -> [it[0], file(it[2]), file(it[3])]}

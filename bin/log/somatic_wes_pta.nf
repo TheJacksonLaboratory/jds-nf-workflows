@@ -5,10 +5,14 @@ println '\n'
 println logo.show()
 
 def param_log(){
+
+def message = ""
+
 if (params.gen_org != "human") {
     error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 
 }
-log.info """
+
+message = """
 WES PARAMETER LOG
 
 --comment: ${params.comment}
@@ -56,16 +60,15 @@ ______________________________________________________
 --cosmic                        ${params.cosmic}
 --snpEff_config                 ${params.snpEff_config}
 
-
-
-
-
-
 Project Directory: ${projectDir}
 
 Command line call: 
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+
+return(message)
 
 }

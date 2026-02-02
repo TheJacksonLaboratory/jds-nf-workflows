@@ -1,20 +1,20 @@
-def PARAM_LOG(){
-    if (!params.ref_fa || params.ref_fa == "<PATH>" || params.ref_fa == "/<PATH>") {
-        error "'--ref_fa': \"${params.ref_fa}\" is not valid, specify path to reference FASTA" 
-    }
+def param_log(){
+if (!params.ref_fa || params.ref_fa == "<PATH>" || params.ref_fa == "/<PATH>") {
+    error "'--ref_fa': \"${params.ref_fa}\" is not valid, specify path to reference FASTA" 
+}
 
-    if (!params.sampleID || params.ref_fa == "<STRING>") {
-        error "'--sampleID': \"${params.sampleID}\" is not valid, specify a name for this sample" 
-    }
-    
-    if (params.gen_org != "mouse") {
-        error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'mouse'" 
-    }
-    
-    log.info """
-______________________________________________________
+if (!params.sampleID || params.ref_fa == "<STRING>") {
+    error "'--sampleID': \"${params.sampleID}\" is not valid, specify a name for this sample" 
+}
 
-              ILLUMINA SV PARAMETER LOG
+if (params.gen_org != "mouse") {
+    error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'mouse'" 
+}
+    
+def message = ""
+
+message = """
+ILLUMINA SV PARAMETER LOG
 
 --comment: ${params.comment}
 
@@ -54,4 +54,8 @@ ______________________________________________________
 Project Directory: ${projectDir}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

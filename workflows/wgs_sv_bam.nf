@@ -4,9 +4,9 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/wgs_sv_bam.nf"
 include {param_log} from "${projectDir}/bin/log/wgs_sv_bam.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {extract_csv_bam} from "${projectDir}/bin/shared/extract_csv_bam.nf"
 include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
-
 
 // help if needed
 if (params.help){
@@ -15,7 +15,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 bam_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
 

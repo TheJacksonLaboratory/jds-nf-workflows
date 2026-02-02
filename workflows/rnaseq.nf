@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/rnaseq"
 include {param_log} from "${projectDir}/bin/log/rnaseq"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
 include {extract_csv_bam_rnaseq} from "${projectDir}/bin/shared/extract_csv_bam.nf"
@@ -34,8 +35,13 @@ if (params.help){
     exit 0
 }
 
-// log paramiter info
-param_log()
+// log params
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 if (params.download_data && !params.csv_input) {
     exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."

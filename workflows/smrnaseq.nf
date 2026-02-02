@@ -6,6 +6,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/smrnaseq.nf"
 include {param_log} from "${projectDir}/bin/log/smrnaseq.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {INPUT_CHECK} from "${projectDir}/subworkflows/input_check"
 include {FASTQC as FASTQC_RAW;
@@ -90,9 +91,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
 
-
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 // main workflow
 workflow SMRNASEQ {
