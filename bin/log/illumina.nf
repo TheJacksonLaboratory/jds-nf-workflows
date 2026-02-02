@@ -35,6 +35,9 @@ ______________________________________________________
 -c                     ${params.config}
 --quality_phred        ${params.quality_phred}
 --unqualified_perc     ${params.unqualified_perc}
+--trim_poly_g          ${params.trim_poly_g}
+--trim_poly_x          ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len       ${params.poly_x_min_len}" : ""}
 --exclude_regions      ${params.exclude_regions}
 --sv_ins_ref           ${params.sv_ins_ref}
 --sv_del_ref           ${params.sv_del_ref}

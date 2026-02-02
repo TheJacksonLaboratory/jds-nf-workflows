@@ -36,6 +36,9 @@ ______________________________________________________
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 --genotype_targets              ${params.genotype_targets}
 --snpID_list                    ${params.snpID_list}
 --snp_annotations               ${params.snp_annotations}

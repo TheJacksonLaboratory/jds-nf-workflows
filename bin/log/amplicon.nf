@@ -37,6 +37,9 @@ ______________________________________________________
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}

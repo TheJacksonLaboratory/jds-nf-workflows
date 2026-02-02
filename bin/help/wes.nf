@@ -27,8 +27,12 @@ Parameter | Default | Description
                  | Human: '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta'
                  | Pre-compiled BWA index files, points to human reference when --gen_org human. 
 
---min_pct_hq_reads | 0.0 | The minimum percent of high-quality reads passing when trimming the fastq files to continue with the analysis. 0.0 disables this filter.
---hq_pct | 70 | The percentage of bases within a read that must be high quality for the read to pass filtering"
+--quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
+--unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
+--detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
+--trim_poly_g | false | For Illumina NextSeq/NovaSeq data, polyG can happen in read tails since G means no signal in the Illumina two-color systems. fastp can detect the polyG in read tails and trim them. This option is disabled by default. If your data is from NextSeq or NovaSeq, please enable this option to get better result.
+--trim_poly_x | false | If enabled, polyX trimming is done. If specified with polyG trimming, that is done first then polyX trimming is done. A minimum length can be set with --poly_x_min_len for fastp to detect polyX
+--poly_x_min_len | 10 | Minimum length of polyX to be trimmed. Default is 10.
 
 --target_gatk | Mouse: '/projects/omics_share/mouse/GRCm38/supporting_files/capture_kit_files/agilent/v2/S32371113_mouse_exon_V2.bare.bed' 
               | Human: '/projects/omics_share/human/GRCh38/supporting_files/capture_kit_files/agilent/v7/S31285117_MergedProbes_no_gene_names.bed'

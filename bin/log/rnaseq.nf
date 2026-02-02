@@ -88,6 +88,10 @@ def commonParams = """
 --quality_phred                         ${params.quality_phred}
 --unqualified_perc                      ${params.unqualified_perc}
 --detect_adapter_for_pe                 ${params.detect_adapter_for_pe}
+--trim_poly_g                           ${params.trim_poly_g}
+--trim_poly_x                           ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                        ${params.poly_x_min_len}" : ""}
+
 --seed_length                           ${params.seed_length}
 --strandedness_ref                      ${params.strandedness_ref}
 --strandedness_gtf                      ${params.strandedness_gtf}

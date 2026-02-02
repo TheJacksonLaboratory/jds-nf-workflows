@@ -34,8 +34,12 @@ def help(){
 
   fastp filtering paramenters:
   Parameter | Default | Description
-  --quality_phred | 30 | Quality score threshold.
-  --unqualified_perc | 30 | Percent threhold of unqualified bases to pass reads.
+  --quality_phred | 15 | Quality score threshold.
+  --unqualified_perc | 40 | Percent threhold of unqualified bases to pass reads.
+  --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
+  --trim_poly_g | false | For Illumina NextSeq/NovaSeq data, polyG can happen in read tails since G means no signal in the Illumina two-color systems. fastp can detect the polyG in read tails and trim them. This option is disabled by default. If your data is from NextSeq or NovaSeq, please enable this option to get better result.
+  --trim_poly_x | false | If enabled, polyX trimming is done. If specified with polyG trimming, that is done first then polyX trimming is done. A minimum length can be set with --poly_x_min_len for fastp to detect polyX
+  --poly_x_min_len | 10 | Minimum length of polyX to be trimmed. Default is 10.
 
   SURVIVOR merging parameters:
   Parameter | Default | Description

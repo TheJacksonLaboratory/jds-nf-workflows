@@ -26,6 +26,9 @@ def baseParams = """
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 --xengsort_host_fasta           ${params.xengsort_host_fasta}
 --xengsort_idx_path             ${params.xengsort_idx_path}
 --xengsort_idx_name             ${params.xengsort_idx_name}
