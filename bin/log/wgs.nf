@@ -16,7 +16,10 @@ def param_log(){
     if (params.gen_org == 'other' && params.run_mt_calling) {
         error "'--gen_org': When '--gen_org other' is specified, '--run_mt_calling' must be false. MT calling is only supported for mouse and human samples."
     }
-
+    
+    if (params.bam_input && !params.csv_input) {
+        error "When `--bam_input` is specified, input must be provided with `--csv_input`." 
+    }
 
     def baseParams = """
     --workflow                      ${params.workflow}

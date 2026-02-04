@@ -41,10 +41,10 @@ Parameter | Default | Description
                    | GTF file used with kallisto index file used in strandedness determination. 
 --strandedness     | null | Library strandedness override. Supported options are 'reverse_stranded' or 'forward_stranded' or 'non_stranded'. This override parameter is only used when the tool `check_strandedness` fails to classify the strandedness of a sample. If the tool provides a strand direction, that determination is used." 
 
---rsem_ref_files | /projects/omics_share/mouse/GRCm38/transcriptome/indices/ensembl/v102/bowtie2 | Pre-compiled index files. Refers to human indices when --gen_org human. JAX users should not change this, unless using STAR indices.
---rsem_ref_prefix | 'Mus_musculus.GRCm38.dna.toplevel' | Prefix for index files. JAX users should not change this, unless using STAR indices. Refers to human indices when --gen_org human.
---seed_length | 25 | 'Seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie, it uses this value for Bowtie's seed length parameter.'
---rsem_aligner | 'bowtie2' | Options: bowtie2 or star. The aligner algorithm used by RSEM. Note, if using STAR, point rsem_ref_files to STAR based indices.
+--rsem_ref_files | /projects/omics_share/mouse/GRCm38/transcriptome/indices/ensembl/v102 | Pre-compiled index files. Refers to human indices when --gen_org human.
+--rsem_ref_prefix | 'Mus_musculus.GRCm38.dna.toplevel' | Prefix for index files. Refers to human indices when --gen_org human.
+--seed_length | 25 | 'Bowtie2 seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie2, it uses this value for Bowtie2's seed length parameter.'
+--rsem_aligner | 'star' | Options: star or bowtie2. The aligner algorithm used by RSEM.
 
 --fragment_length_mean | 280 | Used when --read_type == 'SE'. "The mean of the fragment length distribution, which is assumed to be a Gaussian."
 --fragment_length_sd | 50 | Used when --read_type == 'SE'. "The standard deviation of the fragment length distribution, which is assumed to be a Gaussian. "
@@ -77,7 +77,7 @@ Parameter| Default| Description
 --ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. 
 --ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  
 
---rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified, andr --ref_fa / --ref_gtf will be used to generate one. 
+--rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified. If not provided --ref_fa / --ref_gtf will be used to generate one. 
 --rsem_reference_name | null | User provided path to an RSEM reference name. If not provided, --ref_fa / --ref_gtf will be used to generate one. 
 --ref_fa | null | Genomic reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
 --ref_gtf | null | Transcript GTF reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 

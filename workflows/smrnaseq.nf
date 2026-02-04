@@ -297,7 +297,7 @@ workflow SMRNASEQ {
 
   // Mirdeep2
   MIRDEEP2_MAPPER ( mature_reads, genome_index.collect() )
-  MIRDEEP2_RUN (params.fasta, MIRDEEP2_MAPPER.out.mirdeep2_inputs, params.formatted_hairpin, params.formatted_mature )
+  MIRDEEP2_RUN (params.ref_fa, MIRDEEP2_MAPPER.out.mirdeep2_inputs, params.formatted_hairpin, params.formatted_mature )
 
   
   // Create channels for multi input files

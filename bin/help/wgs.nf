@@ -15,6 +15,8 @@ Parameter | Default | Description
 --download_data | null | Requires `--csv_input`. When specified, read data in the CSV manifest will be downloaded from provided URLs. 
 --merge_inds | false | In some use cases, samples are structured by a higher organizational level. If specified, `merge_ind` merges of BAMs to the ind level prior to calling (e.g., Ind_42 <-- sampleA, sampleB, sampleC).
 
+--bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
+
 --run_sv | false | Options: false and true. Default: false. If this boolean is specified, structural variant calling will be performed.
 --run_mt_calling | false | Options: false and true. Default: false. If this boolean is specified, mitochondrial variant calling will be performed.
 
@@ -26,7 +28,7 @@ Parameter | Default | Description
 --coverage_cap | null | If an integer value is specified, jvarkit 'Biostar154220' is used to cap coverage at the that value. See: http://lindenb.github.io/jvarkit/Biostar154220.html
 --primary_chrom_bed | '/projects/compsci/omics_share/mouse/GRCm38/genome/annotation/intervals/Mus_musculus.GRCm38.dna.primary_assembly.bed' | A bed file containing the primary chromsomes with positions. Used in limiting jvarkit 'Biostar154220' to those regions with expected coverage.
 
---run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GCVF output will be generated.
+--run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GVCF output will be generated.
 
 --gen_org | mouse | Options: mouse, human, other.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCh38. If other, this parameter is not used.

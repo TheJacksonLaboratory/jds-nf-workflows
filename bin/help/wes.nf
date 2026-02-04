@@ -14,7 +14,7 @@ Parameter | Default | Description
 --csv_input | null | Provide a CSV manifest file with the header: "sampleID,lane,fastq_1,fastq_2". See the repository wiki for an example file. Fastq_2 is optional and used only in PE data. Fastq files can either be absolute paths to local files, or URLs to remote files. If remote URLs are provided, `--download_data` must be specified.
 --download_data | null | Requires `--csv_input`. When specified, read data in the CSV manifest will be downloaded from provided URLs. 
 
---run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GCVF output will be generated.
+--run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GVCF output will be generated.
 
 --gen_org | mouse | Options: mouse and human.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
