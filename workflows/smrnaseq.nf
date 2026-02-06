@@ -97,11 +97,11 @@ param_log()
 // main workflow
 workflow SMRNASEQ {
 
-  if (params.input)     { ch_input = file(params.input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
+  if (params.csv_input)     { ch_input = file(params.csv_input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
 
 
   // SUBWORKFLOW: Read in samplesheet, validate and stage input files
-  INPUT_CHECK(file(params.input)
+  INPUT_CHECK(file(params.csv_input)
   )
   .reads
   .dump(tag: 'group')
