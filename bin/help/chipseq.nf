@@ -34,7 +34,7 @@ Parameter | Default | Description
 --adaptorSeq | 'AGATCGGAAGAGC' | Adapter sequence to be trimmed. This sequence is the standard Illumina adapter sequence.
 
 --mismatch_penalty | 4 | The BWA penalty for a mismatch, set to BWA mem default by default.
---bwa_min_score | false | Don’t output BWA MEM alignments with score lower than this parameter (Default: false)
+--bwa_min_score | null | Don’t output BWA MEM alignments with score lower than this parameter (Default: null and unused)
 --keep_dups | false | Duplicate reads are not filtered from alignments (Default: false)
 --keep_multi_map | false | Reads mapping to multiple locations in the genome are not filtered from alignments (Default: false)
 --bamtools_filter_pe_config | /<PATH> | The path to bamtools_filter_pe.json for paired end (PE)

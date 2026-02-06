@@ -34,7 +34,7 @@ The following are human specific parameters. To see help for mouse, add `--gen_o
 --ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.fasta' | The reference fasta to be used throughout the process for alignment as well as any downstream analysis, points to human reference when --gen_org human. 
 --ref_fa_indices | '/projects/omics_share/human/GRCh38/genome/indices/gatk/bwa/Homo_sapiens_assembly38.fasta' | Pre-compiled BWA index files. 
 
---ref_fa_dict | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.dict' | FASTA dictonary file.  
+--ref_fa_dict | '/projects/omics_share/human/GRCh38/genome/sequence/gatk/Homo_sapiens_assembly38.dict' | FASTA dictionary file.  
 --combined_reference_set | '/projects/compsci/omics_share/human/GRCh38/supporting_files/PTA_inputs/combined_ref_set/Homo_sapiens_assembly38.fasta' | Several tools (GRIDSS, SVABA) requires reference and bwa index files in same directory. Links used within this directory to avoid duplication of fasta and bwa indicies. See note in directory. 
 
 --mismatch_penalty | 8 | The BWA penalty for a mismatch.

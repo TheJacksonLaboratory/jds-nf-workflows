@@ -101,11 +101,11 @@ workflow.onComplete {
 // main workflow
 workflow SMRNASEQ {
 
-  if (params.input)     { ch_input = file(params.input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
+  if (params.csv_input)     { ch_input = file(params.csv_input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
 
 
   // SUBWORKFLOW: Read in samplesheet, validate and stage input files
-  INPUT_CHECK(file(params.input)
+  INPUT_CHECK(file(params.csv_input)
   )
   .reads
   .dump(tag: 'group')
@@ -301,7 +301,7 @@ workflow SMRNASEQ {
 
   // Mirdeep2
   MIRDEEP2_MAPPER ( mature_reads, genome_index.collect() )
-  MIRDEEP2_RUN (params.fasta, MIRDEEP2_MAPPER.out.mirdeep2_inputs, params.formatted_hairpin, params.formatted_mature )
+  MIRDEEP2_RUN (params.ref_fa, MIRDEEP2_MAPPER.out.mirdeep2_inputs, params.formatted_hairpin, params.formatted_mature )
 
   
   // Create channels for multi input files
