@@ -1,0 +1,37 @@
+nextflow_process {
+
+    name "Test Process GATK_GATHERBQSRREPORTS"
+    script "modules/gatk/gatk_gatherbqsrreports.nf"
+    process "GATK_GATHERBQSRREPORTS"
+
+    test("Main Function") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                read_type = "PE"
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr10_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr1_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr2_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr3_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr4_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr5_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr6_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr7_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr8_recal_data.table', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/wgs/recal_data/A2_chr9_recal_data.table', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+}
