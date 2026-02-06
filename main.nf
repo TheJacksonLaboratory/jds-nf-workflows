@@ -72,11 +72,17 @@ else if (params.workflow == "generate_rnaseq_index"){
 else if (params.workflow == "joint_gvcf_calling"){
   include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
 }
-else if (params.workflow == "wgs_long_read"){
-  include {wgs_long_read} from './workflows/wgs_long_read'
+else if (params.workflow == "qtl_mapping"){
+  include {QTL_MAPPING} from './workflows/qtl_mapping'
+}
+else if (params.workflow == "haplotype_reconstruction"){
+  include {HAPLOTYPE_RECONSTRUCTION} from './workflows/haplotype_reconstruction'
 }
 else if (params.workflow == "mitochondria_variant_calling"){
   include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
+} 
+else if (params.workflow == "wgs_long_read"){
+  include {wgs_long_read} from './workflows/wgs_long_read'
 }
 else if (params.workflow == "reannotate_pta"){
   include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
@@ -165,6 +171,12 @@ workflow{
   }
   if (params.workflow == "mitochondria_variant_calling"){
     MITOCHONDRIA_VARIANT_CALLING()
+  }
+  if (params.workflow == "qtl_mapping"){
+    QTL_MAPPING()
+  }
+  if (params.workflow == "haplotype_reconstruction"){
+    HAPLOTYPE_RECONSTRUCTION()
   }
   if (params.workflow == "reannotate_pta"){
     REANNOTATE_PTA()
