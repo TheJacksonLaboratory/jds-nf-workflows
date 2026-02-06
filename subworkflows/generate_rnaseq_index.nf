@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/generate_rnaseq_index.nf"
 include {param_log} from "${projectDir}/bin/log/generate_rnaseq_index.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {AGAT_GFFTOGTF} from "${projectDir}/modules/agat/agat_gfftogtf"
 include {MAKE_CUSTOM_TRANSCRIPTOME} from "${projectDir}/modules/utility_modules/make_custom_transcriptome"
 include {RSEM_PREPAREREFERENCE as RSEM_PREPAREREFERENCE_BOWTIE2;
@@ -20,7 +21,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 def checkFileExists(filePath, name) {
     if (filePath && !file(filePath).exists()) {

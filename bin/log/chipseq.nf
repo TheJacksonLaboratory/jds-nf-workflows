@@ -5,8 +5,12 @@ println '\n'
 println logo.show()
 
 def param_log(){
+
+def message = ""
+
 if (params.gen_org=='human')
-  log.info """
+
+message = """
 CHIPSEQ PARAMETER LOG
 
 --comment: ${params.comment}
@@ -60,7 +64,7 @@ ${workflow.commandLine}
 ______________________________________________________
 """
 else
-log.info """
+message = """
 CHIPSEQ PARAMETER LOG
 
 --comment: ${params.comment}
@@ -113,5 +117,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
 
 }

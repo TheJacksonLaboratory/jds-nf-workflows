@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/ancestry.nf"
 include {param_log} from "${projectDir}/bin/log/ancestry.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
 include {BCFTOOLS_MPILEUP} from "${projectDir}/modules/bcftools/bcftools_mpileup"
 include {BCFTOOLS_CALL} from "${projectDir}/modules/bcftools/bcftools_call"
@@ -21,7 +22,12 @@ if (params.help){
 // main workflow
 workflow ANCESTRY_RUN {
     // log params
-    param_log()
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
 
     // prepare reads channel
     if (params.csv_input) {
