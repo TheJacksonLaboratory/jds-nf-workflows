@@ -5,7 +5,10 @@ println '\n'
 println logo.show()
 
 def param_log(){
-log.info """
+
+def message = ""
+
+message = """
 GENERATE PSEUDOREFERENCE PARAMETER LOG
 
 --comment: ${params.comment}
@@ -38,4 +41,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

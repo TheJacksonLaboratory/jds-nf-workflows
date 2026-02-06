@@ -9,6 +9,7 @@ process RSEM_ALIGNMENT_EXPRESSION {
     container 'quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0'
 
     publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*stats", mode:'copy', enabled: params.rsem_aligner == "bowtie2"
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*final.out", mode:'copy', enabled: params.rsem_aligner == "star"
     publishDir "${params.pubdir}/${sampleID}", pattern: "*results*", mode:'copy'
     publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*genome.sorted.ba*", mode:'copy'
     publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*transcript.sorted.ba*", mode:'copy'

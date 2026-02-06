@@ -4,8 +4,13 @@ logo = new Logo()
 println '\n'
 println logo.show()
 
+
+
 def param_log(){
-log.info """
+
+def message = ""
+
+message = """
 GENERATE DO GBRS INPUT FILES
 
 Results Published to: ${params.pubdir}
@@ -21,4 +26,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

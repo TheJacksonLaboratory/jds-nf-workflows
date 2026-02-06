@@ -21,6 +21,10 @@ process FASTP {
     script:
 
     detect_adapter = params.detect_adapter_for_pe ? "--detect_adapter_for_pe" : ""
+    polyTrim = params.trim_poly_g ? "--trim_poly_g" : ""
+    if (params.trim_poly_x) {
+        polyTrim = polyTrim + " --trim_poly_x --poly_x_min_len ${params.poly_x_min_len}"
+    }
 
     if (params.read_type == "SE" || !params.fastq2)
         """
@@ -29,6 +33,7 @@ process FASTP {
             -q ${params.quality_phred} \
             -u ${params.unqualified_perc} \
             -w ${task.cpus} \
+            ${polyTrim} \
             -j ${sampleID}_fastp.json \
             -h ${sampleID}_fastp_report.html \
             -R "${sampleID} fastp report"
@@ -42,6 +47,7 @@ process FASTP {
             -q ${params.quality_phred} \
             -u ${params.unqualified_perc} \
             -w ${task.cpus} \
+            ${polyTrim} \
             ${detect_adapter} \
             -j ${sampleID}_fastp.json \
             -h ${sampleID}_fastp_report.html \

@@ -9,6 +9,7 @@ include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_str
 include {STAR_ALIGN} from "${projectDir}/modules/star/star_align_rsem"
 include {UMITOOLS_DEDUP as UMITOOLS_DEDUP_GENOME;
          UMITOOLS_DEDUP as UMITOOLS_DEDUP_TRANSCRIPT} from "${projectDir}/modules/umitools/umitools_dedup"
+include {SAMTOOLS_SORT} from "${projectDir}/modules/samtools/samtools_sort"
 include {UMITOOLS_PREPAREFORRSEM} from "${projectDir}/modules/umitools/umitools_prepareforrsem"
 include {RSEM_EXPRESSION} from "${projectDir}/modules/rsem/rsem_expression_umi"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
@@ -62,12 +63,19 @@ workflow UMI_RNASEQ {
         UMITOOLS_DEDUP_GENOME(STAR_ALIGN.out.sorted_genomic_bam_bai)
         UMITOOLS_DEDUP_TRANSCRIPT(STAR_ALIGN.out.sorted_transcript_bam_bai)
 
+        // Restore name sorting - RSEM rquires BAM to be name-sorted (i.e., query-name sorted)
+        SAMTOOLS_SORT (
+            UMITOOLS_DEDUP_TRANSCRIPT.out.bam,
+            '-n',
+            'name_sorted.bam'
+        )
+
         // RSEM Quantification
         if (params.read_type == 'PE') {
-            UMITOOLS_PREPAREFORRSEM(UMITOOLS_DEDUP_TRANSCRIPT.out.bam)
+            UMITOOLS_PREPAREFORRSEM(SAMTOOLS_SORT.out.sorted_file)
             rsem_input = UMITOOLS_PREPAREFORRSEM.out.bam.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
         } else {
-            rsem_input = UMITOOLS_DEDUP_TRANSCRIPT.out.bam.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
+            rsem_input = SAMTOOLS_SORT.out.sorted_file.join(GET_READ_LENGTH.out.read_length).join(CHECK_STRANDEDNESS.out.strand_setting)
         }
 
         RSEM_EXPRESSION(rsem_input, params.rsem_ref_files, params.rsem_star_prefix)

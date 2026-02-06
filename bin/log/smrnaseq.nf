@@ -16,14 +16,16 @@ if (!params.csv_input) {
 
 
 def param_log(){
+
+def message = ""
+
 if (params.gen_org == 'human') {
   if (params.mirtrace_species != 'hsa') {
     log.error "--mirtrace_species should be set to 'hsa' when '--gen_org human'"
     System.exit(1)
   }
 
-
-  log.info """
+  message = """
   SMRNASEQ PARAMETER LOG
 
   --comment: ${params.comment}
@@ -70,7 +72,7 @@ if (params.gen_org == 'human') {
     System.exit(1)
   }
 
-  log.info """
+  message = """
   SMRNASEQ PARAMETER LOG
 
   --comment: ${params.comment}
@@ -113,4 +115,9 @@ if (params.gen_org == 'human') {
   """
 
   }
+
+  log.info(message)
+
+  return(message)
+
 }
