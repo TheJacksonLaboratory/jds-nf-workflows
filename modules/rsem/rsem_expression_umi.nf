@@ -76,6 +76,7 @@ process RSEM_EXPRESSION {
     ${read_type} \
     ${frag} \
     --alignments \
+    --append-names \
     ${bam} \
     \${rsem_ref_name} \
     ${output_name}
