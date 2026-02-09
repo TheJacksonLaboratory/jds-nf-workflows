@@ -2,7 +2,7 @@
 
 ## Release 0.9.3
 
-**NOTE"** The required version of Nextflow is now set to greater than 24.04.0 less than 25.10.0. Users have reported issues when running the workflows in this repository with version 25.10.+.  
+**NOTE:** The required version of Nextflow is now set to greater than 24.04.0 less than 25.10.0. Users have reported issues when running the workflows in this repository with version 25.10.+.  
 
 In this release we add three new workflows aligned with the goals of JAX GeDI:
 
