@@ -22,6 +22,7 @@ table_columns_visible:
     total_sequences: False
 
 extra_fn_clean_exts:
+  - "_aln"
   - "_sortsam"
   - "_realigned_BQSR"
   - "_FilterTrim"

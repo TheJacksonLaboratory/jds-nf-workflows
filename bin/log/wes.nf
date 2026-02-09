@@ -9,8 +9,11 @@ if (params.gen_org != "human" && params.gen_org != "mouse") {
   error "'--gen_org': \"${params.gen_org}\" is not valid, supported options are 'mouse', or 'human'" 
 }
 
+def message = ""
+
 if (params.gen_org=='human')
-log.info """
+
+message = """
 WES PARAMETER LOG
 
 --comment: ${params.comment}
@@ -36,6 +39,9 @@ ______________________________________________________
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
 --target_gatk                   ${params.target_gatk}
@@ -60,7 +66,7 @@ ${workflow.commandLine}
 ______________________________________________________
 """
 else
-log.info """
+message = """
 WES PARAMETER LOG
 
 --comment: ${params.comment}
@@ -85,6 +91,9 @@ ______________________________________________________
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 --run_gvcf                      ${params.run_gvcf}
 --dbSNP                         ${params.dbSNP}
 --target_gatk                   ${params.target_gatk}
@@ -101,5 +110,9 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+
+return(message)
 
 }

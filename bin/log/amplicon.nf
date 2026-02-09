@@ -9,9 +9,10 @@ if (params.gen_org != "human") {
   error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 
 }
 
-if (params.workflow=='amplicon_generic')
+def message = ""
 
-log.info """
+if (params.workflow=='amplicon_generic')
+message = """
 AMPLICON PARAMETER LOG
 
 --comment: ${params.comment}
@@ -36,6 +37,9 @@ ______________________________________________________
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
@@ -62,7 +66,7 @@ ${workflow.commandLine}
 ______________________________________________________
 """
 else
-"""
+message = """
 AMPLICON PARAMETER LOG
 
 --comment: ${params.comment}
@@ -109,4 +113,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

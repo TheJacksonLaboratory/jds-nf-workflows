@@ -47,6 +47,9 @@ process RSEM_EXPRESSION {
 }
 
 /*
+This module uses pre-aligned BAM files provided by the user, are validated by a separate RSEM based process in this repository.
+
+From the RSEM docs: 
 Using an alternative aligner
 
 

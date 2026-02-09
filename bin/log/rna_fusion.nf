@@ -8,7 +8,10 @@ def param_log(){
 if (params.gen_org != "human") {
     error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 
 }
-log.info """
+
+def message = ""
+
+message = """
 RNA FUSION PARAMETER LOG
 
 --comment: ${params.comment}
@@ -60,5 +63,9 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+
+return(message)
 
 }
