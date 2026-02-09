@@ -1,5 +1,183 @@
 # RELEASE NOTES
 
+## Release 0.9.3
+
+**NOTE"** The required version of Nextflow is now set to greater than 24.04.0 less than 25.10.0. Users have reported issues when running the workflows in this repository with version 25.10.+.  
+
+In this release we add three new workflows aligned with the goals of JAX GeDI:
+
+1. Low-coverage WGS Haplotype reconstruction (`lcwgs_hr`)
+1. Haplotype reconstruction (`haplotype_reconstruction`)
+1. QTL Mapping (`qtl_mapping`)
+
+The two haplotype reconstruction workflows support the conversion of either low-coverage WGS sequencing reads or GigaMUGA marker genotypes obtained from genetically diverse mice to allele probabilities. The outputs of both workflows can be paired with phenotypes collected on the same mice and submitted to the QTL mapping workflow to link genetic variation in the analyzed population to variation in those phenotypes.  
+
+Please see the respective wiki pages for each workflow for more details.
+
+We have expanded the RNAseq workflow in two ways: 
+1. UMI-aware quantification was added (`--umi`). See the [RNAseq wiki](https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki/RNA-Pipeline-ReadMe#rna-with-umi) page for more details on how to enable UMI-aware running, and the required configurations. Note that at this time `--pdx` does not support `--umi`; however, this is a planned expansion. 
+1. Added support for `other` genome/transcriptome `--gen_org` case. The user must provide all relevant inputs for their genome/transcriptome. It is recommended that the [`--workflow generate_rnaseq_index`](https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki/Generate-RNASeq-Index-Pipeline-ReadMe) be used to generate the required inputs.   
+
+**NOTE:** The default `--workflow rnaseq` read-aligner has been changed from `Bowtie2` to `STAR` (`--rsem_aligner star`)
+
+Additionally: 
+
+• We have added the ability to run the WGS workflow from a pre-aligned BAM input (`--workflow wgs --bam_input`). See the [WGS wiki page](https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki/WGS-Pipeline-ReadMe#bam-input---bam_input) for more information.
+
+• For all cases where read-trimming is done with FASTP, we have added the `--trim_poly_g` and `--trim_poly_x` with `--poly_x_min_len` options. For more information on how these options function, please see the FastP documentation on [PolyG](https://github.com/OpenGene/fastp?tab=readme-ov-file#polyg-tail-trimming) and [PolyX](https://github.com/OpenGene/fastp?tab=readme-ov-file#polyx-tail-trimming) trimming. 
+
+• In the generate RNAseq index files workflow, we added support for GFF gene annotation files as input to the workflow. When specifiying GFF, set `--ref_gtf FALSE` (case sensitive) in the Nextflow command when using this param. The workflow first converts to GTF using AGAT_GFFTOGTF before continuing. 
+
+• We have added an additional final run report in text file format. This report, which is in addition to the Nextflow generated HTML report, captures all Nextflow session information, workflow versioning information, and the logged parameter information reported to the standard out when runs begin. This report is saved to the final output directory.
+
+• Finally, we made numerous changes to the internal structure of several workflow config files in preparation of the release of an Open OnDemand application that will utilize these workflows. 
+ 
+### Workflows Added:
+
+1. Low-coverage WGS haplotype reconstruction ( `--workflow lcwgs_hr`)
+1. Haplotype Reconstruction (`--workflow haplotype_reconstruction`)
+1. QTL Mapping (`--workflow qtl_mapping`)
+
+### Subworkflows Added:
+
+1.  subworkflows/umi_rnaseq.nf (`--workflow rnaseq --umi`)
+
+### Workflow Changes:
+
+1. workflows/amplicon_fingerprint.nf: Added final run report logic.  
+1. workflows/amplicon_generic.nf: Added final run report logic.  
+1. workflows/ancestry.nf: Added final run report logic.  
+1. workflows/atac.nf: Added final run report logic.  
+1. workflows/chipseq.nf: Added final run report logic.  
+1. workflows/cnv_array.nf: Added final run report logic.  
+1. workflows/emase.nf: Added final run report logic.  
+1. workflows/gbrs.nf: Added final run report logic.  
+1. workflows/generate_pseudoreference.nf: Added final run report logic.  
+1. workflows/joint_gvcf_calling.nf: Added final run report logic.  
+1. workflows/mitochondria_variant_calling.nf: Added final run report logic.  
+1. workflows/prepare_emase.nf: Added final run report logic.  
+1. workflows/pta.nf: Added final run report logic.  
+1. workflows/rna_fusion.nf: Added final run report logic.  
+1. workflows/rnaseq.nf: Added final run report logic. Added UMI-aware logic. Added logic for `--gen_org other`.  
+1. workflows/rrbs.nf: Added final run report logic.  
+1. workflows/smrnaseq.nf: Added final run report logic.  
+1. workflows/somatic_wes.nf: Added final run report logic.  
+1. workflows/somatic_wes_pta.nf: Added final run report logic.  
+1. workflows/wes.nf: Added final run report logic.  
+1. workflows/wgs.nf: Added final run report logic. Added logic for `--bam_input`.  
+1. workflows/wgs_long_read.nf: Added final run report logic.  
+1. workflows/wgs_sv_bam.nf: Added final run report logic.  
+
+### Subworkflows Changes:
+
+1. subworkflows/generate_rnaseq_index.nf: Added final run report logic, added file checks for existence of inputs, added GFF support.
+1. subworkflows/illumina.nf: Added final run report logic.  
+1. subworkflows/ont.nf: Added final run report logic.  
+1. subworkflows/pacbio.nf: Added final run report logic.  
+1. subworkflows/pdx_rnaseq.nf: Tab linting. 
+1. subworkflows/prep_do_gbrs_inputs.nf: Added final run report logic.  
+1. subworkflows/rna_from_bam.nf: Tab linting.
+
+### Modules Added:
+
+1. modules/agat/agat_gfftogtf.nf
+1. modules/qtl2/concat_genoprobs.nf
+1. modules/qtl2/concat_genoprobs_lcwgs.nf
+1. modules/qtl2/concat_intensities.nf
+1. modules/qtl2/data_qc.nf
+1. modules/qtl2/geneseek2qtl2.nf
+1. modules/qtl2/genoprobs.nf
+1. modules/qtl2/genoprobs_lcwgs.nf
+1. modules/qtl2/harvest_qtl.nf
+1. modules/qtl2/map_qtl.nf
+1. modules/qtl2/qtl_effects.nf
+1. modules/qtl2/run_perms.nf
+1. modules/qtl2/sample_marker_QC.nf
+1. modules/qtl2/summarize_qtl_effects.nf
+1. modules/qtl2/update_files.nf
+1. modules/qtl2/write_cross.nf
+1. modules/quilt/quilt_to_qtl2.nf
+1. modules/quilt/run_quilt.nf
+1. modules/r/lcwgs_sex_check.nf
+1. modules/r/render_QC_markdown.nf
+1. modules/rsem/rsem_expression_umi.nf
+1. modules/samtools/samtools_depth_value.nf
+1. modules/samtools/samtools_downsample.nf
+1. modules/star/star_align_rsem.nf
+1. modules/umitools/umitools_dedup.nf
+1. modules/umitools/umitools_extract.nf
+1. modules/umitools/umitools_prepareforrsem.nf
+1. modules/utility_modules/create_bamlist.nf
+
+### Module Changes:
+
+1. modules/fastp/fastp.nf: Added `polyG` and `polyX` trimming options. 
+1. modules/picard/picard_collectrnaseqmetrics.nf: Increase wall clock time
+1. modules/rsem/rsem_alignment_expression.nf: Added log capture for STAR runs
+1. modules/snpeff_snpsift/snpsift_extractfields.nf: Adjust field capture to extract average allele frequency: `AVG_AF` 
+1. modules/utility_modules/generate_rrna_intervals.nf: Adjust internal variable naming
+
+### Module Deleted:  
+
+None
+
+### Configuration Changed:  
+
+1. config/rnaseq.nf: Default `rsem_aligner` is now `star`
+
+### Scripts Added:
+
+1. bin/lcwgs/concatGenoProbs_lcwgs.R
+1. bin/lcwgs/coverage_based_sex_check.R
+1. bin/lcwgs/genoprobs.R
+1. bin/lcwgs/prepare_qtl2_files.R
+1. bin/lcwgs/run_quilt.R
+1. bin/qtl/QC_template.Rmd
+1. bin/qtl/calcGenoProbs.R
+1. bin/qtl/concatGenoProbs.R
+1. bin/qtl/concatIntensities.R
+1. bin/qtl/data_qc.R
+1. bin/qtl/geneseek2qtl2.R
+1. bin/qtl/harvest_qtl.R
+1. bin/qtl/interpolate_genoprobs.R
+1. bin/qtl/map_qtl.R
+1. bin/qtl/qtl_effects.R
+1. bin/qtl/render_markdown.R
+1. bin/qtl/run_perms.R
+1. bin/qtl/smooth_genoprobs.R
+1. bin/qtl/summarize_qtl_effects.R
+1. bin/qtl/updateGenoProbs.R
+1. bin/qtl/writeControlFile.R
+1. bin/rnaseq/check_umi_location.py
+
+### Script Changes:
+
+None
+
+### NF-Test Tests Added/Modified: 
+
+1. tests/modules/fastp/fastp.nf.test: Added tests for polyG, polyX, and the combination of the terms
+1. tests/modules/gatk/gatk_gatherbqsrreports.nf.test: Added test to demonstrate [issue](https://github.com/nextflow-io/nextflow/issues/6803) in Nextflow 25.10.3 
+1. tests/workflows/haplotype_reconstruction.nf.test: Added tests to support new workflow
+1. tests/workflows/lcwgs.nf.test: Added tests to support new workflow
+1. tests/workflows/qtl_mapping.nf.test: Added tests to support new workflow
+1. tests/subworkflows/generate_rnaseq_index.nf.test: Added GFF cases
+1. tests/workflows/rnaseq.nf.test: Added `--umi` cases
+1. tests/workflows/smrnaseq.nf.test: Adjusted test set to `--read_type SE`
+1. tests/workflows/wgs.nf.test: Added deepvariant test cases, added cases for `--bam_input`
+
+### [CS-NF-Test](https://github.com/TheJacksonLaboratory/cs-nf-test) Data Added: 
+
+1. Added lcwgs data
+1. Added haplotype_reconstruction data
+1. Added qtl_mapping data
+1. Added RNA UMI inputs
+1. Added RNA GFF example
+1. Added recal tables for gatherbqsr
+
+Also of note, as part of our development work with regards to bulk RNA with UMI, we found it necessary to genreate syntehtic data, but without a tool to do so. We have developed [umi-bulk-rna-simulator](https://github.com/TheJacksonLaboratory/umi-bulk-rna-simulator) a comprehensive Python package for simulating bulk RNA-seq data with Unique Molecular Identifiers (UMIs), including PCR amplification and sequencing errors. 
+
+
 ## Release 0.9.2
 
 In this release we add three new workflows. 

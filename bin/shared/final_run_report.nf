@@ -50,6 +50,6 @@ Runtime Logged Info (shown to stdout during run):
 ${message}
 
 """
-def fileName = "workflow_report_${workflow.runName}_${workflow.sessionId}.txt"
+def fileName = "${params.pubdir}/workflow_report_${workflow.runName}_${workflow.sessionId}.txt"
 new File(fileName).text = report
 }
