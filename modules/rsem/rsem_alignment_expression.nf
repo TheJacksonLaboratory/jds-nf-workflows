@@ -56,7 +56,8 @@ process RSEM_ALIGNMENT_EXPRESSION {
         frag="--fragment-length-mean ${params.fragment_length_mean} --fragment-length-sd ${params.fragment_length_sd}"
         stype=""
         trimmedfq="${reads[0]}"
-    } 
+    }
+
     if (params.rsem_aligner == "bowtie2"){
         
         rsem_ref_files = file("${rsem_ref_path}/bowtie2/*").collect { "$it" }.join(' ')
@@ -67,7 +68,9 @@ process RSEM_ALIGNMENT_EXPRESSION {
         index_command="samtools index ${sampleID}.transcript.sorted.bam && samtools index ${sampleID}.genome.sorted.bam"
         intermediate=''
         star_log=''
+        readFilesCommand=''
     }
+
     if (params.rsem_aligner == "star") {
         outbam="--star-output-genome-bam"
         seed_length=""
@@ -91,6 +94,8 @@ process RSEM_ALIGNMENT_EXPRESSION {
             rsem_ref_files = 'error'
         }
 
+        readFilesCommand = reads[0].toString().endsWith('.gz') ? '--star-gzipped-read-file' : ''
+
     }
 
     """
@@ -103,6 +108,7 @@ process RSEM_ALIGNMENT_EXPRESSION {
     ${stype} \
     ${frag} \
     --${params.rsem_aligner} \
+    ${readFilesCommand} \
     --append-names \
     ${seed_length} \
     ${outbam} \

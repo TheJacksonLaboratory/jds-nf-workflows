@@ -24,7 +24,7 @@ workflow.onComplete {
 }
 
 bam_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
-input_ch = bam_input_ch.map{it -> [it[0], file(it[2]), file(it[3])]}
+input_ch = bam_ch.map{it -> [it[0], file(it[2]), file(it[3])]}
 
 // main workflow
 workflow MITOCHONDRIA_VARIANT_CALLING {

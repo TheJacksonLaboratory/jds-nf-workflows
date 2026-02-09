@@ -26,6 +26,7 @@ bam_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
 
 // main workflow
 workflow WGS_SV_BAM {
+    bam_ch = bam_ch.map{ sampleID, meta, bam, bai -> [sampleID, bam, bai] }
     WGS_SV(bam_ch)
     // workflow found in: subworkflows/wgs_sv.nf
 }
