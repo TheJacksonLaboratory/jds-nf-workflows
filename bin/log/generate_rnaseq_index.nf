@@ -20,6 +20,7 @@ ______________________________________________________
 --ref_fa                        ${params.ref_fa}
 --ref_gtf                       ${params.ref_gtf}
 --ref_gff                       ${params.ref_gff}
+--ref_gff3                      ${params.ref_gff3}
 --custom_gene_fasta             ${params.custom_gene_fasta}
 
 Project Directory: ${projectDir}

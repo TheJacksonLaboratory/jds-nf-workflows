@@ -15,7 +15,7 @@ Parameter | Default | Description
 --download_data | null | Requires `--csv_input`. When specified, read data in the CSV manifest will be downloaded from provided URLs. 
 
 --gen_org | mouse | Options: mouse and human.
---genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
+--genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39 or MGI. If gen_org == human, build defaults to GRCm38.
 
 --bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
 
@@ -33,11 +33,13 @@ Parameter | Default | Description
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
 
---strandedness_ref | Mouse: '/projects/compsci/omics_share/human/GRCh38/transcriptome/indices/ensembl/v104/kallisto/kallisto_index'
+--strandedness_ref | Mouse: '/projects/compsci/omics_share/mouse/GRCm38/transcriptome/indices/ensembl/v102/kallisto/kallisto_index'
                    | Human: '/projects/compsci/omics_share/human/GRCh38/transcriptome/indices/ensembl/v104/kallisto/kallisto_index' 
+                   | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/indices/mgi/v114/kallisto_index/kallisto_index' 
                    | Modfied kallisto index file used in strandedness determination. 
 --strandedness_gtf | Mouse: '/projects/compsci/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.gtf'
                    | Human: '/projects/compsci/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.gtf' 
+                   | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/MGI.gtf'
                    | GTF file used with kallisto index file used in strandedness determination. 
 --strandedness     | null | Library strandedness override. Supported options are 'reverse_stranded' or 'forward_stranded' or 'non_stranded'. This override parameter is only used when the tool `check_strandedness` fails to classify the strandedness of a sample. If the tool provides a strand direction, that determination is used." 
 
@@ -53,14 +55,17 @@ Parameter | Default | Description
 
 --picard_dict | Mouse: '/projects/omics_share/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.toplevel.dict' 
               | Human: '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.dict'
+              | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/Mus_musculus.GRCm39.dna.primary_assembly.dict'
               | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ref_flat | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.refFlat.txt' 
            | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.refFlat.txt'
+           | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/MGI.refFlat.txt'
            | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ribo_intervals | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.rRNA.interval_list' 
                  | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.rRNA.interval_list'
+                 | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/MGI.rRNA_intervals.list'
                  | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --pdx | false | Options: false, true. If specified, 'Xengsort' is run on reads to deconvolute human and mouse reads. Human only reads are used in analysis. 

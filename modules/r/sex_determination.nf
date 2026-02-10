@@ -16,7 +16,16 @@ process SEX_DETERMINATION {
         tuple val(sampleID), file("*.csv"), emit: csv
 
     script:
+        
+        gene_id="\$(tail -n+2 ${counts} | head -1 | awk '{print \$1}')"
         """
-        /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination.R ${counts} ./ ${sampleID}
+        echo ${gene_id}
+
+        if [[ ${gene_id} =~ "MGI" ]];
+        then
+          /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination_mgi.R ${counts} ./ ${sampleID}
+        else
+          /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination.R ${counts} ./ ${sampleID}
+        fi
         """
 }
