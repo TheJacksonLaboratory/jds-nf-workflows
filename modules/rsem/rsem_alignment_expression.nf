@@ -9,6 +9,7 @@ process RSEM_ALIGNMENT_EXPRESSION {
     container 'quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0'
 
     publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*stats", mode:'copy', enabled: params.rsem_aligner == "bowtie2"
+    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*final.out", mode:'copy', enabled: params.rsem_aligner == "star"
     publishDir "${params.pubdir}/${sampleID}", pattern: "*results*", mode:'copy'
     publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*genome.sorted.ba*", mode:'copy'
     publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*transcript.sorted.ba*", mode:'copy'
@@ -55,7 +56,8 @@ process RSEM_ALIGNMENT_EXPRESSION {
         frag="--fragment-length-mean ${params.fragment_length_mean} --fragment-length-sd ${params.fragment_length_sd}"
         stype=""
         trimmedfq="${reads[0]}"
-    } 
+    }
+
     if (params.rsem_aligner == "bowtie2"){
         
         rsem_ref_files = file("${rsem_ref_path}/bowtie2/*").collect { "$it" }.join(' ')
@@ -66,7 +68,9 @@ process RSEM_ALIGNMENT_EXPRESSION {
         index_command="samtools index ${sampleID}.transcript.sorted.bam && samtools index ${sampleID}.genome.sorted.bam"
         intermediate=''
         star_log=''
+        readFilesCommand=''
     }
+
     if (params.rsem_aligner == "star") {
         outbam="--star-output-genome-bam"
         seed_length=""
@@ -90,6 +94,8 @@ process RSEM_ALIGNMENT_EXPRESSION {
             rsem_ref_files = 'error'
         }
 
+        readFilesCommand = reads[0].toString().endsWith('.gz') ? '--star-gzipped-read-file' : ''
+
     }
 
     """
@@ -102,6 +108,7 @@ process RSEM_ALIGNMENT_EXPRESSION {
     ${stype} \
     ${frag} \
     --${params.rsem_aligner} \
+    ${readFilesCommand} \
     --append-names \
     ${seed_length} \
     ${outbam} \

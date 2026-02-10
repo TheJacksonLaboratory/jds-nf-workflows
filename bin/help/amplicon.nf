@@ -31,6 +31,5 @@ Parameter | Default | Description
 --call_val | 50 | The minimum phred-scaled confidence threshold at which variants should be called.
 --ploidy_val | '2' | variable in haplotypecaller. Not required for amplicon, but present in module. 
 --target_gatk | '/projects/compsci/omics_share/human/GRCh38/supporting_files/capture_kit_files/IDT/xGen_sampleID_amplicon/hg38Lifted_xGen_SampleID_merged_targets.bed' | A bed file with amplicon target intervals as defined in the amplicon array used in the data. NOTE: This file MUST reflect the amplicon array used to generate your data.
---call_val | 50 | The minimum phred-scaled confidence threshold at which variants should be called.
 '''
 }

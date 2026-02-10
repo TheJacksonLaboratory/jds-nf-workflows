@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/generate_pseudoreference.nf"
 include {param_log} from "${projectDir}/bin/log/generate_pseudoreference.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {FILTER_GTF} from "${projectDir}/modules/utility_modules/filter_gtf_biotypes"
 include {G2GTOOLS_VCF2VCI} from "${projectDir}/modules/g2gtools/g2gtools_vcf2vci"
 include {G2GTOOLS_PATCH} from "${projectDir}/modules/g2gtools/g2gtools_patch"
@@ -24,7 +25,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 if (params.region != '' && params.bed != '') {
     exit 1, "Both REGION: ${params.region} and BED: ${params.bed} can not be set. Use only one of these options at a time."

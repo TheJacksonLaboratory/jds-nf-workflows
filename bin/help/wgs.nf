@@ -15,6 +15,8 @@ Parameter | Default | Description
 --download_data | null | Requires `--csv_input`. When specified, read data in the CSV manifest will be downloaded from provided URLs. 
 --merge_inds | false | In some use cases, samples are structured by a higher organizational level. If specified, `merge_ind` merges of BAMs to the ind level prior to calling (e.g., Ind_42 <-- sampleA, sampleB, sampleC).
 
+--bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
+
 --run_sv | false | Options: false and true. Default: false. If this boolean is specified, structural variant calling will be performed.
 --run_mt_calling | false | Options: false and true. Default: false. If this boolean is specified, mitochondrial variant calling will be performed.
 
@@ -26,7 +28,7 @@ Parameter | Default | Description
 --coverage_cap | null | If an integer value is specified, jvarkit 'Biostar154220' is used to cap coverage at the that value. See: http://lindenb.github.io/jvarkit/Biostar154220.html
 --primary_chrom_bed | '/projects/compsci/omics_share/mouse/GRCm38/genome/annotation/intervals/Mus_musculus.GRCm38.dna.primary_assembly.bed' | A bed file containing the primary chromsomes with positions. Used in limiting jvarkit 'Biostar154220' to those regions with expected coverage.
 
---run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GCVF output will be generated.
+--run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GVCF output will be generated.
 
 --gen_org | mouse | Options: mouse, human, other.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCh38. If other, this parameter is not used.
@@ -46,6 +48,9 @@ Parameter | Default | Description
 --quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
+--trim_poly_g | false | If enabled, polyG trimming is done. For Illumina NextSeq/NovaSeq data, polyG can happen in read tails since G means no signal in the Illumina two-color systems. fastp can detect the polyG in read tails and trim them. 
+--trim_poly_x | false | If enabled, polyX trimming is done. If specified with polyG trimming, that is done first then polyX trimming is done. A minimum length can be set with --poly_x_min_len for fastp to detect polyX
+--poly_x_min_len | 10 | Minimum length of polyX to be trimmed. Default is 10.
 
 --deepvariant | false | Options: false and true. Default: false. If this boolean is specified, Google DeepVariant will be used for variant calling rather than GATK HaplotypeCaller. This option requires csv_input with `sex` as a provided column.
 

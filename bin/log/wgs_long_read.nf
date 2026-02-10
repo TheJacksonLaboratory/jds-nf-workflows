@@ -19,9 +19,10 @@ if (params.deepvariant != true) {
     error "'--deepvariant': \"${params.deepvariant}\" must be true. Workflow is currently only supports deepvariant." 
 }
 
+def message = ""
 
 if (params.gen_org=='human')
-log.info """
+message = """
 WGS PARAMETER LOG
 
 --comment: ${params.comment}
@@ -76,7 +77,7 @@ ${workflow.commandLine}
 ________________________________________________________________________________________
 """
 else
-log.info """
+message = """
 WGS PARAMETER LOG
 
 --comment: ${params.comment}
@@ -124,5 +125,9 @@ Command line call:
 ${workflow.commandLine}
 ________________________________________________________________________________________
 """
+
+log.info(message)
+
+return(message)
 
 }

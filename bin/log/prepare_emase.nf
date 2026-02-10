@@ -5,7 +5,10 @@ println '\n'
 println logo.show()
 
 def param_log(){
-log.info """
+
+def message = ""
+
+message = """
 PREPARE MULTIWAY TRANSCRIPTOME PARAMETER LOG
 
 --comment: ${params.comment}
@@ -19,7 +22,7 @@ ______________________________________________________
 --gtf_file_list                 ${params.gtf_file_list}
 --haplotype_list                ${params.haplotype_list}
 
---keep_intermediate               ${params.keep_intermediate}
+--keep_intermediate             ${params.keep_intermediate}
 
 Project Directory: ${projectDir}
 
@@ -27,4 +30,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

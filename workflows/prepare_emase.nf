@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/prepare_emase.nf"
 include {param_log} from "${projectDir}/bin/log/prepare_emase.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {EMASE_PREPARE_EMASE} from "${projectDir}/modules/emase/emase_prepare_emase"
 include {BOWTIE_BUILD} from "${projectDir}/modules/bowtie/bowtie_build"
 include {CLEAN_TRANSCRIPT_LISTS} from "${projectDir}/modules/python/clean_prepEmase_transcriptList"
@@ -15,7 +16,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 // main workflow
 workflow PREPARE_EMASE {

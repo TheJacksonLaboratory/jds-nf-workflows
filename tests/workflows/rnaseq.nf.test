@@ -139,6 +139,7 @@ nextflow_workflow {
     test("BAM Input -- No Reference") {
         tag "GRCm38"
         tag "primary"
+        tag "bam"
         when {
             params {
                 csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
@@ -162,6 +163,7 @@ nextflow_workflow {
     test("BAM Input -- Provided Reference") {
         tag "GRCm38"
         tag "primary"
+        tag "bam"
         when {
             params {
                 csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
@@ -180,6 +182,74 @@ nextflow_workflow {
         }
 
     }
+
+    test("Full Workflow -- Mouse -- UMI -- GRCm38") {
+        tag "GRCm38"
+        tag "primary"
+        tag "umi"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/Mm_RNA_UMI_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                umi = true
+                umitools_extract_method "regex" 
+                umitools_bc_pattern "^(?P<umi_1>.{6})(?P<discard_1>.{4}).*"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- UMI-skipExtract") {
+        tag "GRCm38"
+        tag "primary"
+        tag "umi"
+        when {
+            params {
+                gen_org = "mouse"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/other/other_RNA_UMI_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                umi = true
+                skip_umi_extract = true
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    } //'other' used here with mouse mapping. the mapping isn't critical, but rather ensuring the option flags clear properly.
+
+    test("Full Workflow -- Human -- UMI -- SE") {
+        tag "GRCh38"
+        tag "primary"
+        tag "umi"
+        when {
+            params {
+                gen_org = "human"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/human/hg38_RNA_UMI_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'rnaseq'
+                read_type = 'SE'
+                strandedness = 'forward_stranded'
+                umi = true
+                umitools_extract_method "regex" 
+                umitools_bc_pattern "^(?P<umi_1>.{6})(?P<discard_1>.{4}).*"
+            }
+        }
+    
+        then {
+            assert workflow.success
+        }
+
+    }
+
 
 }
 

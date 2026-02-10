@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/prep_do_gbrs_input.nf"
 include {param_log} from "${projectDir}/bin/log/prep_do_gbrs_input.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {DO_TRANSITION_PROBABILITIES} from "${projectDir}/modules/r/do_transition_probablities"
 include {PARSE_TRANSITION_PROBABILITIES as PARSE_TRANSITION_PROBABILITIES_FEMALE;
         PARSE_TRANSITION_PROBABILITIES as PARSE_TRANSITION_PROBABILITIES_MALE} from "${projectDir}/modules/python/parse_transprobs"
@@ -17,7 +18,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 // main workflow
 workflow PREP_DO_GBRS_INPUT {

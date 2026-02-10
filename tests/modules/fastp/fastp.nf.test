@@ -1,0 +1,97 @@
+nextflow_process {
+
+    name "Test Process FASTP"
+    script "modules/fastp/fastp.nf"
+    process "FASTP"
+
+    test("FASTP -- Base") {
+
+        when {
+            params {
+                pipeline = 'rnaseq'
+                pubdir = "tests/results"
+                read_type = "PE"
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("FASTP -- polyG") {
+
+        when {
+            params {
+                pipeline = 'rnaseq'
+                pubdir = "tests/results"
+                read_type = "PE"
+                trim_poly_g = true
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("FASTP -- polyX") {
+
+        when {
+            params {
+                pipeline = 'rnaseq'
+                pubdir = "tests/results"
+                read_type = "PE"
+                trim_poly_x = true
+                poly_x_min_len = 12
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("FASTP -- polyG + polyX") {
+
+        when {
+            params {
+                pipeline = 'rnaseq'
+                pubdir = "tests/results"
+                read_type = "PE"
+                trim_poly_g = true
+                trim_poly_x = true
+                poly_x_min_len = 12
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/mouse/mm10_RNA_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+}

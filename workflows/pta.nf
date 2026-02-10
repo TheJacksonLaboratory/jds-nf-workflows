@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/pta.nf"
 include {param_log} from "${projectDir}/bin/log/pta.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 
 include {HS_PTA} from "${projectDir}/subworkflows/hs_pta"
 include {MM_PTA} from "${projectDir}/subworkflows/mm_pta"
@@ -17,8 +18,13 @@ if (params.help){
     exit 0
 }
 
-// log paramiter info
-param_log()
+// log params
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 if (!params.csv_input) {
     exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` or the GitHub Wiki for information."

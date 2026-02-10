@@ -19,11 +19,22 @@ Parameter | Default | Description
 
 --bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
 
+--umi | false | Options: false, true. If specified, UMI-tools will be used to extract and deduplicate UMIs from reads prior to transcript/gene quantification.
+--skip_umi_extract | false | Options: false, true. If specified, UMI extraction step will be skipped. Used in cases when UMIs have already been extracted from reads and placed in read headers.
+--umi_separator | ':' | The character that separates the UMI from the read name in FASTQ files. Default is ':' (e.g., @READ_NAME:UMI_SEQUENCE).
+--umitools_extract_method | 'regex' | Options: regex, string. Method used by UMI-tools to extract UMIs from reads. 'regex' allows for flexible UMI extraction using regular expressions. 'string' requires a fixed position for UMI extraction. See UMI-tools documentation for details.
+--umitools_bc_pattern | null | Pattern used for read 1 UMI extraction. See UMI-tools documentation, and the jds-workflows RNAseq Wiki page for details on how to set this parameter.
+--umitools_bc_pattern2 | null | Pattern used for read 2 UMI extraction. See UMI-tools documentation, and the jds-workflows RNAseq Wiki page for details on how to set this parameter.
+--umitools_grouping_method | 'unique' | Method used by UMI-tools to group UMIs. Options include 'unique', 'adjacency', 'directional', etc. See UMI-tools documentation for details.
+
 --skip_read_trimming | false | Options: false, true. If specified, skip FastP read trimming.
 
 --quality_phred | 15 | The quality value that is required for a base to pass. Default: 15 which is a phred quality score of >=Q15.
 --unqualified_perc | 40 | Percent of bases that are allowed to be unqualified (0~100). Default: 40 which is 40%.
 --detect_adapter_for_pe | false | If true, adapter auto-detection is used for paired end data. By default, paired-end data adapter sequence auto-detection is disabled as the adapters can be trimmed by overlap analysis. However, --detect_adapter_for_pe will enable it. Fastp will run a little slower if you specify the sequence adapters or enable adapter auto-detection, but usually result in a slightly cleaner output, since the overlap analysis may fail due to sequencing errors or adapter dimers.
+--trim_poly_g | false | If enabled, polyG trimming is done. For Illumina NextSeq/NovaSeq data, polyG can happen in read tails since G means no signal in the Illumina two-color systems. fastp can detect the polyG in read tails and trim them. 
+--trim_poly_x | false | If enabled, polyX trimming is done. If specified with polyG trimming, that is done first then polyX trimming is done. A minimum length can be set with --poly_x_min_len for fastp to detect polyX
+--poly_x_min_len | 10 | Minimum length of polyX to be trimmed. Default is 10.
 
 --strandedness_ref | Mouse: '/projects/compsci/omics_share/human/GRCh38/transcriptome/indices/ensembl/v104/kallisto/kallisto_index'
                    | Human: '/projects/compsci/omics_share/human/GRCh38/transcriptome/indices/ensembl/v104/kallisto/kallisto_index' 
@@ -33,10 +44,10 @@ Parameter | Default | Description
                    | GTF file used with kallisto index file used in strandedness determination. 
 --strandedness     | null | Library strandedness override. Supported options are 'reverse_stranded' or 'forward_stranded' or 'non_stranded'. This override parameter is only used when the tool `check_strandedness` fails to classify the strandedness of a sample. If the tool provides a strand direction, that determination is used." 
 
---rsem_ref_files | /projects/omics_share/mouse/GRCm38/transcriptome/indices/ensembl/v102/bowtie2 | Pre-compiled index files. Refers to human indices when --gen_org human. JAX users should not change this, unless using STAR indices.
---rsem_ref_prefix | 'Mus_musculus.GRCm38.dna.toplevel' | Prefix for index files. JAX users should not change this, unless using STAR indices. Refers to human indices when --gen_org human.
---seed_length | 25 | 'Seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie, it uses this value for Bowtie's seed length parameter.'
---rsem_aligner | 'bowtie2' | Options: bowtie2 or star. The aligner algorithm used by RSEM. Note, if using STAR, point rsem_ref_files to STAR based indices.
+--rsem_ref_files | /projects/omics_share/mouse/GRCm38/transcriptome/indices/ensembl/v102 | Pre-compiled index files. Refers to human indices when --gen_org human.
+--rsem_ref_prefix | 'Mus_musculus.GRCm38.dna.toplevel' | Prefix for index files. Refers to human indices when --gen_org human.
+--seed_length | 25 | 'Bowtie2 seed length used by the read aligner. Providing the correct value is important for RSEM. If RSEM runs Bowtie2, it uses this value for Bowtie2's seed length parameter.'
+--rsem_aligner | 'star' | Options: star or bowtie2. The aligner algorithm used by RSEM.
 
 --fragment_length_mean | 280 | Used when --read_type == 'SE'. "The mean of the fragment length distribution, which is assumed to be a Gaussian."
 --fragment_length_sd | 50 | Used when --read_type == 'SE'. "The standard deviation of the fragment length distribution, which is assumed to be a Gaussian. "
@@ -69,7 +80,7 @@ Parameter| Default| Description
 --ref_fa | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa'| Reference fasta to be used in alignment calculation as well as any downstream analysis. 
 --ref_fai | '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.fa.fai' | Reference fasta index file.  
 
---rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified, andr --ref_fa / --ref_gtf will be used to generate one. 
+--rsem_reference_path | null | RSEM reference directory. Used when --bam_input is specified. If not provided --ref_fa / --ref_gtf will be used to generate one. 
 --rsem_reference_name | null | User provided path to an RSEM reference name. If not provided, --ref_fa / --ref_gtf will be used to generate one. 
 --ref_fa | null | Genomic reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
 --ref_gtf | null | Transcript GTF reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 

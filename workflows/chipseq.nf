@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/chipseq.nf"
 include {param_log} from "${projectDir}/bin/log/chipseq.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {CHECK_DESIGN} from "${projectDir}/modules/utility_modules/chipseq_check_design"
 include {SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
@@ -58,7 +59,12 @@ ANSI_RED = "\u001B[31m";
 ANSI_RESET = "\u001B[0m";
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 // main workflow
 workflow CHIPSEQ {

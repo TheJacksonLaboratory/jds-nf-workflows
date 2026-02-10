@@ -1,23 +1,23 @@
-def PARAM_LOG(){
-    if (params.pbmode != "CCS" && params.pbmode != "CLR") {
-        error "'--pbmode': \"${params.pbmode}\" is not valid, supported options are 'CCS' or 'CLR'" 
-    }
+def param_log(){
+if (params.pbmode != "CCS" && params.pbmode != "CLR") {
+    error "'--pbmode': \"${params.pbmode}\" is not valid, supported options are 'CCS' or 'CLR'" 
+}
 
-    if (!params.ref_fa || params.ref_fa == "<PATH>" || params.ref_fa == "/<PATH>") {
-        error "'--ref_fa': \"${params.ref_fa}\" is not valid, specify path to reference FASTA" 
-    }
+if (!params.ref_fa || params.ref_fa == "<PATH>" || params.ref_fa == "/<PATH>") {
+    error "'--ref_fa': \"${params.ref_fa}\" is not valid, specify path to reference FASTA" 
+}
 
-    if (!params.sampleID || params.ref_fa == "<STRING>") {
-        error "'--sampleID': \"${params.sampleID}\" is not valid, specify a name for this sample" 
-    }
-    if (params.gen_org != "mouse") {
-        error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'mouse'" 
-    }
-    
-    log.info """
-______________________________________________________
+if (!params.sampleID || params.ref_fa == "<STRING>") {
+    error "'--sampleID': \"${params.sampleID}\" is not valid, specify a name for this sample" 
+}
+if (params.gen_org != "mouse") {
+    error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'mouse'" 
+}
 
-              PACBIO SV PARAMETER LOG
+def message = ""
+
+message = """
+PACBIO SV PARAMETER LOG
 
 --comment: ${params.comment}
 
@@ -51,4 +51,8 @@ ______________________________________________________
 Project Directory: ${projectDir}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

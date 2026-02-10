@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // Import modules
 include {help} from "${projectDir}/bin/help/cnv_array.nf"
 include {param_log} from "${projectDir}/bin/log/cnv_array.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_cnv_array_csv.nf"
 include {IAAP_CLI} from "${projectDir}/modules/illumina/iaap_cli.nf"
 include {BCFTOOLS_GTC2VCF} from "${projectDir}/modules/bcftools/bcftools_gtct2vcf.nf"
@@ -18,8 +19,14 @@ if (params.help) {
     exit 0
 }
 
-// Log parameter info
-param_log()
+// log params
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
+
 // Parameter validation
 if (!params.bpm_file || !params.egt_file) {
     exit 1, "All parameters (bpm_file, egt_file) are required."

@@ -5,10 +5,14 @@ println '\n'
 println logo.show()
 
 def param_log(){
+
+def message = ""
+
 if (params.gen_org != "human") {
     error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 
 }
-log.info """
+
+message = """
 WES PARAMETER LOG
 
 --comment: ${params.comment}
@@ -32,6 +36,9 @@ ______________________________________________________
 --quality_phred                 ${params.quality_phred}
 --unqualified_perc              ${params.unqualified_perc}
 --detect_adapter_for_pe         ${params.detect_adapter_for_pe}
+--trim_poly_g                   ${params.trim_poly_g}
+--trim_poly_x                   ${params.trim_poly_x}
+${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}" : ""}
 --genotype_targets              ${params.genotype_targets}
 --snpID_list                    ${params.snpID_list}
 --snp_annotations               ${params.snp_annotations}
@@ -56,16 +63,15 @@ ______________________________________________________
 --cosmic                        ${params.cosmic}
 --snpEff_config                 ${params.snpEff_config}
 
-
-
-
-
-
 Project Directory: ${projectDir}
 
 Command line call: 
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+
+return(message)
 
 }

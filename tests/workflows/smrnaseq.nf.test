@@ -11,7 +11,8 @@ nextflow_workflow {
             params {
                 outdir = "tests/results"
                 gen_org = "mouse"
-                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                read_type = "SE"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
                 genome_build = "GRCm38"
                 mirtrace_species = "mmu"
                 pubdir = "tests/results"
@@ -32,7 +33,8 @@ nextflow_workflow {
             params {
                 outdir = "tests/results"
                 gen_org = "mouse"
-                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                read_type = "SE"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
                 genome_build = "GRCm39"
                 mirtrace_species = "mmu"
                 pubdir = "tests/results"
@@ -54,7 +56,8 @@ nextflow_workflow {
             params {
                 outdir = "tests/results"
                 gen_org = "human"
-                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/human/hg_smrna_input.csv'
+                read_type = "SE"
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/human/hg_smrna_input.csv'
                 genome_build = "GRCh38"
                 mirtrace_species = "hsa"
                 pubdir = "tests/results"
@@ -73,7 +76,7 @@ nextflow_workflow {
             params {
                 outdir = "tests/results"
                 gen_org = "mouse"
-                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
                 genome_build = "GRCm38"
                 mirtrace_species = "hsa"
                 pubdir = "tests/results"
@@ -94,7 +97,7 @@ nextflow_workflow {
             params {
                 outdir = "tests/results"
                 gen_org = "human"
-                input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
+                csv_input = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/smrnaseq/mouse/mm_smrna_input.csv'
                 genome_build = "GRCm38"
                 mirtrace_species = "mmu"
                 pubdir = "tests/results"

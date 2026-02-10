@@ -1,0 +1,43 @@
+nextflow_workflow {
+
+    name "Test Workflow Haplotype Reconstruction"
+    script "workflows/haplotype_reconstruction.nf"
+    workflow "HAPLOTYPE_RECONSTRUCTION"
+
+    test("Full Workflow -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/haplotype_reconstruction/mouse/haplotype_reconstruction_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'haplotype_reconstruction'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+    test("Full Workflow -- Mouse -- GRCm39 -- Remove Markers & Correct IDs") {
+        tag "GRCm39"
+        tag "no-rerun"
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/haplotype_reconstruction/mouse/haplotype_reconstruction_input_remove_markers.csv"
+                pubdir = "tests/results"
+                rerun = false
+                correct_ids = true
+                remove_markers = true
+                pipeline = 'haplotype_reconstruction'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+}

@@ -1,0 +1,25 @@
+nextflow_workflow {
+
+    name "Test Workflow QTL Mapping"
+    script "workflows/qtl_mapping.nf"
+    workflow "QTL_MAPPING"
+
+    test("Full Workflow -- Mouse -- GRCm39") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/qtl_mapping/mouse/qtl_mapping_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'qtl_mapping'
+                n_perms = 5
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+}

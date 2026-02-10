@@ -5,7 +5,10 @@ println '\n'
 println logo.show()
 
 def param_log(){
-log.info """
+
+def message = ""
+
+message = """
 GENERATE RNASEQ INDEX PARAMETER LOG
 
 --comment: ${params.comment}
@@ -19,8 +22,8 @@ ______________________________________________________
 --genome_build                  ${params.genome_build}
 --ref_fa                        ${params.ref_fa}
 --ref_gtf                       ${params.ref_gtf}
+--ref_gff                       ${params.ref_gff}
 --custom_gene_fasta             ${params.custom_gene_fasta}
-....
 
 Project Directory: ${projectDir}
 
@@ -28,4 +31,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

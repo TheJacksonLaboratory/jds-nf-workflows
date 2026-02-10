@@ -12,7 +12,7 @@ Parameter | Default | Description
 
 --data_type | 'pacbio' |  Default: 'pacbio'. This should not be changed. It is provided for eventual expansion to ONT data. 
 
---run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GCVF output will be generated.
+--run_gvcf | false | Options: false and true. Default: false. If this boolean is specified, GVCF output will be generated.
 
 --gen_org | mouse | Options: mouse, human, other.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCh38. If other, this parameter is not used.

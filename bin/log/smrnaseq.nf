@@ -9,15 +9,23 @@ if (!(params.gen_org in ['human', 'mouse'])) {
   System.exit(1)
 }
 
+if (!params.csv_input) {
+  log.error "The --csv_input parameter is required. Please provide a CSV input file."
+  System.exit(1)
+}
+
+
 def param_log(){
+
+def message = ""
+
 if (params.gen_org == 'human') {
   if (params.mirtrace_species != 'hsa') {
     log.error "--mirtrace_species should be set to 'hsa' when '--gen_org human'"
     System.exit(1)
   }
 
-
-  log.info """
+  message = """
   SMRNASEQ PARAMETER LOG
 
   --comment: ${params.comment}
@@ -28,7 +36,7 @@ if (params.gen_org == 'human') {
   --gen_org                       ${params.gen_org}
   --genome_build                  ${params.genome_build}
   --read_type                     ${params.read_type}
-  --input                         ${params.input}
+  --csv_input                     ${params.csv_input}
   -w                              ${workDir}
   -c                              ${params.config}
   --pubdir                        ${params.pubdir}
@@ -64,7 +72,7 @@ if (params.gen_org == 'human') {
     System.exit(1)
   }
 
-  log.info """
+  message = """
   SMRNASEQ PARAMETER LOG
 
   --comment: ${params.comment}
@@ -75,7 +83,7 @@ if (params.gen_org == 'human') {
   --gen_org                       ${params.gen_org}
   --genome_build                  ${params.genome_build}
   --read_type                     ${params.read_type}
-  --input                         ${params.input}
+  --csv_input                     ${params.csv_input}
   -w                              ${workDir}
   -c                              ${params.config}
   --pubdir                        ${params.pubdir}
@@ -107,4 +115,9 @@ if (params.gen_org == 'human') {
   """
 
   }
+
+  log.info(message)
+
+  return(message)
+
 }

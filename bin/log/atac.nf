@@ -9,8 +9,11 @@ if (params.gen_org != "human" && params.gen_org != "mouse") {
   error "'--gen_org': \"${params.gen_org}\" is not valid, supported options are 'mouse', or 'human'" 
 }
 
+def message = ""
+
 if (params.gen_org=='human')
-log.info """
+
+message = """
 ATAC PARAMETER LOG
 
 --comment: ${params.comment}
@@ -46,7 +49,7 @@ ${workflow.commandLine}
 ______________________________________________________
 """
 else
-log.info """
+message = """
 ATAC PARAMETER LOG
 
 --comment: ${params.comment}
@@ -83,5 +86,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
 
 }

@@ -101,4 +101,6 @@ def param_log(){
     msg += projectInfo
 
     log.info msg
+
+    return(msg)
 }

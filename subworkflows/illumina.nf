@@ -1,7 +1,8 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 include {help} from "${projectDir}/bin/help/illumina"
-include {PARAM_LOG} from "${projectDir}/bin/log/illumina"
+include {param_log} from "${projectDir}/bin/log/illumina"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
 include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
@@ -62,8 +63,13 @@ include {SURVIVOR_BED_INTERSECT} from "${projectDir}/modules/survivor/survivor_b
 include {SURVIVOR_ANNOTATION} from "${projectDir}/modules/survivor/survivor_annotation"
 include {SURVIVOR_INEXON} from "${projectDir}/modules/survivor/survivor_inexon"
 
-// log parameter info
-PARAM_LOG()
+// log params
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 workflow ILLUMINA {
 

@@ -3,7 +3,8 @@ nextflow.enable.dsl=2
 
 // import modules
 include {help} from "${projectDir}/bin/help/ont"
-include {PARAM_LOG} from "${projectDir}/bin/log/ont"
+include {param_log} from "${projectDir}/bin/log/ont"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {NANOSTAT as NANOSTAT_PREFILT;
          NANOSTAT as NANOSTAT_POSTFILT} from "${projectDir}/modules/nanostat/nanostat"
 include {PORECHOP} from "${projectDir}/modules/porechop/porechop"
@@ -30,9 +31,13 @@ include {SURVIVOR_INEXON} from "${projectDir}/modules/survivor/survivor_inexon"
 include {PYTHON_ANNOT_DEPTHS} from "${projectDir}/modules/python/python_annot_depths"
 include {PYTHON_ANNOT_ON_TARGET} from "${projectDir}/modules/python/python_annot_on_target"
 
-// log parameter info
+// log params
+message = param_log()
 
-PARAM_LOG()
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 workflow ONT {
     if (params.help){

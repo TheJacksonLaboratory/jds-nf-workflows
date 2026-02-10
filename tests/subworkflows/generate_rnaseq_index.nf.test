@@ -40,4 +40,45 @@ nextflow_workflow {
             assert workflow.success
         }
     }
+
+
+    test("RNASeq Index -- GFF") {
+        tag "GRCm38"
+        tag "secondary"
+        tag "rna_index"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                pipeline = 'generate_rnaseq_index'
+                ref_fa = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/test.fasta"
+                ref_gtf = FALSE
+                ref_gff = "https://github.com/TheJacksonLaboratory/jds-nf-test/raw/refs/heads/main/rna/index/test.gff"
+                custom_gene_fasta = null
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("RNASeq Index -- GFF -- Custom FASTA Added") {
+        tag "GRCm38"
+        tag "secondary"
+        tag "rna_index"
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                pipeline = 'generate_rnaseq_index'
+                ref_fa = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/test.fasta"
+                ref_gtf = FALSE
+                ref_gff = "https://github.com/TheJacksonLaboratory/jds-nf-test/raw/refs/heads/main/rna/index/test.gff"
+                custom_gene_fasta = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/extra_gene.fasta"
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
 }

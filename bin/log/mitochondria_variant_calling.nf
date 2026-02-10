@@ -9,8 +9,12 @@ if (params.gen_org != "human" && params.gen_org != "mouse") {
 }
 
 def param_log(){
+
+def message = ""
+
 if (params.gen_org=='mouse')
-log.info """
+
+message = """
 mtDNA VARIANT CALLING PARAMETER LOG
 
 --comment: ${params.comment}
@@ -49,7 +53,7 @@ ${workflow.commandLine}
 ______________________________________________________
 """
 else
-log.info """
+message = """
 mtDNA VARIANT CALLING PARAMETER LOG
 
 --comment: ${params.comment}
@@ -90,7 +94,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }
-
-
-

@@ -1,0 +1,25 @@
+nextflow_workflow {
+
+    name "Test Workflow Low-Coverage WGS Haplotype Reconstruction"
+    script "workflows/lcwgs_hr.nf"
+    workflow "LCWGS_HR"
+
+    test("Full Workflow") {
+        tag "GRCm39"
+        tag "primary"
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/lcwgs/mouse/lcwgs_HR_input.csv"
+                pubdir = "tests/results"
+                pipeline = "lcwgs_hr"
+                covar_file = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/lcwgs/mouse/test_covar.csv"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+}
