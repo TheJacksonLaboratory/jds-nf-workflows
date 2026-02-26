@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/joint_gvcf_calling.nf"
 include {param_log} from "${projectDir}/bin/log/joint_gvcf_calling.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv_gvcf.nf"
 include {SAMTOOLS_FAIDX_TO_BED} from "${projectDir}/modules/samtools/samtools_faidx_to_bed"
 include {GATK_SPLITINTERVALS} from "${projectDir}/modules/gatk/gatk_splitintervals"
@@ -19,7 +20,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 // prepare reads channel
 if (params.csv_input) {

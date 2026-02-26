@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/generate_rnaseq_index.nf"
 include {param_log} from "${projectDir}/bin/log/generate_rnaseq_index.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {AGAT_GFFTOGTF} from "${projectDir}/modules/agat/agat_gfftogtf"
 include {GFFREAD_GFF3TOGTF} from "${projectDir}/modules/gffread/gffread_gff3togtf"
 include {MODIFY_MGI_GTF} from "${projectDir}/modules/utility_modules/modify_mgi_gtf"
@@ -22,7 +23,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 def checkFileExists(filePath, name) {
     if (filePath && !file(filePath).exists()) {

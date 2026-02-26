@@ -41,6 +41,8 @@ process STAR_ALIGN {
         rsem_ref_files = 'error'
     }
 
+    readFilesCommand = reads[0].toString().endsWith('.gz') ? '--readFilesCommand zcat' : ''
+
     """
     if [ "${rsem_ref_files}" = "error" ]; then exit 1; fi
 
@@ -49,6 +51,7 @@ process STAR_ALIGN {
     STAR \
     --genomeDir . \
     --readFilesIn ${reads}  \
+    ${readFilesCommand} \
     --runThreadN ${task.cpus} \
     --outFileNamePrefix ${sampleID}_ \
     --outSAMunmapped Within \

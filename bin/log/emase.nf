@@ -6,8 +6,10 @@ println logo.show()
 
 def param_log(){
 
+def message = ""
+
 if (params.csv_input)
-log.info """
+message = """
 EMASE RUN PARAMETER LOG
 
 --comment: ${params.comment}
@@ -37,7 +39,7 @@ ______________________________________________________
 """
 
 else if (params.concat_lanes)
-log.info """
+message = """
 EMASE RUN PARAMETER LOG
 
 --comment: ${params.comment}
@@ -70,7 +72,7 @@ ${workflow.commandLine}
 ______________________________________________________
 """
 else
-log.info """
+message = """
 EMASE RUN PARAMETER LOG
 
 --comment: ${params.comment}
@@ -102,4 +104,8 @@ Command line call:
 ${workflow.commandLine}
 ______________________________________________________
 """
+
+log.info(message)
+return(message)
+
 }

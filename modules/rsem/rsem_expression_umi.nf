@@ -76,6 +76,7 @@ process RSEM_EXPRESSION {
     ${read_type} \
     ${frag} \
     --alignments \
+    --append-names \
     ${bam} \
     \${rsem_ref_name} \
     ${output_name}
@@ -83,6 +84,8 @@ process RSEM_EXPRESSION {
 }
 
 /*
+This module uses pre-aligned BAM files by a separate STAR module in this repository. 
+
 Using an alternative aligner
 
 
