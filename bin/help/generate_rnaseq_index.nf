@@ -24,6 +24,8 @@ Parameter | Type | Description
 
 --annotation_source | ensembl | Source of transcriptome annotation. Used for internal run tracking or setting default parameters to "MGI"
 
+--ref_table | null | A tab delimited file that provides a map between ensembl and MGI IDs. Format: Ensembl_ID Ensembl_Name Biotype MGI_ID. See the wiki for more details.
+
 --custom_gene_fasta | null | The path to a fasta file with additonal transcript sequences to add to the index. Will be annotated based on the name provided in the sequnece name field. For example: ">New_Gene_42", where New_Gene_42 will be the name of the gene, transcript, and exon. 
 
 '''
