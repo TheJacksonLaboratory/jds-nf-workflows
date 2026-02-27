@@ -1,5 +1,8 @@
 def help(){
   println '''
+
+Note: This workflow relies on 'biotype' annotations within the GTF to define 'rRNA' regions. These regions are used in quality control steps to check percentage of reads mapping to rRNA. `--mgi` is provided to convert MGI based GFF3 files to GTF with the appropriate biotype annotations for rRNA. If using a custom GTF, please ensure that rRNA regions are annotated with biotype 'rRNA' for accurate QC metrics.
+
 Parameter | Type | Description
 
 --pubdir | /<PATH> | The directory that the saved outputs will be stored.
@@ -16,6 +19,10 @@ Parameter | Type | Description
 --ref_gff | null | Used in cases where no GTF is available. When specifiying GFF, set `--ref_gtf FALSE` in the Nextflow command when using this param. The workflow first converts to GTF using AGAT_GFFTOGTF before continuing.
 
 --ref_gff3 | null | Used in cases where no GTF is available. When specifiying GFF3, set `--ref_gtf FALSE` in the Nextflow command when using this param. The workflow first converts to GTF using GFFREAD_GFF3TOGTF and MODIFY_MGI_GTF before continuing.
+
+--mgi | false | If specified, the MGI GTF (either provided or converted) is appended to include 'biotype' annotations.
+
+--annotation_source | ensembl | Source of transcriptome annotation. Used for internal run tracking or setting default parameters to "MGI"
 
 --custom_gene_fasta | null | The path to a fasta file with additonal transcript sequences to add to the index. Will be annotated based on the name provided in the sequnece name field. For example: ">New_Gene_42", where New_Gene_42 will be the name of the gene, transcript, and exon. 
 

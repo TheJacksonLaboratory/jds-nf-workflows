@@ -86,9 +86,12 @@ workflow GENERATE_RNASEQ_INDEX {
         proc_gtf = AGAT_GFFTOGTF.out.gtf
     } else if (params.ref_gff3) {
         GFFREAD_GFF3TOGTF(params.ref_gff3)
-        proc_gtf = MODIFY_MGI_GTF(GFFREAD_GFF3TOGTF.out.gtf, params.ref_table) 
-    } else {
-        proc_gtf = Channel.fromPath(params.ref_gtf)
+        proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+    }
+
+    if (params.mgi) {
+        MODIFY_MGI_GTF(proc_gtf, params.ref_table)
+        proc_gtf = MODIFY_MGI_GTF.out.gtf
     }
 
     if (params.custom_gene_fasta) {

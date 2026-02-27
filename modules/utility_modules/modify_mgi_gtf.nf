@@ -12,15 +12,15 @@ process MODIFY_MGI_GTF {
     publishDir "${params.pubdir}", pattern: "*.gtf", mode:'copy'
 
     input:
-        path(gtf_tmp)
+        path(gtf)
         path(ref_table)
     output:
-        path("${gtf_tmp.getBaseName(2)}.gtf"), emit: gtf
-        //path("*.gtf"), emit: gtf
+        path("${gtf.getBaseName(2)}.biotypeAdded.gtf"), emit: gtf
+
+    // note: getBaseName(2) is used to remove both suffixes ".converted.gtf" from the output of the previous step.
 
     script:
         """
-        perl ${projectDir}/bin/rnaseq/modify_mgi_gtf.pl ${gtf_tmp} ${ref_table} 
+        perl ${projectDir}/bin/generate_rnaseq_index/modify_mgi_gtf.pl ${gtf} ${ref_table} ${gtf.getBaseName(2)}.biotypeAdded.gtf
         """
 }
-

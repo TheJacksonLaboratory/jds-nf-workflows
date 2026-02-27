@@ -10,19 +10,18 @@ process GFFREAD_GFF3TOGTF {
 
     container "quay.io/biocontainers/gffread:0.12.1--h2e03b76_1"
 
-    //publishDir "${params.pubdir}", pattern: "*.gtf", mode:'copy'
+    publishDir "${params.pubdir}", pattern: "*.gtf", mode:'copy'
 
     input:
     path(gff3)
 
     output:
-    path('*tmp.gtf'), emit: gtf
+    path('*converted.gtf'), emit: gtf
 
 
     script:
     """
-    gffread ${gff3} -T -o ${gff3.baseName}.tmp.gtf
-    
+    gffread ${gff3} -T -o ${gff3.baseName}.converted.gtf
     """
 }
 

@@ -15,7 +15,8 @@ Parameter | Default | Description
 --download_data | null | Requires `--csv_input`. When specified, read data in the CSV manifest will be downloaded from provided URLs. 
 
 --gen_org | mouse | Options: mouse and human.
---genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39 or MGI. If gen_org == human, build defaults to GRCm38.
+--genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
+--annotation_source | ensembl | Options currently supported for mouse: ensembl, MGI. Options currently supported for human: ensembl. 
 
 --bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
 
