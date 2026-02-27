@@ -87,6 +87,8 @@ workflow GENERATE_RNASEQ_INDEX {
     } else if (params.ref_gff3) {
         GFFREAD_GFF3TOGTF(params.ref_gff3)
         proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+    } else {
+        proc_gtf = Channel.fromPath(params.ref_gtf)
     }
 
     if (params.mgi) {
