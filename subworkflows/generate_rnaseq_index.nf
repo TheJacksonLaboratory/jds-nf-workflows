@@ -6,6 +6,8 @@ include {help} from "${projectDir}/bin/help/generate_rnaseq_index.nf"
 include {param_log} from "${projectDir}/bin/log/generate_rnaseq_index.nf"
 include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {AGAT_GFFTOGTF} from "${projectDir}/modules/agat/agat_gfftogtf"
+include {GFFREAD_GFF3TOGTF} from "${projectDir}/modules/gffread/gffread_gff3togtf"
+include {MODIFY_MGI_GTF} from "${projectDir}/modules/utility_modules/modify_mgi_gtf"
 include {MAKE_CUSTOM_TRANSCRIPTOME} from "${projectDir}/modules/utility_modules/make_custom_transcriptome"
 include {RSEM_PREPAREREFERENCE as RSEM_PREPAREREFERENCE_BOWTIE2;
          RSEM_PREPAREREFERENCE as RSEM_PREPAREREFERENCE_STAR} from "${projectDir}/modules/rsem/rsem_preparereference"
@@ -35,19 +37,36 @@ def checkFileExists(filePath, name) {
     }
 }
 
-if (!params.ref_gtf && !params.ref_gff) {
-    log.error "Either `--ref_gtf` or `--ref_gff` must be provided."
-    exit 1
-}
 
-if ((params.ref_gtf != null && params.ref_gtf != '') && (params.ref_gff != null && params.ref_gff != '')) {
+if( !params.ref_gff3) {
+  if (!params.ref_gtf && !params.ref_gff) {
+      log.error "Either `--ref_gtf` or `--ref_gff` must be provided."
+      exit 1
+  }
+
+  if ((params.ref_gtf != null && params.ref_gtf != '') && (params.ref_gff != null && params.ref_gff != '')) {
     log.error "Both `--ref_gtf` and `--ref_gff` were provided. Please provide only one."
     exit 1
-}
-
-if (params.ref_gff) {
+  }
+  if (params.ref_gff) {
     checkFileExists(params.ref_gff, "ref_gff")
-}
+  }
+
+} else {
+    if (!params.ref_gtf && !params.ref_gff3) {
+      log.error "Either `--ref_gtf` or `--ref_gff3` must be provided."
+      exit 1
+    }
+    
+    if ((params.ref_gtf != null && params.ref_gtf != '') && (params.ref_gff3 != null && params.ref_gff3 != '')) {
+    log.error "Both `--ref_gtf` and `--ref_gff3` were provided. Please provide only one."
+    exit 1
+  }
+  if (params.ref_gff3) {
+    checkFileExists(params.ref_gff3, "ref_gff3")
+  }
+
+}     
 
 if (params.ref_gtf) {
     checkFileExists(params.ref_gtf, "ref_gtf")
@@ -65,8 +84,16 @@ workflow GENERATE_RNASEQ_INDEX {
     if (params.ref_gff) {
         AGAT_GFFTOGTF(params.ref_gff)
         proc_gtf = AGAT_GFFTOGTF.out.gtf
+    } else if (params.ref_gff3) {
+        GFFREAD_GFF3TOGTF(params.ref_gff3)
+        proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
     } else {
         proc_gtf = Channel.fromPath(params.ref_gtf)
+    }
+
+    if (params.mgi) {
+        MODIFY_MGI_GTF(proc_gtf, params.ref_table)
+        proc_gtf = MODIFY_MGI_GTF.out.gtf
     }
 
     if (params.custom_gene_fasta) {

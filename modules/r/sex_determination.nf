@@ -16,7 +16,7 @@ process SEX_DETERMINATION {
         tuple val(sampleID), file("*.csv"), emit: csv
 
     script:
-        """
-        /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination.R ${counts} ./ ${sampleID}
-        """
+    """
+    /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination.R ${counts} ./ ${sampleID}
+    """
 }

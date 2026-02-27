@@ -1,6 +1,6 @@
 process RSEM_PREPAREREFERENCE {
     cpus 12
-    memory 64.GB
+    memory 90.GB
     time 12.h
 
     tag "$fasta $aligner $read_length"

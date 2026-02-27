@@ -81,4 +81,28 @@ nextflow_workflow {
             assert workflow.success
         }
     }
+
+    test("RNASeq Index -- GFF3") {
+        tag "GRCm39"
+        tag "secondary"
+        tag "rna_index"
+        when {
+            params {
+                gen_org = "mouse"
+                genome_build = "GRCm39"
+                annotation_source = "MGI"
+                pubdir = "tests/results"
+                pipeline = 'generate_rnaseq_index'
+                ref_fa = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/test.fasta"
+                ref_gtf = FALSE
+                ref_gff = FALSE
+                ref_gff3 = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/index/test.gff3"
+                mgi = true
+            }
+        }
+        then {
+            assert workflow.success
+        }
+    }
+
 }
