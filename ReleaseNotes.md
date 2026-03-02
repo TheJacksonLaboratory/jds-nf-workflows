@@ -1,5 +1,64 @@
 # RELEASE NOTES
 
+## Release 0.9.4
+
+In this minor release we add support for the MGI based transcriptome annotation in the RNAseq (`--workflow rnaseq`) workflow, and support for genreating MGI based reference sets using the Generate RNA index (`--workflow generate_rnaseq_index`) workflow. This includes the addition of a new module to convert GFF to GTF, and a module to modify the MGI GTF to add the Ensembl biotype. We also added support for using GFF files as input to the `--workflow generate_rnaseq_index` workflow.  
+
+### Workflows Added:
+
+None
+
+### Subworkflows Added:
+
+None
+
+### Workflow Changes:
+
+None
+
+### Subworkflows Changes:
+
+1. subworkflows/generate_rnaseq_index.nf: Add support for GFF3 input files. Added logic to convert GFF3 to GTF using AGAT_GFFTOGTF module, and added logic to modify MGI annotations to included ensembl biotypes.
+
+### Modules Added:
+
+1. modules/gffread/gffread_gff3togtf.nf
+1. modules/utility_modules/modify_mgi_gtf.nf
+
+### Module Changes:
+
+1. modules/rsem/rsem_preparereference.nf: Increase memory reservation. 
+
+### Module Deleted:  
+
+None
+
+### Configuration Changed:  
+
+1. config/generate_rnaseq_index.config: Added `--annotation_source`, and `--ref_gff3` parameters. Added parameter set for `--annotation_source MGI`
+1. config/pta.config: Updated to GRCm39 references. Note that GRCm38 and GRCm39 are indentical for chrMT, but for consistency with other resources in this workflow, the GRCm39 reference is now used for the mitochondrial variant calling workflow.
+1. config/rnaseq.config: Added `--annotation_source` and parameter set for `--annotation_source MGI`
+1. config/wgs_long_read.config: Adjust `null` params to set `gap` and `exclude_regions` for GRCm38/GRCm39.
+1. config/wgs_sv_bam.config: Remove the unused param `primary_chrom_bed`
+
+### Scripts Added:
+
+1. bin/generate_rnaseq_index/modify_mgi_gtf.pl: adds ensembl biotype to GTF
+
+### Script Changes:
+
+1. bin/rnaseq/sex_determination.R: Added support for MGI naming, and added a 10% difference threshold for sex determination. Samples are 'undetermined' if the difference between the X (Xist) and Y (Dd3y) gene expression is less than 10%.
+
+### NF-Test Tests Added/Modified: 
+
+1. tests/workflows/rnaseq.nf.test: added MGI case
+1. tests/subworkflows/generate_rnaseq_index.nf.test: added MGI case
+
+### [CS-NF-Test](https://github.com/TheJacksonLaboratory/cs-nf-test) Data Added: 
+
+1. Added MGI based GFF with rRNA example, and added example rRNA to GTF and GFF. 
+
+
 ## Release 0.9.3
 
 **NOTE:** The required version of Nextflow is now set to greater than 24.04.0 less than 25.10.0. Users have reported issues when running the workflows in this repository with version 25.10.+.  

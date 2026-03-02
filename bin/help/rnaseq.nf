@@ -16,6 +16,7 @@ Parameter | Default | Description
 
 --gen_org | mouse | Options: mouse and human.
 --genome_build | 'GRCm38' | Mouse specific. Options: GRCm38 or GRCm39. If gen_org == human, build defaults to GRCm38.
+--annotation_source | ensembl | Options currently supported for mouse: ensembl, MGI. Options currently supported for human: ensembl. 
 
 --bam_input | false | Options: false, true. If specified, use BAM file input. `--csv_input` is required. See the wiki page for details. 
 
@@ -36,11 +37,13 @@ Parameter | Default | Description
 --trim_poly_x | false | If enabled, polyX trimming is done. If specified with polyG trimming, that is done first then polyX trimming is done. A minimum length can be set with --poly_x_min_len for fastp to detect polyX
 --poly_x_min_len | 10 | Minimum length of polyX to be trimmed. Default is 10.
 
---strandedness_ref | Mouse: '/projects/compsci/omics_share/human/GRCh38/transcriptome/indices/ensembl/v104/kallisto/kallisto_index'
+--strandedness_ref | Mouse: '/projects/compsci/omics_share/mouse/GRCm38/transcriptome/indices/ensembl/v102/kallisto/kallisto_index'
                    | Human: '/projects/compsci/omics_share/human/GRCh38/transcriptome/indices/ensembl/v104/kallisto/kallisto_index' 
+                   | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/indices/mgi/v114/kallisto_index/kallisto_index' 
                    | Modfied kallisto index file used in strandedness determination. 
 --strandedness_gtf | Mouse: '/projects/compsci/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.gtf'
                    | Human: '/projects/compsci/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.gtf' 
+                   | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/MGI.gtf'
                    | GTF file used with kallisto index file used in strandedness determination. 
 --strandedness     | null | Library strandedness override. Supported options are 'reverse_stranded' or 'forward_stranded' or 'non_stranded'. This override parameter is only used when the tool `check_strandedness` fails to classify the strandedness of a sample. If the tool provides a strand direction, that determination is used." 
 
@@ -56,14 +59,17 @@ Parameter | Default | Description
 
 --picard_dict | Mouse: '/projects/omics_share/mouse/GRCm38/genome/sequence/ensembl/v102/Mus_musculus.GRCm38.dna.toplevel.dict' 
               | Human: '/projects/omics_share/human/GRCh38/genome/sequence/ensembl/v104/Homo_sapiens.GRCh38.dna.toplevel.dict'
+              | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/Mus_musculus.GRCm39.dna.primary_assembly.dict'
               | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ref_flat | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.refFlat.txt' 
            | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.refFlat.txt'
+           | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/MGI.refFlat.txt'
            | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --ribo_intervals | Mouse: '/projects/omics_share/mouse/GRCm38/transcriptome/annotation/ensembl/v102/Mus_musculus.GRCm38.102.chr_patch_hapl_scaff.rRNA.interval_list' 
                  | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.chr_patch_hapl_scaff.rRNA.interval_list'
+                 | MGI: '/projects/compsci/omics_share/mouse/GRCm39/transcriptome/annotation/mgi/v114/MGI.rRNA_intervals.list'
                  | The coverage metric calculation step requires this file. Refers to human assembly when --gen_org human. 
 
 --pdx | false | Options: false, true. If specified, 'Xengsort' is run on reads to deconvolute human and mouse reads. Human only reads are used in analysis. 

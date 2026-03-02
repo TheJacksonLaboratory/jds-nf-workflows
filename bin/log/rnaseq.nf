@@ -71,6 +71,7 @@ def baseParams = """
 
 --gen_org                               ${params.gen_org}
 --genome_build                          ${params.genome_build}
+--annotation_source                     ${params.annotation_source}
 
 --read_type                             ${params.read_type}
 --csv_input                             ${params.csv_input}
