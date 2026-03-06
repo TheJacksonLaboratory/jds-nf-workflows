@@ -78,8 +78,11 @@ if (params.custom_gene_fasta) {
     checkFileExists(params.custom_gene_fasta, "custom_gene_fasta")
 }
 
-
 workflow GENERATE_RNASEQ_INDEX {
+
+    star_read_lengths = params.star_read_lengths instanceof String 
+        ? Channel.from(params.star_read_lengths.split(',').collect{it.trim().toInteger()})
+        : Channel.from(params.star_read_lengths.collect{it.toInteger()})
 
     if (params.ref_gff) {
         AGAT_GFFTOGTF(params.ref_gff)
@@ -104,7 +107,7 @@ workflow GENERATE_RNASEQ_INDEX {
         MAKE_CUSTOM_TRANSCRIPTOME(make_custom_input)
 
         bowtie2_input = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).map{it -> [it[0], it[1], 'bowtie2', '']}
-        star_build_set = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).combine(Channel.of(75, 100, 125, 150)).map{it -> [it[0], it[1], 'STAR', it[2]]}
+        star_build_set = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).combine(star_read_lengths).map{it -> [it[0], it[1], 'STAR', it[2]]}
         
         fasta = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta
         gtf = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf
@@ -114,7 +117,7 @@ workflow GENERATE_RNASEQ_INDEX {
         .map{ it -> [params.ref_fa, it, 'bowtie2', ''] }
 
         star_build_set = proc_gtf
-        .map{ it -> [params.ref_fa, it, 'star'] }.combine(Channel.of(75, 100, 125, 150))
+        .map{ it -> [params.ref_fa, it, 'star'] }.combine(star_read_lengths)
         
         fasta = params.ref_fa
         gtf = proc_gtf

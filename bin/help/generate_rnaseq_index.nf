@@ -16,6 +16,8 @@ Parameter | Type | Description
           | Human: '/projects/omics_share/human/GRCh38/transcriptome/annotation/ensembl/v104/Homo_sapiens.GRCh38.104.gtf'
           | The reference gtf to be used in index generation.
 
+--star_read_lengths | '75, 100, 125, 150' | a single value or comma delimited list of read lengths for STAR index generation.
+
 --ref_gff | null | Used in cases where no GTF is available. When specifiying GFF, set `--ref_gtf FALSE` in the Nextflow command when using this param. The workflow first converts to GTF using AGAT_GFFTOGTF before continuing.
 
 --ref_gff3 | null | Used in cases where no GTF is available. When specifiying GFF3, set `--ref_gtf FALSE` in the Nextflow command when using this param. The workflow first converts to GTF using GFFREAD_GFF3TOGTF and MODIFY_MGI_GTF before continuing.
