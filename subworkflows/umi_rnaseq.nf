@@ -116,7 +116,8 @@ workflow UMI_RNASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
-            ch_multiqc_files.collect()
+            ch_multiqc_files.collect(),
+            params.multiqc_config
         )
         
 }

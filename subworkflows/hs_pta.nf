@@ -284,7 +284,7 @@ workflow HS_PTA {
         // Process tumor and normal BAMs seperately for conpair. For calling, use mapped and crossed data. 
 
         // ** Get alignment and WGS metrics
-        PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
+        PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file, 'wgs')
         PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
         // ** Run MT DNA variant calling.
@@ -889,7 +889,8 @@ workflow HS_PTA {
         ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.contamination.collect{it[1]}.ifEmpty([]))
     
         MULTIQC (
-            ch_multiqc_files.collect()
+            ch_multiqc_files.collect(),
+            params.multiqc_config
         )
 
 }

@@ -40,6 +40,8 @@ process BOWTIE {
 
 OPTIONS USED SUMMARY: 
 
+-q The query input files (specified either as <m1> and <m2>, or as <s>) are FASTQ files (usually having extension .fq or .fastq). This is the default. See also: --solexa-quals and --integer-quals.
+
 -a/--all
 Report all valid alignments per read or pair (default: off). Validity of alignments is determined by the alignment policy (combined effects of -n, -v, -l, and -e). If more than one valid alignment exists and the --best and --strata options are specified, then only those alignments belonging to the best alignment “stratum” will be reported. Bowtie is designed to be very fast for small -k but bowtie can become significantly slower if -a/--all is specified. If you would like to use Bowtie with -a, consider building an index with a denser suffix-array sample, i.e. specify a smaller -o/--offrate when invoking bowtie-build for the relevant index (see the Performance tuning section for details).
 

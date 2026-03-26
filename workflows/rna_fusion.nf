@@ -176,6 +176,7 @@ workflow RNA_FUSION {
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
-        ch_multiqc_files.collect()
+        ch_multiqc_files.collect(),
+        params.multiqc_config
     )
 }

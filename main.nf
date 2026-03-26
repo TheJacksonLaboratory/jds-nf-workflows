@@ -93,6 +93,9 @@ else if (params.workflow == "wgs_sv_bam"){
 else if (params.workflow == "lcwgs_hr"){
   include {LCWGS_HR} from './workflows/lcwgs_hr'
 }
+else if (params.workflow == "bam_to_fastq"){
+  include {BAM_TO_FASTQ} from './subworkflows/bam_to_fastq'
+}
 else {
   // if workflow name is not supported: 
   exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
@@ -186,5 +189,8 @@ workflow{
   }
   if (params.workflow == "lcwgs_hr"){
     LCWGS_HR()
+  }
+  if (params.workflow == "bam_to_fastq"){
+    BAM_TO_FASTQ()
   }
 }

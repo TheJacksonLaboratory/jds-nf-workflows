@@ -345,7 +345,7 @@ workflow WGS {
           .map{it -> it.trim()}
   num_chroms = file(params.chrom_contigs).countLines().toInteger()
 
-  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
+  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file, 'wgs')
   PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
   
   
@@ -503,7 +503,8 @@ workflow WGS {
   ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
   
   MULTIQC (
-      ch_multiqc_files.collect()
+    ch_multiqc_files.collect(),
+    params.multiqc_config
   )
 
 }
