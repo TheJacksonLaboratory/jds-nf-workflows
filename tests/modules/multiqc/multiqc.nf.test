@@ -13,10 +13,10 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = [file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
                 input[1] = "${projectDir}/bin/shared/multiqc/mt_variant_calling.yaml"
                 """
             }
@@ -37,10 +37,10 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = [file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
                 """
             }
         }
@@ -60,10 +60,10 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = [file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
-                            file('/projects/omics_share/meta/benchmarking/jds-nf-test/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
                 input[1] = []
                 """
             }
