@@ -16,10 +16,6 @@ if (params.help){
 // log params
 message = param_log()
 
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
 
 def checkFileExists(filePath, name) {
     if (filePath && !file(filePath).exists()) {

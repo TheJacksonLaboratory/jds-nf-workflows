@@ -70,7 +70,10 @@ else if (params.workflow == "generate_rnaseq_index"){
   include {GENERATE_RNASEQ_INDEX} from './subworkflows/generate_rnaseq_index'
 }
 else if (params.workflow == "generate_rnaseq_simreads"){
-  include {GENERATE_RNASEQ_SIMREADS} from './supportworkflows/generate_rnaseq_simreads'
+  include {GENERATE_RNASEQ_SIMREADS} from './support_workflows/generate_rnaseq_simreads'
+}
+else if (params.workflow == "generate_wgs_simreads"){
+  include {GENERATE_WGS_SIMREADS} from './support_workflows/generate_wgs_simreads'
 }
 else if (params.workflow == "joint_gvcf_calling"){
   include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
@@ -168,6 +171,9 @@ workflow{
   }
   if (params.workflow == "generate_rnaseq_simreads"){
     GENERATE_RNASEQ_SIMREADS()
+  }
+  if (params.workflow == "generate_wgs_simreads"){
+    GENERATE_WGS_SIMREADS()
   }
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
