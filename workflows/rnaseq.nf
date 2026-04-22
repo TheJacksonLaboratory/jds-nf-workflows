@@ -175,7 +175,7 @@ workflow RNASEQ {
         FASTQC(reads)
 
         // Check strand setting
-        CHECK_STRANDEDNESS(reads)
+        CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
         rsem_input = reads.join(CHECK_STRANDEDNESS.out.strand_setting).join(GET_READ_LENGTH.out.read_length)
 

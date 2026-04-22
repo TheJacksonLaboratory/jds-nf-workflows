@@ -12,6 +12,7 @@ process CHECK_STRANDEDNESS {
 
     input:
     tuple val(sampleID), path(reads)
+    path(gtf)
 
     output:
     tuple val(sampleID), env(STRAND), emit: strand_setting
@@ -22,11 +23,11 @@ process CHECK_STRANDEDNESS {
 
     // In cases where the GTF is provided as a gzipped file, we need to unzip it for use in the strandedness check. 
     // We want to avoid adding another input stream here, so the path string of params.strandedness_gtf must be used.
-    def gtf_path = params.strandedness_gtf
+    def gtf_path = gtf
 
     // Extract just the filename from the string to use for the local unzipped copy
     // We use .split('/')[-1] to get the filename from the full path string
-    def gtf_filename = gtf_path.split('/')[-1]
+    def gtf_filename = gtf.getName()
     
     // Determine the local unzipped name
     def gtf_local = gtf_filename.endsWith('.gz') ? gtf_filename.replace('.gz', '') : gtf_filename

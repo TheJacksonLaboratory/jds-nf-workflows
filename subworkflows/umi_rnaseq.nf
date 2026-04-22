@@ -54,7 +54,7 @@ workflow UMI_RNASEQ {
         FASTQC(reads)
 
         // Check strand setting
-        CHECK_STRANDEDNESS(reads)
+        CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
         // STAR Alignment
         STAR_ALIGN(reads.join(GET_READ_LENGTH.out.read_length), params.rsem_ref_files, params.rsem_star_prefix)
