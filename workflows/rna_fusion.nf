@@ -10,7 +10,7 @@ include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
 include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
 include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
 include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {GUNZIP} from "${projectDir}/modules/utility_modules/gunzip"
+include {GUNZIP} from "${projectDir}/modules/utility_modules/gunzip_reads"
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
 include {STAR_ALIGN as STAR_ARRIBA;

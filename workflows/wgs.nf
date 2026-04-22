@@ -196,7 +196,9 @@ workflow WGS {
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
 
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
-    
+    // WHEN merge_ind is used, we need an alternative version of this process. The read groups need to be assigned based on the individual ID, not the sample ID.
+    // To get IND IDs, the meta_ch must be joined to the FASTP output, and the read group process must be modified to use the IND ID instead of the sample ID.
+    // I think this will require a new module that accepts 'meta' as part of the input tuple. 
 
     // START Split FASTQ
     if (params.split_fastq) {

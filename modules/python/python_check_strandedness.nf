@@ -20,9 +20,29 @@ process CHECK_STRANDEDNESS {
     script:
     paired = params.read_type == 'PE' ? "-r2 ${reads[1]}" : ''
 
-    """
-    check_strandedness -g ${params.strandedness_gtf} -k ${params.strandedness_ref} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
+    // In cases where the GTF is provided as a gzipped file, we need to unzip it for use in the strandedness check. 
+    // We want to avoid adding another input stream here, so the path string of params.strandedness_gtf must be used.
+    def gtf_path = params.strandedness_gtf
 
+    // Extract just the filename from the string to use for the local unzipped copy
+    // We use .split('/')[-1] to get the filename from the full path string
+    def gtf_filename = gtf_path.split('/')[-1]
+    
+    // Determine the local unzipped name
+    def gtf_local = gtf_filename.endsWith('.gz') ? gtf_filename.replace('.gz', '') : gtf_filename
+    
+    // Build the unzip command (streaming from the external path to the local work dir)
+    def unzip_cmd = gtf_filename.endsWith('.gz') ? "gunzip -c ${gtf_path} > ${gtf_local}" : ""
+    
+    // If it wasn't gzipped, we use the original path directly; otherwise, use the local unzipped file
+    def gtf_file = gtf_filename.endsWith('.gz') ? gtf_local : gtf_path
+
+
+    """
+
+    ${unzip_cmd}
+
+    check_strandedness -g ${gtf_file} -k ${params.strandedness_ref} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
 
     if grep -q "Data is likely" ${sampleID}_strandedness.txt; then
         
