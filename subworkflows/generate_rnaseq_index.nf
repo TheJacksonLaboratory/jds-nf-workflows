@@ -5,6 +5,7 @@ nextflow.enable.dsl=2
 include {help} from "${projectDir}/bin/help/generate_rnaseq_index.nf"
 include {param_log} from "${projectDir}/bin/log/generate_rnaseq_index.nf"
 include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
+include {GUNZIP} from "${projectDir}/modules/utility_modules/gunzip"
 include {AGAT_GFFTOGTF} from "${projectDir}/modules/agat/agat_gfftogtf"
 include {GFFREAD_GFF3TOGTF} from "${projectDir}/modules/gffread/gffread_gff3togtf"
 include {MODIFY_MGI_GTF} from "${projectDir}/modules/utility_modules/modify_mgi_gtf"
@@ -88,10 +89,21 @@ workflow GENERATE_RNASEQ_INDEX {
         AGAT_GFFTOGTF(params.ref_gff)
         proc_gtf = AGAT_GFFTOGTF.out.gtf
     } else if (params.ref_gff3) {
-        GFFREAD_GFF3TOGTF(params.ref_gff3)
-        proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+        if (params.ref_gff3.endsWith('.gz')) {
+            GUNZIP(params.ref_gff3)
+            GFFREAD_GFF3TOGTF(GUNZIP.out.gunzip_file)
+            proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+        } else {
+            GFFREAD_GFF3TOGTF(params.ref_gff3)
+            proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+        }
     } else {
-        proc_gtf = Channel.fromPath(params.ref_gtf)
+        if (params.ref_gtf.endsWith('.gz')) {
+            GUNZIP(params.ref_gtf)
+            proc_gtf = GUNZIP.out.gunzip_file
+        } else {
+            proc_gtf = Channel.fromPath(params.ref_gtf)
+        }
     }
 
     if (params.mgi) {

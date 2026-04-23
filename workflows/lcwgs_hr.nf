@@ -216,8 +216,10 @@ workflow LCWGS_HR{
   ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it[1] }.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
+  
   MULTIQC (
-      ch_multiqc_files.collect()
+    ch_multiqc_files.collect(),
+    params.multiqc_config
  )
 
 }

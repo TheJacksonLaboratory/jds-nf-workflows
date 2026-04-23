@@ -1,0 +1,24 @@
+nextflow_workflow {
+
+    name "Test Workflow BAM_TO_FASTQ"
+    script "subworkflows/bam_to_fastq.nf"
+    workflow "BAM_TO_FASTQ"
+
+    test("Workflow") {
+
+        when {
+            params {
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/rna/mouse/mm10_RNA_BAM_input.csv"
+                pubdir = "tests/results"
+                pipeline = 'bam_to_fastq'
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+
+}
+
