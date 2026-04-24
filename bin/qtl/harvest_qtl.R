@@ -7,19 +7,19 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20260121
+# 20260311
 ################################################################################
 
 library(qtl2)
 
-# Test files
+# Inputs
 scan1_files <- list.files(pattern = "scan1out.rds")
-perm_files <- list.files(pattern = "scan1perms.rds")
+perm_files <- list.files(pattern = "scan1perms.txt")
 map_files <- list.files(pattern = "map.rds")
 
 # Grab phenotype names
-phenotypes <- unlist(lapply(perm_files, function(x){
-  pheno <- gsub(pattern = "_scan1perms.rds",replacement = "", basename(x))
+phenotypes <- unlist(lapply(scan1_files, function(x){
+  pheno <- gsub(pattern = "_scan1out.rds",replacement = "", basename(x))
   return(pheno)
 }))
 
@@ -30,22 +30,22 @@ for(i in phenotypes){
   # read in data
   
   scan1 <- readRDS(paste0(i,"_scan1out.rds"))
-  perms <- readRDS(paste0(i,"_scan1perms.rds"))
+  perms <- read.table(paste0(i,"_scan1perms.txt"), header = T)
   map   <- readRDS( paste0(i,"_map.rds"))
   
   # plot
   png(paste0(i,"_scan1_thresh.png"))
   qtl2::plot_scan1(scan1, map, main = i)
   qtl2::add_threshold(map, 
-                      thresholdA = summary(perms)[[1]], 
-                      thresholdX = summary(perms)[[1]], col = "red")
+                      thresholdA = perms$perm, 
+                      thresholdX = perms$perm, col = "red")
   dev.off()
   
   # find peaks
   peaks[[i]] <-  qtl2::find_peaks(scan1_output = scan1, 
                                   map = map,
-                                  threshold = summary(perms)[[1]], drop = 3, peakdrop = 3,
-                                  thresholdX = summary(perms)[[1]], dropX = 3, peakdropX = 3,
+                                  threshold = perms$perm, drop = 3, peakdrop = 3,
+                                  thresholdX = perms$perm, dropX = 3, peakdropX = 3,
                                   expand2markers = TRUE,
                                   sort_by = "pos")
   

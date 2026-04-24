@@ -13,7 +13,6 @@ library(dplyr)
 ################################################################################
 
 args <- commandArgs(trailingOnly = TRUE)
-
 covar_file <- args[1]
 cross_file <- args[2]
 genoprobs_file <- args[3]
@@ -30,10 +29,6 @@ print(args)
 # Read in the files
 message("Reading in files...")
 covar <- read.csv(covar_file, header = TRUE, stringsAsFactors = FALSE)
-if("include" %in% colnames(covar)){
-    covar <- covar[covar$include == TRUE,] %>%
-                dplyr::select(-include)
-}
 message("Covariate file read in.")
 message("Reading in cross object...")
 cross <- readRDS(cross_file)
@@ -41,6 +36,12 @@ cross <- readRDS(cross_file)
 # Convert logical parameters from string
 remove_markers <- as.logical(remove_markers)
 correct_ids <- as.logical(correct_ids)
+if(any(covar$include == FALSE)){
+  remove_samples = TRUE
+} else {
+  remove_samples = FALSE
+}
+
 
 if(remove_markers == TRUE){
     if(remove_markers == TRUE && is.null(marker_file)){
@@ -52,6 +53,10 @@ if(remove_markers == TRUE){
 
     message("Dropping bad markers...")
     cross <- qtl2::drop_markers(cross, bad_markers)
+    
+    if(remove_samples){
+      cross <- subset(cross, ind = covar[which(covar$include == TRUE),]$id)
+    }
 
     message("Estimating new genotype probabilities...")
     # Calculate genotype probs
@@ -81,10 +86,6 @@ if(remove_markers == TRUE){
     message("Remove markers is FALSE, reading probability files...")
     # Read in files that we need if correct_ids is TRUE and remove_markers is FALSE
     genoprobs <- readRDS(genoprobs_file)
-
-    # clean genotype probabilities
-    genoprobs <- qtl2::clean_genoprob(genoprobs, cores = parallel::detectCores())
-
     alleleprobs <- readRDS(alleleprobs_file)
     m <- readRDS(viterbi_file)
     k <- readRDS(kinship_file)
@@ -95,25 +96,29 @@ if(correct_ids == TRUE){
         if("correct_id" %in% colnames(covar) == FALSE){
             stop("correct_ids is TRUE, but no correct_id column in covar file.")
         }
-        # Make correct_ids vector
-        correct_ids <- covar$correct_id
-        names(correct_ids) <- covar$id
+  
+        # remove samples if specified in covar file
+        if(remove_samples){
+          cross <- subset(cross, ind = covar[which(covar$include == TRUE),]$id)
+          genoprobs <- subset(genoprobs, ind = covar[which(covar$include == TRUE),]$id)
+          alleleprobs <- subset(alleleprobs, ind = covar[which(covar$include == TRUE),]$id)
+          m <- subset(m, ind = covar[which(covar$include == TRUE),]$id)
+          k <- subset(m, ind = covar[which(covar$include == TRUE),]$id)
+        }
+  
+  
+        # Make correct_ids vector from include column of covar file
+        c <- covar[which(covar$include == TRUE),]$correct_id
+        names(c) <- covar[which(covar$include == TRUE),]$id
+        stopifnot(length(c) == n_ind(cross))
 
         # Correct IDs
-        cross <- qtl2::replace_ids(cross, correct_ids)
-        genoprobs <- qtl2::replace_ids(genoprobs, correct_ids)
-        alleleprobs <- qtl2::replace_ids(alleleprobs, correct_ids)
-        m <- qtl2::replace_ids(m, correct_ids)
+        cross <- qtl2::replace_ids(cross, c)
+        genoprobs <- qtl2::replace_ids(genoprobs, c)
+        alleleprobs <- qtl2::replace_ids(alleleprobs, c)
+        m <- qtl2::replace_ids(m, c)
+        k <- qtl2::replace_ids(k, c)
         
-        name_match <- unlist(lapply(rownames(k[["1"]]), function(x){grep(x, names(correct_ids))}))
-        stopifnot(names(correct_ids)[name_match] == rownames(k[["1"]]))
-        k <- lapply(k, function(x){
-            colnames(x) <- rownames(x) <- unname(correct_ids[name_match])
-            return(x)
-        })
-
-
-
         message("IDs corrected.")
         message("Saving updated cross, genotype probabilities, allele probabilities, and viterbi files...")
         saveRDS(cross, file = paste(project_id,"updated_cross.rds", sep = "_"))
