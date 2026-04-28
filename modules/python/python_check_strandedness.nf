@@ -74,3 +74,37 @@ process CHECK_STRANDEDNESS {
 // Data is likely RF/fr-firststrand
 // Data is likely FR/fr-secondstrand
 // Data is likely unstranded
+/*
+
+# Script logic: 
+
+if single_strand:
+    fwd = float(result.iloc[2,0].replace('Fraction of reads explained by "++,--": ', ''))
+    rev = float(result.iloc[3,0].replace('Fraction of reads explained by "+-,-+": ', ''))
+else:
+    fwd = float(result.iloc[2,0].replace('Fraction of reads explained by "1++,1--,2+-,2-+": ', ''))
+    rev = float(result.iloc[3,0].replace('Fraction of reads explained by "1+-,1-+,2++,2--": ', ''))
+if float(result.iloc[1,0].replace('Fraction of reads failed to determine: ', '')) > 0.50:
+    print('Failed to determine strandedness of > 50% of reads.')
+    print('If this is unexpected, try running again with a higher --nreads value')
+if fwd_percent > 0.9:
+    if single_strand:
+        print('Over 90% of reads explained by "++,--"')
+        print('Data is likely FR/fr-stranded')
+    else:
+        print('Over 90% of reads explained by "1++,1--,2+-,2-+"')
+        print('Data is likely FR/fr-secondstrand')
+elif rev_percent > 0.9:
+    if single_strand:
+        print('Over 90% of reads explained by "+-,-+"')
+        print('Data is likely RF/rf-stranded')
+    else:
+        print('Over 90% of reads explained by "1+-,1-+,2++,2--"')
+        print('Data is likely RF/fr-firststrand')
+elif max(fwd_percent, rev_percent) < 0.6:
+    print('Under 60% of reads explained by one direction')
+    print('Data is likely unstranded')
+else:
+    print('Data does not fall into a likely stranded (max percent explained > 0.9) or unstranded layout (max percent explained < 0.6)')
+    print('Please check your data for low quality and contaminating reads before proceeding')
+*/

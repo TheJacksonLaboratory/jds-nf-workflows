@@ -14,11 +14,23 @@ process PICARD_ADDORREPLACEREADGROUPS {
 
     output:
     tuple val(sampleID), file("*.bam"), emit: bam
-    tuple val(sampleID), file("*.bai"), emit: bai
+    tuple val(sampleID), file("*.bai"), emit: bai, optional: true
 
     script:
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
+
+    /**
+     * Determines whether to create an index file during SAM reordering.
+     * 
+     * Sets the Picard CREATE_INDEX parameter based on the skip_index flag:
+     * - If params.skip_index is true: CREATE_INDEX=false (index creation is disabled)
+     * - If params.skip_index is false: CREATE_INDEX=true (index creation is enabled)
+     * 
+     * Usage: Pass --skip_index to the nextflow command to disable index creation
+     */
+     
+    index_creation = params.skip_index ? 'CREATE_INDEX=false' : 'CREATE_INDEX=true'
 
     """
     picard -Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp AddOrReplaceReadGroups \
@@ -27,6 +39,6 @@ process PICARD_ADDORREPLACEREADGROUPS {
     SORT_ORDER=coordinate \
     TMP_DIR=`pwd`/tmp \
     \$(cat $read_groups) \
-    CREATE_INDEX=true
+    ${index_creation}
     """
 }
