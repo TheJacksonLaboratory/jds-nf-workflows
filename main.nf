@@ -85,7 +85,7 @@ else if (params.workflow == "mitochondria_variant_calling"){
   include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
 } 
 else if (params.workflow == "wgs_long_read"){
-  include {wgs_long_read} from './workflows/wgs_long_read'
+  include {WGS_LONG_READ} from './workflows/wgs_long_read'
 }
 else if (params.workflow == "reannotate_pta"){
   include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
@@ -176,7 +176,7 @@ workflow{
     JOINT_GVCF_CALLING()
   }
   if (params.workflow == "wgs_long_read"){
-    wgs_long_read()
+    WGS_LONG_READ()
   }
   if (params.workflow == "mitochondria_variant_calling"){
     MITOCHONDRIA_VARIANT_CALLING()

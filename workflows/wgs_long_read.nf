@@ -82,7 +82,7 @@ if (params.csv_input) {
 }
 
 // BEGIN main workflow
-workflow wgs_long_read {
+workflow WGS_LONG_READ {
 
     // ADD A DEMUX STEP FOR DATA NOT IN FASTQ FORMAT??
 
