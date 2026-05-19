@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/wgs.nf"
+include {help} from "${projectDir}/bin/help/lcwgs_hr.nf"
 include {param_log} from "${projectDir}/bin/log/lcwgs_hr.nf"
 include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
@@ -183,7 +183,7 @@ workflow LCWGS_HR{
 
   
   CREATE_BAMLIST(bam_input_ch)
-  chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_type}/chromosome_chunks.csv")
+  chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chromosome_chunks.csv")
                     .splitCsv(header: true)
                     .map {row -> 
                             [ chr         = row.chr,

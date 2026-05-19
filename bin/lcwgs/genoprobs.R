@@ -161,6 +161,22 @@ if(cross_type == "genail4" | cross_type == "het3"){
                          crossinfo_codes = c("BxD"=0),
                          alleles=c("B", "D"),
                          overwrite=TRUE)
+} else if(cross_type == "F2"){
+  qtl2::write_control_file(output_file = paste0("chr",chrom,"_control_file.json"),
+                           crosstype="f2",
+                           founder_geno_file=founder_genos,
+                           founder_geno_transposed=TRUE,
+                           gmap_file=gmap,
+                           pmap_file=pmap,
+                           geno_file=sample_genos,
+                           geno_transposed=TRUE,
+                           geno_codes=list(A=1, H=2, B=3),
+                           sex_covar="sex",
+                           sex_codes=list("F"="female",
+                                          "M"="male"),
+                           covar_file=metadata,
+                           xchr="X",
+                           overwrite=TRUE)
 } else {
   print("Cross type specified does not have a process to make .json file; ending")
 }

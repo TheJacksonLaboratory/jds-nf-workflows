@@ -203,6 +203,9 @@ if(chr != "X"){
     print("HET3 strains; sites not expected to adhere to HWE")
     print("Skipping HWE filter")
     # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
+  } else if(cross_type == "F2"){
+    print("F2 cross; sites not expected to adhere to HWE")
+    print("Skipping HWE filter")
   } else {
     print("Pct of sites that deviate from HWE:")
     # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
@@ -373,12 +376,23 @@ if(cross_type == "genail4" | cross_type == "genail8" | cross_type == "cc" | cros
             quote = FALSE, row.names = FALSE)
 
 } else if(cross_type == "bxd"){
-  
+
   # keep the default id column
   stopifnot("id" %in% colnames(meta))
   if("sex" %in% colnames(meta)){
     meta$sex[meta$sex == "female" | meta$sex == "f"] <- "F"
     meta$sex[meta$sex == "male" | meta$sex == "m"] <- "M"
+  }
+  write.csv(meta, file = 'covar.csv',
+            quote = FALSE, row.names = FALSE)
+
+} else if(cross_type == "F2"){
+  stopifnot("id" %in% colnames(meta))
+  if("sex" %in% colnames(meta)){
+    meta$sex[meta$sex == "female" | meta$sex == "f"] <- "F"
+    meta$sex[meta$sex == "male" | meta$sex == "m"] <- "M"
+  } else {
+    message("No sex column included")
   }
   write.csv(meta, file = 'covar.csv',
             quote = FALSE, row.names = FALSE)
