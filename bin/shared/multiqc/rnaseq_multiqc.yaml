@@ -33,6 +33,7 @@ extra_fn_clean_exts:
   - "_strandedness"
   - "_genome_bam_with_read_group_reorder"
   - "_fastp"
+  - " fastp report"
   - "_xenome_stats"
 
 section_comments:
