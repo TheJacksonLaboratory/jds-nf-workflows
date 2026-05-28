@@ -14,7 +14,6 @@ library(qtl2)
 
 # take arguments
 args <- commandArgs(trailingOnly = TRUE)
-
 # what chromosome?
 chrom <- args[1]
 
@@ -62,7 +61,7 @@ if(all(covar$sex == FALSE)){
 if("original_sex" %in% colnames(covar) & all(covar$original_sex == FALSE)){
   covar$original_sex <- "F"
 }
-if(cross_type != "do"){
+if(!cross_type %in% c("do","SDO")){
   revised_covar <- covar %>%
     dplyr::select(-original_sex, -gw_ratio, -sex_ratio)
   write.csv(revised_covar, file = "covar.csv", row.names = F, quote = F)
@@ -92,6 +91,25 @@ if(cross_type == "genail4" | cross_type == "het3"){
                      covar_file = metadata,
                      crossinfo_covar = colnames(covar)[!colnames(covar) %in% c("id","sex")],
                      xchr = "X",
+                     overwrite = T)
+} else if(cross_type == "SDO"){
+  # write control file for ail3 crosses
+  write_control_file(output_file = paste0("chr",chrom,"_control_file.json"),
+                     crosstype="ail3",
+                     founder_geno_file=founder_genos,
+                     founder_geno_transposed=TRUE,
+                     gmap_file=gmap,
+                     pmap_file=pmap,
+                     geno_file=sample_genos,
+                     geno_transposed=TRUE,
+                     geno_codes=list(A=1, H=2, B=3),
+                     sex_covar="sex",
+                     sex_codes=list("F"="female",
+                                    "M"="male"),
+                     covar_file = metadata,
+                     crossinfo_covar="gen",
+                     xchr = "X",
+                     alleles=c("F","G","H"),
                      overwrite = T)
 } else if(cross_type == "F1_mut"){
   # write control file for genail4 crosses

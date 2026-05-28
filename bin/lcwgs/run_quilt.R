@@ -56,7 +56,7 @@ print(args)
 # str(end)
 
 # Take cross type and determine how QUILT should be executed
-if(cross_type == "do" | cross_type == "cc" | cross_type == "het3" | cross_type == "F1_mut"){
+if(cross_type == "do" | cross_type == "cc" | cross_type == "het3" | cross_type == "F1_mut" | cross_type == "SDO"){
   
   # DO, CC, and het3 covar files require generation estimates, so can use this for QUILT
   

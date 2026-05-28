@@ -203,7 +203,11 @@ if(chr != "X"){
     print("HET3 strains; sites not expected to adhere to HWE")
     print("Skipping HWE filter")
     # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
-  } else {
+  } else if(cross_type == "SDO"){
+    print("SDO; sites not expected to adhere to HWE")
+    print("Skipping HWE filter")
+    # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
+  }else {
     print("Pct of sites that deviate from HWE:")
     # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
 
@@ -306,7 +310,12 @@ if(cross_type == "do"){
   colnames(founder_gt) = c("Y","B","C","D")
   founder_gt = data.frame(marker = rownames(founder_gt), founder_gt)
   
-} else {
+} else if(cross_type == "SDO"){
+  
+  colnames(founder_gt) = c("F","G","H")
+  founder_gt = data.frame(marker = rownames(founder_gt), founder_gt)
+  
+}else {
   
   colnames(founder_gt) = LETTERS[1:ncol(founder_gt)]
   founder_gt = data.frame(marker = rownames(founder_gt), founder_gt)
@@ -347,7 +356,7 @@ write.csv(gmap, file = paste0("chr",chr,"_gmap.csv"),
 stopifnot("cross_type" %in% ls(pattern = "cross_type"))
 
 # Does the covar file match the format of the cross type?
-if(cross_type == "genail4" | cross_type == "genail8" | cross_type == "cc" | cross_type == "het3" | cross_type == "F1_mut"){
+if(cross_type == "genail4" | cross_type == "genail8" | cross_type == "cc" | cross_type == "het3" | cross_type == "F1_mut" | cross_type == "SDO"){
   stopifnot("id" %in% colnames(meta))
   stopifnot("gen" %in% colnames(meta))
   stopifnot(colnames(founder_gt)[-1] %in% LETTERS)

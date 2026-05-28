@@ -31,6 +31,8 @@ message(paste("Using", n_cores, "cores for parallel operations"))
 # cross_type <- args[1]
 if(cross_type == "het3" | cross_type == "cc" | cross_type == "genail4"){
   cross_type <- "genail4"
+} else if(cross_type == "SDO"){
+  cross_type <- "genail3"
 } else if(cross_type == "bxd"){
   cross_type <- "risib"
 } else if(cross_type == "F1_mut"){
