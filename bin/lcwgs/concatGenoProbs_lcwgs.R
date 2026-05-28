@@ -35,8 +35,10 @@ if(cross_type == "het3" | cross_type == "cc" | cross_type == "genail4"){
   cross_type <- "risib"
 } else if(cross_type == "F1_mut"){
   cross_type <- "genail14"
-}else if(cross_type == "do"){
+} else if(cross_type == "do"){
   cross_type <- "do"
+} else if(cross_type == "F2"){
+  cross_type <- "f2"
 } else {
   "No clue of cross type!"
 }

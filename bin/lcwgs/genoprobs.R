@@ -6,7 +6,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20260123
+# 20260520
 ################################################################################
 
 library(dplyr)
@@ -46,6 +46,7 @@ smooth_window <- as.numeric(args[9])
 n_cores <- as.numeric(args[10])
 message(paste("Using", n_cores, "cores for parallel operations"))
 
+
 ## RUN ##
 
 cat(paste0("Processing chromosome ",chrom,"\n"))
@@ -62,7 +63,7 @@ if(all(covar$sex == FALSE)){
 if("original_sex" %in% colnames(covar) & all(covar$original_sex == FALSE)){
   covar$original_sex <- "F"
 }
-if(cross_type != "do"){
+if(!cross_type %in% c("do","F2")){
   revised_covar <- covar %>%
     dplyr::select(-original_sex, -gw_ratio, -sex_ratio)
   write.csv(revised_covar, file = "covar.csv", row.names = F, quote = F)
@@ -162,19 +163,30 @@ if(cross_type == "genail4" | cross_type == "het3"){
                          alleles=c("B", "D"),
                          overwrite=TRUE)
 } else if(cross_type == "F2"){
+  
+  # get cross direction encodings from the metadata
+  stopifnot("cross_direction" %in% colnames(covar))
+  cd_vec <- c()
+  cd <- unique(covar$cross_direction)
+  for(i in 1:length(cd)){
+    cd_vec[i] <- i-1
+    names(cd_vec)[i] <- cd[i]
+  }
+  
+  # write control file
   qtl2::write_control_file(output_file = paste0("chr",chrom,"_control_file.json"),
                            crosstype="f2",
-                           founder_geno_file=founder_genos,
-                           founder_geno_transposed=TRUE,
                            gmap_file=gmap,
                            pmap_file=pmap,
                            geno_file=sample_genos,
                            geno_transposed=TRUE,
                            geno_codes=list(A=1, H=2, B=3),
+                           covar_file = metadata,
                            sex_covar="sex",
-                           sex_codes=list("F"="female",
-                                          "M"="male"),
-                           covar_file=metadata,
+                           sex_codes=list("F"="female", 
+                                          "M"="male"), 
+                           crossinfo_covar = "cross_direction",
+                           crossinfo_codes = cd_vec,
                            xchr="X",
                            overwrite=TRUE)
 } else {
@@ -194,9 +206,6 @@ cross <- qtl2::read_cross2(paste0("chr",chrom,"_control_file.json"))
 
 # Drop null markers
 cross <- qtl2::drop_nullmarkers(cross)
-
-# subset during testing
-# cross <- subset(cross, ind = c(1:3))
 
 # Calculate genotype probs
 cat("Calculating genotype probabilities...\n")
