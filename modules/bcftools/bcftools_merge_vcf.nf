@@ -7,19 +7,28 @@ process BCFTOOLS_MERGE_VCF {
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'
 
+    publishDir "${params.pubdir}/results/gold_truth_vcf", pattern: '*ALLchr_golden.vcf*', mode:'copy'
+
     input:
     path(vcf)
     path(tbi)
+    val(name)   
 
 
     output:
-    path("*ALLchr_golden.vcf.gz"), emit: merged_vcf
+    path("*ALLchr_golden.vcf.gz"), emit: merged_vcf, optional: true
+    path("*ALLchr_golden.vcf"), emit: merged_vcf_unzip, optional: true
 
     script:
-    suffix = params.gen_org=='mouse' ? "Mus_musculus.GRCm38" : "Homo_sapiens.GRCh38"
+    prefix = params.gen_org=='mouse' ? "Mus_musculus.GRCm38" : "Homo_sapiens.GRCh38"
+    coverage = params.workflow == "generate_wgs_simreads" ? "10x" : "60x"        
     """
     ls *.vcf.gz > vcfout.list
 
-    bcftools merge -m none --file-list vcfout.list -Oz -o ${suffix}_simVar_10x_ALLchr_golden.vcf.gz
+    bcftools merge -m none --file-list vcfout.list -Oz -o ${prefix}_simVar_${coverage}_${name}chr_golden.vcf.gz
+
+    if [[ ${name} == "FINAL_ALL" ]]; then
+        gunzip ${prefix}_simVar_${coverage}_${name}chr_golden.vcf.gz
+    fi
     """
 }

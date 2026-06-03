@@ -8,7 +8,8 @@ process CONCATENATE_SIMREADS {
 
     container 'ubuntu:20.04'
 
-    publishDir "${params.pubdir}/results/simulated_10x_AllChr", pattern: "*.fastq.gz", mode:'copy'
+    publishDir "${params.pubdir}/results/simulated_10x_AllChr", pattern: "*.fastq.gz", mode:'copy', enabled: params.workflow == 'generate_wgs_simreads'
+    publishDir "${params.pubdir}/results/simulated_60x_AllChr", pattern: "*.fastq.gz", mode:'copy', enabled: params.workflow == 'generate_wes_simreads'
 
 
     input:

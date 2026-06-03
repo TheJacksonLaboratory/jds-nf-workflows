@@ -1,4 +1,4 @@
-process GENERATE_SIMULATED_WGS_DATA {
+process GENERATE_SIMULATED_WES_DATA_FIRST_PASS {
     tag "$chunk_fasta.simpleName"
 
 
@@ -9,16 +9,11 @@ process GENERATE_SIMULATED_WGS_DATA {
 
     container 'quay.io/jaxcompsci/neat:3.3'
 
-    publishDir "${params.pubdir}/results/simulated_10x_individual_chr", pattern: '*fq.gz', mode:'copy'  
-    publishDir "${params.pubdir}/results/gold_truth_vcf", pattern: '*golden.vcf', mode:'copy'  
-
 
     input:
     path chunk_fasta
 
     output:
-    path('*1.fq.gz'), emit: fq1
-    path('*2.fq.gz'), emit: fq2
     path('*vcf'),     emit: vcf
  
 
@@ -28,13 +23,15 @@ process GENERATE_SIMULATED_WGS_DATA {
     python /usr/local/bin/NEAT/gen_reads.py \
         -r ${chunk_fasta} \
         -R 150 \
-        -o ${prefix}_simVar_10x_${chunk_fasta.simpleName} \
-	-c 10 \
+        -o ${prefix}_simVar_60x_${chunk_fasta.simpleName} \
+        -c 120 \
+        -to 0.02 \
         -E 0.001 \
         --vcf \
-        --pe 350 30
-    
+        --pe 350 30 \
+        -tr ${params.target_bed} \
+        --no-fastq
+
     gunzip *vcf.gz
     """
-
 }

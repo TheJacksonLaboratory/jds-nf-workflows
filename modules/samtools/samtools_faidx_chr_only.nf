@@ -1,5 +1,5 @@
 process SAMTOOLS_FAIDX_CHR_ONLY {
-    tag "$sampleID"
+    tag "Fasta"
 
     cpus 1
     memory 8.GB
@@ -8,8 +8,6 @@ process SAMTOOLS_FAIDX_CHR_ONLY {
 
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-    //publishDir "${params.pubdir}/g2gtools", pattern:"*.fai", mode:'copy', enabled: params.workflow == 'generate_pseudoreference' ? true : false
-    //publishDir "${params.pubdir}/genome_info", pattern:"*.fai", mode:'copy', enabled: params.workflow == 'chipseq' ? true : false
 
     input:
         path(fasta)
@@ -20,9 +18,13 @@ process SAMTOOLS_FAIDX_CHR_ONLY {
     script:
     suffix = params.gen_org=='mouse' ? "\$(echo -e ${fasta} | sed 's/.toplevel.fa//g')" : "\$(echo -e ${fasta} | sed 's/_assembly38.fasta//g')"
 
-    if (params.gen_org=='mouse')
+    if (params.gen_org=='mouse' && params.workflow=='generate_wgs_simreads')
     """
       samtools faidx ${fasta} 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 X Y MT > ${suffix}.primary_CHR_Only.fa
+    """
+    else if (params.gen_org=='mouse' && params.workflow=='generate_wes_simreads')
+    """
+      samtools faidx ${fasta} 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 X Y > ${suffix}.primary_CHR_Only.fa
     """
     else if (params.gen_org=='human')
     """

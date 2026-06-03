@@ -19,11 +19,11 @@ process VCF_SORT {
 
 
     script:
-        suffix="\$(echo -e ${merged_vcf} | sed 's/.vcf.gz//g')"  
+        prefix="\$(echo -e ${merged_vcf} | sed 's/.vcf.gz//g')"  
         """
-        vcf-sort ${merged_vcf} >${suffix}_sorted.vcf
-        bgzip ${suffix}_sorted.vcf
-        tabix -f -p vcf ${suffix}_sorted.vcf.gz
+        vcf-sort ${merged_vcf} >${prefix}_sorted.vcf
+        bgzip ${prefix}_sorted.vcf
+        tabix -f -p vcf ${prefix}_sorted.vcf.gz
         """
 
 } 
