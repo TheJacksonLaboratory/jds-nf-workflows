@@ -144,7 +144,7 @@ workflow LCWGS_HR{
   // Sex check
   coverage_files_channel = MOSDEPTH.out.mosdepth.map{it -> it[1]}
                                                 .collect()
-  SEX_CHECK(coverage_files_channel)
+  SEX_CHECK(coverage_files_channel, file(params.covar_file))
 
   if (params.downsample){
   

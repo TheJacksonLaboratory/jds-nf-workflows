@@ -10,6 +10,7 @@ process SEX_CHECK {
 
   input:
   path(mosdepth_files)
+  path(covar_file)
 
   output:
   path('sex_check_covar.csv'), emit: sex_checked_covar
@@ -17,6 +18,6 @@ process SEX_CHECK {
   script:
 
   """
-  Rscript --vanilla ${projectDir}/bin/lcwgs/coverage_based_sex_check.R ${params.covar_file}
+  Rscript --vanilla ${projectDir}/bin/lcwgs/coverage_based_sex_check.R ${covar_file}
   """
 }

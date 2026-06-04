@@ -1,10 +1,8 @@
 process CONCATENATE_GENOPROBS {
 
   cpus 16 
-  memory {600.GB * task.attempt}
-  time {6.hour * task.attempt}
-  errorStrategy 'retry' 
-  maxRetries 2 
+  memory 200.GB
+  time 6.hour
 
   container 'docker://sjwidmay/jds_lcwgs_hr:1.0.0'
   
