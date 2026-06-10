@@ -29,6 +29,7 @@ ______________________________________________________
 --gen_org                       ${params.gen_org}
 --genome_build                  ${params.genome_build}
 --annotation_source             ${params.annotation_source}
+--star_read_lengths             ${params.star_read_lengths}
 --ref_fa                        ${params.ref_fa}
 --ref_gtf                       ${params.ref_gtf}
 --ref_gff                       ${params.ref_gff}

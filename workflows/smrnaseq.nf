@@ -326,7 +326,8 @@ workflow SMRNASEQ {
 
   // Step 41 : MultiQC
   MULTIQC (
-      ch_multiqc_files.collect()
+    ch_multiqc_files.collect(),
+    []
   )
 
 }

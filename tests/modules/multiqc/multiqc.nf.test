@@ -1,0 +1,106 @@
+nextflow_process {
+
+    name "Test Process MULTIQC"
+    script "modules/multiqc/multiqc.nf"
+    process "MULTIQC"
+
+    test("Valid Input[1]") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                input[1] = "${projectDir}/bin/shared/multiqc/mt_variant_calling.yaml"
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("No Input[1]") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                """
+            }
+        }
+
+        then {
+            assert process.failed
+        }
+
+    }
+
+    test("Empty Input[1]") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                input[1] = []
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("Valid Input[1] - Save Inputs") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                save_multiqc_inputs = true
+            }
+            process {
+                """
+                input[0] = [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_AlignmentMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_CollectWgsMetrics.mt.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42_mt.mba_dup_metrics.txt', checkIfExists: true),
+                            file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/mitochondria/multiqc/sample_42.haplocheck_multiqc.txt', checkIfExists: true)]
+                input[1] = "${projectDir}/bin/shared/multiqc/mt_variant_calling.yaml"
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+
+}
+
+

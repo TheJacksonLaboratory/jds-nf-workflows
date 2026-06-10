@@ -17,11 +17,14 @@ process HAPLOCHECK {
     tuple val(sampleID), path("*haplocheck_output.txt"), emit: contam_report
     tuple val(sampleID), path("*contamination.txt"), emit: contam_value
     tuple val(sampleID), env("contam_value"), emit: contam
+    tuple val(sampleID), path("*.haplocheck_multiqc.txt"), emit: multiqc_log
     
     script:
     """
     set -e
     haplocheck --raw --out=output ${vcf} 
+
+    cp output ${sampleID}.haplocheck_multiqc.txt
 
     sed 's/\"//g' output.raw.txt > ${sampleID}.haplocheck_output.txt
 

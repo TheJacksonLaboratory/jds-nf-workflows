@@ -50,7 +50,7 @@ workflow PDX_RNASEQ {
       // QC is assess on all reads. Mouse/human is irrelevant here. 
       FASTQC(reads)
 
-      CHECK_STRANDEDNESS(reads)
+      CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
       // Generate Xengsort Index if needed
       if (params.xengsort_idx_path) {
@@ -144,6 +144,7 @@ workflow PDX_RNASEQ {
       ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS_MOUSE.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
       MULTIQC (
-          ch_multiqc_files.collect()
+          ch_multiqc_files.collect(),
+            params.multiqc_config
       )
 } 
