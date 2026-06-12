@@ -21,7 +21,19 @@ process PICARD_SORTSAM {
     script:
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
-    index_creation = sort_order == 'coordinate' ? 'CREATE_INDEX=true' : ''
+
+    /**
+     * Determines whether to create an index file during SAM reordering.
+     * 
+     * Sets the Picard CREATE_INDEX parameter based on the skip_index flag:
+     * - If params.skip_index is true: CREATE_INDEX=false (index creation is disabled)
+     * - If params.skip_index is false: CREATE_INDEX=true (index creation is enabled)
+     * - If the sort order is coordinate and skip_index is not set, index creation is enabled by default since it's generally recommended for coordinate-sorted BAM files. For other sort orders, index creation is disabled by default unless skip_index is explicitly set to false.
+     * 
+     * Usage: Pass --skip_index to the nextflow command to disable index creation
+     */
+     
+    index_creation = params.skip_index ? 'CREATE_INDEX=false' : (sort_order == 'coordinate' ? 'CREATE_INDEX=true' : '')
 
     """
     picard -Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp SortSam \

@@ -19,7 +19,8 @@ process CONCATENATE_READS_PE {
     script:
 
     """
-    cat $R1 > ${sampleID}_R1${params.extension}
-    cat $R2 > ${sampleID}_R2${params.extension}
+    cat $R1 > ${sampleID}_R1${params.extension} &
+    cat $R2 > ${sampleID}_R2${params.extension} &
+    wait
     """
 }

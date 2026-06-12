@@ -8,10 +8,11 @@ process PICARD_COLLECTALIGNMENTSUMMARYMETRICS{
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.txt", mode:'copy'
+    publishDir "${params.pubdir}/${sampleID}${type == 'mt' ? '/mt_callers/stats' : '/stats'}", pattern: "*.txt", mode: 'copy'
 
     input:
     tuple val(sampleID), file(bam)
+    val(type)
 
     output:
     tuple val(sampleID), file("*.txt"), emit: txt
@@ -20,12 +21,15 @@ process PICARD_COLLECTALIGNMENTSUMMARYMETRICS{
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
+    reference = type == 'mt' ? params.mt_fasta : params.ref_fa
+    suffix = type == 'mt' ? ".mt" : ""
+
     """
     mkdir -p tmp
     gatk --java-options "-Xmx${my_mem}G -Djava.io.tmpdir=`pwd`/tmp"  CollectAlignmentSummaryMetrics \
     --INPUT ${bam} \
-    --OUTPUT ${sampleID}_AlignmentMetrics.txt \
-    --REFERENCE_SEQUENCE ${params.ref_fa} \
+    --OUTPUT ${sampleID}_AlignmentMetrics${suffix}.txt \
+    --REFERENCE_SEQUENCE ${reference} \
     --METRIC_ACCUMULATION_LEVEL ALL_READS \
     --VALIDATION_STRINGENCY LENIENT
     """

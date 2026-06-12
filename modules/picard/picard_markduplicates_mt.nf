@@ -25,7 +25,7 @@ process PICARD_MARKDUPLICATES {
     picard -Xmx${my_mem}G -Xms${my_mem}G MarkDuplicates \
     I=${bam} \
     O=${bam.baseName}_dedup.bam \
-    M=${sampleID}_dup_metrics.txt \
+    M=${bam.baseName}_dup_metrics.txt \
     VALIDATION_STRINGENCY=SILENT \
     OPTICAL_DUPLICATE_PIXEL_DISTANCE=2500 \
     ASSUME_SORT_ORDER="queryname" \

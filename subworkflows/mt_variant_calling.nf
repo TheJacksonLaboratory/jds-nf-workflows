@@ -14,6 +14,7 @@ include {PICARD_SORTSAM as PICARD_SORTSAM_MT;
          PICARD_SORTSAM as PICARD_SORTSAM_SHIFTED_MT} from "${projectDir}/modules/picard/picard_sortsam"
 
 include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
+include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
 
 include {GATK_MUTECT2_MT as GATK_MUTECT2_MT;
          GATK_MUTECT2_MT as GATK_MUTECT2_SHIFTEDMT} from "${projectDir}/modules/gatk/gatk_mutect2_mt"
@@ -45,6 +46,8 @@ include {SNPEFF} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
 include {SNPEFF_ONEPERLINE} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
 include {SNPSIFT_DBNSFP} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
 include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+
+include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 workflow MT_VARIANT_CALLING {
 
@@ -80,7 +83,9 @@ workflow MT_VARIANT_CALLING {
         MUTSERVE(mt_alignment)
 
         PICARD_COLLECTWGSMETRICS(PICARD_SORTSAM_MT.out.bam, 'mt')
-        // This needs to be checked for cases where it is wgs and not mt to make sure it works correctly.  
+        PICARD_COLLECTALIGNMENTSUMMARYMETRICS(PICARD_SORTSAM_MT.out.bam, 'mt')
+
+        ch_HAPLOCHECK_multiqc = Channel.empty() //optional log file for human only.
 
         if (params.gen_org == 'human') {
 
@@ -101,8 +106,9 @@ workflow MT_VARIANT_CALLING {
             GATK_FILTERMUECTCALLS_PRIMARY(primary_filter_input, 'primary')
 
             GATK_LEFTALIGNANDTRIMVARIANTS_PASS(GATK_FILTERMUECTCALLS_PRIMARY.out.vcf_tbi, 'pass-only')
-
+            
             HAPLOCHECK(GATK_LEFTALIGNANDTRIMVARIANTS_PASS.out.interm_vcf_tbi)
+            ch_HAPLOCHECK_multiqc = HAPLOCHECK.out.multiqc_log // set log file for multiqc
 
             contam_filter_input = GATK_FILTERMUECTCALLS_PRIMARY.out.vcf_tbi
                                   .join(GATK_MERGEMUTECTSTATS.out.stats)
@@ -167,5 +173,17 @@ workflow MT_VARIANT_CALLING {
             SNPEFF_ONEPERLINE(SNPEFF.out.vcf, 'MTDNA')
             SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'mtdna')
         }
+
+        ch_multiqc_files = Channel.empty()
+
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES_MT.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_HAPLOCHECK_multiqc.collect{it[1]}.ifEmpty([]))
+        
+        MULTIQC (
+            ch_multiqc_files.collect(),
+            params.multiqc_config_mt
+        )
 
 }

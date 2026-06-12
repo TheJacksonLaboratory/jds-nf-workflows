@@ -29,9 +29,17 @@ process RSEM_ALIGNMENT_EXPRESSION {
     tuple val(sampleID), path("*isoforms.results"), emit: rsem_isoforms
     tuple val(sampleID), path("*.genome.bam"), emit: bam
     tuple val(sampleID), path("*.transcript.bam"), emit: transcript_bam
-    tuple val(sampleID), path("*.genome.sorted.bam"), path("*.genome.sorted.bam.bai"), emit: sorted_genomic_bam
-    tuple val(sampleID), path("*.transcript.sorted.bam"), path("*.transcript.sorted.bam.bai"), emit: sorted_transcript_bam
+    tuple val(sampleID), path("*.genome.sorted.bam"), emit: sorted_genomic_bam
+    tuple val(sampleID), path("*.genome.sorted.bam.bai"), emit: sorted_genomic_bam_bai, optional: true
+    tuple val(sampleID), path("*.transcript.sorted.bam"), emit: sorted_transcript_bam
+    tuple val(sampleID), path("*.transcript.sorted.bam.bai"), emit: sorted_transcript_bam_bai, optional: true
     tuple val(sampleID), path("*final.out"), emit: star_log, optional: true
+
+    /* 
+        Note: For large genomes, the index step may fail. 
+              skip_index may be used to disable index creation. 
+              This is why sorted_genomic_bam and sorted_transcript_bam are marked as optional outputs as they may not be created if the index step isn't run.
+    */
     
     script:
 
@@ -100,6 +108,14 @@ process RSEM_ALIGNMENT_EXPRESSION {
 
     }
 
+    index_command = params.skip_index ? '' : index_command
+    
+    /* 
+        Note: For large genomes, the index step may fail. 
+              skip_index may be used to disable index creation. 
+              Sorting is still valid.
+    */
+    
     """
     if [ "${rsem_ref_files}" = "error" ]; then exit 1; fi
 
