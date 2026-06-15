@@ -9,6 +9,7 @@ process CONCATENATE_READS_SE {
     container 'ubuntu:20.04'
 
     publishDir "${params.pubdir}/${sampleID + '/concatenated_reads'}", pattern: "*", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/reads", pattern: "*", mode:'copy', enabled: params.workflow == 'generate_wes_simreads' || params.workflow == 'generate_wgs_simreads'
 
     input:
     tuple val(sampleID), file(R1)

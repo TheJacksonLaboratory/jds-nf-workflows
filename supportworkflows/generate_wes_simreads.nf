@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {help} from "${projectDir}/bin/help/generate_wes_simreads"
 include {param_log} from "${projectDir}/bin/log/generate_wes_simreads"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {SAMTOOLS_FAIDX_CHR_ONLY} from "${projectDir}/modules/samtools/samtools_faidx_chr_only"
 include {SPLIT_FILES} from "${projectDir}/modules/python/pyfaidx_split_files"
 include {GENERATE_SIMULATED_WES_DATA_FIRST_PASS} from "${projectDir}/modules/neat/generate_simulated_WES_data_first_pass"
@@ -26,6 +27,10 @@ if (params.help){
 // log params
 message = param_log()
 
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 def checkFileExists(filePath, name) {
     if (filePath && !file(filePath).exists()) {

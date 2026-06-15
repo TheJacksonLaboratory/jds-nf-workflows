@@ -8,13 +8,11 @@ process SPLIT_FILES {
 
     container 'quay.io/biocontainers/pyfaidx:0.9.0.4--pyhdfd78af_0'
     
-
     input:
     path(chr_fa)
 
     output:
     path("chunks/*.fa")
-
 
     script:
     """

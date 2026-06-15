@@ -1,0 +1,55 @@
+nextflow_workflow {
+
+    name "Test Workflow GENERATE_WGS_SIMREADS"
+    script "supportworkflows/generate_wgs_simreads.nf"
+    workflow "GENERATE_WGS_SIMREADS"
+
+    test("Full Workflow -- GRCm38 -- PE") {
+
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                pipeline = 'generate_wgs_simreads'
+                fasta = '/projects/compsci/omics_share/meta/benchmarking/jds-nf-test/generate_sim/wgs/random.fasta'
+                chrom_list = 'Sequence_1 Sequence_2 Sequence_3 Sequence_4 Sequence_5 Sequence_6 Sequence_7 Sequence_8 Sequence_9 Sequence_10'
+                read_type = 'PE'
+                coverage = 50
+                read_length = 100
+                insert_size = 200
+                insert_size_sd = 15
+                error_rate = 0.002
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+    
+    test("Full Workflow -- GRCm38 -- SE") {
+
+        when {
+            params {
+                gen_org = "mouse"
+                pubdir = "tests/results"
+                pipeline = 'generate_wgs_simreads'
+                fasta = '/projects/compsci/omics_share/meta/benchmarking/jds-nf-test/generate_sim/wgs/random.fasta'
+                chrom_list = 'Sequence_1 Sequence_2 Sequence_3 Sequence_4 Sequence_5 Sequence_6 Sequence_7 Sequence_8 Sequence_9 Sequence_10'
+                read_type = 'SE'
+                coverage = 50
+                read_length = 100
+                insert_size = 200
+                insert_size_sd = 15
+                error_rate = 0.002
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+
+    }
+}
+/* Reads genreated are independent of genome. No need to test different genomes'*/
