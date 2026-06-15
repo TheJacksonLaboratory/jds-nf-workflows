@@ -11,7 +11,7 @@ nextflow_workflow {
                 gen_org = "mouse"
                 pubdir = "tests/results"
                 pipeline = 'generate_wgs_simreads'
-                fasta = '/projects/compsci/omics_share/meta/benchmarking/jds-nf-test/generate_sim/wgs/random.fasta'
+                fasta = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/generate_sim/wgs/random.fasta'
                 chrom_list = 'Sequence_1 Sequence_2 Sequence_3 Sequence_4 Sequence_5 Sequence_6 Sequence_7 Sequence_8 Sequence_9 Sequence_10'
                 read_type = 'PE'
                 coverage = 50
@@ -35,7 +35,7 @@ nextflow_workflow {
                 gen_org = "mouse"
                 pubdir = "tests/results"
                 pipeline = 'generate_wgs_simreads'
-                fasta = '/projects/compsci/omics_share/meta/benchmarking/jds-nf-test/generate_sim/wgs/random.fasta'
+                fasta = 'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/generate_sim/wgs/random.fasta'
                 chrom_list = 'Sequence_1 Sequence_2 Sequence_3 Sequence_4 Sequence_5 Sequence_6 Sequence_7 Sequence_8 Sequence_9 Sequence_10'
                 read_type = 'SE'
                 coverage = 50
