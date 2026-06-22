@@ -7,7 +7,7 @@ process COMPRESS_INDEX_VCF_SIMREADS {
 
     container 'quay.io/biocontainers/tabix:1.11--hdfd78af_0'
 
-    publishDir "${params.pubdir}/results/gold_truth_vcf", pattern: '*.vcf.gz*', mode:'copy'
+    publishDir "${params.pubdir}/gold_truth_vcf", pattern: '*.vcf.gz*', mode:'copy'
 
 
     input:

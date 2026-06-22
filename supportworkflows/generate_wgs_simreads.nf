@@ -51,9 +51,21 @@ workflow GENERATE_WGS_SIMREADS {
     VCF_SORT(BCFTOOLS_MERGE_VCF.out.merged_vcf)
 
     if (params.read_type == 'PE') {
-        CONCATENATE_READS_PE([params.sampleID, GENERATE_SIMULATED_WGS_DATA.out.fq1.collect(), GENERATE_SIMULATED_WGS_DATA.out.fq2.collect()])
+        ch_fastq1 = GENERATE_SIMULATED_WGS_DATA.out.fq1.collect()
+        ch_fastq2 = GENERATE_SIMULATED_WGS_DATA.out.fq2.collect()
+
+        reads1_with_id = ch_fastq1.map { files -> [params.sampleID, files] }
+        reads2_with_id = ch_fastq2.map { files -> [params.sampleID, files] }
+
+        fq_reads_pe = reads1_with_id.join(reads2_with_id)
+        
+        CONCATENATE_READS_PE(fq_reads_pe)
     } else {
-        CONCATENATE_READS_SE([params.sampleID, GENERATE_SIMULATED_WGS_DATA.out.fq1.collect()])
+        ch_fastq1 = GENERATE_SIMULATED_WGS_DATA.out.fq1.collect()
+
+        reads1_with_id = ch_fastq1.map { files -> [params.sampleID, files] }
+
+        CONCATENATE_READS_SE(reads1_with_id)
     }
 
 }

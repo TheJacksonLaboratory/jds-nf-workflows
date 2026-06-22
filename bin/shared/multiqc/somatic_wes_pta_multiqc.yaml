@@ -29,6 +29,7 @@ extra_fn_clean_exts:
   - "_R1"
   - "_R2"
   - "_fastp"
+  - "fastp report"
   - type: "truncate"
     pattern: ".fastq"
 

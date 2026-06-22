@@ -7,14 +7,14 @@ process BCFTOOLS_MERGE_VCF {
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'
 
-    publishDir "${params.pubdir}/gold_truth_vcf", pattern: '*.vcf.gz', mode:'copy'
+    publishDir "${params.pubdir}/gold_truth_vcf", pattern: '*ALLchr_golden.vcf.gz', mode:'copy'
 
     input:
     path(vcf)
     path(tbi)
 
     output:
-    path("*chr_golden.vcf.gz"), emit: merged_vcf
+    path("*ALLchr_golden.vcf.gz"), emit: merged_vcf
 
     script:
      
@@ -22,6 +22,5 @@ process BCFTOOLS_MERGE_VCF {
     ls *.vcf.gz > vcfout.list
 
     bcftools merge -m none --file-list vcfout.list -Oz -o ${params.sampleID}_${params.gen_org}_simVar_${params.coverage}x_ALLchr_golden.vcf.gz
-
     """
 }

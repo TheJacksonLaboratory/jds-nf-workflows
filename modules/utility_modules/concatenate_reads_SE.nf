@@ -12,10 +12,10 @@ process CONCATENATE_READS_SE {
     publishDir "${params.pubdir}/reads", pattern: "*", mode:'copy', enabled: params.workflow == 'generate_wes_simreads' || params.workflow == 'generate_wgs_simreads'
 
     input:
-    tuple val(sampleID), file(R1)
+    tuple val(sampleID), path(R1)
 
     output:
-    tuple val(sampleID), file("*"), emit: concat_fastq
+    tuple val(sampleID), path("*"), emit: concat_fastq
 
     script:
 

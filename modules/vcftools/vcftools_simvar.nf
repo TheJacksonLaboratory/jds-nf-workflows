@@ -8,27 +8,24 @@ process VCFTOOLS_SIMVAR {
 
     container 'quay.io/jaxcompsci/vcftools:0.1.17--g581c231'
 
-    publishDir "${params.pubdir}/results/gold_truth_vcf", pattern: '*intersect.recode*', mode:'copy'
-
+    publishDir "${params.pubdir}/gold_truth_vcf", pattern: '*recode*.vcf.gz', mode:'copy'
 
     input:
         path(merged_vcf)
         path(merged_vcf_tbi)
+        path(target_bed)
 
     output:
-        path("*_intersect*"), emit: int_vcf
-       
+        path("*recode*.vcf.gz"), emit: int_vcf
 
     script:
-        prefix = params.gen_org=='mouse' ? "Mus_musculus.GRCm38" : "Homo_sapiens.GRCh38"
-        target_bed = params.gen_org=='mouse' ? params.target_bed : params.target_sort_bed 
         """
         vcftools \
              --gzvcf ${merged_vcf} \
-             --out ${prefix}_simVar_60x_ALLchr_golden_WES_intersect \
+             --out ${params.sampleID}_simVar_${params.coverage}x_ALLchr_golden_WEStargetIntersect \
              --bed ${target_bed} \
              --recode \
              --recode-INFO-all
+        bgzip ${params.sampleID}_simVar_${params.coverage}x_ALLchr_golden_WEStargetIntersect.recode.vcf
         """
-
 }

@@ -37,6 +37,7 @@ ______________________________________________________
 --read_length                   ${params.read_length}
 --error_rate                    ${params.error_rate}
 --read_type                     ${params.read_type}
+${params.mutation_rate != null ? "--mutation_rate                 ${params.mutation_rate}" : ""}
 ${params.read_type == 'PE' ? "--insert_size                   ${params.insert_size}" : ""}
 ${params.read_type == 'PE' ? "--insert_size_sd                ${params.insert_size_sd}" : ""}
 
