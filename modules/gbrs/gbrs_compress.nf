@@ -8,7 +8,7 @@ process GBRS_COMPRESS {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.h5", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.h5", mode: 'copy'
 
     input:
     tuple val(sampleID), path(h5)

@@ -7,7 +7,7 @@ process GENERATE_GRID_FILE {
 
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
-    publishDir "${params.pubdir}", pattern: 'ref.genome_grid.GRCm39.tsv', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: 'ref.genome_grid.GRCm39.tsv', mode:'copy'
 
     output:
     path('ref.genome_grid.GRCm39.tsv'), emit: h5_files

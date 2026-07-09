@@ -1,13 +1,13 @@
 process LANCET {
     tag "$sampleID"
 
-    cpus = 4
-    memory = 30.GB
-    time = '18:00:00'
+    cpus 4
+    memory  30.GB
+    time '18:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/jaxcompsci/lancet:v1.1.0'
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.vcf", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.vcf", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), val(meta), path(normal_bam), path(normal_bai), val(normal_name), path(tumor_bam), path(tumor_bai), val(tumor_name), path(bed), val(index)

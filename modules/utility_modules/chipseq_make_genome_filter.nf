@@ -8,7 +8,7 @@ process MAKE_GENOME_FILTER {
 
     container 'ubuntu:20.04'
 
-    publishDir "${params.pubdir}/genome_info", mode: 'copy'
+    publishDir path: { "${params.pubdir}/genome_info" }, mode: 'copy'
 
     input:
     tuple val(sampleID), path(fai)

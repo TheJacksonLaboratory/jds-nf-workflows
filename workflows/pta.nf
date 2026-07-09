@@ -2,37 +2,35 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/pta.nf"
-include {param_log} from "${projectDir}/bin/log/pta.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
+include {help} from "../bin/help/pta.nf"
+include {param_log} from "../bin/log/pta.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
 
-include {HS_PTA} from "${projectDir}/subworkflows/hs_pta"
-include {MM_PTA} from "${projectDir}/subworkflows/mm_pta"
+include {HS_PTA} from "../subworkflows/hs_pta"
+include {MM_PTA} from "../subworkflows/mm_pta"
 
-include {CONCATENATE_PTA_FASTQ} from "${projectDir}/subworkflows/concatenate_pta_fastq"
-
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (!params.csv_input) {
-    exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` or the GitHub Wiki for information."
-}
-
+include {CONCATENATE_PTA_FASTQ} from "../subworkflows/concatenate_pta_fastq"
 
 // main workflow
 workflow PTA {
+
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    if (!params.csv_input) {
+        exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` or the GitHub Wiki for information."
+    }
 
     if (params.csv_input) {
         ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
@@ -57,8 +55,8 @@ workflow PTA {
 // Function to extract information (meta data + file(s)) from csv file(s)
 // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L1084
 def extract_csv(csv_file) {
-    ANSI_RED = "\u001B[31m";
-    ANSI_RESET = "\u001B[0m";
+    def ANSI_RED = "\u001B[31m";
+    def ANSI_RESET = "\u001B[0m";
 
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
     file(csv_file).withReader('UTF-8') { reader ->

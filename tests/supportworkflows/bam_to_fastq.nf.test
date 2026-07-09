@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow BAM_TO_FASTQ"
-    script "subworkflows/bam_to_fastq.nf"
+    script "supportworkflows/bam_to_fastq.nf"
     workflow "BAM_TO_FASTQ"
 
     test("Workflow") {

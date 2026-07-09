@@ -2,116 +2,116 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {SAMTOOLS_MERGE} from "${projectDir}/modules/samtools/samtools_merge"
-include {PICARD_MARKDUPLICATES}	from "${projectDir}/modules/picard/picard_markduplicates"
+include {CLUMPIFY} from "../modules/bbmap/bbmap_clumpify"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {SAMTOOLS_MERGE} from "../modules/samtools/samtools_merge"
+include {PICARD_MARKDUPLICATES}	from "../modules/picard/picard_markduplicates"
 
-include {JVARKIT_COVERAGE_CAP} from "${projectDir}/modules/jvarkit/jvarkit_biostar154220"
-include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
+include {JVARKIT_COVERAGE_CAP} from "../modules/jvarkit/jvarkit_biostar154220"
+include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 
-include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
-include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
+include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "../modules/picard/picard_collectalignmentsummarymetrics"
+include {PICARD_COLLECTWGSMETRICS} from "../modules/picard/picard_collectwgsmetrics"
 
-include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
+include {MT_VARIANT_CALLING} from "../subworkflows/mt_variant_calling"
 
 include {GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_NORMAL;
-         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "${projectDir}/modules/gatk/gatk_getsamplename"
+         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "../modules/gatk/gatk_getsamplename"
 
-include {GATK_HAPLOTYPECALLER_SV_GERMLINE} from "${projectDir}/modules/gatk/gatk_haplotypecaller_sv_germline"
+include {GATK_HAPLOTYPECALLER_SV_GERMLINE} from "../modules/gatk/gatk_haplotypecaller_sv_germline"
 
 include {GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GERMLINE;
-         GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GENOTYPE} from "${projectDir}/modules/gatk/gatk_sortvcf_germline"
-include {GATK_GENOTYPE_GVCF} from "${projectDir}/modules/gatk/gatk_genotype_gvcf"
-include {GATK_CNNSCORE_VARIANTS} from "${projectDir}/modules/gatk/gatk_cnnscorevariants"
-include {GATK_VARIANTFILTRATION_AF} from "${projectDir}/modules/gatk/gatk_variantfiltration_af"
-include {BCFTOOLS_COMPRESS_INDEX} from "${projectDir}/modules/bcftools/bcftools_compress_index"
-include {BCFTOOLS_SPLITMULTIALLELIC_REGIONS} from "${projectDir}/modules/bcftools/bcftools_split_multiallelic_regions"
-include {VEP_GERMLINE} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_mouse"
-include {BCFTOOLS_REMOVESPANNING} from "${projectDir}/modules/bcftools/bcftools_remove_spanning"
+         GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GENOTYPE} from "../modules/gatk/gatk_sortvcf_germline"
+include {GATK_GENOTYPE_GVCF} from "../modules/gatk/gatk_genotype_gvcf"
+include {GATK_CNNSCORE_VARIANTS} from "../modules/gatk/gatk_cnnscorevariants"
+include {GATK_VARIANTFILTRATION_AF} from "../modules/gatk/gatk_variantfiltration_af"
+include {BCFTOOLS_COMPRESS_INDEX} from "../modules/bcftools/bcftools_compress_index"
+include {BCFTOOLS_SPLITMULTIALLELIC_REGIONS} from "../modules/bcftools/bcftools_split_multiallelic_regions"
+include {VEP_GERMLINE} from "../modules/ensembl/varianteffectpredictor_germline_mouse"
+include {BCFTOOLS_REMOVESPANNING} from "../modules/bcftools/bcftools_remove_spanning"
 
-include {GATK_MUTECT2} from "${projectDir}/modules/gatk/gatk_mutect2"
-include {GATK_MERGEMUTECTSTATS} from "${projectDir}/modules/gatk/gatk_mergemutectstats"
-include {GATK_FILTERMUECTCALLS} from "${projectDir}/modules/gatk/gatk_filtermutectcalls"
-include {LANCET} from "${projectDir}/modules/nygenome/lancet"
-include {MANTA} from "${projectDir}/modules/illumina/manta"
-include {STRELKA2} from "${projectDir}/modules/illumina/strelka2"
-include {DELLY_CALL_SOMATIC} from "${projectDir}/modules/delly/delly_call_somatic"
-include {DELLY_FILTER_SOMATIC} from "${projectDir}/modules/delly/delly_filter_somatic"
-include {BCFTOOLS_BCF_TO_VCF} from "${projectDir}/modules/bcftools/bcftools_bcf_to_vcf"
-include {SMOOVE_CALL} from "${projectDir}/modules/smoove/smoove_call"
-include {SVABA} from "${projectDir}/modules/svaba/svaba"
+include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2"
+include {GATK_MERGEMUTECTSTATS} from "../modules/gatk/gatk_mergemutectstats"
+include {GATK_FILTERMUECTCALLS} from "../modules/gatk/gatk_filtermutectcalls"
+include {LANCET} from "../modules/nygenome/lancet"
+include {MANTA} from "../modules/illumina/manta"
+include {STRELKA2} from "../modules/illumina/strelka2"
+include {DELLY_CALL_SOMATIC} from "../modules/delly/delly_call_somatic"
+include {DELLY_FILTER_SOMATIC} from "../modules/delly/delly_filter_somatic"
+include {BCFTOOLS_BCF_TO_VCF} from "../modules/bcftools/bcftools_bcf_to_vcf"
+include {SMOOVE_CALL} from "../modules/smoove/smoove_call"
+include {SVABA} from "../modules/svaba/svaba"
 include {GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_SV_UPDATE_DICTIONARY;
-         GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_INDEL_UPDATE_DICTIONARY} from "${projectDir}/modules/gatk/gatk_updatevcfsequencedictionary"
+         GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_INDEL_UPDATE_DICTIONARY} from "../modules/gatk/gatk_updatevcfsequencedictionary"
 
-include {DELLY_CNV_SOMATIC} from "${projectDir}/modules/delly/delly_cnv_somatic"
-include {BCFTOOLS_MERGE_DELLY_CNV} from "${projectDir}/modules/bcftools/bcftools_merge_delly_cnv"
-include {DELLY_CLASSIFY} from "${projectDir}/modules/delly/delly_classify"
-include {BCFTOOLS_QUERY_DELLY_CNV} from "${projectDir}/modules/bcftools/bcftools_query_delly_cnv"
-include {PLOT_DELLY_CNV} from "${projectDir}/modules/r/plot_delly_cnv"
+include {DELLY_CNV_SOMATIC} from "../modules/delly/delly_cnv_somatic"
+include {BCFTOOLS_MERGE_DELLY_CNV} from "../modules/bcftools/bcftools_merge_delly_cnv"
+include {DELLY_CLASSIFY} from "../modules/delly/delly_classify"
+include {BCFTOOLS_QUERY_DELLY_CNV} from "../modules/bcftools/bcftools_query_delly_cnv"
+include {PLOT_DELLY_CNV} from "../modules/r/plot_delly_cnv"
 
 include {GATK_SORTVCF as GATK_SORTVCF_MUTECT;
          GATK_SORTVCF as GATK_SORTVCF_LANCET;
          GATK_SORTVCF as GATK_SORTVCF_TOOLS;
-         GATK_SORTVCF as GATK_SORTVCF_TOOLS_LANCET} from "${projectDir}/modules/gatk/gatk_sortvcf_somatic_tools"
+         GATK_SORTVCF as GATK_SORTVCF_TOOLS_LANCET} from "../modules/gatk/gatk_sortvcf_somatic_tools"
 
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_GERMLINE;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "../modules/snpeff_snpsift/snpsift_annotate"
 
 include {RENAME_METADATA;
-         RENAME_METADATA as RENAME_METADATA_LANCET} from "${projectDir}/modules/python/python_rename_metadata"
+         RENAME_METADATA as RENAME_METADATA_LANCET} from "../modules/python/python_rename_metadata"
 include {MERGE_PREP;
-         MERGE_PREP as MERGE_PREP_LANCET} from "${projectDir}/modules/python/python_merge_prep"
+         MERGE_PREP as MERGE_PREP_LANCET} from "../modules/python/python_merge_prep"
 include {RENAME_VCF;
-         RENAME_VCF as RENAME_VCF_LANCET;} from "${projectDir}/modules/python/python_rename_vcf"
+         RENAME_VCF as RENAME_VCF_LANCET;} from "../modules/python/python_rename_vcf"
 include {COMPRESS_INDEX_VCF;
          COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_LANCET;
-         COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_REGION_LANCET} from "${projectDir}/modules/tabix/compress_vcf"
+         COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_REGION_LANCET} from "../modules/tabix/compress_vcf"
 include {BCFTOOLS_SPLITMULTIALLELIC;
-         BCFTOOLS_SPLITMULTIALLELIC as BCFTOOLS_SPLITMULTIALLELIC_LANCET} from "${projectDir}/modules/bcftools/bcftools_split_multiallelic"
+         BCFTOOLS_SPLITMULTIALLELIC as BCFTOOLS_SPLITMULTIALLELIC_LANCET} from "../modules/bcftools/bcftools_split_multiallelic"
 include {SPLIT_MNV;
-         SPLIT_MNV as SPLIT_MNV_LANCET} from "${projectDir}/modules/python/python_split_mnv"
+         SPLIT_MNV as SPLIT_MNV_LANCET} from "../modules/python/python_split_mnv"
 
-include {REMOVE_CONTIG} from "${projectDir}/modules/python/python_remove_contig"
+include {REMOVE_CONTIG} from "../modules/python/python_remove_contig"
 include {BCFTOOLS_MERGECALLERS;
-         BCFTOOLS_MERGECALLERS as BCFTOOLS_MERGECALLERS_FINAL} from "${projectDir}/modules/bcftools/bcftools_merge_callers"
-include {BEDTOOLS_STARTCANDIDATES} from "${projectDir}/modules/bedtools/bedtools_start_candidates"
-include {GET_CANDIDATES} from "${projectDir}/modules/python/python_get_candidates"
-include {VCF_TO_BED} from "${projectDir}/modules/python/python_vcf_to_bed"
-include {LANCET_CONFIRM} from "${projectDir}/modules/nygenome/lancet_confirm"
+         BCFTOOLS_MERGECALLERS as BCFTOOLS_MERGECALLERS_FINAL} from "../modules/bcftools/bcftools_merge_callers"
+include {BEDTOOLS_STARTCANDIDATES} from "../modules/bedtools/bedtools_start_candidates"
+include {GET_CANDIDATES} from "../modules/python/python_get_candidates"
+include {VCF_TO_BED} from "../modules/python/python_vcf_to_bed"
+include {LANCET_CONFIRM} from "../modules/nygenome/lancet_confirm"
 include {COMPRESS_INDEX_VCF_REGION;
          COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_ALL_CALLERS;
-         COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_MERGED} from "${projectDir}/modules/tabix/compress_vcf_region"
-include {BCFTOOLS_INTERSECTVCFS} from "${projectDir}/modules/bcftools/bcftools_intersect_lancet_candidates"
+         COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_MERGED} from "../modules/tabix/compress_vcf_region"
+include {BCFTOOLS_INTERSECTVCFS} from "../modules/bcftools/bcftools_intersect_lancet_candidates"
 
-include {MERGE_COLUMNS} from "${projectDir}/modules/python/python_merge_columns"
-include {ADD_NYGC_ALLELE_COUNTS} from "${projectDir}/modules/python/python_add_nygc_allele_counts"
-include {ADD_FINAL_ALLELE_COUNTS} from "${projectDir}/modules/python/python_add_final_allele_counts"
-include {SNV_TO_MNV_FINAL_FILTER} from "${projectDir}/modules/python/python_snv_to_mnv_final_filter"
+include {MERGE_COLUMNS} from "../modules/python/python_merge_columns"
+include {ADD_NYGC_ALLELE_COUNTS} from "../modules/python/python_add_nygc_allele_counts"
+include {ADD_FINAL_ALLELE_COUNTS} from "../modules/python/python_add_final_allele_counts"
+include {SNV_TO_MNV_FINAL_FILTER} from "../modules/python/python_snv_to_mnv_final_filter"
 
-include {GATK_SORTVCF_SOMATIC} from "${projectDir}/modules/gatk/gatk_sortvcf_somatic_merge"
-include {REORDER_VCF_COLUMNS} from "${projectDir}/modules/python/python_reorder_vcf_columns"
-include {COMPRESS_INDEX_MERGED_VCF} from "${projectDir}/modules/tabix/compress_merged_vcf"
-include {VEP_SOMATIC} from "${projectDir}/modules/ensembl/varianteffectpredictor_somatic_mouse"
-include {SOMATIC_VCF_FINALIZATION} from "${projectDir}/modules/python/python_somatic_vcf_finalization_mouse"
+include {GATK_SORTVCF_SOMATIC} from "../modules/gatk/gatk_sortvcf_somatic_merge"
+include {REORDER_VCF_COLUMNS} from "../modules/python/python_reorder_vcf_columns"
+include {COMPRESS_INDEX_MERGED_VCF} from "../modules/tabix/compress_merged_vcf"
+include {VEP_SOMATIC} from "../modules/ensembl/varianteffectpredictor_somatic_mouse"
+include {SOMATIC_VCF_FINALIZATION} from "../modules/python/python_somatic_vcf_finalization_mouse"
 
-include {ANNOTATE_DELLY_CNV} from "${projectDir}/modules/r/annotate_delly_cnv"
+include {ANNOTATE_DELLY_CNV} from "../modules/r/annotate_delly_cnv"
 
-include {MERGE_SV} from "${projectDir}/modules/r/merge_sv_mouse"
+include {MERGE_SV} from "../modules/r/merge_sv_mouse"
 include {ANNOTATE_SV;
-         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_mouse"
+         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "../modules/r/annotate_sv_mouse"
 include {ANNOTATE_GENES_SV;
-         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_genes_sv_mouse"
+         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "../modules/r/annotate_genes_sv_mouse"
 include {ANNOTATE_SV_WITH_CNV;
-         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_with_cnv_mouse"
+         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "../modules/r/annotate_sv_with_cnv_mouse"
 include {FILTER_BEDPE;
-         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/filter_bedpe_mouse"
+         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "../modules/r/filter_bedpe_mouse"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 workflow MM_PTA {
     take:

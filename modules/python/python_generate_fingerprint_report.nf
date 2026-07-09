@@ -8,7 +8,7 @@ process GENERATE_FINGERPRINT_REPORT {
 
     container 'quay.io/jaxcompsci/biopython-pyvcf:1.78'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.tsv", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), file(vcf)

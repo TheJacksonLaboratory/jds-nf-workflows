@@ -1,9 +1,9 @@
 process GATK_SORTVCF_SOMATIC {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 15.GB
-    time = '05:30:00'
+    cpus 1
+    memory  15.GB
+    time '05:30:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'broadinstitute/gatk:4.2.4.1'

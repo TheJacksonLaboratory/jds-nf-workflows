@@ -8,7 +8,7 @@ process FILTER_TRIM {
 
     container 'quay.io/jaxcompsci/python-bz2file:np_2.7.18'
 
-    publishDir "${params.pubdir}/stats", pattern: "*_stat", mode:'copy'
+    publishDir path: { "${params.pubdir}/stats" }, pattern: "*_stat", mode:'copy'
 
     input:
     tuple val(sampleID), file(fq_reads)

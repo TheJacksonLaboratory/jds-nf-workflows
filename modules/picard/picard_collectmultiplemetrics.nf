@@ -1,9 +1,9 @@
 process PICARD_COLLECTMULTIPLEMETRICS {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 6.GB
-    time = '03:00:00'
+    cpus 1
+    memory  6.GB
+    time '03:00:00'
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
 

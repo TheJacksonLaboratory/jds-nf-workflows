@@ -8,7 +8,7 @@ process FASTP {
 
     container 'quay.io/biocontainers/fastp:0.23.4--h5f740d0_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "${sampleID}.fastp*.{json,html,log}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.fastp*.{json,html,log}", mode:'copy'
 
 
     input:

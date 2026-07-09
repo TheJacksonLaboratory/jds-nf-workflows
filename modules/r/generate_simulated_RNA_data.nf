@@ -7,8 +7,8 @@ process GENERATE_SIMULATED_RNA_DATA {
 
     container 'quay.io/jaxcompsci/rna_simreads:v1.0'
 
-    publishDir "${params.pubdir}/results", pattern: '*.gz', mode:'copy'
-    publishDir "${params.pubdir}/results", pattern: '*true_expression.txt', mode:'copy'
+    publishDir path: { "${params.pubdir}/results" }, pattern: '*.gz', mode:'copy'
+    publishDir path: { "${params.pubdir}/results" }, pattern: '*true_expression.txt', mode:'copy'
 
     input:
     tuple path(wrap_fa), val(library_size), val(library_strategy)

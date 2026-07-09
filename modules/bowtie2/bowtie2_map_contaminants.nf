@@ -6,8 +6,8 @@ process BOWTIE_MAP_CONTAMINANTS {
     time '48:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*_bowtie.log", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "filtered.*.stats" , mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*_bowtie.log", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "filtered.*.stats" , mode: 'copy'
 
     container 'quay.io/biocontainers/bowtie2:2.4.5--py36hfca12d5_2' 
 

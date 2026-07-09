@@ -8,7 +8,7 @@ process ANNOTATE_DELLY_CNV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bed", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bed", mode: 'copy'
 
     input:
         tuple val(sampleID), file(delly_cnv), val(meta), val(normal_name), val(tumor_name), val(caller)

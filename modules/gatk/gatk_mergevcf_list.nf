@@ -8,7 +8,7 @@ process GATK_MERGEVCF_LIST {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.vcf", mode:'copy'
 
     input:
     tuple val(sampleID), file(list)

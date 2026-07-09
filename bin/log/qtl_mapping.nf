@@ -1,11 +1,8 @@
-import Logos
-
-logo = new Logo()
-println '\n'
-println logo.show()
-
 def param_log(){
-log.info """
+
+def message = ""
+
+message =  """
 QTL MAPPING PARAMETER LOG
 
 --comment: ${params.comment}
@@ -16,4 +13,8 @@ ______________________________________________________
 --csv_input                     ${params.csv_input}
 --n_perms                       ${params.n_perms}
 """
+
+log.info(message)
+return(message)
+
 }

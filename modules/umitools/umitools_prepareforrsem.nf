@@ -9,7 +9,7 @@ process UMITOOLS_PREPAREFORRSEM {
 
     container "quay.io/biocontainers/umi_tools:1.1.6--py311haab0aaa_0"
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*.rsem_prep.bam", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern: "*.rsem_prep.bam", mode:'copy'
 
     input:
     tuple val(sampleID), path(bam)

@@ -9,7 +9,7 @@ process GENERATE_RRNA_INTERVALS {
 
     container "quay.io/jaxcompsci/perl:0.1.0"
 
-    publishDir "${params.pubdir}", pattern: "*.rRNA_intervals.list", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "*.rRNA_intervals.list", mode:'copy'
 
     input:
         path(gtf)

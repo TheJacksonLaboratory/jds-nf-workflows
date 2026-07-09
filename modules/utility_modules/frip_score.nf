@@ -5,7 +5,7 @@ process FRIP_SCORE {
     memory 10.GB
     time '10:00:00'
 
-    publishDir "${params.pubdir}/${'immuno_precip_samples/' + ip + '_vs_' + control + '/macs2'}", pattern: "*.tsv", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${'immuno_precip_samples/' + ip + '_vs_' + control + '/macs2'}" }, pattern: "*.tsv", mode: 'copy'
 
     container 'quay.io/biocontainers/mulled-v2-8186960447c5cb2faa697666dc1e6d919ad23f3e:3127fcae6b6bdaf8181e21a26ae61231030a9fcb-0'
 

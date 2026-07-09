@@ -2,31 +2,31 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/prep_do_gbrs_input.nf"
-include {param_log} from "${projectDir}/bin/log/prep_do_gbrs_input.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {DO_TRANSITION_PROBABILITIES} from "${projectDir}/modules/r/do_transition_probablities"
+include {help} from "../bin/help/prep_do_gbrs_input.nf"
+include {param_log} from "../bin/log/prep_do_gbrs_input.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {DO_TRANSITION_PROBABILITIES} from "../modules/r/do_transition_probablities"
 include {PARSE_TRANSITION_PROBABILITIES as PARSE_TRANSITION_PROBABILITIES_FEMALE;
-        PARSE_TRANSITION_PROBABILITIES as PARSE_TRANSITION_PROBABILITIES_MALE} from "${projectDir}/modules/python/parse_transprobs"
-include {PARSE_GENE_POSITONS} from "${projectDir}/modules/python/parse_gene_positions"
-include {GENERATE_GRID_FILE} from "${projectDir}/modules/r/generate_grid_file"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
+        PARSE_TRANSITION_PROBABILITIES as PARSE_TRANSITION_PROBABILITIES_MALE} from "../modules/python/parse_transprobs"
+include {PARSE_GENE_POSITONS} from "../modules/python/parse_gene_positions"
+include {GENERATE_GRID_FILE} from "../modules/r/generate_grid_file"
 
 // main workflow
 workflow PREP_DO_GBRS_INPUT {
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
     DO_TRANSITION_PROBABILITIES()
     // Generate transition probabilities in R
 

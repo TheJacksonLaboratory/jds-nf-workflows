@@ -8,7 +8,7 @@ process COVCALC_GATK {
 
     container 'quay.io/jaxcompsci/python-bz2file:np_2.7.18'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bed", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bed", mode:'copy'
 
     input:
     tuple val(sampleID), file(txt)

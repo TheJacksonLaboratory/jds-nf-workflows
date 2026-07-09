@@ -1,5 +1,3 @@
-def VERSION = '2.0.1'
-
 process MIRDEEP2_MAPPER {
     tag "$sampleID"
 
@@ -10,7 +8,7 @@ process MIRDEEP2_MAPPER {
 
     container   'quay.io/biocontainers/mirdeep2:2.0.1.3--hdfd78af_1' 
 
-    publishDir "${params.pubdir}/${sampleID + '/mirdeep'}", pattern: "${sampleID}_*.*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/mirdeep'}" }, pattern: "*_*.*", mode:'copy'
 
     input:
     tuple val(sampleID), path(reads)
@@ -18,7 +16,6 @@ process MIRDEEP2_MAPPER {
 
     output:
     tuple val(sampleID), path('*_collapsed.fa'), path('*reads_vs_refdb.arf'), emit: mirdeep2_inputs
-
 
     script:
     def index_base = index.toString().tokenize(' ')[0].tokenize('.')[0]

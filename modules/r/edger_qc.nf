@@ -7,8 +7,8 @@ process EDGER_QC {
     
     container 'quay.io/biocontainers/mulled-v2-419bd7f10b2b902489ac63bbaafc7db76f8e0ae1:709335c37934db1b481054cbec637c6e5b5971cb-0'
 
-    publishDir "${params.pubdir}/edger", pattern: "hairpin*", mode:'copy'
-    publishDir "${params.pubdir}/edger", pattern: "mature*", mode:'copy'
+    publishDir path: { "${params.pubdir}/edger" }, pattern: "hairpin*", mode:'copy'
+    publishDir path: { "${params.pubdir}/edger" }, pattern: "mature*", mode:'copy'
 
 
     input:

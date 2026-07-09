@@ -1,27 +1,21 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
+include {ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_HUMAN;
+        ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL_HUMAN} from "../modules/r/annotate_sv_with_cnv"
+include {FILTER_BEDPE as FILTER_BEDPE_HUMAN;
+        FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL_HUMAN} from "../modules/r/filter_bedpe"
 
-if (params.gen_org == 'human') {
-    include {ANNOTATE_SV_WITH_CNV;
-            ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_with_cnv"
-    include {FILTER_BEDPE;
-            FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/filter_bedpe"
-}
-
-if (params.gen_org == 'mouse') {
-    include {ANNOTATE_SV_WITH_CNV;
-            ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_with_cnv_mouse"
-    include {FILTER_BEDPE;
-            FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/filter_bedpe_mouse"
-}
-
-if (!params.csv_input) {
-    exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See the GitHub wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki/PTA-Pipeline-ReadMe) for information."
-}
+include {ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_MOUSE;
+        ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL_MOUSE} from "../modules/r/annotate_sv_with_cnv_mouse"
+include {FILTER_BEDPE as FILTER_BEDPE_MOUSE;
+        FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL_MOUSE} from "../modules/r/filter_bedpe_mouse"
 
 workflow REANNOTATE_PTA {
-    
+    if (!params.csv_input) {
+        exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See the GitHub wiki (https://github.com/TheJacksonLaboratory/jds-nf-workflows/wiki/PTA-Pipeline-ReadMe) for information."
+    }
+
     if (params.csv_input) {
         input_files = extract_csv(file(params.csv_input, checkIfExists: true))
         main_files = input_files.map{ it[0] } // main
@@ -29,19 +23,19 @@ workflow REANNOTATE_PTA {
     }
 
     if (params.gen_org == 'human') {
-        ANNOTATE_SV_WITH_CNV(main_files, "main")
-        ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL(supp_files, "supplemental")
+        ANNOTATE_SV_WITH_CNV_HUMAN(main_files, "main")
+        ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL_HUMAN(supp_files, "supplemental")
 
-        FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
-        FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
+        FILTER_BEDPE_HUMAN(ANNOTATE_SV_WITH_CNV_HUMAN.out.sv_genes_cnv_bedpe, "main")
+        FILTER_BEDPE_SUPPLEMENTAL_HUMAN(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL_HUMAN.out.sv_genes_cnv_bedpe, "supplemental")
     }
             
     if (params.gen_org == 'mouse') {
-        ANNOTATE_SV_WITH_CNV(main_files, "main")
-        ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL(supp_files, "supplemental")
+        ANNOTATE_SV_WITH_CNV_MOUSE(main_files, "main")
+        ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL_MOUSE(supp_files, "supplemental")
         
-        FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
-        FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
+        FILTER_BEDPE_MOUSE(ANNOTATE_SV_WITH_CNV_MOUSE.out.sv_genes_cnv_bedpe, "main")
+        FILTER_BEDPE_SUPPLEMENTAL_MOUSE(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL_MOUSE.out.sv_genes_cnv_bedpe, "supplemental")
    
     }
 }
@@ -66,14 +60,14 @@ cnv_annotated_supplemental.bed
 */
 
 
-ANSI_RED = "\u001B[31m";
-ANSI_RESET = "\u001B[0m";
-
 def extract_csv(csv_file) {
+    def ANSI_RED = "\u001B[31m"
+    def ANSI_RESET = "\u001B[0m"
+
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
     file(csv_file).withReader('UTF-8') { reader ->
-        def line, numberOfLinesInSampleSheet = 0;
-        while ((line = reader.readLine()) != null) {numberOfLinesInSampleSheet++}
+        def sampleSheetLines = reader.readLines()
+        def numberOfLinesInSampleSheet = sampleSheetLines.size()
         if (numberOfLinesInSampleSheet < 2) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, and at least one sample." + ANSI_RESET)
@@ -125,8 +119,8 @@ def extract_csv(csv_file) {
                 }
             }
             
-            main = [row.sampleID.toString(), 'normal_placeholder', 'tumor_placeholder', file(row.cnv_annotated, checkIfExists: true), file(row.sv_annotated_genes_cnv, checkIfExists: true)]
-            supp = [row.sampleID.toString(), 'normal_placeholder', 'tumor_placeholder', file(row.cnv_annotated_supplemental, checkIfExists: true), file(row.annotated_genes_cnv_supplemental, checkIfExists: true)]
+            def main = [row.sampleID.toString(), 'normal_placeholder', 'tumor_placeholder', file(row.cnv_annotated, checkIfExists: true), file(row.sv_annotated_genes_cnv, checkIfExists: true)]
+            def supp = [row.sampleID.toString(), 'normal_placeholder', 'tumor_placeholder', file(row.cnv_annotated_supplemental, checkIfExists: true), file(row.annotated_genes_cnv_supplemental, checkIfExists: true)]
             // Note: normal and tumor names are placeholders here, as they are not used in the reannotation steps. The module input tuples require them, but do not use the strings. 
 
             return [main, supp]

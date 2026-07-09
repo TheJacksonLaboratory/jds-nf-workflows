@@ -8,7 +8,7 @@ process FUSION_REPORT {
 
     container 'quay.io/biocontainers/fusion-report:2.1.5--pyhdfd78af_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/fusion-report/'}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/fusion-report/'}" }, mode:'copy'
 
     input:
         tuple val(sampleID), path(arriba), path(fusioncatcher), path(jaffa), path(pizzly), path(squid), path(starfusion)

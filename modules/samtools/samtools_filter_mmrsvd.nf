@@ -9,7 +9,7 @@ process SAMTOOLS_FILTER {
 
     container 'quay.io/biocontainers/samtools:1.10--h9402c20_2'
 
-    publishDir "${params.pubdir}/${sampleID + '/alignments'}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/alignments'}" }, mode:'copy'
 
     input:
     tuple val(sampleID), file(bam)

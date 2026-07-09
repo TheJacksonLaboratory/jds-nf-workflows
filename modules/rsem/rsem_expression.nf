@@ -8,7 +8,8 @@ process RSEM_EXPRESSION {
 
     container 'quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*results*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*results*", mode:'copy'
+
 
     input:
     tuple val(sampleID), path(bam), path(rsem_ref_files), val(rsem_ref_name)

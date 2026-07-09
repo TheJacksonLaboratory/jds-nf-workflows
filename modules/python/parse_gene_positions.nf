@@ -7,7 +7,7 @@ process PARSE_GENE_POSITONS {
 
     container 'hdfgroup/h5py:2.7.0'
 
-    publishDir "${params.pubdir}", pattern: '*.npz', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: '*.npz', mode:'copy'
 
     input:
     path(gene_pos_tsv)

@@ -8,7 +8,7 @@ process CHECK_DESIGN {
 
     container 'quay.io/jaxcompsci/python-bz2file:np_2.7.18'
     
-    publishDir "${params.pubdir}/parsed_samplesheets", mode: 'copy'
+    publishDir path: { "${params.pubdir}/parsed_samplesheets" }, mode: 'copy'
 
     input:
     path(design)

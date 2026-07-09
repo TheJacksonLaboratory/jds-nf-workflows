@@ -1,14 +1,14 @@
 process BEDTOOLS_SUBTRACT {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 6.GB
-    time = '06:00:00'
+    cpus 1
+    memory  6.GB
+    time '06:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/bedtools:2.23.0--h5b5514e_6'
 
-    publishDir "${params.pubdir}/${sampleID + '/sequenza_cnv'}", pattern:"*segments_naWindowFiltered.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/sequenza_cnv'}" }, pattern:"*segments_naWindowFiltered.txt", mode:'copy'
 
     input:
     tuple val(sampleID), path(segments), path(na_win)

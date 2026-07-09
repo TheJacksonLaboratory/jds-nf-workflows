@@ -10,7 +10,7 @@ process XENGSORT_INDEX {
     container 'quay.io/biocontainers/xengsort:2.0.5--pyhdfd78af_0'
 
     // output directory
-    publishDir "${params.pubdir}/xengsort/", mode: 'copy'
+    publishDir path: { "${params.pubdir}/xengsort/" }, mode: 'copy'
 
     // inputs
     input:

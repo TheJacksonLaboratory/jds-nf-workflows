@@ -6,43 +6,44 @@ nextflow.enable.dsl=2
 // on genetically diverse mice
 
 // import modules
-include {help} from "${projectDir}/bin/help/haplotype_reconstruction.nf"
-include {param_log} from "${projectDir}/bin/log/haplotype_reconstruction.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv_qtl.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {GS_TO_QTL2} from "${projectDir}/modules/qtl2/geneseek2qtl2"
-include {WRITE_CROSS} from "${projectDir}/modules/qtl2/write_cross"
-include {GENOPROBS} from "${projectDir}/modules/qtl2/genoprobs"
-include {CONCAT_GENOPROBS} from "${projectDir}/modules/qtl2/concat_genoprobs"
-include {CONCAT_INTENSITIES} from "${projectDir}/modules/qtl2/concat_intensities"
-include {UPDATE_FILES} from "${projectDir}/modules/qtl2/update_files"
-include {QC_REPORT} from "${projectDir}/modules/r/render_QC_markdown"
+include {help} from "../bin/help/haplotype_reconstruction.nf"
+include {param_log} from "../bin/log/haplotype_reconstruction.nf"
+include {extract_csv} from "../bin/shared/extract_csv_qtl.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {GS_TO_QTL2} from "../modules/qtl2/geneseek2qtl2"
+include {WRITE_CROSS} from "../modules/qtl2/write_cross"
+include {GENOPROBS} from "../modules/qtl2/genoprobs"
+include {CONCAT_GENOPROBS} from "../modules/qtl2/concat_genoprobs"
+include {CONCAT_INTENSITIES} from "../modules/qtl2/concat_intensities"
+include {UPDATE_FILES} from "../modules/qtl2/update_files"
+include {QC_REPORT} from "../modules/r/render_QC_markdown"
 
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-// Make channel of consensus files (GigaMUGA)
-founder_genos   = Channel.fromPath(params.gm_cc_do_founder_genotypes).collect()
-gmaps           = Channel.fromPath(params.gm_gmaps).collect()
-pmaps           = Channel.fromPath(params.gm_pmaps).collect()
-consensus_files = founder_genos.concat(gmaps)
-                               .concat(pmaps)
-                               .flatten().collect()
 
 
 // QC and Haplotype Reconstruction Workflow
 workflow HAPLOTYPE_RECONSTRUCTION {
+
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    // Make channel of consensus files (GigaMUGA)
+    founder_genos   = Channel.fromPath(params.gm_cc_do_founder_genotypes).collect()
+    gmaps           = Channel.fromPath(params.gm_gmaps).collect()
+    pmaps           = Channel.fromPath(params.gm_pmaps).collect()
+    consensus_files = founder_genos.concat(gmaps)
+                                .concat(pmaps)
+                                .flatten().collect()
 
     project_ch = extract_csv(params.csv_input)
 

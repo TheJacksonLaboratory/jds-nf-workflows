@@ -8,7 +8,7 @@ process FILTER_REMOVE_MULTI_SHIFT {
     
     container 'quay.io/jaxcompsci/samtools_with_bc:1.3.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*.sorted.rmDup.rmChrM.rmMulti.filtered.ba*", mode: 'copy' 
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern: "*.sorted.rmDup.rmChrM.rmMulti.filtered.ba*", mode: 'copy' 
 
     input:
     tuple val(sampleID), file(mtdna_bam_file), file(mtdna_bai_file)

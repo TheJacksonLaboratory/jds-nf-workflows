@@ -7,10 +7,10 @@ process MULTIQC {
 
     container 'quay.io/jaxcompsci/multiqc:v1.34.dev0_custom'
 
-    publishDir "${params.pubdir}/multiqc", pattern: "*multiqc_report.html", mode:'copy', enabled: !params.save_multiqc_inputs
-    publishDir "${params.pubdir}/multiqc", pattern: "*_data", mode:'copy', enabled: !params.save_multiqc_inputs
-    publishDir "${params.pubdir}/multiqc", pattern: "*_plots", mode:'copy', enabled: !params.save_multiqc_inputs
-    publishDir "${params.pubdir}/multiqc", mode:'copy', enabled: params.save_multiqc_inputs
+    publishDir path: { "${params.pubdir}/multiqc" }, pattern: "*multiqc_report.html", mode:'copy', enabled: !params.save_multiqc_inputs
+    publishDir path: { "${params.pubdir}/multiqc" }, pattern: "*_data", mode:'copy', enabled: !params.save_multiqc_inputs
+    publishDir path: { "${params.pubdir}/multiqc" }, pattern: "*_plots", mode:'copy', enabled: !params.save_multiqc_inputs
+    publishDir path: { "${params.pubdir}/multiqc" }, mode:'copy', enabled: params.save_multiqc_inputs
 
     input:
     path(multiqc_files)

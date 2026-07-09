@@ -10,8 +10,8 @@ process UMITOOLS_DEDUP {
     
     container "quay.io/biocontainers/umi_tools:1.1.6--py311haab0aaa_0"
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "${sampleID}.dedup_stats*", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "${sampleID}.dedup_log.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.dedup_stats*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.dedup_log.txt", mode:'copy'
 
     input:
     tuple val(sampleID), path(bam), path(bai)

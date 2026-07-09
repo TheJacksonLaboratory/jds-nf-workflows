@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {CONCATENATE_READS_SAMPLESHEET} from "${projectDir}/modules/utility_modules/concatenate_reads_sampleSheet"
+include {CONCATENATE_READS_SAMPLESHEET} from "../modules/utility_modules/concatenate_reads_sampleSheet"
 
 workflow CONCATENATE_LOCAL_FILES {
 

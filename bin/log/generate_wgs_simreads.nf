@@ -1,8 +1,4 @@
-import Logos
-
-logo = new Logo()
-println '\n'
-println logo.show()
+def param_log(){
 
 if (!params.fasta) {
   log.error "The --fasta parameter is required. Please provide the path to reference fasta."
@@ -13,8 +9,6 @@ if (!params.read_type || !(params.read_type in ['PE', 'SE'])) {
   log.error "The --read_type parameter is required. Please specify 'PE' for paired-end or 'SE' for single-end reads."
   System.exit(1)
 }
-
-def param_log(){
 
 def message = ""
 

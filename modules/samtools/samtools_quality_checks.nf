@@ -8,7 +8,7 @@ process QUALITY_CHECKS {
 
     container 'quay.io/jaxcompsci/samtools_with_bc:1.3.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.fragment_length_count.txt", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.fragment_length_count.txt", mode: 'copy'
     
     input:
     tuple val(sampleID), file(sort_rm_filter_bam)

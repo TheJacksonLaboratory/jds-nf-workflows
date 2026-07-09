@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow PREP_DO_GBRS_INPUT"
-    script "subworkflows/prep_do_gbrs_inputs.nf"
+    script "supportworkflows/prep_do_gbrs_inputs.nf"
     workflow "PREP_DO_GBRS_INPUT"
 
     test("Full Workflow -- Mouse") {

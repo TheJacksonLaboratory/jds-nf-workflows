@@ -8,8 +8,8 @@ process SAMTOOLS_MERGE {
 
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.bam", mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern:"*.bam", mode:'copy', enabled: params.containsKey('merge_inds') && params.merge_inds
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.bam", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern:"*.bam", mode:'copy', enabled: params.containsKey('merge_inds') && params.merge_inds
 
     input:
         tuple val(sampleID), file(bam)

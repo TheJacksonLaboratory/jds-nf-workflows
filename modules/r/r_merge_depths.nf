@@ -8,7 +8,7 @@ process R_MERGE_DEPTHS {
 
     container 'rocker/tidyverse:4.2.1'    
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy', pattern: "${sampleID}.survivor_joined_results_depths.csv"
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy', pattern: "*.survivor_joined_results_depths.csv"
 
     input:
         tuple val(sampleID), path(nanosv_depths), path(sniffles_depths), path(survivor_ids), path(summary_table)

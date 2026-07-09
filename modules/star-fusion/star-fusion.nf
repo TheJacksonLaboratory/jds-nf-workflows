@@ -8,7 +8,7 @@ process STAR_FUSION {
 
     container 'trinityctat/starfusion:1.12.0'
 
-    publishDir "${params.pubdir}/${sampleID + '/fusions'}", pattern: "*.{tsv,txt}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/fusions'}" }, pattern: "*.{tsv,txt}", mode:'copy'
 
     input:
         tuple val(sampleID), file(reads)

@@ -2,124 +2,125 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/atac.nf"
-include {param_log} from "${projectDir}/bin/log/atac.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
-include {CUTADAPT} from "${projectDir}/modules/cutadapt/cutadapt"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {ALIGN_TRIMMED_FASTQ} from "${projectDir}/modules/bowtie2/bowtie2_align_trimmed_fastq"
+include {help} from "../bin/help/atac.nf"
+include {param_log} from "../bin/log/atac.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {FILE_DOWNLOAD} from "../subworkflows/aria_download_parse"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
+include {CUTADAPT} from "../modules/cutadapt/cutadapt"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {ALIGN_TRIMMED_FASTQ} from "../modules/bowtie2/bowtie2_align_trimmed_fastq"
 include {SAMTOOLS_SORT as SORT_ALIGN_TRIM;
          SAMTOOLS_SORT as SORT_SHIFTED_BAM;
          SAMTOOLS_SORT as SORT_MARK_DUP_BAM;
-         SAMTOOLS_SORT as SORT_LIFTOVER_BAM } from "${projectDir}/modules/samtools/samtools_sort"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
-include {REMOVE_DUPLICATE_READS} from "${projectDir}/modules/samtools/samtools_remove_duplicate_reads"
-include {CALC_MTDNA_FILTER_CHRM} from "${projectDir}/modules/samtools/samtools_calc_mtdna_filter_chrm"
-include {FILTER_REMOVE_MULTI_SHIFT} from "${projectDir}/modules/samtools/samtools_filter_remove_multi_shift"
-include {FILTER_REMOVE_MULTI_SIEVE} from "${projectDir}/modules/deeptools/deeptools_filter_remove_multi_sieve"
-include {CHAIN_CONVERT} from "${projectDir}/modules/g2gtools/g2gtools_chain_convert"
-include {VCI_CONVERT} from "${projectDir}/modules/g2gtools/g2gtools_vci_convert"
-include {CHAIN_EXTRACT_BADREADS} from "${projectDir}/modules/gatk/gatk_chain_extract_badreads"
-include {CHAIN_BAD2UNIQ_READS} from "${projectDir}/modules/samtools/samtools_chain_bad2uniq_reads"
-include {CHAIN_FILTER_READS} from "${projectDir}/modules/gatk/gatk_chain_filter_reads"
-include {CHAIN_SORT_FIXMATE_BAM} from "${projectDir}/modules/samtools/samtools_chain_sort_fixmate_bam"
-include {NON_CHAIN_REINDEX} from "${projectDir}/modules/samtools/samtools_non_chain_reindex"
+         SAMTOOLS_SORT as SORT_LIFTOVER_BAM } from "../modules/samtools/samtools_sort"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
+include {REMOVE_DUPLICATE_READS} from "../modules/samtools/samtools_remove_duplicate_reads"
+include {CALC_MTDNA_FILTER_CHRM} from "../modules/samtools/samtools_calc_mtdna_filter_chrm"
+include {FILTER_REMOVE_MULTI_SHIFT} from "../modules/samtools/samtools_filter_remove_multi_shift"
+include {FILTER_REMOVE_MULTI_SIEVE} from "../modules/deeptools/deeptools_filter_remove_multi_sieve"
+include {CHAIN_CONVERT} from "../modules/g2gtools/g2gtools_chain_convert"
+include {VCI_CONVERT} from "../modules/g2gtools/g2gtools_vci_convert"
+include {CHAIN_EXTRACT_BADREADS} from "../modules/gatk/gatk_chain_extract_badreads"
+include {CHAIN_BAD2UNIQ_READS} from "../modules/samtools/samtools_chain_bad2uniq_reads"
+include {CHAIN_FILTER_READS} from "../modules/gatk/gatk_chain_filter_reads"
+include {CHAIN_SORT_FIXMATE_BAM} from "../modules/samtools/samtools_chain_sort_fixmate_bam"
+include {NON_CHAIN_REINDEX} from "../modules/samtools/samtools_non_chain_reindex"
 include {SAMTOOLS_INDEX;
-         SAMTOOLS_INDEX as SAMTOOLS_INDEX_MERGED} from "${projectDir}/modules/samtools/samtools_index"
-include {PICARD_MERGESAMFILES} from "${projectDir}/modules/picard/picard_mergesamfiles"
-include {PEAK_CALLING} from "${projectDir}/modules/macs2/macs2_peak_calling"
-include {BAM_COVERAGE_BIGWIG} from "${projectDir}/modules/deeptools/deeptools_bam_coverage_bigwig"
-include {FRIP_READS_IN_PEAKS} from "${projectDir}/modules/bedtools/bedtools_frip_reads_in_peaks"
-include {FINAL_CALC_FRIP} from "${projectDir}/modules/samtools/samtools_final_calc_frip"
-include {PEAK_COVERAGE} from "${projectDir}/modules/macs2/macs2_peak_coverage"
-include {FEATURE_COUNTS} from "${projectDir}/modules/subread/subread_feature_counts"
-include {FEATURE_COUNT2BED} from "${projectDir}/modules/bedtools/bedtools_feature_count2bed"
-include {QUALITY_CHECKS} from "${projectDir}/modules/samtools/samtools_quality_checks"
-include {FRAG_LEN_PLOT} from "${projectDir}/modules/r/frag_len_plot"
-include {CALC_PBC_METRICS} from "${projectDir}/modules/bedtools/bedtools_calc_pbc_metrics"
-include {LOG_PARSER} from "${projectDir}/modules/python/python_log_parser"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_MERGED} from "../modules/samtools/samtools_index"
+include {PICARD_MERGESAMFILES} from "../modules/picard/picard_mergesamfiles"
+include {PEAK_CALLING} from "../modules/macs2/macs2_peak_calling"
+include {BAM_COVERAGE_BIGWIG} from "../modules/deeptools/deeptools_bam_coverage_bigwig"
+include {FRIP_READS_IN_PEAKS} from "../modules/bedtools/bedtools_frip_reads_in_peaks"
+include {FINAL_CALC_FRIP} from "../modules/samtools/samtools_final_calc_frip"
+include {PEAK_COVERAGE} from "../modules/macs2/macs2_peak_coverage"
+include {FEATURE_COUNTS} from "../modules/subread/subread_feature_counts"
+include {FEATURE_COUNT2BED} from "../modules/bedtools/bedtools_feature_count2bed"
+include {QUALITY_CHECKS} from "../modules/samtools/samtools_quality_checks"
+include {FRAG_LEN_PLOT} from "../modules/r/frag_len_plot"
+include {CALC_PBC_METRICS} from "../modules/bedtools/bedtools_calc_pbc_metrics"
+include {LOG_PARSER} from "../modules/python/python_log_parser"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (params.download_data && !params.csv_input) {
-    exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
-}
-
-if (params.merge_replicates && !params.csv_input) {
-    exit 1, "Replicate merging was requested with `--merge_replicates`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--merge_replicates` requires a CSV manifest. See `--help` for information."
-}
-
-if (!(params.genome_build in ['GRCm38', 'GRCm39', 'GRCh38'])) {
-  exit 1, "Invalid genome build specified. Please use one of the following: GRCm38, GRCm39, GRCh38."
-}
-
-if (params.gen_org == 'human' && params.genome_build != 'GRCh38') {
-  exit 1, "Invalid genome build specified for human. Please use GRCh38."
-}
-
-// prepare reads channel
-if (params.csv_input) {
-
-    ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
-    
-    if (params.read_type == 'PE'){
-        ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    } else if (params.read_type == 'SE') {
-        ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    }
-
-} else if (params.concat_lanes){
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel
-            .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-            .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
-            .groupTuple()
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                .map { file, file1 -> tuple(getLibraryId(file), file1) }
-                .groupTuple()
-                .map{t-> [t[0], t[1].flatten()]}
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-} else {
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-}
 
 // main workflow
 workflow ATAC {
+
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
+
+  // log params
+  message = param_log()
+
+  // Save params to a file for record-keeping
+  workflow.onComplete {
+      final_run_report(message)
+  }
+
+  if (params.download_data && !params.csv_input) {
+      exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
+  }
+
+  if (params.merge_replicates && !params.csv_input) {
+      exit 1, "Replicate merging was requested with `--merge_replicates`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--merge_replicates` requires a CSV manifest. See `--help` for information."
+  }
+
+  if (!(params.genome_build in ['GRCm38', 'GRCm39', 'GRCh38'])) {
+    exit 1, "Invalid genome build specified. Please use one of the following: GRCm38, GRCm39, GRCh38."
+  }
+
+  if (params.gen_org == 'human' && params.genome_build != 'GRCh38') {
+    exit 1, "Invalid genome build specified for human. Please use GRCh38."
+  }
+
+  // prepare reads channel
+  if (params.csv_input) {
+
+      ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+      
+      if (params.read_type == 'PE'){
+          ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      } else if (params.read_type == 'SE') {
+          ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      }
+
+  } else if (params.concat_lanes){
+    
+    if (params.read_type == 'PE'){
+      read_ch = Channel
+              .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+              .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+              .groupTuple()
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                  .map { file, file1 -> tuple(getLibraryId(file), file1) }
+                  .groupTuple()
+                  .map{t-> [t[0], t[1].flatten()]}
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+  } else {
+    
+    if (params.read_type == 'PE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+  }
 
   // Step 0: Download data and concat Fastq files if needed. 
   if (params.download_data){

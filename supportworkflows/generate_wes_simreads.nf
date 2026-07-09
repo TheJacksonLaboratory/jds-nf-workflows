@@ -2,42 +2,34 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/generate_wes_simreads"
-include {param_log} from "${projectDir}/bin/log/generate_wes_simreads"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {SAMTOOLS_FAIDX_CHR_ONLY} from "${projectDir}/modules/samtools/samtools_faidx_chr_only"
-include {SPLIT_FILES} from "${projectDir}/modules/python/pyfaidx_split_files"
-include {GENERATE_SIMULATED_WES_DATA} from "${projectDir}/modules/neat/generate_simulated_WES_data"
-include {COMPRESS_INDEX_VCF_SIMREADS} from "${projectDir}/modules/tabix/compress_vcf_simreads"
-include {BCFTOOLS_MERGE_VCF} from "${projectDir}/modules/bcftools/bcftools_merge_vcf"
-include {VCF_SORT} from "${projectDir}/modules/vcftools/vcf_sort"
-include {VCFTOOLS_SIMVAR} from "${projectDir}/modules/vcftools/vcftools_simvar"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
+include {help} from "../bin/help/generate_wes_simreads"
+include {param_log} from "../bin/log/generate_wes_simreads"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {SAMTOOLS_FAIDX_CHR_ONLY} from "../modules/samtools/samtools_faidx_chr_only"
+include {SPLIT_FILES} from "../modules/python/pyfaidx_split_files"
+include {GENERATE_SIMULATED_WES_DATA} from "../modules/neat/generate_simulated_WES_data"
+include {COMPRESS_INDEX_VCF_SIMREADS} from "../modules/tabix/compress_vcf_simreads"
+include {BCFTOOLS_MERGE_VCF} from "../modules/bcftools/bcftools_merge_vcf"
+include {VCF_SORT} from "../modules/vcftools/vcf_sort"
+include {VCFTOOLS_SIMVAR} from "../modules/vcftools/vcftools_simvar"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
 
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-def checkFileExists(filePath, name) {
-    if (filePath && !file(filePath).exists()) {
-        log.error "File not found: ${filePath} (${name})"
-        exit 1
-    }
-}
 
 workflow GENERATE_WES_SIMREADS {
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
 
     SAMTOOLS_FAIDX_CHR_ONLY(params.fasta)
     SPLIT_FILES(SAMTOOLS_FAIDX_CHR_ONLY.out.chr_fa)
@@ -70,4 +62,11 @@ workflow GENERATE_WES_SIMREADS {
         CONCATENATE_READS_SE(reads1_with_id)
     }
 
+}
+
+def checkFileExists(filePath, name) {
+    if (filePath && !file(filePath).exists()) {
+        log.error "File not found: ${filePath} (${name})"
+        exit 1
+    }
 }

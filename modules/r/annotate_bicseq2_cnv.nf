@@ -8,7 +8,7 @@ process ANNOTATE_BICSEQ2_CNV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bed", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bed", mode: 'copy'
 
     input:
         //BICSEQ2_SEG.out.bicseq2_sv_calls

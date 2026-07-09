@@ -1,14 +1,14 @@
 process GRIDSS_CALLING {
     tag "$sampleID"
 
-    cpus = 4
-    memory = 15.GB
-    time = '10:00:00'
+    cpus 4
+    memory  15.GB
+    time '10:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/jaxcompsci/gridss:2.13.2-3'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*_gridss_sv.vcf.gz", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/callers'}" }, pattern: "*_gridss_sv.vcf.gz", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), val(meta), path(normal_bam), path(normal_bai), val(normal_name), path(tumor_bam), path(tumor_bai), val(tumor_name), val(gridss_assembled)

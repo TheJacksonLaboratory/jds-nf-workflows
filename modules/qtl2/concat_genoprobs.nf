@@ -8,13 +8,13 @@ process CONCAT_GENOPROBS {
 
   container 'docker://sjwidmay/lcgbs_hr:latest'
   
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_genoprobs.rds", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_alleleprobs.rds", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_cross.rds", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_maxmarg.rds", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_kinship.rds", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_genotyping_errors.rds", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_bad_markers.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_genoprobs.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_alleleprobs.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_cross.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_maxmarg.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_kinship.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_genotyping_errors.rds", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_bad_markers.rds", mode:'copy'
 
   input:
   tuple val(project_id), file(crosses), file(genoprobs)

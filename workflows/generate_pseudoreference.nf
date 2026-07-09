@@ -2,42 +2,42 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/generate_pseudoreference.nf"
-include {param_log} from "${projectDir}/bin/log/generate_pseudoreference.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {FILTER_GTF} from "${projectDir}/modules/utility_modules/filter_gtf_biotypes"
-include {G2GTOOLS_VCF2VCI} from "${projectDir}/modules/g2gtools/g2gtools_vcf2vci"
-include {G2GTOOLS_PATCH} from "${projectDir}/modules/g2gtools/g2gtools_patch"
-include {G2GTOOLS_TRANSFORM} from "${projectDir}/modules/g2gtools/g2gtools_transform"
+include {help} from "../bin/help/generate_pseudoreference.nf"
+include {param_log} from "../bin/log/generate_pseudoreference.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {FILTER_GTF} from "../modules/utility_modules/filter_gtf_biotypes"
+include {G2GTOOLS_VCF2VCI} from "../modules/g2gtools/g2gtools_vcf2vci"
+include {G2GTOOLS_PATCH} from "../modules/g2gtools/g2gtools_patch"
+include {G2GTOOLS_TRANSFORM} from "../modules/g2gtools/g2gtools_transform"
 include {SAMTOOLS_FAIDX as SAMTOOLS_FAIDX_G2GTOOLS;
-         SAMTOOLS_FAIDX as SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
-include {G2GTOOLS_CONVERT} from "${projectDir}/modules/g2gtools/g2gtools_convert"
-include {APPEND_DROPPED_CHROMS} from "${projectDir}/modules/python/append_dropped_chroms"
-include {G2GTOOLS_GTF2DB} from "${projectDir}/modules/g2gtools/g2gtools_gtf2db"
+         SAMTOOLS_FAIDX as SAMTOOLS_FAIDX} from "../modules/samtools/samtools_faidx"
+include {G2GTOOLS_CONVERT} from "../modules/g2gtools/g2gtools_convert"
+include {APPEND_DROPPED_CHROMS} from "../modules/python/append_dropped_chroms"
+include {G2GTOOLS_GTF2DB} from "../modules/g2gtools/g2gtools_gtf2db"
 include {G2GTOOLS_EXTRACT as G2GTOOLS_EXTRACT_GENES;
          G2GTOOLS_EXTRACT as G2GTOOLS_EXTRACT_TRANSCRIPTS;
-         G2GTOOLS_EXTRACT as G2GTOOLS_EXTRACT_EXONS} from "${projectDir}/modules/g2gtools/g2gtools_extract"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (params.region != '' && params.bed != '') {
-    exit 1, "Both REGION: ${params.region} and BED: ${params.bed} can not be set. Use only one of these options at a time."
-}
+         G2GTOOLS_EXTRACT as G2GTOOLS_EXTRACT_EXONS} from "../modules/g2gtools/g2gtools_extract"
 
 // main workflow
 workflow GENERATE_PSEUDOREFERENCE  {
+
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    if (params.region != '' && params.bed != '') {
+        exit 1, "Both REGION: ${params.region} and BED: ${params.bed} can not be set. Use only one of these options at a time."
+    }
 
     if (params.gtf_biotype_include) {
         FILTER_GTF()

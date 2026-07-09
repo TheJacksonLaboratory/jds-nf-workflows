@@ -1,0 +1,42 @@
+nextflow_workflow {
+
+    name "Test Workflow REANNOTATE_PTA"
+    script "supportworkflows/reannotate_pta.nf"
+    workflow "REANNOTATE_PTA"
+
+    test("Workflow -- Human") {
+        tag "human"
+
+        when {
+            params {
+                gen_org = "human"
+                pipeline = "reannotate_pta"
+                pubdir = "tests/results"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/bedfiles/reannotate_pta_human.csv"
+            }
+        }
+
+        
+
+        then {
+            assert workflow.success
+        }
+    }
+
+    test("Workflow -- Mouse") {
+        tag "mouse"
+
+        when {
+            params {
+                gen_org = "mouse"
+                pipeline = "reannotate_pta"
+                pubdir = "tests/results"
+                csv_input = "https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/refs/heads/main/pta/bedfiles/reannotate_pta_mouse.csv"
+            }
+        }
+
+        then {
+            assert workflow.success
+        }
+    }
+}

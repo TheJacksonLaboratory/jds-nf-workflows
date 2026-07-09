@@ -7,7 +7,7 @@ process REFORMAT_FASTA {
 
     container 'quay.io/biocontainers/bbmap:39.06--h92535d8_0'
 
-    publishDir "${params.pubdir}/results", pattern: "*LINEWRAP.fa", mode:'copy'
+    publishDir path: { "${params.pubdir}/results" }, pattern: "*LINEWRAP.fa", mode:'copy'
 
     input:
     path(fa_cds)

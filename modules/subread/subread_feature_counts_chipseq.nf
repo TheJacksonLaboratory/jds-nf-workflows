@@ -7,7 +7,7 @@ process SUBREAD_FEATURECOUNTS {
   
     container 'quay.io/biocontainers/subread:2.0.1--hed695b0_0'
 
-    publishDir "${params.pubdir}/${'consensusCalling_' + antibody + '/subread'}", pattern: "*.txt*", mode: 'copy'  
+    publishDir path: { "${params.pubdir}/${'consensusCalling_' + antibody + '/subread'}" }, pattern: "*.txt*", mode: 'copy'  
 
     input:
     tuple val(antibody), val(replicatesExist), val(multipleGroups), path(bams), path(saf)

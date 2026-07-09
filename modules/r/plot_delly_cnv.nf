@@ -8,7 +8,7 @@ process PLOT_DELLY_CNV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/cnv_plots'}", pattern: "*.png", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/cnv_plots'}" }, pattern: "*.png", mode: 'copy'
 
     input:
     tuple val(sampleID), path(cov), path(seg_bed)

@@ -1,5 +1,3 @@
-def VERSION = '2.0.1'
-
 process MIRDEEP2_RUN {
     tag "$sampleID"
 
@@ -10,7 +8,7 @@ process MIRDEEP2_RUN {
 
     container 'quay.io/biocontainers/mirdeep2:2.0.1.3--hdfd78af_1'
 
-    publishDir "${params.pubdir}/${sampleID + '/mirdeep2'}", pattern: "result*.{bed,csv,html}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/mirdeep2'}" }, pattern: "result*.{bed,csv,html}", mode:'copy'
 
     input:
     path(fasta)

@@ -2,16 +2,16 @@
 nextflow.enable.dsl=2
 
 include {GATK_PRINTREADS as GATK_PRINTREADS_NORMAL;
-         GATK_PRINTREADS as GATK_PRINTREADS_TUMOR;} from "${projectDir}/modules/gatk/gatk_printreads"
+         GATK_PRINTREADS as GATK_PRINTREADS_TUMOR;} from "../modules/gatk/gatk_printreads"
 include {SAMTOOLS_MPILEUP as SAMTOOLS_MPILEUP_NORMAL;
-         SAMTOOLS_MPILEUP as SAMTOOLS_MPILEUP_TUMOR} from "${projectDir}/modules/samtools/samtools_mpileup"
-include {SEQUENZA_PILEUP2SEQZ} from "${projectDir}/modules/sequenza/sequenza_pileup2seqz"
-include {SCARHRD} from "${projectDir}/modules/scarhrd/scarhrd"
-include {SEQUENZA_RUN} from "${projectDir}/modules/sequenza/sequenza_run"
+         SAMTOOLS_MPILEUP as SAMTOOLS_MPILEUP_TUMOR} from "../modules/samtools/samtools_mpileup"
+include {SEQUENZA_PILEUP2SEQZ} from "../modules/sequenza/sequenza_pileup2seqz"
+include {SCARHRD} from "../modules/scarhrd/scarhrd"
+include {SEQUENZA_RUN} from "../modules/sequenza/sequenza_run"
 include {SEQUENZA_ANNOTATE as SEQUENZA_ANNOTATE_RAW;
-         SEQUENZA_ANNOTATE as SEQUENZA_ANNOTATE_FILTERED} from "${projectDir}/modules/sequenza/sequenza_annotate"
-include {SEQUENZA_NA_WINDOWS} from "${projectDir}/modules/sequenza/sequenza_na_window"
-include {BEDTOOLS_SUBTRACT} from "${projectDir}/modules/bedtools/bedtools_sequenza_subtract"
+         SEQUENZA_ANNOTATE as SEQUENZA_ANNOTATE_FILTERED} from "../modules/sequenza/sequenza_annotate"
+include {SEQUENZA_NA_WINDOWS} from "../modules/sequenza/sequenza_na_window"
+include {BEDTOOLS_SUBTRACT} from "../modules/bedtools/bedtools_sequenza_subtract"
 
 workflow CNV {
     take:
@@ -35,7 +35,7 @@ workflow CNV {
         sequenza_input = SAMTOOLS_MPILEUP_NORMAL.out.pileup
                         .map{it -> [it[1].patient, it[1], it[2]]}
                         .cross(
-                            tumor_pileups = SAMTOOLS_MPILEUP_TUMOR.out.pileup
+                            SAMTOOLS_MPILEUP_TUMOR.out.pileup
                             .map{it -> [it[1].patient, it[1], it[2]]}
                         )
                         .map{normal, tumor -> [tumor[1].id, tumor[1], normal[2], tumor[2]]}

@@ -1,7 +1,7 @@
 nextflow_workflow {
 
     name "Test Workflow GENERATE_RNASEQ_INDEX"
-    script "subworkflows/generate_rnaseq_index.nf"
+    script "supportworkflows/generate_rnaseq_index.nf"
     workflow "GENERATE_RNASEQ_INDEX"
 
     test("RNASeq Index -- Stock") {

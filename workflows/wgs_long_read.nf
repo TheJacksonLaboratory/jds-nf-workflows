@@ -2,88 +2,88 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/wgs_long_read.nf"
-include {param_log} from "${projectDir}/bin/log/wgs_long_read.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
+include {help} from "../bin/help/wgs_long_read.nf"
+include {param_log} from "../bin/log/wgs_long_read.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
 
-include {FASTP_LONG} from "${projectDir}/modules/fastp/fastp_long"
-include {PBMM2_CALL} from "${projectDir}/modules/pbmm2/pbmm2_call"
+include {FASTP_LONG} from "../modules/fastp/fastp_long"
+include {PBMM2_CALL} from "../modules/pbmm2/pbmm2_call"
 
 include {SAMTOOLS_MERGE;
-         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
-include {SAMTOOLS_STATS} from "${projectDir}/modules/samtools/samtools_stats"
-include {PUBLISH_BAM} from "${projectDir}/modules/utility_modules/publish_bam_bai"
-include {MOSDEPTH} from "${projectDir}/modules/mosdepth/mosdepth"
+         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "../modules/samtools/samtools_merge"
+include {SAMTOOLS_STATS} from "../modules/samtools/samtools_stats"
+include {PUBLISH_BAM} from "../modules/utility_modules/publish_bam_bai"
+include {MOSDEPTH} from "../modules/mosdepth/mosdepth"
 
-include {DEEPVARIANT} from "${projectDir}/modules/deepvariant/deepvariant"
+include {DEEPVARIANT} from "../modules/deepvariant/deepvariant"
 include {SAMTOOLS_INDEX;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_IND;
-         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "${projectDir}/modules/samtools/samtools_index"
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "../modules/samtools/samtools_index"
 
 include {BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_VCF;
-         BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_GVCF} from "${projectDir}/modules/bcftools/bcftools_merge_deepvar_vcfs"
+         BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_GVCF} from "../modules/bcftools/bcftools_merge_deepvar_vcfs"
 
 include {GATK_MERGEVCF;
          GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
-         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
+         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "../modules/gatk/gatk_mergevcf"
 
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
-include {SNPEFF} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
-include {SNPEFF_ONEPERLINE} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_DBNSFP} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
-include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP} from "../modules/snpeff_snpsift/snpsift_annotate"
+include {SNPEFF} from "../modules/snpeff_snpsift/snpeff_snpeff"
+include {SNPEFF_ONEPERLINE} from "../modules/snpeff_snpsift/snpeff_oneperline"
+include {SNPSIFT_DBNSFP} from "../modules/snpeff_snpsift/snpsift_dbnsfp"
+include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields"
 
-include {PBSV_DISCOVER} from "${projectDir}/modules/pbsv/pbsv_discover"
-include {PBSV_CALL} from "${projectDir}/modules/pbsv/pbsv_call"
-include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
+include {PBSV_DISCOVER} from "../modules/pbsv/pbsv_discover"
+include {PBSV_CALL} from "../modules/pbsv/pbsv_call"
+include {SNIFFLES} from "../modules/sniffles/sniffles"
 
-include {SV_MERGE} from "${projectDir}/modules/r/wgs_sv/wgs_sv_merge"
+include {SV_MERGE} from "../modules/r/wgs_sv/wgs_sv_merge"
 include {ANNOTATE_SV;
-         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_sv"
+         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "../modules/r/wgs_sv/annotate_sv"
 include {ANNOTATE_GENES_SV;
-         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_genes_sv"
+         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "../modules/r/wgs_sv/annotate_genes_sv"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
-//help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (!params.csv_input) {
-    exit 1, "No input CSV file was specified with `--csv_input`. This workflow requires an input CSV file. See `--help` for information."
-}
-
-if (params.containsKey('concat_lanes') && params.concat_lanes) {
-    exit 1, "Concatenation of lanes was specified with `--concat_lanes`. However, this is not applicable for PacBio long read data. Please remove `--concat_lanes` from your command."
-}
-
-// Prepare reads channel
-// Note that for PacBio data there is no concept of PE / SE reads. There is only 1 input fastq for each sample. 
-// The concept of 'lanes' is also not applicable, as PacBio reads are not split into lanes like Illumina reads. Therefore, lanes are not concatenated.
-if (params.csv_input) {
-    ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
-    ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-    ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-} else {
-    exit 1, "ERROR: No input CSV file was specified with `--csv_input`. This workflow requires an input CSV file. See `--help` for information."
-}
 
 // BEGIN main workflow
 workflow WGS_LONG_READ {
 
+    //help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    if (!params.csv_input) {
+        exit 1, "No input CSV file was specified with `--csv_input`. This workflow requires an input CSV file. See `--help` for information."
+    }
+
+    if (params.containsKey('concat_lanes') && params.concat_lanes) {
+        exit 1, "Concatenation of lanes was specified with `--concat_lanes`. However, this is not applicable for PacBio long read data. Please remove `--concat_lanes` from your command."
+    }
+
+    // Prepare reads channel
+    // Note that for PacBio data there is no concept of PE / SE reads. There is only 1 input fastq for each sample. 
+    // The concept of 'lanes' is also not applicable, as PacBio reads are not split into lanes like Illumina reads. Therefore, lanes are not concatenated.
+    if (params.csv_input) {
+        ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+        ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+    } else {
+        exit 1, "ERROR: No input CSV file was specified with `--csv_input`. This workflow requires an input CSV file. See `--help` for information."
+    }
     // ADD A DEMUX STEP FOR DATA NOT IN FASTQ FORMAT??
 
     // FASTP for quality control
@@ -238,6 +238,7 @@ workflow WGS_LONG_READ {
     ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
 
     MULTIQC(
-        ch_multiqc_files.collect()
+        ch_multiqc_files.collect(),
+        params.multiqc_config
     )
 }

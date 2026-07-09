@@ -2,32 +2,32 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
+include {FASTP} from "../modules/fastp/fastp"
 include {READ_GROUPS as READ_GROUPS_HUMAN;
-         READ_GROUPS as READ_GROUPS_MOUSE} from "${projectDir}/modules/utility_modules/read_groups"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_length"
-include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
-include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
-include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
+         READ_GROUPS as READ_GROUPS_MOUSE} from "../modules/utility_modules/read_groups"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {GET_READ_LENGTH} from "../modules/utility_modules/get_read_length"
+include {CHECK_STRANDEDNESS} from "../modules/python/python_check_strandedness"
+include {XENGSORT_INDEX} from "../modules/xengsort/xengsort_index"
+include {XENGSORT_CLASSIFY} from "../modules/xengsort/xengsort_classify"
 // include {GZIP as GZIP_HUMAN;
-//          GZIP as GZIP_MOUSE} from "${projectDir}/modules/utility_modules/gzip"
+//          GZIP as GZIP_MOUSE} from "../modules/utility_modules/gzip"
 include {RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_HUMAN;
-         RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_MOUSE} from "${projectDir}/modules/rsem/rsem_alignment_expression"
+         RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_MOUSE} from "../modules/rsem/rsem_alignment_expression"
 include {SEX_DETERMINATION as SEX_DETERMINATION_HUMAN;
-         SEX_DETERMINATION as SEX_DETERMINATION_MOUSE} from "${projectDir}/modules/r/sex_determination"
+         SEX_DETERMINATION as SEX_DETERMINATION_MOUSE} from "../modules/r/sex_determination"
 include {MERGE_RSEM_COUNTS as MERGE_RSEM_COUNTS_HUMAN;
-         MERGE_RSEM_COUNTS as MERGE_RSEM_COUNTS_MOUSE} from "${projectDir}/modules/utility_modules/merge_rsem_counts"
-include {LYMPHOMA_CLASSIFIER} from "${projectDir}/modules/python/python_lymphoma_classifier"
+         MERGE_RSEM_COUNTS as MERGE_RSEM_COUNTS_MOUSE} from "../modules/utility_modules/merge_rsem_counts"
+include {LYMPHOMA_CLASSIFIER} from "../modules/python/python_lymphoma_classifier"
 include {PICARD_ADDORREPLACEREADGROUPS as PICARD_ADDORREPLACEREADGROUPS_HUMAN;
-         PICARD_ADDORREPLACEREADGROUPS as PICARD_ADDORREPLACEREADGROUPS_MOUSE} from "${projectDir}/modules/picard/picard_addorreplacereadgroups"
+         PICARD_ADDORREPLACEREADGROUPS as PICARD_ADDORREPLACEREADGROUPS_MOUSE} from "../modules/picard/picard_addorreplacereadgroups"
 include {PICARD_REORDERSAM as PICARD_REORDERSAM_HUMAN;
-         PICARD_REORDERSAM as PICARD_REORDERSAM_MOUSE} from "${projectDir}/modules/picard/picard_reordersam"
+         PICARD_REORDERSAM as PICARD_REORDERSAM_MOUSE} from "../modules/picard/picard_reordersam"
 include {PICARD_SORTSAM as PICARD_SORTSAM_HUMAN;
-         PICARD_SORTSAM as PICARD_SORTSAM_MOUSE} from "${projectDir}/modules/picard/picard_sortsam"
+         PICARD_SORTSAM as PICARD_SORTSAM_MOUSE} from "../modules/picard/picard_sortsam"
 include {PICARD_COLLECTRNASEQMETRICS as PICARD_COLLECTRNASEQMETRICS_HUMAN;
-         PICARD_COLLECTRNASEQMETRICS as PICARD_COLLECTRNASEQMETRICS_MOUSE} from "${projectDir}/modules/picard/picard_collectrnaseqmetrics"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+         PICARD_COLLECTRNASEQMETRICS as PICARD_COLLECTRNASEQMETRICS_MOUSE} from "../modules/picard/picard_collectrnaseqmetrics"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 workflow PDX_RNASEQ {
 

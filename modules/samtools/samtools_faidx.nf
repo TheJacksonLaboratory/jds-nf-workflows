@@ -8,8 +8,8 @@ process SAMTOOLS_FAIDX {
 
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-    publishDir "${params.pubdir}/g2gtools", pattern:"*.fai", mode:'copy', enabled: params.workflow == 'generate_pseudoreference' ? true : false
-    publishDir "${params.pubdir}/genome_info", pattern:"*.fai", mode:'copy', enabled: params.workflow == 'chipseq' ? true : false
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern:"*.fai", mode:'copy', enabled: params.workflow == 'generate_pseudoreference' ? true : false
+    publishDir path: { "${params.pubdir}/genome_info" }, pattern:"*.fai", mode:'copy', enabled: params.workflow == 'chipseq' ? true : false
 
     input:
         tuple val(sampleID), path(fasta)

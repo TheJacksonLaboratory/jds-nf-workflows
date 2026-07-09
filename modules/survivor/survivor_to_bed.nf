@@ -8,7 +8,7 @@ process SURVIVOR_TO_BED {
 
     container 'rocker/tidyverse:4.2.1'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy', enabled: params.data_type == 'ont' ? false : true
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy', enabled: params.data_type == 'ont' ? false : true
 
     input:
         tuple val(sampleID), file(annot), file(summary)

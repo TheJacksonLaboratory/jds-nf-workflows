@@ -8,7 +8,7 @@ process ANNOTATE_SV_WITH_CNV {
     
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}/merged_sv", pattern: "*.bedpe", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}/merged_sv" }, pattern: "*.bedpe", mode: 'copy'
 
     input:
         tuple val(sampleID), path(delly_annot), path(annot_sv_genes_bedpe)

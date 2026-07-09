@@ -4,53 +4,53 @@ nextflow.enable.dsl=2
 // Adapted from: nf-core/smrnaseq 2.2.4 and 2.4.0 workflows
 
 // import modules
-include {help} from "${projectDir}/bin/help/smrnaseq.nf"
-include {param_log} from "${projectDir}/bin/log/smrnaseq.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {INPUT_CHECK} from "${projectDir}/subworkflows/input_check"
+include {help} from "../bin/help/smrnaseq.nf"
+include {param_log} from "../bin/log/smrnaseq.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {INPUT_CHECK} from "../subworkflows/input_check"
 include {FASTQC as FASTQC_RAW;
-         FASTQC as FASTQC_TRIM} from "${projectDir}/modules/fastqc/fastqc"
-include {FASTP} from "${projectDir}/modules/fastp/fastp_smrna"
+         FASTQC as FASTQC_TRIM} from "../modules/fastqc/fastqc"
+include {FASTP} from "../modules/fastp/fastp_smrna"
 
-include {SEQCLUSTER_SEQUENCES} from "${projectDir}/modules/seqcluster/seqcluster_collapse"
+include {SEQCLUSTER_SEQUENCES} from "../modules/seqcluster/seqcluster_collapse"
 
-include {MIRTRACE_RUN} from "${projectDir}/modules/mirtrace/mirtrace"
+include {MIRTRACE_RUN} from "../modules/mirtrace/mirtrace"
 
 include { BOWTIE_MAP_CONTAMINANTS as MAP_TRNA
           BOWTIE_MAP_CONTAMINANTS as MAP_CDNA
           BOWTIE_MAP_CONTAMINANTS as MAP_NCRNA
-          BOWTIE_MAP_CONTAMINANTS as MAP_OTHER } from "${projectDir}/modules/bowtie2/bowtie2_map_contaminants"
+          BOWTIE_MAP_CONTAMINANTS as MAP_OTHER } from "../modules/bowtie2/bowtie2_map_contaminants"
 
 include {BOWTIE_MAP_SEQ  as BOWTIE_MAP_MATURE;
          BOWTIE_MAP_SEQ  as BOWTIE_MAP_HAIRPIN;
          BOWTIE_MAP_SEQ  as BOWTIE_MAP_GENOME;
-         BOWTIE_MAP_SEQ  as BOWTIE_MAP_SEQCLUSTER } from "${projectDir}/modules/bowtie/bowtie_map_mirna"
+         BOWTIE_MAP_SEQ  as BOWTIE_MAP_SEQCLUSTER } from "../modules/bowtie/bowtie_map_mirna"
 
 include {SAMTOOLS_SORT as SAMTOOLS_SORT_MATURE;
          SAMTOOLS_SORT as SAMTOOLS_SORT_HAIRPIN;
          SAMTOOLS_SORT as SAMTOOLS_SORT_GENOME;
-         SAMTOOLS_SORT as SAMTOOLS_SORT_SEQCLUSTER } from "${projectDir}/modules/samtools/samtools_sort"
+         SAMTOOLS_SORT as SAMTOOLS_SORT_SEQCLUSTER } from "../modules/samtools/samtools_sort"
 
 include {SAMTOOLS_INDEX as SAMTOOLS_INDEX_MATURE;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_HAIRPIN;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_GENOME;
-         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SEQCLUSTER } from "${projectDir}/modules/samtools/samtools_index"
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SEQCLUSTER } from "../modules/samtools/samtools_index"
 
 include {SAMTOOLS_STATS as SAMTOOLS_STATS_MATURE;
          SAMTOOLS_STATS as SAMTOOLS_STATS_HAIRPIN;
          SAMTOOLS_STATS as SAMTOOLS_STATS_GENOME;
-         SAMTOOLS_STATS as SAMTOOLS_STATS_SEQCLUSTER } from "${projectDir}/modules/samtools/samtools_stats"
+         SAMTOOLS_STATS as SAMTOOLS_STATS_SEQCLUSTER } from "../modules/samtools/samtools_stats"
 
-include { MIRTOP_QUANT         } from "${projectDir}/modules/mirtop/mirtop_quant"
-include { TABLE_MERGE          } from "${projectDir}/modules/r/datatable_merge"
-include { EDGER_QC             } from "${projectDir}/modules/r/edger_qc"
+include { MIRTOP_QUANT         } from "../modules/mirtop/mirtop_quant"
+include { TABLE_MERGE          } from "../modules/r/datatable_merge"
+include { EDGER_QC             } from "../modules/r/edger_qc"
 
-include { MIRDEEP2_PIGZ        } from "${projectDir}/modules/mirdeep2/mirdeep2_prepare"
-include { MIRDEEP2_MAPPER      } from "${projectDir}/modules/mirdeep2/mirdeep2_mapper"
-include { MIRDEEP2_RUN         } from "${projectDir}/modules/mirdeep2/mirdeep2_run"
+include { MIRDEEP2_PIGZ        } from "../modules/mirdeep2/mirdeep2_prepare"
+include { MIRDEEP2_MAPPER      } from "../modules/mirdeep2/mirdeep2_mapper"
+include { MIRDEEP2_RUN         } from "../modules/mirdeep2/mirdeep2_run"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 
 
@@ -58,10 +58,8 @@ include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
 // Function that parses fastp json output file to get total number of reads after trimming
 
-import groovy.json.JsonSlurper
-
 def getFastpReadsAfterFiltering(json_file) {
-    return new JsonSlurper().parseText(json_file.text)
+  return new groovy.json.JsonSlurper().parseText(json_file.text)
     ?.get('summary')
     ?.get('after_filtering')
     ?.get('total_reads')
@@ -69,40 +67,37 @@ def getFastpReadsAfterFiltering(json_file) {
 }
 
 String getFastpAdapterSequence(json_file){
-    return new JsonSlurper().parseText(json_file.text)
+  return new groovy.json.JsonSlurper().parseText(json_file.text)
     ?.get('adapter_cutting')
     ?.get('read1_adapter_sequence')
 }
 
 def add_suffix(row, suffix) {
-    sampleID = "${row[0]}_${suffix}"
-    def array = []
-    array = [ sampleID, row[1] ]
-    return array
+  def sampleID = "${row[0]}_${suffix}"
+  return [sampleID, row[1]]
 }
 
 ///////////////////////
 
 
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
 // main workflow
 workflow SMRNASEQ {
 
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
+
   if (params.csv_input)     { ch_input = file(params.csv_input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
 
+  // log params
+  message = param_log()
+
+  // Save params to a file for record-keeping
+  workflow.onComplete {
+      final_run_report(message)
+  }
 
   // SUBWORKFLOW: Read in samplesheet, validate and stage input files
   INPUT_CHECK(file(params.csv_input)
@@ -157,7 +152,7 @@ workflow SMRNASEQ {
   // and set the channel
   FASTP.out.reads
     .combine(adapterseq)
-    .map { id, reads, adapterseq -> [adapterseq, id, reads] }
+    .map { id, reads, adapter_seq -> [adapter_seq, id, reads] }
     .groupTuple()
     .set { ch_mirtrace_inputs }
 
@@ -168,7 +163,6 @@ workflow SMRNASEQ {
 
   // Mitrace
   MIRTRACE_RUN(ch_mirtrace_inputs)
-
 
   // tRNA, cDNA, ncRNA
   // mature, hairpin, genome

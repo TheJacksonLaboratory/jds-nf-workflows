@@ -1,14 +1,13 @@
 // Function to extract information (meta data + file(s)) from csv file(s)
 // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L1084
 
-ANSI_RED = "\u001B[31m";
-ANSI_RESET = "\u001B[0m";
-
 def extract_csv_bam(csv_file) {
+    def ANSI_RED = "\u001B[31m"
+    def ANSI_RESET = "\u001B[0m"
+
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
     file(csv_file).withReader('UTF-8') { reader ->
-        def line, numberOfLinesInSampleSheet = 0;
-        while ((line = reader.readLine()) != null) {numberOfLinesInSampleSheet++}
+        def numberOfLinesInSampleSheet = reader.readLines().size()
         if (numberOfLinesInSampleSheet < 2) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, and at least one sample." + ANSI_RESET)
@@ -52,7 +51,7 @@ def extract_csv_bam(csv_file) {
             [row.sampleID.toString(), row]
         }.groupTuple()
         .map{ meta, rows ->
-            size = rows.size()
+            def size = rows.size()
             [rows, size]
         }.transpose()
         .map{ row, numLanes ->
@@ -70,7 +69,7 @@ def extract_csv_bam(csv_file) {
         meta.id = row.sampleID.toString()
         
         // defines the number of files for each sample. 
-        meta.size = size
+        meta.size = numLanes
 
         try {
             file(row.bam, checkIfExists: true)
@@ -100,10 +99,12 @@ def extract_csv_bam(csv_file) {
 
 
 def extract_csv_bam_rnaseq(csv_file) {
+    def ANSI_RED = "\u001B[31m"
+    def ANSI_RESET = "\u001B[0m"
+
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
     file(csv_file).withReader('UTF-8') { reader ->
-        def line, numberOfLinesInSampleSheet = 0;
-        while ((line = reader.readLine()) != null) {numberOfLinesInSampleSheet++}
+        def numberOfLinesInSampleSheet = reader.readLines().size()
         if (numberOfLinesInSampleSheet < 2) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, and at least one sample." + ANSI_RESET)
@@ -143,7 +144,7 @@ def extract_csv_bam_rnaseq(csv_file) {
             [row.sampleID.toString(), row]
         }.groupTuple()
         .map{ meta, rows ->
-            size = rows.size()
+            def size = rows.size()
             [rows, size]
         }.transpose()
         .map{ row, numLanes ->
@@ -157,7 +158,7 @@ def extract_csv_bam_rnaseq(csv_file) {
         meta.id = row.sampleID.toString()
         
         // defines the number of files for each sample. 
-        meta.size = size
+        meta.size = numLanes
 
         try {
             file(row.bam, checkIfExists: true)

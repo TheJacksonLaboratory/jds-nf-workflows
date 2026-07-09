@@ -2,155 +2,153 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/wgs.nf"
-include {param_log} from "${projectDir}/bin/log/wgs.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {extract_csv_bam} from "${projectDir}/bin/shared/extract_csv_bam.nf"
-include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
+include {help} from "../bin/help/wgs.nf"
+include {param_log} from "../bin/log/wgs.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {extract_csv_bam} from "../bin/shared/extract_csv_bam.nf"
+include {FILE_DOWNLOAD} from "../subworkflows/aria_download_parse"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
 
-include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {CLUMPIFY} from "../modules/bbmap/bbmap_clumpify"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
 
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {BWA_MEM_HLA} from "${projectDir}/modules/bwa/bwa_mem_hla"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {BWA_MEM_HLA} from "../modules/bwa/bwa_mem_hla"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
 include {SAMTOOLS_MERGE;
-         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
+         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "../modules/samtools/samtools_merge"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
 
-include {DEEPVARIANT} from "${projectDir}/modules/deepvariant/deepvariant"
-include {GATK_BASERECALIBRATOR} from "${projectDir}/modules/gatk/gatk_baserecalibrator_interval"
-include {GATK_GATHERBQSRREPORTS} from "${projectDir}/modules/gatk/gatk_gatherbqsrreports"
-include {GATK_APPLYBQSR} from "${projectDir}/modules/gatk/gatk_applybqsr"
+include {DEEPVARIANT} from "../modules/deepvariant/deepvariant"
+include {GATK_BASERECALIBRATOR} from "../modules/gatk/gatk_baserecalibrator_interval"
+include {GATK_GATHERBQSRREPORTS} from "../modules/gatk/gatk_gatherbqsrreports"
+include {GATK_APPLYBQSR} from "../modules/gatk/gatk_applybqsr"
 
-include {JVARKIT_COVERAGE_CAP} from "${projectDir}/modules/jvarkit/jvarkit_biostar154220"
+include {JVARKIT_COVERAGE_CAP} from "../modules/jvarkit/jvarkit_biostar154220"
 include {SAMTOOLS_INDEX;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_IND;
-         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "${projectDir}/modules/samtools/samtools_index"
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "../modules/samtools/samtools_index"
 
-include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
-include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
+include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "../modules/picard/picard_collectalignmentsummarymetrics"
+include {PICARD_COLLECTWGSMETRICS} from "../modules/picard/picard_collectwgsmetrics"
 
 include {GATK_HAPLOTYPECALLER_INTERVAL;
-         GATK_HAPLOTYPECALLER_INTERVAL as GATK_HAPLOTYPECALLER_INTERVAL_GVCF} from "${projectDir}/modules/gatk/gatk_haplotypecaller_interval"
-include {MAKE_VCF_LIST} from "${projectDir}/modules/utility_modules/make_vcf_list"
-include {GATK_MERGEVCF_LIST} from "${projectDir}/modules/gatk/gatk_mergevcf_list"
+         GATK_HAPLOTYPECALLER_INTERVAL as GATK_HAPLOTYPECALLER_INTERVAL_GVCF} from "../modules/gatk/gatk_haplotypecaller_interval"
+include {MAKE_VCF_LIST} from "../modules/utility_modules/make_vcf_list"
+include {GATK_MERGEVCF_LIST} from "../modules/gatk/gatk_mergevcf_list"
 include {BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_VCF;
-         BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_GVCF} from "${projectDir}/modules/bcftools/bcftools_merge_deepvar_vcfs"
-include {GATK_COMBINEGVCFS} from "${projectDir}/modules/gatk/gatk_combinegvcfs"
+         BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_GVCF} from "../modules/bcftools/bcftools_merge_deepvar_vcfs"
+include {GATK_COMBINEGVCFS} from "../modules/gatk/gatk_combinegvcfs"
 
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
-         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "${projectDir}/modules/gatk/gatk_selectvariants"
+         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants"
 include {GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_SNP;
-         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "${projectDir}/modules/gatk/gatk_variantfiltration"
+         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "../modules/gatk/gatk_variantfiltration"
 include {GATK_MERGEVCF;
          GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
-         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
+         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "../modules/gatk/gatk_mergevcf"
 
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "../modules/snpeff_snpsift/snpsift_annotate"
 include {SNPEFF;
          SNPEFF as SNPEFF_SNP;
-         SNPEFF as SNPEFF_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
+         SNPEFF as SNPEFF_INDEL} from "../modules/snpeff_snpsift/snpeff_snpeff"
 include {SNPEFF_ONEPERLINE;
          SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
-         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
+         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "../modules/snpeff_snpsift/snpeff_oneperline"
 include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP;
          SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
-         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
-include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "../modules/snpeff_snpsift/snpsift_dbnsfp"
+include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
-include {WGS_SV} from "${projectDir}/subworkflows/wgs_sv"
-include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (params.download_data && !params.csv_input && !params.bam_input) {
-    exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
-}
-
-if (params.bam_input){
-
-  bam_input_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
-  bam_file = bam_input_ch.map{it -> [it[0], file(it[2])]}
-  index_file = bam_input_ch.map{it -> [it[0], file(it[3])]}
-  meta_ch = bam_input_ch.map{it -> [it[0], it[1]]}
-  
-} else {
-
-  // prepare reads channel
-  if (params.csv_input) {
-
-      ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
-
-      if (params.read_type == 'PE'){
-          ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
-          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-      } else if (params.read_type == 'SE') {
-          ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-      }
-
-  } else if (params.concat_lanes){
-    
-    if (params.read_type == 'PE'){
-      read_ch = Channel
-              .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-              .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
-              .groupTuple()
-    }
-    else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                  .map { file, file1 -> tuple(getLibraryId(file), file1) }
-                  .groupTuple()
-                  .map{t-> [t[0], t[1].flatten()]}
-    }
-      // if channel is empty give error message and exit
-      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-  } else {
-    
-    if (params.read_type == 'PE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-    }
-    else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-    }
-      // if channel is empty give error message and exit
-      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-  }
-}
-
-
+include {WGS_SV} from "../subworkflows/wgs_sv"
+include {MT_VARIANT_CALLING} from "../subworkflows/mt_variant_calling"
 
 // BEGIN main workflow
 workflow WGS {
-  
+    
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
+
+  // log params
+  message = param_log()
+
+  // Save params to a file for record-keeping
+  workflow.onComplete {
+      final_run_report(message)
+  }
+
+  if (params.download_data && !params.csv_input && !params.bam_input) {
+      exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
+  }
+
+  if (params.bam_input){
+
+    bam_input_ch = extract_csv_bam(file(params.csv_input, checkIfExists: true))
+    bam_file = bam_input_ch.map{it -> [it[0], file(it[2])]}
+    index_file = bam_input_ch.map{it -> [it[0], file(it[3])]}
+    meta_ch = bam_input_ch.map{it -> [it[0], it[1]]}
+    
+  } else {
+
+    // prepare reads channel
+    if (params.csv_input) {
+
+        ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+
+        if (params.read_type == 'PE'){
+            ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
+            ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+        } else if (params.read_type == 'SE') {
+            ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+            ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+        }
+
+    } else if (params.concat_lanes){
+      
+      if (params.read_type == 'PE'){
+        read_ch = Channel
+                .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+                .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+                .groupTuple()
+      }
+      else if (params.read_type == 'SE'){
+        read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                    .map { file, file1 -> tuple(getLibraryId(file), file1) }
+                    .groupTuple()
+                    .map{t-> [t[0], t[1].flatten()]}
+      }
+        // if channel is empty give error message and exit
+        read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+    } else {
+      
+      if (params.read_type == 'PE'){
+        read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+      }
+      else if (params.read_type == 'SE'){
+        read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+      }
+        // if channel is empty give error message and exit
+        read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+    }
+  }
+
   // Initiate MultiQC channel
   ch_multiqc_files = Channel.empty()
 

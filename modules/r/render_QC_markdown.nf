@@ -6,7 +6,7 @@ process QC_REPORT {
 
   container 'docker://sjwidmay/haplotype_reconstruction_qtl_nf:qc_markdown'
 
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*", mode:'copy'
 
   input:
   tuple val(project_id), path(genoprobs), path(alleleprobs), path(cross), path(pmap), path(gmap), path(viterbi), path(kinship), path(genotyping_errors), path(bad_markers), path(x_intensities), path(y_intensities), path(all_marker_intensities)

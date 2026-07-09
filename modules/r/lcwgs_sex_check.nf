@@ -6,7 +6,7 @@ process SEX_CHECK {
 
   container 'docker://sjwidmay/jds_lcwgs_hr:1.0.0'
 
-  publishDir "${params.pubdir}", pattern:"sex_check_covar.csv", mode:'copy'
+  publishDir path: { "${params.pubdir}" }, pattern:"sex_check_covar.csv", mode:'copy'
 
   input:
   path(mosdepth_files)

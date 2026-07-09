@@ -8,7 +8,7 @@ process CALC_MTDNA_FILTER_CHRM {
 
     container 'quay.io/jaxcompsci/samtools_with_bc:1.3.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*_mtDNA_Content.txt", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*_mtDNA_Content.txt", mode: 'copy'
 
     input:
     tuple val(sampleID), file(rmdup_bam_file), file(rmdup_bai_file)

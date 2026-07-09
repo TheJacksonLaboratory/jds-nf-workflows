@@ -8,7 +8,7 @@ process SURVIVOR_VCF_TO_TABLE {
 
     container 'quay.io/jaxcompsci/perl:0.1.0'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy', enabled: params.data_type == 'ont' ? false : true
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy', enabled: params.data_type == 'ont' ? false : true
 
     input:
         tuple val(sampleID), file(vcf)

@@ -9,7 +9,7 @@ process MODIFY_MGI_GTF {
 
     container "quay.io/jaxcompsci/perl:0.1.0"
 
-    publishDir "${params.pubdir}", pattern: "*.gtf", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "*.gtf", mode:'copy'
 
     input:
         path(gtf)

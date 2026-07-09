@@ -1,9 +1,3 @@
-import Logos
-
-logo = new Logo()
-println '\n'
-println logo.show()
-
 def param_log() {
 // Check required parameters
 if (!params.bpm_file) {

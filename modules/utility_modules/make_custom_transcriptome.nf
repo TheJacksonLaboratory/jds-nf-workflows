@@ -8,7 +8,7 @@ process MAKE_CUSTOM_TRANSCRIPTOME {
 
     container 'quay.io/jaxcompsci/biopython-pyvcf:1.78'
 
-    publishDir "${params.pubdir}/custom_transcriptome", mode:'copy'
+    publishDir path: { "${params.pubdir}/custom_transcriptome" }, mode:'copy'
 
     input:
     tuple path(ref_fa), path(ref_gtf), path(custom_gene_fasta)

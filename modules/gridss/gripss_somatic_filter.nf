@@ -1,16 +1,16 @@
 process GRIPSS_SOMATIC_FILTER {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 30.GB
-    time = '01:00:00'
+    cpus 1
+    memory  30.GB
+    time '01:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
     
     container 'quay.io/biocontainers/hmftools-gripss:2.3.2--hdfd78af_0'
 
     stageInMode = 'copy'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*gripss.filtered.vcf.gz", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/callers'}" }, pattern: "*gripss.filtered.vcf.gz", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), val(meta), val(normal_name), val(tumor_name)

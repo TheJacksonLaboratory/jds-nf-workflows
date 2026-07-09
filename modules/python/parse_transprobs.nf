@@ -8,7 +8,7 @@ process PARSE_TRANSITION_PROBABILITIES {
 
     container 'hdfgroup/h5py:2.7.0'
 
-    publishDir "${params.pubdir}", pattern: '*.npz', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: '*.npz', mode:'copy'
 
     input:
     tuple path(h5), val(generation)

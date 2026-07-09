@@ -1,43 +1,43 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include {SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
+include {SAMTOOLS_FAIDX} from "../modules/samtools/samtools_faidx"
 
-include {SMOOVE_CALL} from "${projectDir}/modules/smoove/smoove_call_germline"
-include {MANTA_CALL} from "${projectDir}/modules/illumina/manta_germline"
-include {SVABA} from "${projectDir}/modules/svaba/svaba_germline"
-include {GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_SV_UPDATE_DICTIONARY} from "${projectDir}/modules/gatk/gatk_updatevcfsequencedictionary_germline"
-include {DELLY_CALL_GERMLINE} from "${projectDir}/modules/delly/delly_call_germline"
+include {SMOOVE_CALL} from "../modules/smoove/smoove_call_germline"
+include {MANTA_CALL} from "../modules/illumina/manta_germline"
+include {SVABA} from "../modules/svaba/svaba_germline"
+include {GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_SV_UPDATE_DICTIONARY} from "../modules/gatk/gatk_updatevcfsequencedictionary_germline"
+include {DELLY_CALL_GERMLINE} from "../modules/delly/delly_call_germline"
 
-include {DELLY_CNV_GERMLINE} from "${projectDir}/modules/delly/delly_cnv_germline"
-include {BCFTOOLS_QUERY_DELLY_CNV} from "${projectDir}/modules/bcftools/bcftools_query_delly_cnv_germline"
+include {DELLY_CNV_GERMLINE} from "../modules/delly/delly_cnv_germline"
+include {BCFTOOLS_QUERY_DELLY_CNV} from "../modules/bcftools/bcftools_query_delly_cnv_germline"
 
 include {BCFTOOLS_REHEAD_SORT as REHEAD_SORT_LUMPY;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_DELLY;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_MANTA;
-         BCFTOOLS_REHEAD_SORT as REHEAD_SORT_SVABA} from "${projectDir}/modules/bcftools/bcftools_rehead_sort"
+         BCFTOOLS_REHEAD_SORT as REHEAD_SORT_SVABA} from "../modules/bcftools/bcftools_rehead_sort"
 
 include {DUPHOLD as DUPHOLD_DELLY;
          DUPHOLD as DUPHOLD_LUMPY;
          DUPHOLD as DUPHOLD_MANTA;
-         DUPHOLD as DUPHOLD_SVABA} from "${projectDir}/modules/duphold/duphold"
+         DUPHOLD as DUPHOLD_SVABA} from "../modules/duphold/duphold"
 
 include {BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_DELLY;
          BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_LUMPY;
          BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_MANTA;
-         BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_SVABA} from "${projectDir}/modules/bcftools/bcftools_duphold_filter"
+         BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_SVABA} from "../modules/bcftools/bcftools_duphold_filter"
 
-include {ANNOTATE_DELLY_CNV} from "${projectDir}/modules/r/wgs_sv/annotate_delly_cnv"
+include {ANNOTATE_DELLY_CNV} from "../modules/r/wgs_sv/annotate_delly_cnv"
 
-include {SV_MERGE} from "${projectDir}/modules/r/wgs_sv/wgs_sv_merge"
+include {SV_MERGE} from "../modules/r/wgs_sv/wgs_sv_merge"
 include {ANNOTATE_SV;
-         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_sv"
+         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "../modules/r/wgs_sv/annotate_sv"
 include {ANNOTATE_GENES_SV;
-         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_genes_sv"
+         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "../modules/r/wgs_sv/annotate_genes_sv"
 include {ANNOTATE_SV_WITH_CNV;
-         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/annotate_sv_with_cnv"
+         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "../modules/r/wgs_sv/annotate_sv_with_cnv"
 include {FILTER_BEDPE;
-         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/wgs_sv/filter_bedpe"
+         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "../modules/r/wgs_sv/filter_bedpe"
 
 workflow WGS_SV {
 

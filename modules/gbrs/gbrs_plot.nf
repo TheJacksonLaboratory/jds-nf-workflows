@@ -8,7 +8,7 @@ process GBRS_PLOT  {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.pdf", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.pdf", mode: 'copy'
 
     input:
     tuple val(sampleID), path(interpolated_genoprobs)

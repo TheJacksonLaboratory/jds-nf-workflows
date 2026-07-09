@@ -7,8 +7,8 @@ process MIRTOP_QUANT {
     
     container 'quay.io/biocontainers/mulled-v2-0c13ef770dd7cc5c76c2ce23ba6669234cf03385:63be019f50581cc5dfe4fc0f73ae50f2d4d661f7-0' 
 
-    publishDir "${params.pubdir}", pattern: "mirtop/mirtop*", mode:'copy'
-    publishDir "${params.pubdir}", pattern: "mirtop/stats/*", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "mirtop/mirtop*", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "mirtop/stats/*", mode:'copy'
 
 
     input:

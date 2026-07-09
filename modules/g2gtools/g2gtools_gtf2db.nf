@@ -8,7 +8,7 @@ process G2GTOOLS_GTF2DB {
 
     container 'quay.io/jaxcompsci/g2gtools:74926ad'
 
-    publishDir "${params.pubdir}/g2gtools", pattern: '*.gtf.db', mode:'copy'
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: '*.gtf.db', mode:'copy'
 
     input:
     tuple val(strain), path(gtf)

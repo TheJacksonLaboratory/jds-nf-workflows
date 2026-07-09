@@ -8,7 +8,7 @@ process MAP_QTL {
     
     container 'docker://sjwidmay/lcgbs_hr:latest'
 
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1out.rds", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/${phenotype}" }, pattern:"*_scan1out.rds", mode:'copy'
 
     input:
     tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), path(map_file)

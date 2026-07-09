@@ -8,10 +8,10 @@ process BISMARK_ALIGNMENT {
 
     container 'quay.io/biocontainers/bismark:0.23.1--hdfd78af_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/alignment'}", pattern: "*.bam", mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*report.txt", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID + '/alignment'}", pattern: "*unmapped*", mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID + '/alignment'}", pattern: "*ambiguous*", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/alignment'}" }, pattern: "*.bam", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*report.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/alignment'}" }, pattern: "*unmapped*", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/alignment'}" }, pattern: "*ambiguous*", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), path(fq_reads)

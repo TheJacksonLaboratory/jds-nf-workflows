@@ -13,7 +13,7 @@ process XENGSORT_CLASSIFY {
 
     // output directory
     // publishDir "${params.pubdir}/${sampleID + '/xengsort/xengsort_classify'}", pattern: "*.fq", mode: "copy"
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.txt", mode:'copy'
 
     // inputs
     input:

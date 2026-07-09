@@ -1,14 +1,14 @@
 process SAMTOOLS_FASTQ {
     tag "$sampleID"
 
-    cpus = 4
-    memory = 20.GB
-    time = '18:00:00'
+    cpus 4
+    memory  20.GB
+    time '18:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/samtools:1.17--hd87286a_2'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.fastq.gz", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.fastq.gz", mode: 'copy'
 
     input:
     tuple val(sampleID), file(bam)

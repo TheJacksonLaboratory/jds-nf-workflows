@@ -2,73 +2,73 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/chipseq.nf"
-include {param_log} from "${projectDir}/bin/log/chipseq.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {CHECK_DESIGN} from "${projectDir}/modules/utility_modules/chipseq_check_design"
-include {SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
-include {MAKE_GENOME_FILTER} from "${projectDir}/modules/utility_modules/chipseq_make_genome_filter"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {TRIM_GALORE} from "${projectDir}/modules/trim_galore/trim_galore"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {SAMTOOLS_FILTER} from "${projectDir}/modules/samtools/samtools_filter"
+include {help} from "../bin/help/chipseq.nf"
+include {param_log} from "../bin/log/chipseq.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {CHECK_DESIGN} from "../modules/utility_modules/chipseq_check_design"
+include {SAMTOOLS_FAIDX} from "../modules/samtools/samtools_faidx"
+include {MAKE_GENOME_FILTER} from "../modules/utility_modules/chipseq_make_genome_filter"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {TRIM_GALORE} from "../modules/trim_galore/trim_galore"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {SAMTOOLS_FILTER} from "../modules/samtools/samtools_filter"
 include {SAMTOOLS_SORT;
          SAMTOOLS_SORT as PAIR_SORT;
-         SAMTOOLS_SORT as NAME_SORT} from "${projectDir}/modules/samtools/samtools_sort"
-include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
+         SAMTOOLS_SORT as NAME_SORT} from "../modules/samtools/samtools_sort"
+include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 include {SAMTOOLS_STATS;
          SAMTOOLS_STATS as SAMTOOLS_STATS_MD;
          SAMTOOLS_STATS as SAMTOOLS_STATS_FILTERED;
-         SAMTOOLS_STATS as SAMTOOLS_STATS_BF} from "${projectDir}/modules/samtools/samtools_stats"
-include {PICARD_MERGESAMFILES} from "${projectDir}/modules/picard/picard_mergesamfiles"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
-include {SAMTOOLS_MERGEBAM_FILTER} from "${projectDir}/modules/samtools/samtools_mergebam_filter"
-include {BAMTOOLS_FILTER} from "${projectDir}/modules/bamtools/bamtools_filter"
-include {BAMPE_RM_ORPHAN} from "${projectDir}/modules/utility_modules/chipseq_bampe_rm_orphan"
-include {PRESEQ} from "${projectDir}/modules/preseq/preseq"
-include {PICARD_COLLECTMULTIPLEMETRICS} from "${projectDir}/modules/picard/picard_collectmultiplemetrics"
-include {BEDTOOLS_GENOMECOV} from "${projectDir}/modules/bedtools/bedtools_genomecov"
-include {UCSC_BEDGRAPHTOBIGWIG} from "${projectDir}/modules/ucsc/ucsc_bedgraphtobigwig"
-include {DEEPTOOLS_COMPUTEMATRIX} from "${projectDir}/modules/deeptools/deeptools_computematrix"
-include {DEEPTOOLS_PLOTPROFILE} from "${projectDir}/modules/deeptools/deeptools_plotprofile"
-include {DEEPTOOLS_PLOTHEATMAP} from "${projectDir}/modules/deeptools/deeptools_plotheatmap"
-include {PHANTOMPEAKQUALTOOLS} from "${projectDir}/modules/r/phantompeakqualtools"
-include {MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS} from "${projectDir}/modules/r/multiqc_custom_phantompeakqualtools"
-include {DEEPTOOLS_PLOTFINGERPRINT} from "${projectDir}/modules/deeptools/deeptools_plotfingerprint"
-include {PEAK_CALLING_CHIPSEQ} from "${projectDir}/modules/macs2/macs2_peak_calling_chipseq"
-include {FRIP_SCORE} from "${projectDir}/modules/utility_modules/frip_score"
+         SAMTOOLS_STATS as SAMTOOLS_STATS_BF} from "../modules/samtools/samtools_stats"
+include {PICARD_MERGESAMFILES} from "../modules/picard/picard_mergesamfiles"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
+include {SAMTOOLS_MERGEBAM_FILTER} from "../modules/samtools/samtools_mergebam_filter"
+include {BAMTOOLS_FILTER} from "../modules/bamtools/bamtools_filter"
+include {BAMPE_RM_ORPHAN} from "../modules/utility_modules/chipseq_bampe_rm_orphan"
+include {PRESEQ} from "../modules/preseq/preseq"
+include {PICARD_COLLECTMULTIPLEMETRICS} from "../modules/picard/picard_collectmultiplemetrics"
+include {BEDTOOLS_GENOMECOV} from "../modules/bedtools/bedtools_genomecov"
+include {UCSC_BEDGRAPHTOBIGWIG} from "../modules/ucsc/ucsc_bedgraphtobigwig"
+include {DEEPTOOLS_COMPUTEMATRIX} from "../modules/deeptools/deeptools_computematrix"
+include {DEEPTOOLS_PLOTPROFILE} from "../modules/deeptools/deeptools_plotprofile"
+include {DEEPTOOLS_PLOTHEATMAP} from "../modules/deeptools/deeptools_plotheatmap"
+include {PHANTOMPEAKQUALTOOLS} from "../modules/r/phantompeakqualtools"
+include {MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS} from "../modules/r/multiqc_custom_phantompeakqualtools"
+include {DEEPTOOLS_PLOTFINGERPRINT} from "../modules/deeptools/deeptools_plotfingerprint"
+include {PEAK_CALLING_CHIPSEQ} from "../modules/macs2/macs2_peak_calling_chipseq"
+include {FRIP_SCORE} from "../modules/utility_modules/frip_score"
 include {HOMER_ANNOTATEPEAKS;
-         HOMER_ANNOTATEPEAKS as CONSENSUS_PEAKS_ANNOTATE} from "${projectDir}/modules/homer/homer_annotatepeaks"
-include {PLOT_MACS2_QC} from "${projectDir}/modules/macs2/plot_macs2_qc"
-include {PLOT_HOMER_ANNOTATEPEAKS} from "${projectDir}/modules/homer/plot_homer_annotatepeaks"
-include {MACS2_CONSENSUS} from "${projectDir}/modules/macs2/macs2_consensus"
-include {ANNOTATE_BOOLEAN_PEAKS} from "${projectDir}/modules/homer/annotate_boolean_peaks"
-include {SUBREAD_FEATURECOUNTS} from "${projectDir}/modules/subread/subread_feature_counts_chipseq"
-include {DESEQ2_QC} from "${projectDir}/modules/utility_modules/deseq2_qc"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+         HOMER_ANNOTATEPEAKS as CONSENSUS_PEAKS_ANNOTATE} from "../modules/homer/homer_annotatepeaks"
+include {PLOT_MACS2_QC} from "../modules/macs2/plot_macs2_qc"
+include {PLOT_HOMER_ANNOTATEPEAKS} from "../modules/homer/plot_homer_annotatepeaks"
+include {MACS2_CONSENSUS} from "../modules/macs2/macs2_consensus"
+include {ANNOTATE_BOOLEAN_PEAKS} from "../modules/homer/annotate_boolean_peaks"
+include {SUBREAD_FEATURECOUNTS} from "../modules/subread/subread_feature_counts_chipseq"
+include {DESEQ2_QC} from "../modules/utility_modules/deseq2_qc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-ANSI_RED = "\u001B[31m";
-ANSI_RESET = "\u001B[0m";
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
 
 // main workflow
 workflow CHIPSEQ {
 
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
+
+  def ANSI_RED = "\u001B[31m";
+  def ANSI_RESET = "\u001B[0m";
+
+  // log params
+  message = param_log()
+
+  // Save params to a file for record-keeping
+  workflow.onComplete {
+      final_run_report(message)
+  }
   if (params.input)     { ch_input = file(params.input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
 
   // Step 1: CHECK_DESIGN

@@ -2,29 +2,21 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/pacbio"
-include {param_log} from "${projectDir}/bin/log/pacbio"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {PBMM2_INDEX} from "${projectDir}/modules/pbmm2/pbmm2_index"
-include {PBMM2_CALL} from "${projectDir}/modules/pbmm2/pbmm2_call"
-include {PBSV_DISCOVER} from "${projectDir}/modules/pbsv/pbsv_discover"
-include {PBSV_CALL} from "${projectDir}/modules/pbsv/pbsv_call"
-include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
-include {SURVIVOR_MERGE} from "${projectDir}/modules/survivor/survivor_merge"
-include {SURVIVOR_VCF_TO_TABLE} from "${projectDir}/modules/survivor/survivor_vcf_to_table"
-include {SURVIVOR_SUMMARY} from "${projectDir}/modules/survivor/survivor_summary"
-include {SURVIVOR_TO_BED} from "${projectDir}/modules/survivor/survivor_to_bed"
-include {SURVIVOR_BED_INTERSECT} from "${projectDir}/modules/survivor/survivor_bed_intersect"
-include {SURVIVOR_ANNOTATION} from "${projectDir}/modules/survivor/survivor_annotation"
-include {SURVIVOR_INEXON} from "${projectDir}/modules/survivor/survivor_inexon"
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
+include {help} from "../bin/help/pacbio"
+include {param_log} from "../bin/log/pacbio"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {PBMM2_INDEX} from "../modules/pbmm2/pbmm2_index"
+include {PBMM2_CALL} from "../modules/pbmm2/pbmm2_call"
+include {PBSV_DISCOVER} from "../modules/pbsv/pbsv_discover"
+include {PBSV_CALL} from "../modules/pbsv/pbsv_call"
+include {SNIFFLES} from "../modules/sniffles/sniffles"
+include {SURVIVOR_MERGE} from "../modules/survivor/survivor_merge"
+include {SURVIVOR_VCF_TO_TABLE} from "../modules/survivor/survivor_vcf_to_table"
+include {SURVIVOR_SUMMARY} from "../modules/survivor/survivor_summary"
+include {SURVIVOR_TO_BED} from "../modules/survivor/survivor_to_bed"
+include {SURVIVOR_BED_INTERSECT} from "../modules/survivor/survivor_bed_intersect"
+include {SURVIVOR_ANNOTATION} from "../modules/survivor/survivor_annotation"
+include {SURVIVOR_INEXON} from "../modules/survivor/survivor_inexon"
 
 workflow PACBIO {
 
@@ -33,6 +25,14 @@ workflow PACBIO {
         exit 0
     }
 
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+    
     ch_fasta = params.ref_fa ? Channel.fromPath(params.ref_fa): null
     ch_fastq1 = params.fastq1 ? Channel.fromPath(params.fastq1) : null
     ch_sampleID = params.sampleID ? Channel.value(params.sampleID) : null

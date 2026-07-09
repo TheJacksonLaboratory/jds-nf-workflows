@@ -1,53 +1,53 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include {GATK_PRINTREADS} from "${projectDir}/modules/gatk/gatk_printreads_mt"
-include {PICARD_REVERTSAM} from "${projectDir}/modules/picard/picard_revertsam"
-include {PICARD_SAMTOFASTQ} from "${projectDir}/modules/picard/picard_samtofastq"
+include {GATK_PRINTREADS} from "../modules/gatk/gatk_printreads_mt"
+include {PICARD_REVERTSAM} from "../modules/picard/picard_revertsam"
+include {PICARD_SAMTOFASTQ} from "../modules/picard/picard_samtofastq"
 include {BWA_MEM as BWA_MEM_MT;
-         BWA_MEM as BWA_MEM_SHIFTED_MT} from "${projectDir}/modules/bwa/bwa_mem_mt"
+         BWA_MEM as BWA_MEM_SHIFTED_MT} from "../modules/bwa/bwa_mem_mt"
 include{PICARD_MERGEBAMALIGNMENT as PICARD_MERGEBAMALIGNMENT_MT;
-        PICARD_MERGEBAMALIGNMENT as PICARD_MERGEBAMALIGNMENT_SHIFTED_MT} from "${projectDir}/modules/picard/picard_mergebamalignment"
+        PICARD_MERGEBAMALIGNMENT as PICARD_MERGEBAMALIGNMENT_SHIFTED_MT} from "../modules/picard/picard_mergebamalignment"
 include {PICARD_MARKDUPLICATES as PICARD_MARKDUPLICATES_MT;
-         PICARD_MARKDUPLICATES as PICARD_MARKDUPLICATES_SHIFTED_MT} from "${projectDir}/modules/picard/picard_markduplicates_mt"
+         PICARD_MARKDUPLICATES as PICARD_MARKDUPLICATES_SHIFTED_MT} from "../modules/picard/picard_markduplicates_mt"
 include {PICARD_SORTSAM as PICARD_SORTSAM_MT;
-         PICARD_SORTSAM as PICARD_SORTSAM_SHIFTED_MT} from "${projectDir}/modules/picard/picard_sortsam"
+         PICARD_SORTSAM as PICARD_SORTSAM_SHIFTED_MT} from "../modules/picard/picard_sortsam"
 
-include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
-include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
+include {PICARD_COLLECTWGSMETRICS} from "../modules/picard/picard_collectwgsmetrics"
+include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "../modules/picard/picard_collectalignmentsummarymetrics"
 
 include {GATK_MUTECT2_MT as GATK_MUTECT2_MT;
-         GATK_MUTECT2_MT as GATK_MUTECT2_SHIFTEDMT} from "${projectDir}/modules/gatk/gatk_mutect2_mt"
+         GATK_MUTECT2_MT as GATK_MUTECT2_SHIFTEDMT} from "../modules/gatk/gatk_mutect2_mt"
 
-include {PICARD_LIFTOVERVCF_MERGEVCF} from "${projectDir}/modules/picard/picard_liftovervcf_mergevcf"
+include {PICARD_LIFTOVERVCF_MERGEVCF} from "../modules/picard/picard_liftovervcf_mergevcf"
 
-include {GATK_MERGEMUTECTSTATS} from "${projectDir}/modules/gatk/gatk_mergemutectstats"
+include {GATK_MERGEMUTECTSTATS} from "../modules/gatk/gatk_mergemutectstats"
 
 include {GATK_FILTERMUECTCALLS;
-         GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_PRIMARY} from "${projectDir}/modules/gatk/gatk_filtermutectcalls_mt"
+         GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_PRIMARY} from "../modules/gatk/gatk_filtermutectcalls_mt"
 
 include {GATK_LEFTALIGNANDTRIMVARIANTS;
-         GATK_LEFTALIGNANDTRIMVARIANTS as GATK_LEFTALIGNANDTRIMVARIANTS_PASS} from "${projectDir}/modules/gatk/gatk_leftalignandtrimvariants"
+         GATK_LEFTALIGNANDTRIMVARIANTS as GATK_LEFTALIGNANDTRIMVARIANTS_PASS} from "../modules/gatk/gatk_leftalignandtrimvariants"
 
-include {HAPLOCHECK} from "${projectDir}/modules/haplocheck/haplocheck"
+include {HAPLOCHECK} from "../modules/haplocheck/haplocheck"
 
-include {PICARD_MT_COVERAGEATEVERYBASE} from "${projectDir}/modules/picard/picard_mt_coverageateverybase"
+include {PICARD_MT_COVERAGEATEVERYBASE} from "../modules/picard/picard_mt_coverageateverybase"
 
-include {MITY_RUNALL} from "${projectDir}/modules/mity/mity_runall"
-include {MUTSERVE} from "${projectDir}/modules/mutserve/mutserve"
+include {MITY_RUNALL} from "../modules/mity/mity_runall"
+include {MUTSERVE} from "../modules/mutserve/mutserve"
 
-include {PREP_MTDNA_VCF} from "${projectDir}/modules/r/prep_mtdna_vcf"
-include {BCFTOOLS_MERGECALLERS} from "${projectDir}/modules/bcftools/bcftools_merge_mt_callers"
-include {COMPUTE_AVG_AF} from "${projectDir}/modules/r/compute_avg_af"
+include {PREP_MTDNA_VCF} from "../modules/r/prep_mtdna_vcf"
+include {BCFTOOLS_MERGECALLERS} from "../modules/bcftools/bcftools_merge_mt_callers"
+include {COMPUTE_AVG_AF} from "../modules/r/compute_avg_af"
 
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
-include {SNPEFF} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
-include {SNPEFF_ONEPERLINE} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_DBNSFP} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
-include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_COSMIC} from "../modules/snpeff_snpsift/snpsift_annotate"
+include {SNPEFF} from "../modules/snpeff_snpsift/snpeff_snpeff"
+include {SNPEFF_ONEPERLINE} from "../modules/snpeff_snpsift/snpeff_oneperline"
+include {SNPSIFT_DBNSFP} from "../modules/snpeff_snpsift/snpsift_dbnsfp"
+include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 workflow MT_VARIANT_CALLING {
 

@@ -8,7 +8,7 @@ process FILTER_GTF {
 
     container 'quay.io/jaxcompsci/ripgrep:v1'
 
-    publishDir "${params.pubdir}", pattern: '*.gtf', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: '*.gtf', mode:'copy'
 
     output:
     path('*.gtf'), emit: filtered_gtf

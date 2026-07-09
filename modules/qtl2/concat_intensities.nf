@@ -6,9 +6,9 @@ process CONCAT_INTENSITIES {
 
   container 'docker://sjwidmay/lcgbs_hr:latest'
   
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_all_intensities.fst", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"*_intensities.csv", mode:'copy'
-  publishDir "${params.pubdir}/projects/${project_id}/results", pattern:"dedup_samples.csv", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_all_intensities.fst", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"*_intensities.csv", mode:'copy'
+  publishDir path: { "${params.pubdir}/projects/${project_id}/results" }, pattern:"dedup_samples.csv", mode:'copy'
 
   input:
   tuple val(project_id), file(sex_chromosome_intensities), file(intensity_fsts)

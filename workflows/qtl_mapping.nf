@@ -2,27 +2,33 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/qtl_mapping.nf"
-include {param_log} from "${projectDir}/bin/log/qtl_mapping.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv_qtl.nf"
-include {DATA_QC} from "${projectDir}/modules/qtl2/data_qc.nf"
-include {MAP_QTL} from "${projectDir}/modules/qtl2/map_qtl.nf"
-include {RUN_PERMS} from "${projectDir}/modules/qtl2/run_perms.nf"
-include {HARVEST_QTL} from "${projectDir}/modules/qtl2/harvest_qtl.nf"
-include {QTL_EFFECTS} from "${projectDir}/modules/qtl2/qtl_effects.nf"
-include {SUMMARIZE_QTL_EFFECTS} from "${projectDir}/modules/qtl2/summarize_qtl_effects.nf"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-param_log()
+include {help} from "../bin/help/qtl_mapping.nf"
+include {param_log} from "../bin/log/qtl_mapping.nf"
+include {extract_csv} from "../bin/shared/extract_csv_qtl.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {DATA_QC} from "../modules/qtl2/data_qc.nf"
+include {MAP_QTL} from "../modules/qtl2/map_qtl.nf"
+include {RUN_PERMS} from "../modules/qtl2/run_perms.nf"
+include {HARVEST_QTL} from "../modules/qtl2/harvest_qtl.nf"
+include {QTL_EFFECTS} from "../modules/qtl2/qtl_effects.nf"
+include {SUMMARIZE_QTL_EFFECTS} from "../modules/qtl2/summarize_qtl_effects.nf"
 
 workflow QTL_MAPPING {
     
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
     project_ch = extract_csv(params.csv_input)
     project_ch.map{it -> [  it[0],
                             it[1].covar_file, it[1].map_file, it[1].genoprobs_file, it[1].alleleprobs_file, it[1].kinship_file, 

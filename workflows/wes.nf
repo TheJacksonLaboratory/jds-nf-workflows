@@ -2,117 +2,117 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/wes.nf"
-include {param_log} from "${projectDir}/bin/log/wes.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
+include {help} from "../bin/help/wes.nf"
+include {param_log} from "../bin/log/wes.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {FILE_DOWNLOAD} from "../subworkflows/aria_download_parse"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
 
-include {GATK_BASERECALIBRATOR} from "${projectDir}/modules/gatk/gatk_baserecalibrator_interval"
-include {GATK_GATHERBQSRREPORTS} from "${projectDir}/modules/gatk/gatk_gatherbqsrreports"
-include {GATK_APPLYBQSR} from "${projectDir}/modules/gatk/gatk_applybqsr"
+include {GATK_BASERECALIBRATOR} from "../modules/gatk/gatk_baserecalibrator_interval"
+include {GATK_GATHERBQSRREPORTS} from "../modules/gatk/gatk_gatherbqsrreports"
+include {GATK_APPLYBQSR} from "../modules/gatk/gatk_applybqsr"
 
-include {PICARD_COLLECTHSMETRICS} from "${projectDir}/modules/picard/picard_collecthsmetrics"
+include {PICARD_COLLECTHSMETRICS} from "../modules/picard/picard_collecthsmetrics"
 
 include {GATK_HAPLOTYPECALLER;
-         GATK_HAPLOTYPECALLER as GATK_HAPLOTYPECALLER_GVCF} from "${projectDir}/modules/gatk/gatk_haplotypecaller"
+         GATK_HAPLOTYPECALLER as GATK_HAPLOTYPECALLER_GVCF} from "../modules/gatk/gatk_haplotypecaller"
 include {GATK_VARIANTFILTRATION;
          GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_SNP;
-         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "${projectDir}/modules/gatk/gatk_variantfiltration"
+         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "../modules/gatk/gatk_variantfiltration"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
-         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "${projectDir}/modules/gatk/gatk_selectvariants"
+         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants"
 include {GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
-         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
-include {GATK_INDEXFEATUREFILE} from "${projectDir}/modules/gatk/gatk_indexfeaturefile"
+         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "../modules/gatk/gatk_mergevcf"
+include {GATK_INDEXFEATUREFILE} from "../modules/gatk/gatk_indexfeaturefile"
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "../modules/snpeff_snpsift/snpsift_annotate"
 include {SNPEFF;
          SNPEFF as SNPEFF_SNP;
-         SNPEFF as SNPEFF_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
+         SNPEFF as SNPEFF_INDEL} from "../modules/snpeff_snpsift/snpeff_snpeff"
 include {SNPEFF_ONEPERLINE;
          SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
-         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "../modules/snpeff_snpsift/snpeff_oneperline"
+include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields"
 include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
-         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
-
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (params.download_data && !params.csv_input) {
-    exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
-}
-
-// prepare reads channel
-if (params.csv_input) {
-
-    ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
-    
-    if (params.read_type == 'PE'){
-        ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    } else if (params.read_type == 'SE') {
-        ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    }
-
-} else if (params.concat_lanes){
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel
-            .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-            .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
-            .groupTuple()
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                .map { file, file1 -> tuple(getLibraryId(file), file1) }
-                .groupTuple()
-                .map{t-> [t[0], t[1].flatten()]}
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-} else {
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-}
+         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "../modules/snpeff_snpsift/snpsift_dbnsfp"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 // main workflow
 workflow WES {
+
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
+
+  // log params
+  message = param_log()
+
+  // Save params to a file for record-keeping
+  workflow.onComplete {
+      final_run_report(message)
+  }
+
+  if (params.download_data && !params.csv_input) {
+      exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
+  }
+
+  // prepare reads channel
+  if (params.csv_input) {
+
+      ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+      
+      if (params.read_type == 'PE'){
+          ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      } else if (params.read_type == 'SE') {
+          ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      }
+
+  } else if (params.concat_lanes){
+    
+    if (params.read_type == 'PE'){
+      read_ch = Channel
+              .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+              .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+              .groupTuple()
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                  .map { file, file1 -> tuple(getLibraryId(file), file1) }
+                  .groupTuple()
+                  .map{t-> [t[0], t[1].flatten()]}
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+  } else {
+    
+    if (params.read_type == 'PE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+  }
+
   // Step 0: Download data and concat Fastq files if needed. 
   if (params.download_data){
       FILE_DOWNLOAD(ch_input_sample)

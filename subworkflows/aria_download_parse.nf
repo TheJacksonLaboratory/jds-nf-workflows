@@ -2,8 +2,8 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {ARIA_DOWNLOAD} from "${projectDir}/modules/utility_modules/aria_download"
-include {CONCATENATE_READS_SAMPLESHEET} from "${projectDir}/modules/utility_modules/concatenate_reads_sampleSheet"
+include {ARIA_DOWNLOAD} from "../modules/utility_modules/aria_download"
+include {CONCATENATE_READS_SAMPLESHEET} from "../modules/utility_modules/concatenate_reads_sampleSheet"
 
 workflow FILE_DOWNLOAD {
 
@@ -29,6 +29,9 @@ workflow FILE_DOWNLOAD {
         if (params.read_type == 'PE') {
             aria_download_input = ch_input_sample
             .multiMap { it ->
+                def sampleID
+                def ind
+                def sex
                 if (params.merge_replicates) {
                     sampleID   = it[1].sampleID+'_'+it[1].replicate
                 } else {
@@ -44,6 +47,9 @@ workflow FILE_DOWNLOAD {
         } else {
             aria_download_input = ch_input_sample
             .multiMap { it ->
+                def sampleID
+                def ind
+                def sex
                 if (params.merge_replicates) {
                     sampleID   = it[1].sampleID+'_'+it[1].replicate
                 } else {

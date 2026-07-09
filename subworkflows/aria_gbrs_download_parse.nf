@@ -2,8 +2,8 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {ARIA_DOWNLOAD} from "${projectDir}/modules/utility_modules/aria_download"
-include {CONCATENATE_READS_SAMPLESHEET} from "${projectDir}/modules/utility_modules/concatenate_reads_sampleSheet"
+include {ARIA_DOWNLOAD} from "../modules/utility_modules/aria_download"
+include {CONCATENATE_READS_SAMPLESHEET} from "../modules/utility_modules/concatenate_reads_sampleSheet"
 
 workflow FILE_DOWNLOAD {
 

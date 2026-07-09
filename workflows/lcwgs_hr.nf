@@ -2,97 +2,98 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/wgs.nf"
-include {param_log} from "${projectDir}/bin/log/lcwgs_hr.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
+include {help} from "../bin/help/wgs.nf"
+include {param_log} from "../bin/log/lcwgs_hr.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {FILE_DOWNLOAD} from "../subworkflows/aria_download_parse"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
 
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
 
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
 include {SAMTOOLS_MERGE;
-         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
-include {SAMTOOLS_STATS} from "${projectDir}/modules/samtools/samtools_stats"
-include {MOSDEPTH} from "${projectDir}/modules/mosdepth/mosdepth"
+         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "../modules/samtools/samtools_merge"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
+include {SAMTOOLS_STATS} from "../modules/samtools/samtools_stats"
+include {MOSDEPTH} from "../modules/mosdepth/mosdepth"
 
-include {SEX_CHECK} from "${projectDir}/modules/r/lcwgs_sex_check"
+include {SEX_CHECK} from "../modules/r/lcwgs_sex_check"
 
-include {SAMTOOLS_DEPTH_VALUE} from "${projectDir}/modules/samtools/samtools_depth_value"
-include {SAMTOOLS_DOWNSAMPLE_BAM} from "${projectDir}/modules/samtools/samtools_downsample"
-include {CREATE_BAMLIST} from "${projectDir}/modules/utility_modules/create_bamlist"
+include {SAMTOOLS_DEPTH_VALUE} from "../modules/samtools/samtools_depth_value"
+include {SAMTOOLS_DOWNSAMPLE_BAM} from "../modules/samtools/samtools_downsample"
+include {CREATE_BAMLIST} from "../modules/utility_modules/create_bamlist"
 
-include {QUILT} from "${projectDir}/modules/quilt/run_quilt"
-include {QUILT_TO_QTL2} from "${projectDir}/modules/quilt/quilt_to_qtl2"
-include {QTL2_GENOPROBS} from "${projectDir}/modules/qtl2/genoprobs_lcwgs"
-include {CONCATENATE_GENOPROBS} from "${projectDir}/modules/qtl2/concat_genoprobs_lcwgs"
+include {QUILT} from "../modules/quilt/run_quilt"
+include {QUILT_TO_QTL2} from "../modules/quilt/quilt_to_qtl2"
+include {QTL2_GENOPROBS} from "../modules/qtl2/genoprobs_lcwgs"
+include {CONCATENATE_GENOPROBS} from "../modules/qtl2/concat_genoprobs_lcwgs"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-param_log()
-
-if (params.download_data && !params.csv_input) {
-    exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
-}
-
-// prepare reads channel
-if (params.csv_input) {
-
-    ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
-
-    if (params.read_type == 'PE'){
-        ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    } else if (params.read_type == 'SE') {
-        ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    }
-
-} else if (params.concat_lanes){
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel
-            .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-            .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
-            .groupTuple()
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                .map { file, file1 -> tuple(getLibraryId(file), file1) }
-                .groupTuple()
-                .map{t-> [t[0], t[1].flatten()]}
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-} else {
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-}
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 
 workflow LCWGS_HR{
+
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
+
+  // log params
+  param_log()
+
+  if (params.download_data && !params.csv_input) {
+      exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
+  }
+
+  // prepare reads channel
+  if (params.csv_input) {
+
+      ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+
+      if (params.read_type == 'PE'){
+          ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      } else if (params.read_type == 'SE') {
+          ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      }
+
+  } else if (params.concat_lanes){
+    
+    if (params.read_type == 'PE'){
+      read_ch = Channel
+              .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+              .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+              .groupTuple()
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                  .map { file, file1 -> tuple(getLibraryId(file), file1) }
+                  .groupTuple()
+                  .map{t-> [t[0], t[1].flatten()]}
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+  } else {
+    
+    if (params.read_type == 'PE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+  }
+
   // Step 0: Download data and concat Fastq files if needed. 
   if (params.download_data){
       FILE_DOWNLOAD(ch_input_sample)

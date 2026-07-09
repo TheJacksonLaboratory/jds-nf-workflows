@@ -1,9 +1,3 @@
-import Logos
-
-logo = new Logo()
-println '\n'
-println logo.show()
-
 def param_log(){
 
 if (params.rsem_aligner != "bowtie2" && params.rsem_aligner != "star") {
@@ -110,10 +104,7 @@ def seParams = """
 def umiParas = """
 --umi                                   ${params.umi}
 --skip_umi_extract                      ${params.skip_umi_extract}
---umitools_extract_method               ${params.umitools_extract_method}
---umitools_bc_pattern                   ${params.umitools_bc_pattern}
---umitools_bc_pattern2                  ${params.umitools_bc_pattern2}
---umitools_grouping_method              ${params.umitools_grouping_method}
+${!params.skip_umi_extract ? "--umitools_extract_method               ${params.umitools_extract_method}\n--umitools_bc_pattern                   ${params.umitools_bc_pattern}\n--umitools_bc_pattern2                  ${params.umitools_bc_pattern2}\n--umitools_grouping_method              ${params.umitools_grouping_method}" : ""}
 """
 
 def bowtie2params = """

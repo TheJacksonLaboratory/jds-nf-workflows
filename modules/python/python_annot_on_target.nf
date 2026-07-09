@@ -8,7 +8,7 @@ process PYTHON_ANNOT_ON_TARGET {
 
     container 'quay.io/biocontainers/pysam:0.15.2--py36h02877da_7'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy'
 
     input:
         tuple val(sampleID), path(vcf)

@@ -8,8 +8,8 @@ process PRIMERCLIP {
 
     container 'quay.io/biocontainers/primerclip:0.3.8--h9ee0642_1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.sam", mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern:"*primerclip_runstats.log", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.sam", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern:"*primerclip_runstats.log", mode:'copy'
 
     input:
       tuple val(sampleID), file(sam)

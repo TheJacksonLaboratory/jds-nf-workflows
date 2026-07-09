@@ -1,14 +1,14 @@
 process PICARD_LIFTOVERVCF_MERGEVCF {
     tag "$sampleID"
 
-    cpus = 4
-    memory = 15.GB
+    cpus 4
+    memory  15.GB
     time 15.hour
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
     
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*.vcf*", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/callers'}" }, pattern: "*.vcf*", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), path(vcf), path(shifted_vcf)

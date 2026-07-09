@@ -1,14 +1,14 @@
 process ASCAT_ANNOTATION {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 24.GB
-    time = '01:30:00'
-    errorStrategy = { (task.exitStatus == 140) ? { log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish' }.call() : 'finish' }
+    cpus 1
+    memory  24.GB
+    time '01:30:00'
+    errorStrategy { (task.exitStatus == 140) ? { log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish' }.call() : 'finish' }
 
     container 'quay.io/jaxcompsci/ascat:v3.1.3'
 
-    publishDir "${params.pubdir}/${sampleID}", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode: 'copy'
 
     input:
     tuple val(sampleID), val(meta), path(segments_raw), path(ploidy)

@@ -6,27 +6,30 @@ process PLOT_HOMER_ANNOTATEPEAKS {
 
     container 'quay.io/biocontainers/mulled-v2-ad9dd5f398966bf899ae05f8e7c54d0fb10cdfa7:05678da05b8e5a7a5130e90a9f9a6c585b965afa-0'
 
-    publishDir "${params.pubdir}/${'immuno_precip_samples/cross_sample_plots'}", pattern: "*.{pdf,txt}", mode: 'copy'
+    publishDir path: { "${params.pubdir}/immuno_precip_samples/cross_sample_plots" }, pattern: "*.{pdf,txt}", mode: 'copy'
 
     input:
-    file(annos)
-    file(mqc_header)
-    val suffix        //_peaks.annotatePeaks.txt
+    path(annos)
+    path(mqc_header)
+    val(suffix)
+
+    output:
+    path('*.txt'), emit: txt
+    path('*.pdf'), emit: pdf
+    path('*.tsv'), emit: tsv
 
     when:
     params.macs_gsize && !params.skip_peak_annotation && !params.skip_peak_qc
 
-    output:
-    path '*.txt'       , emit: txt
-    path '*.pdf'       , emit: pdf
-    path '*.tsv'       , emit: tsv
-
-    script: // This script was bundled withing the nf-core/chipseq/bin/ directory
+    // This script was bundled within the nf-core/chipseq/bin/ directory
+    script:
     def prefix = "macs_annotatepeaks"
+    def joinedAnnos = annos.join(',')
+    def sampleNames = annos.collect { it.name.replace(suffix, '') }.join(',')
     """
     ${projectDir}/bin/chipseq/plot_homer_annotatepeaks.r \\
-        -i ${annos.join(',')} \\
-        -s ${annos.join(',').replaceAll("${suffix}","")} \\
+        -i ${joinedAnnos} \\
+        -s ${sampleNames} \\
         -p $prefix \\
         -o ./
 

@@ -7,7 +7,7 @@ process CONPAIR {
     container 'quay.io/jaxcompsci/conpair:gatk4.1.5.0_v0.2'
     errorStrategy 'ignore'
 
-    publishDir "${params.pubdir}/${pairName}", pattern:"*.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${pairName}" }, pattern:"*.txt", mode:'copy'
     
     input:
     tuple val(sampleID), val(pairName), file(tumor_pileup), file(normal_pileup)

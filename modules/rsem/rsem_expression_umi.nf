@@ -8,7 +8,7 @@ process RSEM_EXPRESSION {
 
     container 'quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*results*", mode:'copy'
+    publishDir path: {"${params.pubdir}/${sampleID}"}, pattern: "*results*", mode:'copy'
 
     input:
     tuple val(sampleID), path(bam), val(read_length), val(strand_setting)
@@ -23,13 +23,13 @@ process RSEM_EXPRESSION {
     
     script:
 
+    def frag = ""
+    def read_type = ""
     if (params.read_type == "PE"){
-        frag=""
         read_type="--paired-end"
     }
     if (params.read_type == "SE"){
         frag="--fragment-length-mean ${params.fragment_length_mean} --fragment-length-sd ${params.fragment_length_sd}"
-        read_type=""
     }
 
     def output_name = bam.getName() == "${sampleID}.transcript.bam" ? "${sampleID}.rsem_out" : "${sampleID}"
@@ -37,6 +37,7 @@ process RSEM_EXPRESSION {
     // RSEM will fail as the input gets potentially overwritten. This avoids naming collisions. 
 
 
+    def prob = ''
     if (strand_setting == "reverse_stranded") {
         prob="--forward-prob 0"
     }
@@ -49,20 +50,21 @@ process RSEM_EXPRESSION {
         prob="--forward-prob 0.5"
     }
 
-    read_length = read_length.toInteger()
+    def read_len = read_length.toInteger()
+    def rsem_ref_files
 
-    if( read_length >= 45 && read_length <= 60) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_50/*").collect { "$it" }.join(' ')
-    } else if( read_length >= 65 && read_length <= 85) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { "$it" }.join(' ')
-    } else if( read_length >= 90 && read_length <= 110 ) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { "$it" }.join(' ')
-    } else if( read_length >= 115 && read_length <= 135 ) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_125/*").collect { "$it" }.join(' ')
-    } else if( read_length >= 140 && read_length <= 160 ) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_150/*").collect { "$it" }.join(' ')
+    if( read_len >= 45 && read_len <= 60) {
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_50/*").collect { "$it" }.join(' ')
+    } else if( read_len >= 65 && read_len <= 85) {
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { "$it" }.join(' ')
+    } else if( read_len >= 90 && read_len <= 110 ) {
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { "$it" }.join(' ')
+    } else if( read_len >= 115 && read_len <= 135 ) {
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_125/*").collect { "$it" }.join(' ')
+    } else if( read_len >= 140 && read_len <= 160 ) {
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_150/*").collect { "$it" }.join(' ')
     } else {
-        log.info("\nUnsupported read length " + read_length + " in RSEM with STAR. RSEM will now fail gracefully.\n\n")
+        log.info("\nUnsupported read length " + read_len + " in RSEM with STAR. RSEM will now fail gracefully.\n\n")
         rsem_ref_files = 'error'
     }
 

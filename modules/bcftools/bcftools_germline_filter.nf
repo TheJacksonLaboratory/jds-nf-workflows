@@ -3,14 +3,14 @@ process BCFTOOLS_GERMLINE_FILTER {
     // https://bitbucket.nygenome.org/projects/WDL/repos/somatic_dna_wdl/browse/germline/germline.wdl?at=7.4.0
     tag "$sampleID"
     
-    cpus = 1
-    memory = 2.GB
-    time = '00:30:00'
+    cpus 1
+    memory  2.GB
+    time '00:30:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*haplotypecaller.gatk.filtered.vcf.gz", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*haplotypecaller.gatk.filtered.vcf.gz", mode:'copy'
 
     input:
     tuple val(sampleID), file(vcf)
