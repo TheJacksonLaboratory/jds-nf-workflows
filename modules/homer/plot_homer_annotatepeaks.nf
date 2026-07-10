@@ -27,7 +27,7 @@ process PLOT_HOMER_ANNOTATEPEAKS {
     def joinedAnnos = annos.join(',')
     def sampleNames = annos.collect { it.name.replace(suffix, '') }.join(',')
     """
-    ${projectDir}/bin/chipseq/plot_homer_annotatepeaks.r \\
+    ${moduleDir}/bin/plot_homer_annotatepeaks.r \\
         -i ${joinedAnnos} \\
         -s ${sampleNames} \\
         -p $prefix \\

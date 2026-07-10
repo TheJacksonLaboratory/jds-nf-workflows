@@ -25,6 +25,6 @@ process READ_GROUPS {
         p=''
     }
     """
-    python ${projectDir}/bin/shared/read_group_from_fastq.py $p -s ${sampleID} -o ${sampleID}_read_group.txt ${fq_reads[0]}
+    python ${moduleDir}/bin/read_group_from_fastq.py $p -s ${sampleID} -o ${sampleID}_read_group.txt ${fq_reads[0]}
     """
 }

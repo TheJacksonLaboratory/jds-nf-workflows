@@ -19,6 +19,6 @@ process CHECK_DESIGN {
 
     script: 
     """
-    python ${projectDir}/bin/chipseq/check_design.py $design design_reads.csv design_controls.csv
+    python ${moduleDir}/bin/check_design.py $design design_reads.csv design_controls.csv
     """
 }

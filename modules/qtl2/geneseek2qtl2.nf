@@ -3,7 +3,7 @@ process GS_TO_QTL2 {
   cpus 2
   time 1.hour
   memory 50.GB
-  errorStrategy {(task.exitStatus == 1) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}.\n Please check ${projectDir}/results/${project_id}/logs.\n Also, please verify that sample names in metadata match those expected in FinalReport file(s).\n\n"; return 'ignore'}.call() : 'finish'}
+  errorStrategy {(task.exitStatus == 1) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}.\n Please check results/${project_id}/logs.\n Also, please verify that sample names in metadata match those expected in FinalReport file(s).\n\n"; return 'ignore'}.call() : 'finish'}
 
   container 'docker://sjwidmay/lcgbs_hr:latest'
 
@@ -19,7 +19,7 @@ process GS_TO_QTL2 {
 
   script:
   """
-  Rscript --vanilla ${projectDir}/bin/qtl/geneseek2qtl2.R \
+  Rscript --vanilla ${moduleDir}/bin/geneseek2qtl2.R \
 	${params.gm_cc_do_allele_codes} \
 	${covar_file} \
 	${finalreport_files}

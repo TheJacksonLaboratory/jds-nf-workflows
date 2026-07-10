@@ -17,6 +17,6 @@ process SEX_DETERMINATION {
 
     script:
     """
-    /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination.R ${counts} ./ ${sampleID}
+    /usr/bin/env Rscript ${moduleDir}/bin/sex_determination.R ${counts} ./ ${sampleID}
     """
 }

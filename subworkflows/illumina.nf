@@ -73,10 +73,10 @@ workflow ILLUMINA {
         final_run_report(message)
     }
 
-    ch_fastq1 = params.fastq1 ? Channel.fromPath(params.fastq1) : null
-    ch_fastq2 = params.fastq2 ? Channel.fromPath(params.fastq2) : null
-    ch_sampleID = params.sampleID ? Channel.value(params.sampleID) : null
-    ch_bam = params.bam ? Channel.fromPath(params.bam) : null
+    ch_fastq1 = params.fastq1 ? channel.fromPath(params.fastq1) : null
+    ch_fastq2 = params.fastq2 ? channel.fromPath(params.fastq2) : null
+    ch_sampleID = params.sampleID ? channel.value(params.sampleID) : null
+    ch_bam = params.bam ? channel.fromPath(params.bam) : null
 
 
     // Prepare reads channel
@@ -91,9 +91,9 @@ workflow ILLUMINA {
                             .map { it -> tuple(it[0], tuple(it[1], it[2]))}
     }
     else if (params.csv_input && !params.bam && !params.fastq1) {
-        sample_count = Channel.empty()
+        sample_count = channel.empty()
         // If csv input, check sample quantity in csv, if more than one sample in csv, then exit
-        Channel.fromPath(params.csv_input).splitCsv(header: true)
+        channel.fromPath(params.csv_input).splitCsv(header: true)
               .map { row -> tuple( row.sampleID ) }
               .unique()
               .count()

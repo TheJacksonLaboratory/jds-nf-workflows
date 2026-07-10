@@ -16,6 +16,6 @@ process SURVIVOR_SUMMARY {
         tuple val(sampleID), file("${sampleID}.survivor_summary.csv"), emit: csv
     script:
         """
-        /usr/bin/env python ${projectDir}/bin/germline_sv/sv_to_table.py -v ${vcf} -o ${sampleID}.survivor_summary.csv
+        /usr/bin/env python ${moduleDir}/bin/sv_to_table.py -v ${vcf} -o ${sampleID}.survivor_summary.csv
         """
 }

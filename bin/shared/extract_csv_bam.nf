@@ -39,7 +39,7 @@ def extract_csv_bam(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID) | !(row.bam) | !(row.bai)){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
@@ -132,7 +132,7 @@ def extract_csv_bam_rnaseq(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID) | !(row.bam)){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)

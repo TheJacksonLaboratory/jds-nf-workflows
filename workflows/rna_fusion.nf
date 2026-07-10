@@ -71,7 +71,7 @@ workflow RNA_FUSION {
         
     } else if (params.concat_lanes){
     
-        read_ch = Channel
+        read_ch = channel
                 .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
                 .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
                 .groupTuple()
@@ -81,7 +81,7 @@ workflow RNA_FUSION {
 
     } else {
 
-        read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+        read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
 
         // if channel is empty give error message and exit
         read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -114,7 +114,7 @@ workflow RNA_FUSION {
     FASTQC(GUNZIP.out.gunzip_fastq)
 
     // Step 1a: Xengsort if PDX data used.
-    ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file.
+    ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file.
     if (params.pdx){
 
         // Generate Xengsort Index if needed
@@ -171,7 +171,7 @@ workflow RNA_FUSION {
     FUSION_REPORT(fusion_report_input)
 
     // Step 5: MultiQC
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FUSION_REPORT.out.summary_fusions_mq.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))

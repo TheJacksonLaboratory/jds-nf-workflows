@@ -57,13 +57,13 @@ workflow GBRS {
     } else if (params.concat_lanes){
     
         if (params.read_type == 'PE'){
-            read_ch = Channel
+            read_ch = channel
                     .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
                     .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
                     .groupTuple()
         }
         else if (params.read_type == 'SE'){
-            read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+            read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
                         .map { file, file1 -> tuple(getLibraryId(file), file1) }
                         .groupTuple()
                         .map{t-> [t[0], t[1].flatten()]}
@@ -74,13 +74,13 @@ workflow GBRS {
     } else {
 
         if (params.read_type == 'PE'){
-            temp_read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+            temp_read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
             temp_read_ch.map{it -> [it[0], it[1][0], 'R1']}.set{r1}
             temp_read_ch.map{it -> [it[0], it[1][1], 'R2']}.set{r2}
             read_ch = r1.mix(r2)
         }
         else if (params.read_type == 'SE'){
-            temp_read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+            temp_read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
             temp_read_ch.map{it -> [it[0], it[1][0], 'R1']}.set{read_ch}
         }
         // if channel is empty give error message and exit

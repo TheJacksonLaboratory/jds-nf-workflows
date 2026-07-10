@@ -32,7 +32,7 @@ process PICARD_MERGESAMFILES {
         OUTPUT=${sampleID}.sorted.bam \
         SORT_ORDER=coordinate \
         VALIDATION_STRINGENCY=LENIENT \
-        TMP_DIR=tmp
+        TMP_DIR=`pwd`/tmp
         """
     }else {
         """

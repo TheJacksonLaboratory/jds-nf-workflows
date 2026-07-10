@@ -30,7 +30,7 @@ workflow UMI_RNASEQ {
     main:
 
         // UMI Extraction if needed
-        ch_UMITOOLS_multiqc = Channel.empty() // optional log, depeding on skip umi extract
+        ch_UMITOOLS_multiqc = channel.empty() // optional log, depeding on skip umi extract
         if (!params.skip_umi_extract) {
             UMITOOLS_EXTRACT(read_ch)
             fastp_input = UMITOOLS_EXTRACT.out.umi_fastq
@@ -40,7 +40,7 @@ workflow UMI_RNASEQ {
         }
 
         // FASTP Quality Trimming
-        ch_FASTP_multiqc = Channel.empty() // optional log, depeding on skip trim
+        ch_FASTP_multiqc = channel.empty() // optional log, depeding on skip trim
         if (!params.skip_read_trimming) {
             FASTP(fastp_input)
             reads = FASTP.out.trimmed_fastq
@@ -105,7 +105,7 @@ workflow UMI_RNASEQ {
         PICARD_COLLECTRNASEQMETRICS(PICARD_SORTSAM.out.bam.join(CHECK_STRANDEDNESS.out.strand_setting), params.ref_flat, params.ribo_intervals)
 
         // Summary Stats
-        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = channel.empty()
         ch_multiqc_files = ch_multiqc_files.mix(ch_UMITOOLS_multiqc.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))

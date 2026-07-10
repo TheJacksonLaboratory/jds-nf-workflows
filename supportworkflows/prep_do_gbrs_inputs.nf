@@ -30,7 +30,7 @@ workflow PREP_DO_GBRS_INPUT {
     DO_TRANSITION_PROBABILITIES()
     // Generate transition probabilities in R
 
-    generations = Channel.from( 0..params.num_generations )
+    generations = channel.from( 0..params.num_generations )
 
     female_transProbs = DO_TRANSITION_PROBABILITIES.out.female_h5_file.combine(generations)
     PARSE_TRANSITION_PROBABILITIES_FEMALE(female_transProbs, 'F')

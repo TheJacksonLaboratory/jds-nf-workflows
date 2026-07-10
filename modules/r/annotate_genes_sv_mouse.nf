@@ -19,14 +19,14 @@ process ANNOTATE_GENES_SV {
     
     if (suppl_switch == "main")
         """
-        Rscript ${projectDir}/bin/pta/annotate-bedpe-with-genes-mouse.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-genes-mouse.r \
             --ensembl=${params.ensemblUniqueBed} \
             --bedpe=${annot_sv_bedpe} \
             --out_file=${sampleID}.manta_lumpy_delly_svaba_sv_annotated_genes.bed
         """
     else if (suppl_switch == "supplemental")
         """
-        Rscript ${projectDir}/bin/pta/annotate-bedpe-with-genes-mouse.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-genes-mouse.r \
             --ensembl=${params.ensemblUniqueBed} \
             --bedpe=${annot_sv_bedpe} \
             --out_file=${sampleID}.manta_lumpy_delly_svaba_sv_annotated_genes_supplemental.bed \

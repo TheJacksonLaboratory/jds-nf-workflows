@@ -17,7 +17,7 @@ process PARSE_GENE_POSITONS {
 
     script:
     """
-    python ${projectDir}/bin/gbrs/parse_ref_gene_pos_file.py -i ${gene_pos_tsv} -t ${params.emase_gene2transcript} -n "ref.gene_pos.ordered_ensBuild_${params.ensembl_build}"
+    python ${moduleDir}/bin/parse_ref_gene_pos_file.py -i ${gene_pos_tsv} -t ${params.emase_gene2transcript} -n "ref.gene_pos.ordered_ensBuild_${params.ensembl_build}"
     """
 
     stub:

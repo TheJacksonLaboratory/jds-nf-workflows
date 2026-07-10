@@ -23,7 +23,7 @@ process RENAME_VCF {
 
     """
     python \
-    ${projectDir}/bin/pta/rename_vcf.py \
+    ${moduleDir}/bin/rename_vcf.py \
     ${vcf} \
     ${vcf.baseName}_sampleNamed.vcf \
     ${normal} \

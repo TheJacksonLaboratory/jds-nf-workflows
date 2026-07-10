@@ -24,7 +24,7 @@ process PICARD_CLEANSAM {
     """
     picard -Xmx${my_mem}G CleanSam \
     I=${bam} \
-    TMP_DIR=${workDir}/temp \
+    TMP_DIR=`pwd`/tmp \
     VALIDATION_STRINGENCY=SILENT \
     O=${bam.baseName}.cleaned.bam
     """

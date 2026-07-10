@@ -33,10 +33,10 @@ workflow PACBIO {
         final_run_report(message)
     }
     
-    ch_fasta = params.ref_fa ? Channel.fromPath(params.ref_fa): null
-    ch_fastq1 = params.fastq1 ? Channel.fromPath(params.fastq1) : null
-    ch_sampleID = params.sampleID ? Channel.value(params.sampleID) : null
-    ch_bam = params.bam ? Channel.fromPath(params.bam) : null
+    ch_fasta = params.ref_fa ? channel.fromPath(params.ref_fa): null
+    ch_fastq1 = params.fastq1 ? channel.fromPath(params.fastq1) : null
+    ch_sampleID = params.sampleID ? channel.value(params.sampleID) : null
+    ch_bam = params.bam ? channel.fromPath(params.bam) : null
 
     if (params.fastq1 && !params.bam) {
         fq_reads = ch_sampleID.concat(ch_fastq1)

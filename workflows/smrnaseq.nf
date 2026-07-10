@@ -170,14 +170,14 @@ workflow SMRNASEQ {
   // bowtie indexes
 
   // Set up trna / cdna / ncrna bowtie2 index channel
-  trna_index = Channel.fromPath(params.bowtie2_index_trna+'*')
-  cdna_index = Channel.fromPath(params.bowtie2_index_cdna+'*')
-  ncrna_index = Channel.fromPath(params.bowtie2_index_ncrna+'*')
+  trna_index = channel.fromPath(params.bowtie2_index_trna+'*')
+  cdna_index = channel.fromPath(params.bowtie2_index_cdna+'*')
+  ncrna_index = channel.fromPath(params.bowtie2_index_ncrna+'*')
 
   // Set up mature / hairpin / genome bowtie1 index channel
-  mature_index = Channel.fromPath(params.bowtie_index_mature+'*')
-  hairpin_index = Channel.fromPath(params.bowtie_index_hairpin+'*')
-  genome_index = Channel.fromPath(params.ref_fa_indices+'*')
+  mature_index = channel.fromPath(params.bowtie_index_mature+'*')
+  hairpin_index = channel.fromPath(params.bowtie_index_hairpin+'*')
+  genome_index = channel.fromPath(params.ref_fa_indices+'*')
 
 
   // Bowtie2
@@ -266,7 +266,7 @@ workflow SMRNASEQ {
 
    
   // Mirtop & Table merge
-  ch_mirtop_logs = Channel.empty()
+  ch_mirtop_logs = channel.empty()
 
   if (params.mirtrace_species){
 
@@ -299,7 +299,7 @@ workflow SMRNASEQ {
 
   
   // Create channels for multi input files
-  ch_multiqc_files = Channel.empty()
+  ch_multiqc_files = channel.empty()
 
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC_RAW.out.quality_stats.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC_TRIM.out.quality_stats.collect{it[1]}.ifEmpty([]))

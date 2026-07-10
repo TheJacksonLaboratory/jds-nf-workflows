@@ -20,7 +20,7 @@ process PARSE_TRANSITION_PROBABILITIES {
     script:
 
     """
-    python ${projectDir}/bin/gbrs/parse_h5_transprob_to_npz.py -t ${h5} -s ${sex} -g ${generation} -l "${params.haplotype_list}"
+    python ${moduleDir}/bin/parse_h5_transprob_to_npz.py -t ${h5} -s ${sex} -g ${generation} -l "${params.haplotype_list}"
     """
 
     stub:

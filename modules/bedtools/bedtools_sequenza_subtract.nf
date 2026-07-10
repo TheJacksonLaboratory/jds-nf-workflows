@@ -21,7 +21,7 @@ process BEDTOOLS_SUBTRACT {
     """
     bedtools subtract -N -f 0.5 -a ${segments} -b ${na_win} > ${sampleID}_tmp_sub.txt
 
-    cat ${projectDir}/bin/wes/sequenza_header.txt ${sampleID}_tmp_sub.txt > ${sampleID}_segments_naWindowFiltered.txt
+    cat ${moduleDir}/assets/sequenza_header.txt ${sampleID}_tmp_sub.txt > ${sampleID}_segments_naWindowFiltered.txt
     """
 }
 

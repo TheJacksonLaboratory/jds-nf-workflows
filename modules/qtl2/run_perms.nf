@@ -19,7 +19,7 @@ process RUN_PERMS {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/run_perms.R ${covar_file} \
+    Rscript ${moduleDir}/bin/run_perms.R ${covar_file} \
             ${map_file} \
             ${genoprobs_file} \
             ${alleleprobs_file} \

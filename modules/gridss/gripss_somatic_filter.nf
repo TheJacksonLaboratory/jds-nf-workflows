@@ -8,7 +8,7 @@ process GRIPSS_SOMATIC_FILTER {
     
     container 'quay.io/biocontainers/hmftools-gripss:2.3.2--hdfd78af_0'
 
-    stageInMode = 'copy'
+    stageInMode 'copy'
 
     publishDir path: { "${params.pubdir}/${sampleID + '/callers'}" }, pattern: "*gripss.filtered.vcf.gz", mode:'copy'
 

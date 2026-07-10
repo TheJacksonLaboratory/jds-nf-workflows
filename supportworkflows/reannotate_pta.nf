@@ -95,7 +95,7 @@ def extract_csv(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
 
             // List of files to check for existence.
@@ -126,5 +126,5 @@ def extract_csv(csv_file) {
             return [main, supp]
 
         } // end row map
-    // end of Channel.from, no bracket needed.
+    // end of channel.from, no bracket needed.
 } // end extract_csv

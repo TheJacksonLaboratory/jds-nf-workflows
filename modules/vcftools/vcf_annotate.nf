@@ -6,14 +6,14 @@ process VCF_ANNOTATE {
     time '23:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
+    container 'quay.io/biocontainers/perl-vcftools-vcf:0.1.16--pl5321hdfd78af_4'
+
     input:
     tuple val(sampleID), file(snp_vcf)
     val(indel_snp)
 
     output:
     tuple val(sampleID), file("*.vcf"), emit: vcf
-
-    container 'quay.io/biocontainers/perl-vcftools-vcf:0.1.16--pl5321hdfd78af_4'
 
     script:
 

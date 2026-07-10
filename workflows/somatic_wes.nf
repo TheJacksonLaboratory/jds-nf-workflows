@@ -112,13 +112,13 @@ workflow SOMATIC_WES {
     } else if (params.concat_lanes){
     
     if (params.read_type == 'PE'){
-        read_ch = Channel
+        read_ch = channel
                 .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
                 .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
                 .groupTuple()
     }
     else if (params.read_type == 'SE'){
-        read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+        read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
                     .map { file, file1 -> tuple(getLibraryId(file), file1) }
                     .groupTuple()
                     .map{t-> [t[0], t[1].flatten()]}
@@ -129,10 +129,10 @@ workflow SOMATIC_WES {
     } else {
     
     if (params.read_type == 'PE'){
-        read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+        read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
     }
     else if (params.read_type == 'SE'){
-        read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+        read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
     }
         // if channel is empty give error message and exit
         read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -176,7 +176,7 @@ workflow SOMATIC_WES {
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
 
     // Step 1a: Run Xengsort if PDX data used.
-    ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file. 
+    ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file. 
     if (params.pdx){
 
         // Generate Xengsort Index if needed
@@ -207,7 +207,7 @@ workflow SOMATIC_WES {
 
     // Step 6: Variant Pre-Processing - Part 2
     // Read a list of contigs from parameters to provide to GATK as intervals
-    chroms = Channel
+    chroms = channel
         .fromPath("${params.chrom_contigs}")
         .splitText()
         .map{it -> it.trim()}
@@ -293,7 +293,7 @@ workflow SOMATIC_WES {
     
     SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'somatic_wes')
 
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))

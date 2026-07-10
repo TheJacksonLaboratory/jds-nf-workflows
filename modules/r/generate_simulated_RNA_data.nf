@@ -22,7 +22,7 @@ process GENERATE_SIMULATED_RNA_DATA {
     quality_reference = params.quality_reference ? params.quality_reference : 'none'
 
     """
-    Rscript ${projectDir}/bin/generate_rnaseq_simreads/generate_simulated_RNA_data.R ${wrap_fa} ${library_size} ${library_strategy} ${params.read_length} ${params.fragment_length_min} ${params.fragment_length_max} ${params.fragment_length_mean} ${params.fragment_length_sd} ${params.simulate_sequencing_error} ${quality_reference}
+    Rscript ${moduleDir}/bin/generate_simulated_RNA_data.R ${wrap_fa} ${library_size} ${library_strategy} ${params.read_length} ${params.fragment_length_min} ${params.fragment_length_max} ${params.fragment_length_mean} ${params.fragment_length_sd} ${params.simulate_sequencing_error} ${quality_reference}
     """
 
 }

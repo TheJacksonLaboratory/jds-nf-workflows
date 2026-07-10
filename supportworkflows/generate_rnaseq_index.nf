@@ -75,8 +75,8 @@ workflow GENERATE_RNASEQ_INDEX {
     }
     
     star_read_lengths = params.star_read_lengths instanceof String 
-        ? Channel.from(params.star_read_lengths.split(',').collect{it.trim().toInteger()})
-        : Channel.from(params.star_read_lengths.collect{it.toInteger()})
+        ? channel.from(params.star_read_lengths.split(',').collect{it.trim().toInteger()})
+        : channel.from(params.star_read_lengths.collect{it.toInteger()})
 
     if (params.ref_gff) {
         AGAT_GFFTOGTF(params.ref_gff)
@@ -95,7 +95,7 @@ workflow GENERATE_RNASEQ_INDEX {
             GUNZIP(params.ref_gtf)
             proc_gtf = GUNZIP.out.gunzip_file
         } else {
-            proc_gtf = Channel.fromPath(params.ref_gtf)
+            proc_gtf = channel.fromPath(params.ref_gtf)
         }
     }
 

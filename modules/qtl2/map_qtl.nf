@@ -21,7 +21,7 @@ process MAP_QTL {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/map_qtl.R ${covar_file} \
+    Rscript ${moduleDir}/bin/map_qtl.R ${covar_file} \
             ${map_file} \
             ${genoprobs_file} \
             ${alleleprobs_file} \

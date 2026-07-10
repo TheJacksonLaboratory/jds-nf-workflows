@@ -24,7 +24,7 @@ process PLOT_MACS2_QC {
     def joinedPeaks = peaks.join(',')
     def sampleNames = peaks.collect { it.name.replace("_peaks.${peak_type}", '') }.join(',')
     """
-    ${projectDir}/bin/chipseq/plot_macs_qc.r \\
+    ${moduleDir}/bin/plot_macs_qc.r \\
         -i ${joinedPeaks} \\
         -s ${sampleNames} \\
         -o ./ \\

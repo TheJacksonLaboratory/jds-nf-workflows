@@ -16,7 +16,7 @@ process DATA_QC {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/data_qc.R ${covar_file} \
+    Rscript ${moduleDir}/bin/data_qc.R ${covar_file} \
             ${genoprobs_file} \
             ${alleleprobs_file} \
             ${kinship_file} \

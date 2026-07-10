@@ -23,7 +23,7 @@ process QTL_EFFECTS {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/qtl_effects.R ${phenotype} \
+    Rscript ${moduleDir}/bin/qtl_effects.R ${phenotype} \
         ${alleleprobs_file} \
         ${kinship_file} \
         ${covar_file} \

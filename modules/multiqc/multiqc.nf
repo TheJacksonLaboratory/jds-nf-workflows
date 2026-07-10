@@ -26,8 +26,8 @@ process MULTIQC {
 
     def custom_config = multiqc_config ? "--config $multiqc_config" : params.multiqc_config ? "--config ${params.multiqc_config}" : ''
     """
-    ln -s ${projectDir}/bin/shared/multiqc/JAX_logo_rgb_transparentback.png .
-    ln -s ${projectDir}/bin/shared/multiqc/JAX_logo_white_transparentback.png .
+    ln -s ${moduleDir}/assets/multiqc/JAX_logo_rgb_transparentback.png .
+    ln -s ${moduleDir}/assets/multiqc/JAX_logo_white_transparentback.png .
     multiqc . --no-ai ${custom_config}
     """
 

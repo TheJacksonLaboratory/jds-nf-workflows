@@ -21,7 +21,7 @@ process MERGE_SV {
         listOfChroms = chrom_list.collect { "$it" }.join(',')
 
         """
-        Rscript ${projectDir}/bin/pta/merge-caller-vcfs.r \
+        Rscript ${moduleDir}/bin/merge-caller-vcfs.r \
             --vcf=${manta_vcf},${gripss_vcf} \
             --caller=manta,gridss \
             --tumor=${tumor_name} \

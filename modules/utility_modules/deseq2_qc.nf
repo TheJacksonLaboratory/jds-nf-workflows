@@ -31,7 +31,7 @@ process DESEQ2_QC {
     vst = params.deseq2_vst ? '--vst TRUE' : ''
     peak_type = params.narrow_peak ? 'narrowPeak' : 'broadPeak'
     """
-    ${projectDir}/bin/chipseq/deseq2_qc.r \\
+    ${moduleDir}/bin/deseq2_qc.r \\
         --count_file $counts \\
         --sample_suffix '$bam_ext' \\
         --outdir ./ \\

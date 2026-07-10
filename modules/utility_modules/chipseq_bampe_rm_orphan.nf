@@ -17,6 +17,6 @@ process BAMPE_RM_ORPHAN {
     script:  // This script was bundled withing the nf-core/chipseq/bin/ directory
     prefix = "${sampleID}.mLb.clN"
     """
-    python ${projectDir}/bin/chipseq/bampe_rm_orphan.py ${bam[0]} ${prefix}.bam --only_fr_pairs
+    python ${moduleDir}/bin/bampe_rm_orphan.py ${bam[0]} ${prefix}.bam --only_fr_pairs
     """
 }

@@ -16,6 +16,6 @@ process SEQUENZA_NA_WINDOWS {
 
     script:
     """
-    Rscript ${projectDir}/bin/wes/sequenza_seg_na_window.R ${extract_rdata} ${sampleID}_win.txt
+    Rscript ${moduleDir}/bin/sequenza_seg_na_window.R ${extract_rdata} ${sampleID}_win.txt
     """
 }

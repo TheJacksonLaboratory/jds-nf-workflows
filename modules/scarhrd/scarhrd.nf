@@ -19,6 +19,6 @@ process SCARHRD {
 
     script:
     """
-    Rscript ${projectDir}/bin/wes/scarHRD.R ${seqz} ${sampleID}
+    Rscript ${moduleDir}/bin/scarHRD.R ${seqz} ${sampleID}
     """
 }

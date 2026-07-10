@@ -21,7 +21,7 @@ process MERGE_COLUMNS {
 
     """
     python \
-    ${projectDir}/bin/pta/merge_columns.py \
+    ${moduleDir}/bin/merge_columns.py \
     ${vcf} \
     ${sampleID}_single_column_${chrom}.vcf \
     ${normal} \

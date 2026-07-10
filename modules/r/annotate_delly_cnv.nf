@@ -22,7 +22,7 @@ process ANNOTATE_DELLY_CNV {
         listOfChroms = chrom_list.collect { "$it" }.join(',')
 
         """
-        Rscript ${projectDir}/bin/pta/annotate-cnv-delly.r \
+        Rscript ${moduleDir}/bin/annotate-cnv-delly.r \
             --cnv=${delly_cnv} \
             --caller="delly" \
             --tumor=${tumor_name} \

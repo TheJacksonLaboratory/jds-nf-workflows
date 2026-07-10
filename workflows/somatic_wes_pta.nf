@@ -116,7 +116,7 @@ workflow SOMATIC_WES_PTA {
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
 
     // Step 1a: Xengsort if PDX data used.
-    ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file.
+    ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file.
     if (params.pdx){
         FASTP.out.trimmed_fastq.join(meta_ch).branch{
             normal: it[2].status == 0
@@ -154,7 +154,7 @@ workflow SOMATIC_WES_PTA {
 
     // Step 6: Variant Pre-Processing - Part 2
     // Read a list of contigs from parameters to provide to GATK as intervals
-    chroms = Channel
+    chroms = channel
         .fromPath("${params.chrom_contigs}")
         .splitText()
         .map{it -> it.trim()}
@@ -319,7 +319,7 @@ workflow SOMATIC_WES_PTA {
     
     SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'somatic_wes_pta')
 
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
@@ -362,7 +362,7 @@ def extract_csv(csv_file) {
     def sample_count_normal = 0
     def sample_count_tumor = 0
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         // Retrieves number of lanes by grouping together by patient and sample and counting how many entries there are for this combination
         .map { row ->
             sample_count_all += 1

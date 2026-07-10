@@ -1,5 +1,5 @@
 process LUMPY_EXTRACT_SPLITS {
-    tag "$sample_name"
+    tag "$sampleID"
     
     cpus 8
     memory  40.GB

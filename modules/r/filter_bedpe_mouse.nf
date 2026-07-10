@@ -23,7 +23,7 @@ process FILTER_BEDPE {
     script:
         if(suppl_switch == "main")
         """
-        Rscript ${projectDir}/bin/pta/filter-bedpe.r \
+        Rscript ${moduleDir}/bin/filter-bedpe.r \
             --filter_databases=INS,DEL,INV \
             --bedpe=${sv_genes_cnv_bedpe} \
             --genome=GRCm39 \
@@ -33,7 +33,7 @@ process FILTER_BEDPE {
 
         else if (suppl_switch == "supplemental")
         """
-        Rscript ${projectDir}/bin/pta/filter-bedpe.r \
+        Rscript ${moduleDir}/bin/filter-bedpe.r \
             --filter_databases=INS,DEL,INV \
             --bedpe=${sv_genes_cnv_bedpe} \
             --genome=GRCm39 \

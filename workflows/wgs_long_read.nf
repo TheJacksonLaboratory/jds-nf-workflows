@@ -151,7 +151,7 @@ workflow WGS_LONG_READ {
     MOSDEPTH(bam_file.join(index_file))
 
     // Make chromsome channel
-    chroms = Channel.fromPath("${params.chrom_contigs}")
+    chroms = channel.fromPath("${params.chrom_contigs}")
         .splitText()
         .map { it -> it.trim() }
     num_chroms = file(params.chrom_contigs).countLines().toInteger()
@@ -230,7 +230,7 @@ workflow WGS_LONG_READ {
     ANNOTATE_GENES_SV(ANNOTATE_SV.out.annot_sv_bedpe, "main")
     ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
 
-    ch_multiqc_files = Channel.empty()
+    ch_multiqc_files = channel.empty()
     ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it[1] }.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))

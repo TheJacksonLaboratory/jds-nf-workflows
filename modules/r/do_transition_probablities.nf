@@ -19,7 +19,7 @@ process DO_TRANSITION_PROBABILITIES {
 
     script:
     """
-    Rscript ${projectDir}/bin/gbrs/gene_bp_to_cM_to_transprob.R --ensembl_build ${params.ensembl_build} --num_generation ${params.num_generations} --output_prefix "tranprob.genes.DO."
+    Rscript ${moduleDir}/bin/gene_bp_to_cM_to_transprob.R --ensembl_build ${params.ensembl_build} --num_generation ${params.num_generations} --output_prefix "tranprob.genes.DO."
     """
 
     stub:

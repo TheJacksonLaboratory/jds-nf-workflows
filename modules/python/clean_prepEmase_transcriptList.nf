@@ -17,7 +17,7 @@ process CLEAN_TRANSCRIPT_LISTS {
 
     script:
     """
-    python ${projectDir}/bin/emase/clean_transcript_info.py \
+    python ${moduleDir}/bin/clean_transcript_info.py \
     --input-transcript-list ${pooled_transcript_list} \
     --haplotype-transcript-output emase.pooled.fullTranscripts.info \
     --full-transcript-output emase.fullTranscripts.info \

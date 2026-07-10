@@ -21,7 +21,7 @@ process ASCAT {
 
     script:
         """
-        Rscript ${projectDir}/bin/cnv_array/ASCAT_run.R \
+        Rscript ${moduleDir}/bin/ASCAT_run.R \
             ${sampleID} \
             ${BAF} \
             ${LRR} \

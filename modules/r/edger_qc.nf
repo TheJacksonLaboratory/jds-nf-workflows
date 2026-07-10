@@ -20,7 +20,7 @@ process EDGER_QC {
 
     script:
     """
-    ${projectDir}/bin/smrnaseq/edgeR_miRBase.r $input_files
+    ${moduleDir}/bin/edgeR_miRBase.r $input_files
     """
 
 }

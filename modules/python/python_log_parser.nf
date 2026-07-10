@@ -18,6 +18,6 @@ process LOG_PARSER {
 
     script:
     """
-    python ${projectDir}/bin/atac/LogParser.py > ${sampleID}.summary_QC_metrics.txt
+    python ${moduleDir}/bin/LogParser.py > ${sampleID}.summary_QC_metrics.txt
     """
 }

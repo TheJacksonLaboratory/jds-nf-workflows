@@ -156,7 +156,7 @@ workflow HS_PTA {
         // Normal samples should PASS the PDX step. 
 
         // ** Step 2a: Xengsort if PDX data used.
-        ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file. 
+        ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file. 
         if (params.pdx){
 
             FASTP.out.trimmed_fastq.join(meta_ch).branch{
@@ -248,7 +248,7 @@ workflow HS_PTA {
         PICARD_MARKDUPLICATES(bam_file)
 
         // Read a list of contigs from parameters to provide to GATK as intervals
-        chroms = Channel
+        chroms = channel
             .fromPath("${params.chrom_contigs}")
             .splitText()
             .map{it -> it.trim()}
@@ -444,7 +444,7 @@ workflow HS_PTA {
         // maps to a set with indicies, flattens the map [file, index, file, index ...], 
         // collates the flattened map into pairs, then remaps to the pairs to tuple
 
-        intervals = Channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
+        intervals = channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
                     .collect()
                     .sort()
                     .map { items -> items.withIndex() }
@@ -536,7 +536,7 @@ workflow HS_PTA {
 
         // ** Lancet - SNP/InDEL Calling
         // Generate a list of chromosome beds. This is generated in the same manner as the calling `intervals` variable above. 
-        lancet_beds = Channel.fromPath( params.lancet_beds_directory+'/*.bed' )
+        lancet_beds = channel.fromPath( params.lancet_beds_directory+'/*.bed' )
                         .collect()
                         .sort()
                         .map { items -> items.withIndex() }
@@ -591,7 +591,7 @@ workflow HS_PTA {
         biqseq_norm_input_tumor = SAMTOOLS_FILTER_UNIQUE_TUMOR.out.uniq_seq.join(SAMTOOLS_STATS_INSERTSIZE_TUMOR.out.read_length_insert_size)
         // sampleID, individual_chr_seq_files, meta, read_ID, read_length, insert_size. 
 
-        fasta_files = Channel.fromPath( file(params.ref_fa).parent + '/*_chr*' )
+        fasta_files = channel.fromPath( file(params.ref_fa).parent + '/*_chr*' )
                 .collect()
         // collect individual chr fasta files. These are located in the same directory as the main reference. 
         // if the extension of `name_chr#.fa` changes this match will break. 
@@ -881,7 +881,7 @@ workflow HS_PTA {
         FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
         FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
 
-        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = channel.empty()
         ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))

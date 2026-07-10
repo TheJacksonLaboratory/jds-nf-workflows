@@ -15,7 +15,7 @@ def extract_gbrs_csv(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID && row.sex && row.generation && row.fastq_1)){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)

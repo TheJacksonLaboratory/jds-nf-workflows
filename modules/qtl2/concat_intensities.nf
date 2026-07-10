@@ -20,7 +20,7 @@ process CONCAT_INTENSITIES {
   script:
   
   """
-  Rscript --vanilla ${projectDir}/bin/qtl/concatIntensities.R
+  Rscript --vanilla ${moduleDir}/bin/concatIntensities.R
   mv chrX_intensities.csv ${project_id}_chrX_intensities.csv
   mv chrY_intensities.csv ${project_id}_chrY_intensities.csv
   mv all_intensities.fst ${project_id}_all_intensities.fst

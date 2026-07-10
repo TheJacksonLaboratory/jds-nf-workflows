@@ -37,7 +37,7 @@ include {CONCATENATE_GENOPROBS} from "../modules/qtl2/concat_genoprobs_lcwgs"
 include {MULTIQC} from "../modules/multiqc/multiqc"
 
 
-workflow LCWGS_HR{
+workflow LCWGS_HR {
 
   // help if needed
   if (params.help){
@@ -68,13 +68,13 @@ workflow LCWGS_HR{
   } else if (params.concat_lanes){
     
     if (params.read_type == 'PE'){
-      read_ch = Channel
+      read_ch = channel
               .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
               .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
               .groupTuple()
     }
     else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
                   .map { file, file1 -> tuple(getLibraryId(file), file1) }
                   .groupTuple()
                   .map{t-> [t[0], t[1].flatten()]}
@@ -85,10 +85,10 @@ workflow LCWGS_HR{
   } else {
     
     if (params.read_type == 'PE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
     }
     else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
     }
       // if channel is empty give error message and exit
       read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -156,7 +156,7 @@ workflow LCWGS_HR{
     }
     
     // Use full coverage estimate and specified downsampling levels to subset the bam file
-    downsampleChannel = Channel.fromPath("${params.downsampling_coverage_csv}")
+    downsampleChannel = channel.fromPath("${params.downsampling_coverage_csv}")
                            .splitCsv()
                            .flatten()
     downsampled_bams = coverageFilesChannel.join(SAMTOOLS_DEPTH_VALUE.out.bam_out).combine(downsampleChannel)
@@ -184,12 +184,12 @@ workflow LCWGS_HR{
 
   
   CREATE_BAMLIST(bam_input_ch)
-  chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_type}/chromosome_chunks.csv")
+  chrChunks = channel.fromPath("${params.ref_haps_dir}/${params.cross_type}/chromosome_chunks.csv")
                     .splitCsv(header: true)
                     .map {row -> 
-                            [ chr         = row.chr,
-                              chunk_start = row.start,
-                              chunk_stop  = row.stop] }
+                            [ row.chr,
+                              row.start,
+                              row.stop] }
                     .map {it -> [ it[0].toString(), it[1], it[2] ]}
 
   // Run QUILT
@@ -209,7 +209,7 @@ workflow LCWGS_HR{
   CONCATENATE_GENOPROBS(collected_probs)
 
   // MultiQC report
-  ch_multiqc_files = Channel.empty()
+  ch_multiqc_files = channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))

@@ -23,7 +23,7 @@ process ANNOTATE_DELLY_CNV {
 
         if ( params.gen_org == 'mouse' )
         """
-        Rscript ${projectDir}/bin/wgs/annotate-cnv-delly.r \
+        Rscript ${moduleDir}/bin/annotate-cnv-delly.r \
             --cnv=${delly_cnv} \
             --caller="delly" \
             --sample_name=${sampleID} \
@@ -39,7 +39,7 @@ process ANNOTATE_DELLY_CNV {
 
         else if ( params.gen_org == 'human' )
         """
-        Rscript ${projectDir}/bin/wgs/annotate-cnv-delly.r \
+        Rscript ${moduleDir}/bin/annotate-cnv-delly.r \
             --cnv=${delly_cnv} \
             --caller="delly" \
             --sample_name=${sampleID} \

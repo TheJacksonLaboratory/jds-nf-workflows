@@ -14,6 +14,7 @@ process COMPRESS_INDEX_VCF {
     output:
     tuple val(sampleID), file("*.vcf.gz"), file("*.vcf.gz.tbi"), val(meta), val(normal_name), val(tumor_name), val(tool), emit: compressed_vcf_tbi
 
+    script:
     """
     bgzip \
     -c \

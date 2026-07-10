@@ -19,7 +19,7 @@ process LYMPHOMA_CLASSIFIER {
     script:
     """
     python \
-    ${projectDir}/bin/rnaseq/lymphoma_classifier.py \
+    ${moduleDir}/bin/lymphoma_classifier.py \
     --expected_expression ${params.classifier_table} \
     --counts ${rsem_counts} \
     --output ${sampleID}.EBV_classifier.txt

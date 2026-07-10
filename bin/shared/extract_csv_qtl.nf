@@ -5,7 +5,7 @@ def extract_csv(csv_file) {
     def ANSI_RED = "\u001B[31m"
     def ANSI_RESET = "\u001B[0m"
 
-    return Channel.fromPath(csv_file)
+    return channel.fromPath(csv_file)
         .splitCsv(header: true)
         .map{ row ->
             if (!(row.project_id)){

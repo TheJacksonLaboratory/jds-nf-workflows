@@ -17,7 +17,7 @@ process COSMIC_CANCER_RESISTANCE_MUTATION_GERMLINE {
     script:
     """
     python \
-    ${projectDir}/bin/pta/add_cancer_resistance_mutations.py \
+    ${moduleDir}/bin/add_cancer_resistance_mutations.py \
     ${params.cosmic_cancer_resistance_muts} \
     ${vcf} \
     ${sampleID}_germline_snv_indel_annotated_supplemental.vcf

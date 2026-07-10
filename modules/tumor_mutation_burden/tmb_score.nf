@@ -20,7 +20,7 @@ process TMB_SCORE {
  
     shell:
     '''
-    python3 !{projectDir}/bin/wes/allele_depth_min_and_AF_from_ADs.py !{vcf} !{vcf.baseName}.pyfiltered.vcf 15 !{tumor_name}
+    python3 !{moduleDir}/bin/allele_depth_min_and_AF_from_ADs.py !{vcf} !{vcf.baseName}.pyfiltered.vcf 15 !{tumor_name}
 
     java -jar /opt/snpEff/SnpSift.jar filter --addFilter "lowAF" --rmFilter "PASS" 'ALT_AF[ANY] < 5' -f !{vcf.baseName}.pyfiltered.vcf | \
     java -jar /opt/snpEff/SnpSift.jar filter --addFilter "strandBias" --rmFilter "PASS" 'FS > 60' | \
@@ -42,7 +42,7 @@ process TMB_SCORE {
 
     cat !{sampleID}_all_genes_variants_cosmicannotation_germlineflag_oneperline_final.tab | grep "HIGH\\|MODERATE" | awk -F '\\t' '{ if($5 !~ "rs" && ($6==""||$6=="PASS"||$6==".")) print $1,$2-1,$2 }'| sort| uniq| tr ' ' '\\t' > count2; echo "chr\tstart\tend\tLength\tHM" > !{sampleID}_somatic.HM.tab; bedtools coverage -a !{hexcoverage} -b count2 | cut -f 1-5 >> !{sampleID}_somatic.HM.tab
 
-    Rscript !{projectDir}/bin/wes/TMB_calc.R !{sampleID}_somatic.HM.tab  !{sampleID}_somatic_TMB_Score.txt
+    Rscript !{moduleDir}/bin/TMB_calc.R !{sampleID}_somatic.HM.tab  !{sampleID}_somatic_TMB_Score.txt
 
     '''
 }

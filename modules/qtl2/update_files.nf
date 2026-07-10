@@ -25,7 +25,7 @@ process UPDATE_FILES {
   script:
   
   """
-  Rscript --vanilla ${projectDir}/bin/qtl/updateGenoProbs.R ${covar_file} \
+  Rscript --vanilla ${moduleDir}/bin/updateGenoProbs.R ${covar_file} \
                 ${cross_file} \
                 ${genoprobs_file} \
                 ${alleleprobs_file} \

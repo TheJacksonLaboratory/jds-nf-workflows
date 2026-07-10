@@ -34,7 +34,7 @@ workflow ANCESTRY_RUN {
     if (params.csv_input) {
         bam_input = extract_csv(file(params.csv_input, checkIfExists: true))
     } else {
-        bam_input = Channel.fromFilePairs("${params.sample_folder}/*.bam", checkExists:true, size:1 )
+        bam_input = channel.fromFilePairs("${params.sample_folder}/*.bam", checkExists:true, size:1 )
     }
     SAMTOOLS_INDEX(bam_input)
     ANCESTRY(bam_input.join(SAMTOOLS_INDEX.out.bai))
@@ -64,7 +64,7 @@ def extract_csv(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID && row.bam)){
                 log.error "Error in CSV file: Missing field in csv file header. The csv file must have fields named: 'sampleID, bam"

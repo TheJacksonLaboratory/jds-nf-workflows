@@ -87,13 +87,13 @@ workflow WES {
   } else if (params.concat_lanes){
     
     if (params.read_type == 'PE'){
-      read_ch = Channel
+      read_ch = channel
               .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
               .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
               .groupTuple()
     }
     else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
                   .map { file, file1 -> tuple(getLibraryId(file), file1) }
                   .groupTuple()
                   .map{t-> [t[0], t[1].flatten()]}
@@ -104,10 +104,10 @@ workflow WES {
   } else {
     
     if (params.read_type == 'PE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
     }
     else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
     }
       // if channel is empty give error message and exit
       read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -158,11 +158,11 @@ workflow WES {
   PICARD_MARKDUPLICATES(PICARD_SORTSAM.out.bam)
 
   // If Human: Step 5-10
-  ch_GATK_BASERECALIBRATOR_multiqc = Channel.empty() //optional log file for human only.
+  ch_GATK_BASERECALIBRATOR_multiqc = channel.empty() //optional log file for human only.
   if (params.gen_org=='human'){
 
       // Read a list of contigs from parameters to provide to GATK as intervals
-      chroms = Channel
+      chroms = channel
           .fromPath("${params.chrom_contigs}")
           .splitText()
           .map{it -> it.trim()}
@@ -271,7 +271,7 @@ workflow WES {
 
   }
   
-  ch_multiqc_files = Channel.empty()
+  ch_multiqc_files = channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(ch_GATK_BASERECALIBRATOR_multiqc.collect{it[1]}.ifEmpty([]))

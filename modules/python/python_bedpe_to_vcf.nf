@@ -16,6 +16,6 @@ process PYTHON_BEDPE_TO_VCF {
         tuple val(sampleID), path("*.vcf"), emit: vcf
     script:
     """
-    python ${projectDir}/bin/germline_sv/bedpetovcf.py -i ${bedpe} -v ${sampleID}.mergedCall.vcf
+    python ${moduleDir}/bin/bedpetovcf.py -i ${bedpe} -v ${sampleID}.mergedCall.vcf
     """
 }

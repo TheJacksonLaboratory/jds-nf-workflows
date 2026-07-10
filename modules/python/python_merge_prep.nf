@@ -20,13 +20,13 @@ process MERGE_PREP {
 
     """
     python \
-    ${projectDir}/bin/pta/reorder_vcf.py \
+    ${moduleDir}/bin/reorder_vcf.py \
     ${vcf} \
     ${vcf.baseName}_ordered.vcf \
     ${normal_name} ${tumor_name}
     
     python \
-    ${projectDir}/bin/pta/merge_prep.py \
+    ${moduleDir}/bin/merge_prep.py \
     --vcf ${vcf.baseName}_ordered.vcf \
     --out ${vcf.baseName}_mergePrep.vcf \
     --tool ${tool_name} \

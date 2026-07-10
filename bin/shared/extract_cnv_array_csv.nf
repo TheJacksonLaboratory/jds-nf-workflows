@@ -16,7 +16,7 @@ def extract_csv(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID) || !(row.idat_red) || !(row.idat_green)) {
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)

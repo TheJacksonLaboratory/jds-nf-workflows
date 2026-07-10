@@ -14,7 +14,7 @@ process GENERATE_GRID_FILE {
 
     script:
     """
-    Rscript ${projectDir}/bin/gbrs/generate_grid_file.R
+    Rscript ${moduleDir}/bin/generate_grid_file.R
     """
 
     stub:

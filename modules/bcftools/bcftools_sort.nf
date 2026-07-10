@@ -10,6 +10,7 @@ process BCFTOOLS_SORT {
 
     input:
     tuple val(sampleID), file(vcf)
+    val(indel_snp)
 
     output:
     tuple val(sampleID), file("*.vcf"), emit: vcf

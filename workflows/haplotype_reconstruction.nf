@@ -38,9 +38,9 @@ workflow HAPLOTYPE_RECONSTRUCTION {
     }
 
     // Make channel of consensus files (GigaMUGA)
-    founder_genos   = Channel.fromPath(params.gm_cc_do_founder_genotypes).collect()
-    gmaps           = Channel.fromPath(params.gm_gmaps).collect()
-    pmaps           = Channel.fromPath(params.gm_pmaps).collect()
+    founder_genos   = channel.fromPath(params.gm_cc_do_founder_genotypes).collect()
+    gmaps           = channel.fromPath(params.gm_gmaps).collect()
+    pmaps           = channel.fromPath(params.gm_pmaps).collect()
     consensus_files = founder_genos.concat(gmaps)
                                 .concat(pmaps)
                                 .flatten().collect()
@@ -67,11 +67,10 @@ workflow HAPLOTYPE_RECONSTRUCTION {
 
         // Concatenate intensities across projects for QC
         CONCAT_INTENSITIES(qc_intensities)
-        metadata = GS_TO_QTL2.out.qtl2meta.combine(CONCAT_INTENSITIES.out.dedup_samples, by: 0)
-        sampleGenos = GS_TO_QTL2.out.sampleGenos
+        metadata_sampleGenos = GS_TO_QTL2.out.qtl2meta.combine(CONCAT_INTENSITIES.out.dedup_samples, by: 0).join(GS_TO_QTL2.out.sampleGenos, by: 0)
 
-        // Write control file
-        WRITE_CROSS(metadata, sampleGenos, consensus_files)
+        // // Write control file
+        WRITE_CROSS(metadata_sampleGenos, consensus_files)
 
         // Initial haplotype reconstruction
         GENOPROBS(WRITE_CROSS.out.cross)

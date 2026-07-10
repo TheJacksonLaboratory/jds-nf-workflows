@@ -16,7 +16,7 @@ process VCF2EIGENSTRAT {
 
     script:
     """
-    python ${projectDir}/bin/ancestry/vcf2eigenstrat.py -o ${sampleID} -v ${vcf} && \
+    python ${moduleDir}/bin/vcf2eigenstrat.py -o ${sampleID} -v ${vcf} && \
     paste -d ',' <(cat ${sampleID}.snp | sed -e 's/    /,/g' | cut -f 1,2,3,4 -d ',') <(cat ${sampleID}.snp | sed -e 's/    /,/g' | cut -f 1 -d ',' | cut -f 3,4 -d ':' | sed -e 's/:/,/g') | sed -e 's/,/    /g' > ${sampleID}.reformatted.snp
     """
 }

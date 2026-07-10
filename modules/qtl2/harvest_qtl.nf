@@ -21,6 +21,6 @@ process HARVEST_QTL {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/harvest_qtl.R
+    Rscript ${moduleDir}/bin/harvest_qtl.R
     """
 }

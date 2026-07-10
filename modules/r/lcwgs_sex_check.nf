@@ -17,6 +17,6 @@ process SEX_CHECK {
   script:
 
   """
-  Rscript --vanilla ${projectDir}/bin/lcwgs/coverage_based_sex_check.R ${params.covar_file}
+  Rscript --vanilla ${moduleDir}/bin/coverage_based_sex_check.R ${params.covar_file}
   """
 }

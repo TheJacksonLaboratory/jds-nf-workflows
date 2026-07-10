@@ -19,7 +19,7 @@ process QUILT {
   script:
 
   """
-  Rscript --vanilla ${projectDir}/bin/lcwgs/run_quilt.R ${bamlist} \
+  Rscript --vanilla ${moduleDir}/bin/run_quilt.R ${bamlist} \
       ${chr} \
       ${covar_file} \
       ${params.cross_type} \

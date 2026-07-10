@@ -17,7 +17,7 @@ process FILTER_VCF {
     script:
     """
     python \
-    ${projectDir}/bin/pta/vcf_filter.py \
+    ${moduleDir}/bin/vcf_filter.py \
     ${params.germline_filtering_vcf} \
     ${vcf} \
     ${sampleID}_final_filtered_${chrom}.vcf

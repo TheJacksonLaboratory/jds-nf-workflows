@@ -8,7 +8,7 @@ process GRIDSS_CHROM_FILTER {
 
     container 'quay.io/jaxcompsci/internal_tools:v1.0'
 
-    stageInMode = 'copy'
+    stageInMode 'copy'
 
     publishDir path: { "${params.pubdir}/${sampleID + '/callers'}" }, pattern: "*_gridss_sv_unfiltered_chroms.vcf", mode:'copy', enabled: params.keep_intermediate
 
@@ -23,7 +23,7 @@ process GRIDSS_CHROM_FILTER {
     chrom_list = chroms.collect { "$it" }.join(' ')
 
     """
-    python ${projectDir}/bin/pta/filter_vcf.py \
+    python ${moduleDir}/bin/filter_vcf.py \
     --vcf-file ${vcf} \
     --output ${sampleID}_gridss_sv_unfiltered_chroms.vcf \
     --chroms ${chrom_list}

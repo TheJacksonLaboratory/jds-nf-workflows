@@ -363,7 +363,7 @@ workflow CHIPSEQ {
   // note: ch_deseq2_pca_header, ch_deseq2_clustering_header are generic files used for all samples. 
 
   // Create channels for multi input files
-  ch_multiqc_files = Channel.empty()
+  ch_multiqc_files = channel.empty()
   
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_stats.collect{it[1]}.ifEmpty([]))

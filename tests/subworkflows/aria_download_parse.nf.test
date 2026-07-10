@@ -15,7 +15,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'testSample_42',
                         [sampleID:'testSample_42', lane:'lane1', replicate:'NA', id:'testSample_42', size:1, ind: 'Sample_42', sex: 'M'], 
@@ -50,7 +50,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'testSample_42',
                         [sampleID:'testSample_42', lane:'lane1', replicate:'NA', id:'testSample_42', size:1, ind: 'Sample_42', sex: 'M'], 
@@ -83,7 +83,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'testSample_42',
                         [sampleID:'testSample_42', lane:'lane1', replicate:'NA', id:'testSample_42', size:2, ind: 'Sample_42', sex: 'M'], 
@@ -118,7 +118,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'testSample_42',
                         [sampleID:'testSample_42', lane:'lane1', replicate:'NA', id:'testSample_42', size:2, ind: 'Sample_42', sex: 'M'], 

@@ -46,7 +46,7 @@ workflow GENERATE_PSEUDOREFERENCE  {
         gtf_file = params.primary_reference_gtf
     }
 
-    Channel
+    channel
     .of( params.strain.split(',') )
     .set { strain }
     /* 

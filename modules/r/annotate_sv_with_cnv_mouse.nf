@@ -21,7 +21,7 @@ process ANNOTATE_SV_WITH_CNV {
         if (suppl_switch == "main") {
             output_name = "${sampleID}_manta_lumpy_delly_svaba_sv_annotated_genes_cnv" == annot_sv_genes_bedpe.baseName ? "${sampleID}_manta_lumpy_delly_svaba_sv_reannotated_genes_cnv.bedpe" : "${sampleID}_manta_lumpy_delly_svaba_sv_annotated_genes_cnv.bedpe"
             """
-            Rscript ${projectDir}/bin/pta/annotate-bedpe-with-cnv.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-cnv.r \
                 --cnv=${delly_annot} \
                 --bedpe=${annot_sv_genes_bedpe} \
                 --distance_limit=1000 \
@@ -30,7 +30,7 @@ process ANNOTATE_SV_WITH_CNV {
         } else if (suppl_switch == "supplemental") {
             output_name = "${sampleID}_manta_lumpy_delly_svaba_sv_annotated_genes_cnv_supplemental" == annot_sv_genes_bedpe.baseName ? "${sampleID}_manta_lumpy_delly_svaba_sv_reannotated_genes_cnv_supplemental.bedpe" : "${sampleID}_manta_lumpy_delly_svaba_sv_annotated_genes_cnv_supplemental.bedpe"
             """
-            Rscript ${projectDir}/bin/pta/annotate-bedpe-with-cnv.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-cnv.r \
                 --cnv=${delly_annot} \
                 --bedpe=${annot_sv_genes_bedpe} \
                 --distance_limit=1000 \

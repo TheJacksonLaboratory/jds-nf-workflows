@@ -85,7 +85,7 @@ workflow MT_VARIANT_CALLING {
         PICARD_COLLECTWGSMETRICS(PICARD_SORTSAM_MT.out.bam, 'mt')
         PICARD_COLLECTALIGNMENTSUMMARYMETRICS(PICARD_SORTSAM_MT.out.bam, 'mt')
 
-        ch_HAPLOCHECK_multiqc = Channel.empty() //optional log file for human only.
+        ch_HAPLOCHECK_multiqc = channel.empty() //optional log file for human only.
 
         if (params.gen_org == 'human') {
 
@@ -174,7 +174,7 @@ workflow MT_VARIANT_CALLING {
             SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'mtdna')
         }
 
-        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = channel.empty()
 
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES_MT.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))

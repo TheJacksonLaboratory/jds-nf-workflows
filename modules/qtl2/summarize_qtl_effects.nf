@@ -21,7 +21,7 @@ process SUMMARIZE_QTL_EFFECTS {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/summarize_qtl_effects.R ${id} ${params.primary_chrom_bed}
+    Rscript ${moduleDir}/bin/summarize_qtl_effects.R ${id} ${params.primary_chrom_bed}
     """
 
 }

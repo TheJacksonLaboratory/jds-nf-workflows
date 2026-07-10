@@ -19,7 +19,7 @@ process ANNOTATE_SV {
     if (params.gen_org == "human") {
         if (suppl_switch == "main") {
             """
-            Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
                 --db_names=gap,DGV,1000G,PON,COSMIC \
                 --db_files=${params.gap},${params.dgvBedpe},${params.thousandGVcf},${params.svPon},${params.cosmicBedPe} \
                 --slop=${params.sv_slop} \
@@ -30,7 +30,7 @@ process ANNOTATE_SV {
             """
         } else if (suppl_switch == "supplemental") {
             """
-            Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
                 --db_names=gap,DGV,1000G,PON,COSMIC \
                 --db_files=${params.gap},${params.dgvBedpe},${params.thousandGVcf},${params.svPon},${params.cosmicBedPe} \
                 --slop=${params.sv_slop} \
@@ -42,7 +42,7 @@ process ANNOTATE_SV {
     } else if (params.gen_org == "mouse") {
         if (suppl_switch == "main") {
             """
-            Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
                 --db_names=GAP,DEL,INS,INV,EXCLUDE_RANGE \
                 --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_regions} \
                 --slop=${params.sv_slop} \
@@ -52,7 +52,7 @@ process ANNOTATE_SV {
             """
         } else if (suppl_switch == "supplemental") {
             """
-            Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-databases.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
                 --db_names=GAP,DEL,INS,INV,EXCLUDE_RANGE \
                 --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_regions} \
                 --slop=${params.sv_slop} \

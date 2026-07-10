@@ -22,6 +22,6 @@ process CONCATENATE_GENOPROBS {
   script:
 
   """
-  Rscript --vanilla ${projectDir}/bin/lcwgs/concatGenoProbs_lcwgs.R ${params.cross_type} ${params.interp_250k_gridfile} ${projectDir}/bin/qtl/interpolate_genoprobs.R ${task.cpus}
+  Rscript --vanilla ${moduleDir}/bin/concatGenoProbs_lcwgs.R ${params.cross_type} ${params.interp_250k_gridfile} ${moduleDir}/bin/interpolate_genoprobs.R ${task.cpus}
   """
 }

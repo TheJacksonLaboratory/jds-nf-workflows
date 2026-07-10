@@ -16,7 +16,7 @@ def extract_csv(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID) | !(row.outputID) | !(row.gvcf) ){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
@@ -28,7 +28,7 @@ def extract_csv(csv_file) {
             [row.sampleID.toString(), row]
         }.groupTuple()
         .map{ meta, rows ->
-            size = rows.size()
+            def size = rows.size()
             [rows, size]
         }.transpose()
         .map{ row, numLanes -> //from here do the usual thing for csv parsing
@@ -47,7 +47,7 @@ def extract_csv(csv_file) {
         /* 
             NOTE: Additional ID parsing could be added here. For example a concatenation of patient and sample, if those fields were added to the csv sheet. 
         */
-        meta.size = size
+        meta.size = numLanes
         // defines the number of lanes for each sample. 
 
         // join meta to gvcf

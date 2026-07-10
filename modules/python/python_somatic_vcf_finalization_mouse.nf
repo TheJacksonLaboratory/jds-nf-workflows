@@ -26,18 +26,18 @@ process SOMATIC_VCF_FINALIZATION {
 
     """
     python \
-    ${projectDir}/bin/pta/annotate_id.py \
+    ${moduleDir}/bin/annotate_id.py \
     ${vcf} \
     ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_supplemental.vcf
 
     python \
-    ${projectDir}/bin/pta/make_main_vcf.py \
+    ${moduleDir}/bin/make_main_vcf.py \
     ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_supplemental.vcf \
     ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.vcf \
     GRCm39
 
     python \
-    ${projectDir}/bin/pta/make_txt.py \
+    ${moduleDir}/bin/make_txt.py \
     --vcf ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.vcf \
     --txt ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.txt \
     --vep-version GRCm39 \

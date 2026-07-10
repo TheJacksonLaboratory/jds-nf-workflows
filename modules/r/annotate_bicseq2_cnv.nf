@@ -23,7 +23,7 @@ process ANNOTATE_BICSEQ2_CNV {
         listOfChroms = chrom_list.collect { "$it" }.join(',')
 
         """
-        Rscript ${projectDir}/bin/pta/annotate-cnv.r \
+        Rscript ${moduleDir}/bin/annotate-cnv.r \
             --cnv=${bicseq2_calls} \
             --caller="bicseq2" \
             --tumor=${tumor_name} \

@@ -335,7 +335,7 @@ workflow MM_PTA {
         // maps to a set with indicies, flattens the map [file, index, file, index ...], 
         // collates the flattened map into pairs, then remaps to the pairs to tuple
 
-        intervals = Channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
+        intervals = channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
                     .collect()
                     .sort()
                     .map { items -> items.withIndex() }
@@ -350,7 +350,7 @@ workflow MM_PTA {
         chrom_channel = ch_normal_samples.combine(intervals).filter{it[4] != params.proxy_normal_sampleName}
 
         // Read a list of chromosome names from a parameter. These are provided to several tools. 
-        chroms = Channel
+        chroms = channel
             .fromPath("${params.chrom_contigs}")
             .splitText()
             .map{it -> it.trim()}
@@ -426,7 +426,7 @@ workflow MM_PTA {
 
         // ** Lancet - SNP/InDEL Calling
         // Generate a list of chromosome beds. This is generated in the same manner as the calling `intervals` variable above. 
-        lancet_beds = Channel.fromPath( params.lancet_beds_directory+'/*.bed' )
+        lancet_beds = channel.fromPath( params.lancet_beds_directory+'/*.bed' )
                         .collect()
                         .sort()
                         .map { items -> items.withIndex() }
@@ -743,7 +743,7 @@ workflow MM_PTA {
         FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
         FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
    
-        ch_multiqc_files = Channel.empty()
+        ch_multiqc_files = channel.empty()
         ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))

@@ -22,6 +22,6 @@ process SNPSIFT_EXTRACT_AND_PARSE {
 
     script:
     """
-    python ${projectDir}/bin/pta/split_annotations.py ${table} ${sampleID}_annotated_filtered_final_table.txt
+    python ${moduleDir}/bin/split_annotations.py ${table} ${sampleID}_annotated_filtered_final_table.txt
     """
 }

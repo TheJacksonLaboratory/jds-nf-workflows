@@ -14,6 +14,7 @@ process COMPRESS_INDEX_VCF_REGION {
     output:
     tuple val(sampleID), file("*.vcf.gz"), file("*.vcf.gz.tbi"), val(meta), val('empty_name'), val('empty_name'), val(chrom), emit: compressed_vcf_tbi
 
+    script:
     """
     bgzip \
     -c \

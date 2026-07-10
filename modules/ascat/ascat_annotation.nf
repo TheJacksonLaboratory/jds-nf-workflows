@@ -21,8 +21,8 @@ process ASCAT_ANNOTATION {
     script:
     gender = meta.gender == 'XX' ? 'female' : 'male'
     """
-    perl ${projectDir}/bin/cnv_array/segment_raw_extend.pl ${segments_raw} ${ploidy} ${params.chrArm} ${gender}
-    perl ${projectDir}/bin/cnv_array/annotate_ensembl_genes.pl ${sampleID}.segments_raw.extend.txt ${params.cnvGeneFile}
-    R CMD BATCH --slave "--args ${sampleID}.segments_raw.extend.txt ${sampleID} ./ " ${projectDir}/bin/cnv_array/seg_plot.R
+    perl ${moduleDir}/bin/segment_raw_extend.pl ${segments_raw} ${ploidy} ${params.chrArm} ${gender}
+    perl ${moduleDir}/bin/annotate_ensembl_genes.pl ${sampleID}.segments_raw.extend.txt ${params.cnvGeneFile}
+    R CMD BATCH --slave "--args ${sampleID}.segments_raw.extend.txt ${sampleID} ./ " ${moduleDir}/bin/seg_plot.R
     """
 }

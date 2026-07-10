@@ -17,7 +17,7 @@ process ADD_FINAL_ALLELE_COUNTS {
     script:
     """
     python \
-    ${projectDir}/bin/pta/add_final_allele_counts_to_vcf.py \
+    ${moduleDir}/bin/add_final_allele_counts_to_vcf.py \
     -v ${vcf} \
     -o ${sampleID}_final_${chrom}.vcf \
     """

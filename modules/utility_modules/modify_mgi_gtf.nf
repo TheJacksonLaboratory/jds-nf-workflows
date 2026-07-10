@@ -21,6 +21,6 @@ process MODIFY_MGI_GTF {
 
     script:
         """
-        perl ${projectDir}/bin/generate_rnaseq_index/modify_mgi_gtf.pl ${gtf} ${ref_table} ${gtf.getBaseName(2)}.biotypeAdded.gtf
+        perl ${moduleDir}/bin/modify_mgi_gtf.pl ${gtf} ${ref_table} ${gtf.getBaseName(2)}.biotypeAdded.gtf
         """
 }

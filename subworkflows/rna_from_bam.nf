@@ -21,7 +21,7 @@ workflow RNA_FROM_BAM {
     
     main:
         if (!params.rsem_reference_path || params.rsem_reference_path == '' || params.rsem_reference_path == null) {
-            bowtie2_input = Channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
+            bowtie2_input = channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
             RSEM_PREPAREREFERENCE(bowtie2_input)
 
             rsem_ref_files = RSEM_PREPAREREFERENCE.out.all_files.toList()
@@ -30,7 +30,7 @@ workflow RNA_FROM_BAM {
 
         } else {
 
-            rsem_ref_files = Channel
+            rsem_ref_files = channel
             .fromPath( "${params.rsem_reference_path}/**" )
             .collect()
             .toList()

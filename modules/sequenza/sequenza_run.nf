@@ -29,7 +29,7 @@ process SEQUENZA_RUN {
     female = meta.sex == 'XX' ? 'TRUE' : 'FALSE'
 
     """
-    Rscript ${projectDir}/bin/wes/sequenza_run.R ${seqz} ${sampleID} ./ ${female}
+    Rscript ${moduleDir}/bin/sequenza_run.R ${seqz} ${sampleID} ./ ${female}
 
     cat ${sampleID}_segments.txt | tr -d "\\"" | awk 'NR>1' > ${sampleID}_segments.tmp
     """

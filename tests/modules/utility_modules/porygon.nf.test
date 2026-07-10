@@ -1,0 +1,25 @@
+nextflow_process {
+
+    name "Test Process PORYGON"
+    script "modules/utility_modules/porygon.nf"
+    process "PORYGON"
+
+    test("Porygon used python. It was super effective.") {
+
+        when {
+            params {
+
+            }
+            process {
+                """
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+}

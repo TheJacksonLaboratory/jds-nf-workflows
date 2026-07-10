@@ -25,7 +25,7 @@ process BICSEQ2_SEG_UNPAIRED {
     """
 
     python3 \
-    ${projectDir}/bin/pta/bicseq2_seg_config_writer_unpaired.py \
+    ${moduleDir}/bin/bicseq2_seg_config_writer_unpaired.py \
     --tumor-norms ${tumor_norm_list} \
     --seg-bicseq2-config ${params.bicseq2_chromList} \
     --out-file configuration_file.txt \

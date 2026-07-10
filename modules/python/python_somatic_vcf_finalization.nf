@@ -27,23 +27,23 @@ process SOMATIC_VCF_FINALIZATION {
 
     """
     python \
-    ${projectDir}/bin/pta/annotate_id.py \
+    ${moduleDir}/bin/annotate_id.py \
     ${vcf} \
     ${sampleID}_somatic_vep_cosmic_cancerResitMut_annotated_id.vcf
 
     python \
-    ${projectDir}/bin/pta/rename_csq_vcf.py \
+    ${moduleDir}/bin/rename_csq_vcf.py \
     ${sampleID}_somatic_vep_cosmic_cancerResitMut_annotated_id.vcf \
     ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_supplemental.vcf
 
     python \
-    ${projectDir}/bin/pta/make_main_vcf.py \
+    ${moduleDir}/bin/make_main_vcf.py \
     ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_supplemental.vcf \
     ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.vcf \
     GRCh38
 
     python \
-    ${projectDir}/bin/pta/make_txt.py \
+    ${moduleDir}/bin/make_txt.py \
     --vcf ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.vcf \
     --txt ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.txt \
     --vep-version GRCh38 \
@@ -51,7 +51,7 @@ process SOMATIC_VCF_FINALIZATION {
     --normal ${normal_name} 
 
     python \
-    ${projectDir}/bin/pta/make_maf.py \
+    ${moduleDir}/bin/make_maf.py \
     --vcf ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.vcf \
     --maf ${sampleID}_somatic_snv_indel_annotated_${output_suffix}_final.maf \
     --library WGS \

@@ -96,13 +96,13 @@ workflow AMPLICON_GENERIC  {
   } else if (params.concat_lanes){
     
     if (params.read_type == 'PE'){
-      read_ch = Channel
+      read_ch = channel
               .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
               .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
               .groupTuple()
     }
     else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
                   .map { file, file1 -> tuple(getLibraryId(file), file1) }
                   .groupTuple()
                   .map{t-> [t[0], t[1].flatten()]}
@@ -113,10 +113,10 @@ workflow AMPLICON_GENERIC  {
   } else {
     
     if (params.read_type == 'PE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
     }
     else if (params.read_type == 'SE'){
-      read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
     }
       // if channel is empty give error message and exit
       read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
@@ -263,7 +263,7 @@ workflow AMPLICON_GENERIC  {
   SNPSIFT_EXTRACTFIELDS(SNPEFF_ONEPERLINE.out.vcf, 'amplicon_generic')
 
   // MultiQC
-  ch_multiqc_files = Channel.empty()
+  ch_multiqc_files = channel.empty()
   ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))

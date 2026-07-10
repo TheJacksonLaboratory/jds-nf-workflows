@@ -17,14 +17,14 @@ process SURVIVOR_VCF_TO_TABLE {
     script:
         if (params.data_type == "pacbio")
             """
-            /usr/bin/env bash ${projectDir}/bin/germline_sv/surv_annot.sh ${sampleID} ${vcf} pacbio
+            /usr/bin/env bash ${moduleDir}/bin/surv_annot.sh ${sampleID} ${vcf} pacbio
             """
         else if (params.data_type == "illumina")
             """
-            /usr/bin/env bash ${projectDir}/bin/germline_sv/surv_annot.sh ${sampleID} ${vcf} illumina
+            /usr/bin/env bash ${moduleDir}/bin/surv_annot.sh ${sampleID} ${vcf} illumina
             """
         else if (params.data_type == "ont")
             """
-            /usr/bin/env bash ${projectDir}/bin/germline_sv/surv_annot.sh ${sampleID} ${vcf} ont
+            /usr/bin/env bash ${moduleDir}/bin/surv_annot.sh ${sampleID} ${vcf} ont
             """            
 }

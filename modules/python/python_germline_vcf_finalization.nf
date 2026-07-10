@@ -23,12 +23,12 @@ process GERMLINE_VCF_FINALIZATION {
 
     """
     python \
-    ${projectDir}/bin/pta/annotate_id.py \
+    ${moduleDir}/bin/annotate_id.py \
     ${vcf} \
     ${sampleID}_germline_vep_cosmic_cancerResitMut_annotated_id.vcf
 
     python \
-    ${projectDir}/bin/pta/rename_csq_vcf.py \
+    ${moduleDir}/bin/rename_csq_vcf.py \
     ${sampleID}_germline_vep_cosmic_cancerResitMut_annotated_id.vcf \
     ${sampleID}_germline_snv_indel_annotated_${output_suffix}_final.vcf
     """

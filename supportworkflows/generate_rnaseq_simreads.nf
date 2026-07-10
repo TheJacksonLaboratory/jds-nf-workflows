@@ -28,10 +28,10 @@ workflow GENERATE_RNASEQ_SIMREADS {
     REFORMAT_FASTA(params.fa_cds)
 
     library_size = params.library_size instanceof String 
-        ? Channel.from(params.library_size.split(',').collect{it.trim().toInteger()})
-        : Channel.from(params.library_size.collect{it.toInteger()})
+        ? channel.from(params.library_size.split(',').collect{it.trim().toInteger()})
+        : channel.from(params.library_size.collect{it.toInteger()})
 
-    sim_input = params.library_strategy == 'BOTH' ? REFORMAT_FASTA.out.wrap_fasta.combine(library_size).combine(Channel.from(['PE', 'SE'])) : REFORMAT_FASTA.out.wrap_fasta.combine(library_size).combine(Channel.from([params.library_strategy]))
+    sim_input = params.library_strategy == 'BOTH' ? REFORMAT_FASTA.out.wrap_fasta.combine(library_size).combine(channel.from(['PE', 'SE'])) : REFORMAT_FASTA.out.wrap_fasta.combine(library_size).combine(channel.from([params.library_strategy]))
 
     GENERATE_SIMULATED_RNA_DATA(sim_input)
 

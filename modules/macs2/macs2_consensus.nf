@@ -37,7 +37,7 @@ process MACS2_CONSENSUS {
     sort -T '.' -k1,1 -k2,2n ${peaks.collect{it.toString()}.sort().join(' ')} \\
         | mergeBed -c $mergecols -o $collapsecols > ${prefix}.txt
 
-    ${projectDir}/bin/chipseq/macs2_merged_expand.py \\
+    ${moduleDir}/bin/macs2_merged_expand.py \\
         ${prefix}.txt \\
         ${peaks.collect{it.toString()}.sort().join(',').replaceAll("_peaks.${peak_type}","")} \\
         ${prefix}.boolean.txt \\
@@ -49,7 +49,7 @@ process MACS2_CONSENSUS {
     echo -e "GeneID\tChr\tStart\tEnd\tStrand" > ${prefix}.saf
     awk -v FS='\t' -v OFS='\t' 'FNR > 1 { print \$4, \$1, \$2, \$3,  "+" }' ${prefix}.boolean.txt >> ${prefix}.saf
 
-    ${projectDir}/bin/chipseq/plot_peak_intersect.r -i ${prefix}.boolean.intersect.txt -o ${prefix}.boolean.intersect.plot.pdf
+    ${moduleDir}/bin/plot_peak_intersect.r -i ${prefix}.boolean.intersect.txt -o ${prefix}.boolean.intersect.plot.pdf
 
     echo "${prefix}.bed\t${antibody}/${prefix}.bed" > ${prefix}.antibody.txt
 

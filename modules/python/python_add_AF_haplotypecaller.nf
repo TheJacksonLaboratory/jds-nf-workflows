@@ -19,6 +19,6 @@ process ADD_ALT_AF {
 
     script:
     """
-    python ${projectDir}/bin/wes/AF_haplotypecaller.py ${vcf} ${sampleID}_${output_suffix}.vcf 9
+    python ${moduleDir}/bin/AF_haplotypecaller.py ${vcf} ${sampleID}_${output_suffix}.vcf 9
     """
 }

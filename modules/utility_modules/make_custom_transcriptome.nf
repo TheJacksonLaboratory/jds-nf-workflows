@@ -21,7 +21,7 @@ process MAKE_CUSTOM_TRANSCRIPTOME {
     script:
         """
         cat ${ref_fa} ${custom_gene_fasta} > ${ref_fa.baseName}_${custom_gene_fasta.baseName}.fasta
-        python ${projectDir}/bin/rnaseq/fasta_to_gtf.py -i ${custom_gene_fasta} -o ${custom_gene_fasta.baseName}.gtf
+        python ${moduleDir}/bin/fasta_to_gtf.py -i ${custom_gene_fasta} -o ${custom_gene_fasta.baseName}.gtf
         cat ${ref_gtf} ${custom_gene_fasta.baseName}.gtf > ${ref_fa.baseName}_${custom_gene_fasta.baseName}.gtf
         """
 }

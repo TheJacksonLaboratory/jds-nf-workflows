@@ -25,7 +25,7 @@ process PICARD_FIX_MATE_INFORMATION {
     picard -Xmx${my_mem}G FixMateInformation \
     I=${bam} \
     O=${bam.baseName}.fixed_mate.bam \
-    TMP_DIR=${workDir}/temp \
+    TMP_DIR=`pwd`/tmp \
     ADD_MATE_CIGAR=true \
     SORT_ORDER=coordinate
     """

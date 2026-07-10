@@ -18,7 +18,7 @@ process FRAG_LEN_PLOT {
 
     script:
     """
-    Rscript ${projectDir}/bin/atac/fragment_length_plot.R ${frag_len_count} ${sampleID}_spline_table.txt
+    Rscript ${moduleDir}/bin/fragment_length_plot.R ${frag_len_count} ${sampleID}_spline_table.txt
     mv fraglen_plot.pdf ${sampleID}_fraglen_plot.pdf
     """
 }

@@ -21,7 +21,7 @@ process ANNOTATE_SV_WITH_CNV {
 
         if (suppl_switch == "main")
         """
-        Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-cnv.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-cnv.r \
             --cnv=${delly_annot} \
             --bedpe=${annot_sv_genes_bedpe} \
             --distance_limit=${params.cnv_distance_limit} \
@@ -30,7 +30,7 @@ process ANNOTATE_SV_WITH_CNV {
 
         else if (suppl_switch == "supplemental")
         """
-        Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-cnv.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-cnv.r \
             --cnv=${delly_annot} \
             --bedpe=${annot_sv_genes_bedpe} \
             --distance_limit=${params.cnv_distance_limit} \

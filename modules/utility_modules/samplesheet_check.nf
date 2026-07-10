@@ -11,7 +11,7 @@ process SAMPLESHEET_CHECK {
 
     script:
     """
-    ${projectDir}/bin/smrnaseq/check_samplesheet.py \
+    ${moduleDir}/bin/check_samplesheet.py \
     $samplesheet \
     samplesheet.valid.csv
     """

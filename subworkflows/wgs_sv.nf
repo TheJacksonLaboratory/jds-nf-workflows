@@ -47,7 +47,7 @@ workflow WGS_SV {
     
     main:
         // Read a list of chromosome names from a parameter. These are provided to several tools. 
-        chroms = Channel
+        chroms = channel
             .fromPath("${params.chrom_contigs}")
             .splitText()
             .map{it -> it.trim()}

@@ -18,6 +18,6 @@ process SEQUENZA_ANNOTATE {
 
     script:
     """
-    perl ${projectDir}/bin/wes/ensembl_annotation.pl ${segment_file} ${params.ensembl_database}
+    perl ${moduleDir}/bin/ensembl_annotation.pl ${segment_file} ${params.ensembl_database}
     """
 }

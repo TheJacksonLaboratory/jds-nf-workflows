@@ -20,7 +20,7 @@ process ANNOTATE_SV {
 
         if (suppl_switch == "main")
         """
-        Rscript ${projectDir}/bin/pta/annotate-bedpe-with-databases.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
             --db_names=gap,DGV,1000G,PON,COSMIC \
             --db_files=${params.gap},${params.dgvBedpe},${params.thousandGVcf},${params.svPon},${params.cosmicBedPe} \
             --slop=500 \
@@ -32,7 +32,7 @@ process ANNOTATE_SV {
         """
         else if (suppl_switch == "supplemental")
         """
-        Rscript ${projectDir}/bin/pta/annotate-bedpe-with-databases.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
             --db_names=gap,DGV,1000G,PON,COSMIC \
             --db_files=${params.gap},${params.dgvBedpe},${params.thousandGVcf},${params.svPon},${params.cosmicBedPe} \
             --slop=500 \
