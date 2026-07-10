@@ -70,7 +70,7 @@ def extract_csv(csv_file) {
     // Additional check of sample sheet:
     // 1. Each row should specify a lane and the same combination of patient, sample and lane shouldn't be present in different rows.
     // 2. The same sample shouldn't be listed for different patients.
-    def patient_sample_lane_combinations_in_samplesheet = []
+    // def patient_sample_lane_combinations_in_samplesheet = []
     def sample2patient = [:]
 
     channel.from(csv_file).splitCsv(header: true)
@@ -100,11 +100,11 @@ def extract_csv(csv_file) {
             }
             [[row.patient.toString(), row.sampleID.toString()], row]
         }.groupTuple()
-        .map{ meta, rows ->
+        .map{ _meta, rows ->
             def size = rows.size()
             [rows, size]
         }.transpose()
-        .map{ row, numLanes -> //from here do the usual thing for csv parsing
+        .map{ row, _numLanes -> //from here do the usual thing for csv parsing
 
         def meta = [:]
 
@@ -139,7 +139,7 @@ def extract_csv(csv_file) {
             try {
                 file(row.fastq_1, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_1 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
@@ -149,7 +149,7 @@ def extract_csv(csv_file) {
             try {
                 file(row.fastq_2, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_2 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)

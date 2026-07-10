@@ -98,7 +98,11 @@ workflow CONCATENATE_LOCAL_FILES {
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
 
-    emit:
-        read_meta_ch
+        def second_val = 42
 
+    emit:
+        read_meta_ch = read_meta_ch
+        second_val = second_val
+        // The emit statement explicitly names the emitted value, which avoids warn 'Emit name should be omitted when there is only one emit'
+        // Naming emits, allows for easier code reading / tracing. Should not be a warn, and this is a way around that.
 }

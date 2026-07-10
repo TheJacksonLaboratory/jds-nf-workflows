@@ -14,9 +14,9 @@ process PEAK_COVERAGE {
     output:
     tuple val(sampleID), file("*_peaks.narrowPeak.saf")
 
-    shell:
-    '''
-    awk 'OFS="\\t" {print $1"."$2"."$3, $1, $2, $3, "."}' !{narrow_peaks} \
-    > !{sampleID}_peaks.narrowPeak.saf
-    '''
+    script:
+    """
+    awk 'OFS="\\t" {print \$1"."\$2"."\$3, \$1, \$2, \$3, "."}' ${narrow_peaks} \
+    > ${sampleID}_peaks.narrowPeak.saf
+    """
 }

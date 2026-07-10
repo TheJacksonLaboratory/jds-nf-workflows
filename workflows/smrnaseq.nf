@@ -89,7 +89,7 @@ workflow SMRNASEQ {
       exit 0
   }
 
-  if (params.csv_input)     { ch_input = file(params.csv_input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' }
+  if (params.csv_input)     { _ch_input = file(params.csv_input, checkIfExists: true) } else { exit 1, 'Samples design file not specified!' } // ch_input unused other than to check that file exists.
 
   // log params
   message = param_log()

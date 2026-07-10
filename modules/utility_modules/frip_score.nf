@@ -18,7 +18,7 @@ process FRIP_SCORE {
     tuple val(ip), path("*.tsv"), emit : tsv
 
     script:
-    def PEAK_TYPE = params.narrow_peak ? 'narrowPeak' : 'broadPeak'
+    // def PEAK_TYPE = params.narrow_peak ? 'narrowPeak' : 'broadPeak'
     """
     cat $peak | wc -l | awk -v OFS='\t' '{ print "${ip}", \$1 }' | cat $peak_count_header - > ${ip}_peaks.count_mqc.tsv
     READS_IN_PEAKS=\$(intersectBed -a ${ipbam[0]} -b $peak -bed -c -f 0.20 | awk -F '\t' '{sum += \$NF} END {print sum}')i

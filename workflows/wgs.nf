@@ -221,7 +221,7 @@ workflow WGS {
       }
       split_fastq_count = split_fastq_files
                       .groupTuple()
-                      .map{sample, reads, index, read_group -> [sample, groupKey(sample, index.size())]}
+                      .map{sample, _reads, index, _read_group -> [sample, groupKey(sample, index.size())]}
       bwa_mem_mapping = split_fastq_count
                   .combine(split_fastq_files, by:0) 
                   .map{it -> [it[1], it[2], it[3], it[4]] }

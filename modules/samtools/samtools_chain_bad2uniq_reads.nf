@@ -16,15 +16,15 @@ process CHAIN_BAD2UNIQ_READS {
     
     when: params.chain != null
 
-    shell:
+    script:
     // Get unique 'bad read names' from bam file using gatk ValidateSamFile out results
-    '''
-    cat !{bad_reads} \
-    | awk '{print $5}' \
+    """
+    cat ${bad_reads} \
+    | awk '{print \$5}' \
     | sed -r 's/\\,//g' \
     | sort -n \
     | uniq -c \
-    | awk '{print $2}' \
+    | awk '{print \$2}' \
     > ReadName_unique
-    '''
+    """
 }

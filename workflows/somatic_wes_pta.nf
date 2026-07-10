@@ -188,8 +188,8 @@ workflow SOMATIC_WES_PTA {
     GATK_GETSAMPLENAME_NORMAL(ch_final_bam.normal.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
     GATK_GETSAMPLENAME_TUMOR(ch_final_bam.tumor.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
 
-    ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
-    ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+    ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+    ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
     
     /* 
     The above map statements adjusts channels for normal, tumor samples to organize them by patient IDs. 
@@ -386,12 +386,12 @@ def extract_csv(csv_file) {
             [[patientId, sampleId], row]
         }
         .groupTuple()
-        .map { meta, rows ->
+        .map { _meta, rows ->
             def size = rows.size()
             [rows, size]
         }
         .transpose()
-        .map { row, numLanes -> // from here do the usual thing for csv parsing
+        .map { row, _numLanes -> // from here do the usual thing for csv parsing
 
             def meta = [:]
 
@@ -426,7 +426,7 @@ def extract_csv(csv_file) {
                 try {
                     file(row.fastq_1, checkIfExists: true)
                 }
-                catch (Exception e) {
+                catch (Exception _e) {
                     System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                     System.err.println(ANSI_RED + "The file: " + row.fastq_1 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                     System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
@@ -436,7 +436,7 @@ def extract_csv(csv_file) {
                 try {
                     file(row.fastq_2, checkIfExists: true)
                 }
-                catch (Exception e) {
+                catch (Exception _e) {
                     System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                     System.err.println(ANSI_RED + "The file: " + row.fastq_2 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                     System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)

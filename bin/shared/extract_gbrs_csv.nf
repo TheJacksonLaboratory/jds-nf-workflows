@@ -26,7 +26,7 @@ def extract_gbrs_csv(csv_file) {
             }
             [row.sampleID.toString(), row]
         }.groupTuple()
-        .map{ meta, rows ->
+        .map{ _meta, rows ->
             def size = rows.size()
             [rows, size]
         }.transpose()
@@ -61,7 +61,7 @@ def extract_gbrs_csv(csv_file) {
             try {
                 file(row.fastq_1, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_1 + ' does not exist. Use absolute paths, and check for correctness.' + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
@@ -71,7 +71,7 @@ def extract_gbrs_csv(csv_file) {
             try {
                 file(row.fastq_2, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_2 + ' does not exist. Use absolute paths, and check for correctness.' + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
@@ -92,7 +92,7 @@ def extract_gbrs_csv(csv_file) {
             try {
                 file(row.fastq_1, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_1 + ' does not exist. Use absolute paths, and check for correctness.' + ANSI_RESET)
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)

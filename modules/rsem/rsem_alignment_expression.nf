@@ -76,7 +76,6 @@ process RSEM_ALIGNMENT_EXPRESSION {
     def intermediate
     def star_log
     def readFilesCommand
-    def output_prefix = "${sampleID}/${sampleID}"
 
     if (params.rsem_aligner == "bowtie2"){
         

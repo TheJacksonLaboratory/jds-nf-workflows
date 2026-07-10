@@ -14,7 +14,7 @@ process SNIFFLES {
         tuple val(sampleID), file(bam), file(index)
     output:
         tuple val(sampleID), file("${sampleID}.sniffles_sorted_prefix.vcf"), emit: sniffles_vcf
-    shell:
+    script:
         if(params.tandem_repeats)
             """
             sniffles --input ${bam} --vcf ${sampleID}.sniffles_calls.vcf --tandem-repeats ${params.tandem_repeats} --output-rnames -t ${task.cpus}

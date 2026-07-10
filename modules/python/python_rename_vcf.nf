@@ -19,7 +19,11 @@ process RENAME_VCF {
     normal = meta.normal_id
     tumor = meta.tumor_id
 
-    tool_name = tool == 'lancet_support' ? 'lancet' : tool
+    // tool_name = tool == 'lancet_support' ? 'lancet' : tool 
+    // This was included, and unused. I believe it was originally intended to make the tool name 'lancet'; however, 
+    // lancet_support is correct here as in the GATK_SORTVCF there is logic to account for 'lancet_support' and if
+    // it were renamed here to 'lancet' that logic wouldn't work. I think the code was stored as a hold over, 
+    // and is not commented out, and this note serves as an explanation for future reference.
 
     """
     python \

@@ -210,7 +210,7 @@ workflow HS_PTA {
             }
             split_fastq_count = split_fastq_files
                             .groupTuple()
-                            .map{sample, reads, index, read_group -> [sample, groupKey(sample, index.size())]}
+                            .map{sample, _reads, index, _read_group -> [sample, groupKey(sample, index.size())]}
                         
             bwa_mem_mapping = split_fastq_count
                         .combine(split_fastq_files, by:0)
@@ -298,8 +298,8 @@ workflow HS_PTA {
         GATK_GETSAMPLENAME_NORMAL(ch_final_bam.normal.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
         GATK_GETSAMPLENAME_TUMOR(ch_final_bam.tumor.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
 
-        ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
-        ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+        ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+        ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
         
         /* 
         The above map statements adjusts channels for normal, tumor samples to organize them by patient IDs. 
@@ -461,7 +461,7 @@ workflow HS_PTA {
         // Use the list of chroms from above to get a list of primary chromosomes and exclude chrM (dropRight(1))
         // The 'chroms' object and those made below are provided to several tools. 
         chrom_list = chroms.collect().dropRight(1)
-        chrom_list_noY = chrom_list.dropRight(1)
+        _chrom_list_noY = chrom_list.dropRight(1) // unused, but left with '_' in case needed in future. 
         
         // Variant calling. 
         GATK_HAPLOTYPECALLER_SV_GERMLINE(chrom_channel)
@@ -706,7 +706,7 @@ workflow HS_PTA {
 
         callers_for_merge = GATK_SORTVCF_TOOLS.out.vcf_tbi
                             .groupTuple(size: 5)
-                            .map{sampleID, vcf, idx, meta, normal_sample, tumor_sample, tool_list -> tuple( sampleID, vcf, idx, meta.unique()[0] )  }
+                            .map{sampleID, vcf, idx, meta, _normal_sample, _tumor_sample, _tool_list -> tuple( sampleID, vcf, idx, meta.unique()[0] )  }
                             .combine(chrom_list.flatten())
         // The above collects all callers on sampleID, then maps to avoid duplication of data and to drop the tool list, which is not needed anymore. 
         // Note that this could be done using 'by' in the groupTuple statement. However, the map is still required to remove the tool list. 
@@ -735,7 +735,7 @@ workflow HS_PTA {
         //    Compress and index the resulting VCF.
         lancet_confirm_input = VCF_TO_BED.out.bed                         
                             .combine(ch_paired_samples, by: 0)
-                            .map{sampleID, bed, meta, chrom, meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, bed, meta, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name, chrom )  }
+                            .map{sampleID, bed, meta, chrom, _meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, bed, meta, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name, chrom )  }
         // The above combines output by sampleID with BAM files. Then maps to avoid duplication of data, and set input tuples for the steps that follow.  
         // Note that "combine" here, combines each output stream from VCF_TO_BED with ch_paired_samples, keeping the scattered chrom seperate. 
 
@@ -745,7 +745,7 @@ workflow HS_PTA {
         // 5. Intersect Lancet Confirm with candidate extractions. 
         candidate_lancet_intersect_input = COMPRESS_INDEX_VCF_REGION.out.compressed_vcf_tbi
                                         .join(COMPRESS_INDEX_VCF_REGION_LANCET.out.compressed_vcf_tbi, by: [0,6])
-                                        .map{sampleID, chrom, vcf, tbi, meta, empty_name, empty_name2, vcf2, tbi2, meta2, normal_name, tumor_name -> tuple( sampleID, vcf, tbi, vcf2, tbi2, meta, normal_name, tumor_name, chrom )}
+                                        .map{sampleID, chrom, vcf, tbi, meta, _empty_name, _empty_name2, vcf2, tbi2, _meta2, normal_name, tumor_name -> tuple( sampleID, vcf, tbi, vcf2, tbi2, meta, normal_name, tumor_name, chrom )}
         // The above joins candidate VCF with Lancet Confirm VCF by sampleID and chrom. Then maps to avoid duplication of data, and set input tuples for the steps that follow.  
         // Note: A. The 'by' statement here, joins on sampleID and chrom, which correspond to index values 0 and 6 in the output tuples. 
         //       B. 'empty_name' is used here because 'normal_name' and 'tumor_name' are not required/used in the candidate steps. 
@@ -787,7 +787,7 @@ workflow HS_PTA {
         // ** Merge lancet confirmed back to all merged callers. Compress and index merged calls.  
         allCalls_lancetConfirm_merge_input = COMPRESS_INDEX_VCF_ALL_CALLERS.out.compressed_vcf_tbi
                                             .join(GATK_SORTVCF_TOOLS_LANCET.out.vcf_tbi, by: [0,6])
-                                            .map{sampleID, chrom, vcf, tbi, meta, empty_name, empty_name2, vcf2, tbi2, meta2, normal_name, tumor_name -> tuple( sampleID, [vcf, vcf2], [tbi, tbi2], meta, chrom )}
+                                            .map{sampleID, chrom, vcf, tbi, meta, _empty_name, _empty_name2, vcf2, tbi2, _meta2, _normal_name, _tumor_name -> tuple( sampleID, [vcf, vcf2], [tbi, tbi2], meta, chrom )}
         // BCFTOOLS_MERGE Requires an input tuple as follows: [val(sampleID), file(vcf), file(idx), val(meta), val(chrom)]
         // Join the output streams on sampleID and chrom, and then map to the require tuple structure. Note that [vcf, vcf2] makes a list that is understoon by the module. 
 
@@ -803,7 +803,7 @@ workflow HS_PTA {
         //    "Runs pileup on tumor and normal bam files to compute allele counts for bi-allelic SNV and Indel variants in VCF file and adds pileup format columns to the VCF file.""
         addAlleleCounts_confirm_input = MERGE_COLUMNS.out.mergeColumn_vcf                         
                             .combine(ch_paired_samples, by: 0)
-                            .map{sampleID, vcf, meta, chrom, meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, vcf, meta, normal_bam, normal_bai, tumor_bam, tumor_bai, chrom )  }
+                            .map{sampleID, vcf, meta, chrom, _meta2, normal_bam, normal_bai, _normal_name, tumor_bam, tumor_bai, _tumor_name -> tuple( sampleID, vcf, meta, normal_bam, normal_bai, tumor_bam, tumor_bai, chrom )  }
         ADD_NYGC_ALLELE_COUNTS(addAlleleCounts_confirm_input)
 
         // 3. Add Final Allele Counts to VCF
@@ -824,7 +824,7 @@ workflow HS_PTA {
         // number of chrom intervals split on during the above steps. A 'value' variable used in groupTuple size statement. MT is removed, hence '- 1'. If dynamic 'Y' is ever implimented. This needs adjustment. 
         chrom_merge_input = SNV_TO_MNV_FINAL_FILTER.out.vcf
                             .groupTuple(size: num_intervals)
-                            .map{sampleID, vcf, meta, chrom -> tuple( sampleID, vcf, meta.unique()[0] )  }
+                            .map{sampleID, vcf, meta, _chrom -> tuple( sampleID, vcf, meta.unique()[0] )  }
                             // Collect scattered chroms, remap to tuple without chrom names. 
 
         GATK_SORTVCF_SOMATIC(chrom_merge_input)

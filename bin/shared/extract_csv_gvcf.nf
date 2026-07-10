@@ -27,7 +27,7 @@ def extract_csv(csv_file) {
             }
             [row.sampleID.toString(), row]
         }.groupTuple()
-        .map{ meta, rows ->
+        .map{ _meta, rows ->
             def size = rows.size()
             [rows, size]
         }.transpose()
@@ -54,7 +54,7 @@ def extract_csv(csv_file) {
         try {
             file(row.gvcf, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.gvcf + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)

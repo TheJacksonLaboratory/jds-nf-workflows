@@ -28,8 +28,7 @@ process DESEQ2_QC {
     script:
     prefix = "${antibody}.consensus_peaks"
     bam_ext = params.read_type == 'SE'  ? '.mLb.clN.sorted.bam' : '.mLb.clN.bam'
-    vst = params.deseq2_vst ? '--vst TRUE' : ''
-    peak_type = params.narrow_peak ? 'narrowPeak' : 'broadPeak'
+    vst = params.deseq2_vst ? '--vst TRUE' : '' // this is now connected properly, prior it was always set TRUE. 
     """
     ${moduleDir}/bin/deseq2_qc.r \\
         --count_file $counts \\
@@ -37,7 +36,7 @@ process DESEQ2_QC {
         --outdir ./ \\
         --outprefix $prefix \\
         --cores $task.cpus \\
-        --id_col 1 --count_col 7 --vst TRUE
+        --id_col 1 --count_col 7 ${vst}
 
     sed 's/deseq2_pca/deseq2_pca_${task.index}/g' <$deseq2_pca_header >tmp.txt
     sed -i -e 's/DESeq2 /${antibody} DESeq2 /g' tmp.txt

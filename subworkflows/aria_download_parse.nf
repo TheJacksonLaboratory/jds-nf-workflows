@@ -118,7 +118,7 @@ workflow FILE_DOWNLOAD {
         .groupTuple(by: [0,2], size: group_size) // sampleID, meta
         .map{it -> tuple(it[0], it[2], it[4].toSorted( { a, b -> a.getName() <=> b.getName() } ) ) }
 
-        read_meta_ch.view()
+        def second_val = 42
 
         /*
             Mix concatenation files, with non-concat files. 'mix' allows for, all, some, or no files to have 
@@ -128,5 +128,8 @@ workflow FILE_DOWNLOAD {
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
     emit:
-        read_meta_ch
+        read_meta_ch = read_meta_ch
+        second_val = second_val 
+        // The emit statement explicitly names the emitted value, which avoids warn 'Emit name should be omitted when there is only one emit'
+        // Naming emits, allows for easier code reading / tracing. Should not be a warn, and this is a way around that.
 }

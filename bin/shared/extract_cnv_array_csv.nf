@@ -27,11 +27,11 @@ def extract_csv(csv_file) {
             } 
             [row.sampleID.toString(), row]
         }.groupTuple()
-        .map{ meta, rows ->
+        .map{ _sampleID, rows ->
             def size = rows.size()
             [rows, size]
         }.transpose()
-        .map{ row, numLanes -> //from here do the usual thing for csv parsing
+        .map{ row, _numLanes -> //from here do the usual thing for csv parsing
 
         if (row.idat_red.substring(row.idat_red.lastIndexOf(System.getProperty("file.separator")) + 1).count("_") > 2){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
@@ -75,7 +75,7 @@ def extract_csv(csv_file) {
         try {
             file(row.idat_red, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.idat_red + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
@@ -85,7 +85,7 @@ def extract_csv(csv_file) {
         try {
             file(row.idat_green, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.idat_green + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)

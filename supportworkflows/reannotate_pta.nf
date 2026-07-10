@@ -109,9 +109,9 @@ def extract_csv(csv_file) {
             filesToCheck.each { filePath ->
                 try {
                     file(filePath, checkIfExists: true)
-                } catch (Exception e) {
+                } catch (Exception _e) {
                     System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-                    def headerName = row.find { k, v -> v == filePath }?.key ?: "unknown"
+                    def headerName = row.find { _k, v -> v == filePath }?.key ?: "unknown"
                     System.err.println(ANSI_RED + "The file for header '${headerName}': " + filePath + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                     System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
                     System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)

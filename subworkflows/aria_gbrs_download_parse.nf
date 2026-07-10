@@ -101,6 +101,11 @@ workflow FILE_DOWNLOAD {
             Reads are remapped to read_ch and meta is placed in meta_ch. Input tuples for existing modules 
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
+        def second_val = 42
+
     emit:
-        read_meta_ch
+        read_meta_ch = read_meta_ch
+        second_val = second_val
+        // The emit statement explicitly names the emitted value, which avoids warn 'Emit name should be omitted when there is only one emit'
+        // Naming emits, allows for easier code reading / tracing. Should not be a warn, and this is a way around that.
 }

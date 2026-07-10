@@ -14,9 +14,10 @@ workflow INPUT_CHECK {
         .splitCsv ( header:true, sep:',' )
         .map { it -> create_fastq_channel(it) }
         .set { reads }
-
+    def second_val = 42
     emit:
-    reads                                     // channel: [ val(meta), [ reads ] ]
+    reads = reads                                    // channel: [ val(meta), [ reads ] ]
+    second_val = second_val
     //versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 

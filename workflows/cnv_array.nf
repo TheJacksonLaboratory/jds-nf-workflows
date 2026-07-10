@@ -39,8 +39,8 @@ workflow CNV_ARRAY {
         exit 1, "Workflow requires a CSV manifest. See `--help` for information."   
     }
 
-    GC_file = file(params.gc_file, checkIfExists: true)
-    RT_file = file(params.rt_file, checkIfExists: true)
+    _GC_file = file(params.gc_file, checkIfExists: true) // var used only to check file exists. 
+    _RT_file = file(params.rt_file, checkIfExists: true) // var used only to check file exists. 
 
     IAAP_CLI(ch_input)
     BCFTOOLS_GTC2VCF(IAAP_CLI.out.gtc)

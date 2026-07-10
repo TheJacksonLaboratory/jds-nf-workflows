@@ -18,33 +18,33 @@ process CALC_MTDNA_FILTER_CHRM {
     tuple val(sampleID), file("*.sorted.rmDup.rmChrM.bam.bai"), emit: rmChrM_bai
     tuple val(sampleID), file("*_mtDNA_Content.txt"), emit: mtdna_log
 
-    shell:
+    script:
     // Get Mitochondrial and total read counts, calculate %mtDNA and filter Mitochondrial Reads from bam file 
 
     mt_name = params.gen_org == 'mouse' ?  'MT' : 'chrM'
 
-    '''
+    """
     # Get Mitochondrial Read Counts from bam file 
-    mtReads=$(samtools idxstats !{rmdup_bam_file} | grep '!{mt_name}' | cut -f 3)
+    mtReads=\$(samtools idxstats ${rmdup_bam_file} | grep '${mt_name}' | cut -f 3)
     
     # Get Total Read Counts from bam file
-    totalReads=$(samtools idxstats !{rmdup_bam_file} | awk '{SUM += $3} END {print SUM}')
+    totalReads=\$(samtools idxstats ${rmdup_bam_file} | awk '{SUM += \$3} END {print SUM}')
 
-    if [ $mtReads >0 ]
+    if [ \$mtReads >0 ]
     then
-        mtReads=$(echo $mtReads)
+        mtReads=\$(echo \$mtReads)
     else
-        mtReads=$(echo 0)
+        mtReads=\$(echo 0)
     fi
 
     # Calculate %mtDNA
-    echo -e 'sampleID\\tPerc mtDNA\\n'!{sampleID}'\\t'$(bc <<< "scale=2;100*$mtReads/$totalReads") >> !{sampleID}_mtDNA_Content.txt
+    echo -e 'sampleID\\tPerc mtDNA\\n'${sampleID}'\\t'\$(bc <<< "scale=2;100*\$mtReads/\$totalReads") >> ${sampleID}_mtDNA_Content.txt
 
     # Filter Mitochondrial Reads from bam file
-    samtools view -@ !{task.cpus} -h !{rmdup_bam_file} \
-    | grep -v !{mt_name} \
-    | samtools sort -@ !{task.cpus} -O bam \
-    -o !{sampleID}.sorted.rmDup.rmChrM.bam \
-    && samtools index !{sampleID}.sorted.rmDup.rmChrM.bam
-    '''
+    samtools view -@ ${task.cpus} -h ${rmdup_bam_file} \
+    | grep -v ${mt_name} \
+    | samtools sort -@ ${task.cpus} -O bam \
+    -o ${sampleID}.sorted.rmDup.rmChrM.bam \
+    && samtools index ${sampleID}.sorted.rmDup.rmChrM.bam
+    """
 }

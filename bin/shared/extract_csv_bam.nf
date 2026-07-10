@@ -50,7 +50,7 @@ def extract_csv_bam(csv_file) {
             }
             [row.sampleID.toString(), row]
         }.groupTuple()
-        .map{ meta, rows ->
+        .map{ _meta, rows ->
             def size = rows.size()
             [rows, size]
         }.transpose()
@@ -74,7 +74,7 @@ def extract_csv_bam(csv_file) {
         try {
             file(row.bam, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.bam + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
@@ -83,7 +83,7 @@ def extract_csv_bam(csv_file) {
         try {
             file(row.bai, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.bai + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
@@ -143,7 +143,7 @@ def extract_csv_bam_rnaseq(csv_file) {
             }
             [row.sampleID.toString(), row]
         }.groupTuple()
-        .map{ meta, rows ->
+        .map{ _meta, rows ->
             def size = rows.size()
             [rows, size]
         }.transpose()
@@ -163,7 +163,7 @@ def extract_csv_bam_rnaseq(csv_file) {
         try {
             file(row.bam, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.bam + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
