@@ -197,7 +197,7 @@ workflow MM_PTA {
             index_file = PICARD_MARKDUPLICATES.out.dedup_bai
         }
 
-        PICARD_MARKDUPLICATES.out.dedup_bam.join(PICARD_MARKDUPLICATES.out.dedup_bai).join(meta_ch).branch{
+        PICARD_MARKDUPLICATES.out.dedup_bam.join(PICARD_MARKDUPLICATES.out.dedup_bai).join(meta_ch).branch{ it ->
             normal: it[3].status == 0
             tumor:  it[3].status == 1
         }.set{ch_final_bam}
@@ -261,7 +261,7 @@ workflow MM_PTA {
         // Restore un-paired tumor samples, and add the proxy normal sample as pairing in those cases
         ch_paired_samples = ch_tumor_to_cross
             .mix(ch_paired_samples)
-            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{it[2].size() == 1} 
+            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{ it -> it[2].size() == 1} 
                         // it[0] = per-tumor unique ID (sampleID for pre-cross tumors, tumor_id for post-cross pairs), it[1] = meta, it[2] = bam, it[3] = bai, it[4] = sampleReadID. 
                         // Grouping by per-tumor ID (not patient) so that multiple unpaired tumors from the same patient
                         // are each handled independently. A paired tumor appears twice in the mix (once from ch_tumor_to_cross,
@@ -301,18 +301,18 @@ workflow MM_PTA {
 
 
         ch_ind_samples = ch_paired_samples
-            .filter{it[4] != params.proxy_normal_sampleName}
+            .filter{ it -> it[4] != params.proxy_normal_sampleName}
             .multiMap{it -> 
                     normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3], it[4]]
                     tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]
                     }
-            ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-            ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+            ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+            ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]}
 
         ch_tumor_only = ch_paired_samples
-            .filter{it[4] == params.proxy_normal_sampleName}
+            .filter{ it -> it[4] == params.proxy_normal_sampleName}
             .map{it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-            .unique{it[0]}
+            .unique{ it -> it[0]}
 
 
         /*
@@ -347,7 +347,7 @@ workflow MM_PTA {
         // interval count is used in groupTuple size statements. 
 
         // Applies scatter intervals from above to the BAM file channel prior to variant calling. 
-        chrom_channel = ch_normal_samples.combine(intervals).filter{it[4] != params.proxy_normal_sampleName}
+        chrom_channel = ch_normal_samples.combine(intervals).filter{ it -> it[4] != params.proxy_normal_sampleName}
 
         // Read a list of chromosome names from a parameter. These are provided to several tools. 
         chroms = channel
@@ -744,10 +744,10 @@ workflow MM_PTA {
         FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
    
         ch_multiqc_files = channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
     
         MULTIQC (
             ch_multiqc_files.collect(),

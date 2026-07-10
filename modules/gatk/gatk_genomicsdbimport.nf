@@ -19,7 +19,7 @@ process GATK_GENOMICSDBIMPORT {
     String my_mem = (task.memory-5.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = gvcf.collect { "--variant $it" }.join(' ')
+    inputs = gvcf.collect { it -> "--variant $it" }.join(' ')
 
     """
     mkdir -p tmp

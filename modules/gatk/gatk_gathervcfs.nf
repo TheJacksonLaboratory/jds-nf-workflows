@@ -23,7 +23,7 @@ process GATK_GATHERVCFS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = vcf.collect { "-I $it" }.join(' ')
+    inputs = vcf.collect { it -> "-I $it" }.join(' ')
 
     """
     mkdir -p tmp

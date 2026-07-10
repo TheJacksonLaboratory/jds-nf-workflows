@@ -18,7 +18,7 @@ process MERGE_SV {
         
 
     script:
-        listOfChroms = chrom_list.collect { "$it" }.join(',')
+        listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
         """
         Rscript ${moduleDir}/bin/merge-caller-vcfs.r \

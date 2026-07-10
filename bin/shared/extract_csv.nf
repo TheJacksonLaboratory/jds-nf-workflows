@@ -20,7 +20,7 @@ def extract_csv(csv_file) {
         file(csv_file).withReader('UTF-8') { headerReader ->
             headerLine = headerReader.readLine()
         }
-        def headers = headerLine.split(',').collect { it.trim() }
+        def headers = headerLine.split(',').collect { it -> it.trim() }
         def requiredHeaders = ['sampleID', 'fastq_1']
 
         if (params.containsKey('read_type') && params.read_type == 'PE') {
@@ -36,9 +36,9 @@ def extract_csv(csv_file) {
             requiredHeaders << 'replicate'
         }
 
-        def requiredHeadersStr = requiredHeaders.collect { "'${it}'" }.join(', ')
+        def requiredHeadersStr = requiredHeaders.collect { it -> "'${it}'" }.join(', ')
   
-        def missingHeaders = requiredHeaders.findAll { !headers.contains(it) }
+        def missingHeaders = requiredHeaders.findAll { it -> !headers.contains(it) }
         if (missingHeaders) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Missing required header(s) in CSV file: ${missingHeaders.join(', ')}" + ANSI_RESET)

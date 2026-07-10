@@ -264,11 +264,11 @@ workflow AMPLICON_GENERIC  {
 
   // MultiQC
   ch_multiqc_files = channel.empty()
-  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTTARGETPCRMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(TARGET_COVERAGE_METRICS.out.qc_metrics.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTTARGETPCRMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(TARGET_COVERAGE_METRICS.out.qc_metrics.collect{ it -> it[1]}.ifEmpty([]))
 
   MULTIQC (
     ch_multiqc_files.collect(),

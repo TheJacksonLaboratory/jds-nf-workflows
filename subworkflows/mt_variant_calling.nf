@@ -176,10 +176,10 @@ workflow MT_VARIANT_CALLING {
 
         ch_multiqc_files = channel.empty()
 
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES_MT.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_HAPLOCHECK_multiqc.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES_MT.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_HAPLOCHECK_multiqc.collect{ it -> it[1]}.ifEmpty([]))
         
         MULTIQC (
             ch_multiqc_files.collect(),

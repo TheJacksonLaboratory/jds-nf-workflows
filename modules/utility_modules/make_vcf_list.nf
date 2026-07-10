@@ -18,11 +18,11 @@ process MAKE_VCF_LIST {
     script:
     // Puts Individual Chromosome Files In Order and Then Into List for MergeVCFs
     // convert paths to strings
-    def string_list = chroms.collect { it.toString() }
+    def string_list = chroms.collect { it -> it.toString() }
     // find matches and put in final list
     def sorted = ''
     order.each { chr ->
-        sorted += (string_list.find { it.contains('_' + chr + '.vcf') }) + "\n"
+        sorted += (string_list.find { it -> it.contains('_' + chr + '.vcf') }) + "\n"
     }
 
     """

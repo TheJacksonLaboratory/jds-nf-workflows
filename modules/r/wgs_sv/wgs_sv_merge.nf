@@ -20,7 +20,7 @@ process SV_MERGE {
 
     script:
     
-    listOfChroms = chrom_list.collect { "$it" }.join(',')
+    listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
     if (params.workflow == "wgs" || params.workflow == "wgs_sv_bam") {
 

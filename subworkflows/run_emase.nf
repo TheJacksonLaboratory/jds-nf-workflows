@@ -24,7 +24,7 @@ workflow RUN_EMASE {
         if (params.read_type == 'PE'){
             emase_common_align_pairedReads_input = EMASE_BAM2EMASE.out.emase_h5
                                                 .groupTuple(size: 2)
-                                                .map { sampleID, reads -> tuple( sampleID, reads.sort{it.name} ) }
+                                                .map { sampleID, reads -> tuple( sampleID, reads.sort{ it -> it.name} ) }
             // collect EMASE files by sample ID then map and sort tuple to [sampleID, [R1, R2]]
 
             EMASE_GET_COMMON_ALIGNMENT(emase_common_align_pairedReads_input)

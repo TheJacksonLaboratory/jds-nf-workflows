@@ -16,7 +16,7 @@ process SAMTOOLS_FILTER_UNIQUE {
     tuple val(sampleID), path("seq_out/*.seq"), val(meta), val(read_ID), emit: uniq_seq
 
     script:
-    chrom_list = chroms.collect { "$it" }.join(' ')
+    chrom_list = chroms.collect { it -> "$it" }.join(' ')
     """
     /samtools-0.1.7a_getUnique-0.1.3/samtools view -U "BWA,${read_ID}_,N,N" ${bam}
     

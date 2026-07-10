@@ -20,16 +20,16 @@ def extract_csv_bam(csv_file) {
         file(csv_file).withReader('UTF-8') { headerReader ->
             headerLine = headerReader.readLine()
         }
-        def headers = headerLine.split(',').collect { it.trim() }
+        def headers = headerLine.split(',').collect { it -> it.trim() }
         def requiredHeaders = ['sampleID', 'bam', 'bai']
 
         if (params.deepvariant) {
             requiredHeaders << 'sex'
         }
 
-        def requiredHeadersStr = requiredHeaders.collect { "'${it}'" }.join(', ')
+        def requiredHeadersStr = requiredHeaders.collect { it -> "'${it}'" }.join(', ')
   
-        def missingHeaders = requiredHeaders.findAll { !headers.contains(it) }
+        def missingHeaders = requiredHeaders.findAll { it -> !headers.contains(it) }
         if (missingHeaders) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Missing required header(s) in CSV file: ${missingHeaders.join(', ')}" + ANSI_RESET)
@@ -117,12 +117,12 @@ def extract_csv_bam_rnaseq(csv_file) {
         file(csv_file).withReader('UTF-8') { headerReader ->
             headerLine = headerReader.readLine()
         }
-        def headers = headerLine.split(',').collect { it.trim() }
+        def headers = headerLine.split(',').collect { it -> it.trim() }
         def requiredHeaders = ['sampleID', 'bam']
 
-        def requiredHeadersStr = requiredHeaders.collect { "'${it}'" }.join(', ')
+        def requiredHeadersStr = requiredHeaders.collect { it -> "'${it}'" }.join(', ')
   
-        def missingHeaders = requiredHeaders.findAll { !headers.contains(it) }
+        def missingHeaders = requiredHeaders.findAll { it -> !headers.contains(it) }
         if (missingHeaders) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Missing required header(s) in CSV file: ${missingHeaders.join(', ')}" + ANSI_RESET)

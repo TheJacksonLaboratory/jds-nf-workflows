@@ -187,8 +187,8 @@ workflow RNASEQ {
         }
 
         if (params.merge_rna_counts) {
-          MERGE_RSEM_COUNTS(RSEM_ALIGNMENT_EXPRESSION.out.rsem_genes.collect{it[1]},
-                            RSEM_ALIGNMENT_EXPRESSION.out.rsem_isoforms.collect{it[1]},
+          MERGE_RSEM_COUNTS(RSEM_ALIGNMENT_EXPRESSION.out.rsem_genes.collect{ it -> it[1]},
+                            RSEM_ALIGNMENT_EXPRESSION.out.rsem_isoforms.collect{ it -> it[1]},
                             'allSamples')
         }
 
@@ -208,12 +208,12 @@ workflow RNASEQ {
 
         // Step 6: Summary Stats
         ch_multiqc_files = channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.rsem_cnt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.star_log.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_FASTP_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CHECK_STRANDEDNESS.out.strandedness_report.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.rsem_cnt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(RSEM_ALIGNMENT_EXPRESSION.out.star_log.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{ it -> it[1]}.ifEmpty([]))
 
         MULTIQC (
             ch_multiqc_files.collect(),

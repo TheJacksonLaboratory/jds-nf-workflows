@@ -138,10 +138,10 @@ workflow SMRNASEQ {
   // Get adapter sequence and Channel setup for mirtrace inputs
 
   // This will return with all jsons
-  jsons = FASTP.out.json.collect{it[1]}.ifEmpty([])
+  jsons = FASTP.out.json.collect{ it -> it[1]}.ifEmpty([])
 
   // Just pick the first jason file
-  json_1 = jsons.map { it[0] }
+  json_1 = jsons.map { it -> it[0] }
 
   // Set adapter sequence
   json_1
@@ -205,7 +205,7 @@ workflow SMRNASEQ {
   // Bowtie1
   // Set up input reads channel : Mature
   mature_reads
-       .map { add_suffix(it, "mature") }
+       .map { it -> add_suffix(it, "mature") }
        .dump (tag:'msux')
        .set { reads_mirna }
 
@@ -214,7 +214,7 @@ workflow SMRNASEQ {
 
   // Set up input reads channel : Hairpin
   BOWTIE_MAP_MATURE.out.unmapped
-        .map { add_suffix(it, "hairpin") }
+        .map { it -> add_suffix(it, "hairpin") }
         .dump (tag:'hsux')
         .set { reads_hairpin }
 
@@ -239,8 +239,8 @@ workflow SMRNASEQ {
 
 
   // Set up inputs for EdgeR
-  SAMTOOLS_STATS_MATURE.out.idxstat.collect{it[1]}
-        .mix(SAMTOOLS_STATS_HAIRPIN.out.idxstat.collect{it[1]})
+  SAMTOOLS_STATS_MATURE.out.idxstat.collect{ it -> it[1]}
+        .mix(SAMTOOLS_STATS_HAIRPIN.out.idxstat.collect{ it -> it[1]})
         .dump(tag:'edger')
         .flatten()
         .collect()
@@ -253,7 +253,7 @@ workflow SMRNASEQ {
   // Seqcluster
   // Set up input reads channel : Seqcluster
   mature_reads
-       .map { add_suffix(it, "seqcluster") }
+       .map { it -> add_suffix(it, "seqcluster") }
        .dump (tag:'ssux')
        .set { reads_seqcluster }
 
@@ -271,7 +271,7 @@ workflow SMRNASEQ {
   if (params.mirtrace_species){
 
         //Mirtop quant
-        MIRTOP_QUANT(BOWTIE_MAP_SEQCLUSTER.out.bam.collect{it[1]}, params.formatted_hairpin , params.gtf)
+        MIRTOP_QUANT(BOWTIE_MAP_SEQCLUSTER.out.bam.collect{ it -> it[1]}, params.formatted_hairpin , params.gtf)
         ch_mirtop_logs = MIRTOP_QUANT.out.logs
 
         // Table merge
@@ -282,7 +282,7 @@ workflow SMRNASEQ {
   // Genome
   // Set up input reads : genome
   BOWTIE_MAP_HAIRPIN.out.unmapped
-        .map { add_suffix(it, "genome") }
+        .map { it -> add_suffix(it, "genome") }
         .dump (tag:'gsux')
         .set { reads_genome }
 
@@ -301,21 +301,21 @@ workflow SMRNASEQ {
   // Create channels for multi input files
   ch_multiqc_files = channel.empty()
 
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC_RAW.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC_TRIM.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_GENOME.out.flagstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_GENOME.out.idxstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_GENOME.out.stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MATURE.out.flagstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MATURE.out.idxstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MATURE.out.stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_HAIRPIN.out.flagstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_HAIRPIN.out.idxstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_HAIRPIN.out.stats.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC_RAW.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC_TRIM.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_GENOME.out.flagstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_GENOME.out.idxstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_GENOME.out.stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MATURE.out.flagstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MATURE.out.idxstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MATURE.out.stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_HAIRPIN.out.flagstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_HAIRPIN.out.idxstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_HAIRPIN.out.stats.collect{ it -> it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(ch_mirtop_logs.collect().ifEmpty([]))
   //ch_multiqc_files = ch_multiqc_files.mix(MIRTOP_QUANT.out.mirtop_logs.collect().ifEmpty([]))
 
-  ch_multiqc_files = ch_multiqc_files.mix(MIRTRACE_RUN.out.mirtrace.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(MIRTRACE_RUN.out.mirtrace.collect{ it -> it[1]}.ifEmpty([]))
 
 
   // Step 41 : MultiQC

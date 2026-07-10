@@ -18,7 +18,7 @@ process GATK_SORTVCF_SOMATIC {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = list.collect { "-I $it" }.join(' ')
+    inputs = list.collect { it -> "-I $it" }.join(' ')
 
     """
     mkdir -p tmp

@@ -20,7 +20,7 @@ process GATK_SORTVCF {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = list.collect { "-I $it" }.join(' ')
+    inputs = list.collect { it -> "-I $it" }.join(' ')
 
     if (tool == 'lancet_support' && params.gen_org == 'human') {
         chrom_extract = (list =~ /\w+merged_(chr.+)_h.+/)

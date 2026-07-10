@@ -18,8 +18,8 @@ workflow REANNOTATE_PTA {
 
     if (params.csv_input) {
         input_files = extract_csv(file(params.csv_input, checkIfExists: true))
-        main_files = input_files.map{ it[0] } // main
-        supp_files = input_files.map{ it[1] } // supplemental
+        main_files = input_files.map{ it -> it[0] } // main
+        supp_files = input_files.map{ it -> it[1] } // supplemental
     }
 
     if (params.gen_org == 'human') {
@@ -80,12 +80,12 @@ def extract_csv(csv_file) {
         file(csv_file).withReader('UTF-8') { headerReader ->
             headerLine = headerReader.readLine()
         }
-        def headers = headerLine.split(',').collect { it.trim() }
+        def headers = headerLine.split(',').collect { it -> it.trim() }
         def requiredHeaders = ['sampleID', 'sv_annotated_genes_cnv', 'annotated_genes_cnv_supplemental', 'cnv_annotated', 'cnv_annotated_supplemental']
 
-        def requiredHeadersStr = requiredHeaders.collect { "'${it}'" }.join(', ')
+        def requiredHeadersStr = requiredHeaders.collect { it -> "'${it}'" }.join(', ')
   
-        def missingHeaders = requiredHeaders.findAll { !headers.contains(it) }
+        def missingHeaders = requiredHeaders.findAll { it -> !headers.contains(it) }
         if (missingHeaders) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Missing required header(s) in CSV file: ${missingHeaders.join(', ')}" + ANSI_RESET)

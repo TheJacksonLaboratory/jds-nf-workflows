@@ -75,8 +75,8 @@ workflow GENERATE_RNASEQ_INDEX {
     }
     
     star_read_lengths = params.star_read_lengths instanceof String 
-        ? channel.from(params.star_read_lengths.split(',').collect{it.trim().toInteger()})
-        : channel.from(params.star_read_lengths.collect{it.toInteger()})
+        ? channel.from(params.star_read_lengths.split(',').collect{ it -> it.trim().toInteger()})
+        : channel.from(params.star_read_lengths.collect{ it -> it.toInteger()})
 
     if (params.ref_gff) {
         AGAT_GFFTOGTF(params.ref_gff)

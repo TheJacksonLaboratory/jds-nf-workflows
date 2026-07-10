@@ -18,7 +18,7 @@ process SUBREAD_FEATURECOUNTS {
 
     script:
     prefix = "${antibody}.consensus_peaks"
-    bam_files = bams.findAll { it.toString().endsWith('.bam') }.sort()
+    bam_files = bams.findAll { it -> it.toString().endsWith('.bam') }.sort()
     pe_params = params.read_type == 'SE' ? '' : '-p --donotsort'
     """
     featureCounts \\

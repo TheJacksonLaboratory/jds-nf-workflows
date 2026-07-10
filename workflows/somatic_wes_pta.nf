@@ -118,7 +118,7 @@ workflow SOMATIC_WES_PTA {
     // Step 1a: Xengsort if PDX data used.
     ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file.
     if (params.pdx){
-        FASTP.out.trimmed_fastq.join(meta_ch).branch{
+        FASTP.out.trimmed_fastq.join(meta_ch).branch{ it ->
             normal: it[2].status == 0
             tumor:  it[2].status == 1
         }.set{fastq_files}
@@ -175,7 +175,7 @@ workflow SOMATIC_WES_PTA {
     // Nextflow channel processing
     // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L854
 
-    GATK_APPLYBQSR.out.bam.join(GATK_APPLYBQSR.out.bai).join(meta_ch).branch{
+    GATK_APPLYBQSR.out.bam.join(GATK_APPLYBQSR.out.bai).join(meta_ch).branch{ it ->
         normal: it[3].status == 0
         tumor:  it[3].status == 1
     }.set{ch_final_bam}
@@ -232,12 +232,12 @@ workflow SOMATIC_WES_PTA {
                 normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3], it[4]]
                 tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]
                 }
-        ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-        ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+        ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+        ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]}
 
     ch_msisensor2_input = ch_paired_samples
-        .map{["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-        .unique{it[0]}
+        .map{ it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
+        .unique{ it -> it[0]}
 
     // Step: MSI
     MSISENSOR2_MSI(ch_msisensor2_input)
@@ -320,13 +320,13 @@ workflow SOMATIC_WES_PTA {
     SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'somatic_wes_pta')
 
     ch_multiqc_files = channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(GATK_FILTERMUECTCALLS.out.stats.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(GATK_FILTERMUECTCALLS.out.stats.collect{ it -> it[1]}.ifEmpty([]))
 
     MULTIQC (
         ch_multiqc_files.collect(),

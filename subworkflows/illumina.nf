@@ -97,7 +97,7 @@ workflow ILLUMINA {
               .map { row -> tuple( row.sampleID ) }
               .unique()
               .count()
-              .branch{
+              .branch{ it ->
                  pass: it == 1
                        return it
               }

@@ -44,7 +44,7 @@ workflow CONCATENATE_LOCAL_FILES {
             .map{ it -> tuple(it[0], it[1].size(), it[2], it[3], it[4]) } // sampleID, num_lanes, meta, read_ID:[R1|R2], file
             
             concat_input = temp_map
-            .branch {
+            .branch { it ->
                 concat: it[1] > 1
                 pass:  it[1] == 1
             }
@@ -68,7 +68,7 @@ workflow CONCATENATE_LOCAL_FILES {
             .map{ it -> tuple(it[0], it[1].size(), it[2], it[3], it[4]) } // sampleID, num_lanes, meta, read_ID:[R1], file
             
             concat_input = temp_map
-            .branch {
+            .branch { it ->
                 concat: it[1] > 1
                 pass:  it[1] == 1
             }

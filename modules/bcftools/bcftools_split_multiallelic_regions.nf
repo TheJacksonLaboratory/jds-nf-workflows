@@ -17,7 +17,7 @@ process BCFTOOLS_SPLITMULTIALLELIC_REGIONS {
 
     script:
     
-    listOfChroms = chrom_list.collect { "$it" }.join(',')
+    listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
     """
     bcftools \

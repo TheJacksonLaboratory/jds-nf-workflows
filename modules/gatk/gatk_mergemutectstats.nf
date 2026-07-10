@@ -19,7 +19,7 @@ process GATK_MERGEMUTECTSTATS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    stats = list.collect { "-stats $it" }.join(' ')
+    stats = list.collect { it -> "-stats $it" }.join(' ')
 
     """
     mkdir -p tmp

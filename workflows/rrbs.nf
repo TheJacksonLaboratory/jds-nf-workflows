@@ -132,13 +132,13 @@ workflow RRBS {
   }
 
   ch_multiqc_files = channel.empty()
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trimmed_fastqc.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(BISMARK_ALIGNMENT.out.report.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(ch_BISMARK_DEDUPLICATION_multiqc.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(BISMARK_METHYLATION_EXTRACTION.out.extractor_reports.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(BISMARK_METHYLATION_EXTRACTION.out.extractor_mbias.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trimmed_fastqc.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(BISMARK_ALIGNMENT.out.report.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(ch_BISMARK_DEDUPLICATION_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(BISMARK_METHYLATION_EXTRACTION.out.extractor_reports.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(BISMARK_METHYLATION_EXTRACTION.out.extractor_mbias.collect{ it -> it[1]}.ifEmpty([]))
 
   MULTIQC (
     ch_multiqc_files.collect(),

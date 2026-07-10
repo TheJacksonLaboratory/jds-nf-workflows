@@ -14,7 +14,7 @@ process FILTER_GTF {
     path('*.gtf'), emit: filtered_gtf
 
     script:
-    include_statement = params.gtf_biotype_include.split(',').collect { "$it" }.join('|')
+    include_statement = params.gtf_biotype_include.split(',').collect { it -> "$it" }.join('|')
     """
     sh ${moduleDir}/bin/filter_gtf.sh ${params.primary_reference_gtf} "${include_statement}"
     """

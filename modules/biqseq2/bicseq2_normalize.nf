@@ -28,7 +28,7 @@ process BICSEQ2_NORMALIZE {
     // `bicseq2_config_writer` will sort lists by chromosome name, and omit invalid chr names. 
     // Chromosome names in file names must have `chr` in the name. OR the bicseq2config file must be changed to exclude it. 
 
-    fasta_files = fasta_file_list.collect { "$it" }.join(' ')
+    fasta_files = fasta_file_list.collect { it -> "$it" }.join(' ')
     
     read_length = read_length.toInteger()
 
@@ -45,7 +45,7 @@ process BICSEQ2_NORMALIZE {
         mappability_path = 'error'
     }
 
-    seq_file_list = individual_chr_seq_files.collect { "$it" }.join(' ')
+    seq_file_list = individual_chr_seq_files.collect { it -> "$it" }.join(' ')
 
 
     """

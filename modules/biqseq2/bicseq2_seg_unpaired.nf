@@ -18,7 +18,7 @@ process BICSEQ2_SEG_UNPAIRED {
 
     script:
 
-    tumor_norm_list = individual_tumor_norm_bin_files.collect { "$it" }.join(' ')
+    tumor_norm_list = individual_tumor_norm_bin_files.collect { it -> "$it" }.join(' ')
 
     scale = params.bicseq2_no_scaling ? "--noscale" : ""
 

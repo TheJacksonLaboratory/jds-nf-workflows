@@ -20,7 +20,7 @@ process GRIDSS_CHROM_FILTER {
     tuple val(sampleID), path('*_gridss_sv_unfiltered_chroms.vcf'), val(meta), val(normal_name), val(tumor_name), emit: gridss_chrom_vcf
     
     script:
-    chrom_list = chroms.collect { "$it" }.join(' ')
+    chrom_list = chroms.collect { it -> "$it" }.join(' ')
 
     """
     python ${moduleDir}/bin/filter_vcf.py \

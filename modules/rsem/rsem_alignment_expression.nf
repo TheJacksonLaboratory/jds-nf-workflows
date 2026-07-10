@@ -80,7 +80,7 @@ process RSEM_ALIGNMENT_EXPRESSION {
 
     if (params.rsem_aligner == "bowtie2"){
         
-        rsem_ref_files = files("${rsem_ref_path}/bowtie2/*").collect { "$it" }.join(' ')
+        rsem_ref_files = files("${rsem_ref_path}/bowtie2/*").collect { it -> "$it" }.join(' ')
 
         outbam="--output-genome-bam"
         seed_length="--seed-length ${params.seed_length}"
@@ -102,15 +102,15 @@ process RSEM_ALIGNMENT_EXPRESSION {
         def read_len = read_length.toInteger()
 
         if( read_len >= 45 && read_len <= 60) {
-            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_50/*").collect { "$it" }.join(' ')
+            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_50/*").collect { it -> "$it" }.join(' ')
         } else if( read_len >= 65 && read_len <= 85) {
-            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { "$it" }.join(' ')
+            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { it -> "$it" }.join(' ')
         } else if( read_len >= 90 && read_len <= 110 ) {
-            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { "$it" }.join(' ')
+            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { it -> "$it" }.join(' ')
         } else if( read_len >= 115 && read_len <= 135 ) {
-            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_125/*").collect { "$it" }.join(' ')
+            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_125/*").collect { it -> "$it" }.join(' ')
         } else if( read_len >= 140 && read_len <= 160 ) {
-            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_150/*").collect { "$it" }.join(' ')
+            rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_150/*").collect { it -> "$it" }.join(' ')
         } else {
             log.info("\nUnsupported read length " + read_len + " in RSEM with STAR. RSEM will now fail gracefully.\n\n")
             rsem_ref_files = 'error'

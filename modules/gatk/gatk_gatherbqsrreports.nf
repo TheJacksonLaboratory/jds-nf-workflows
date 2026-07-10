@@ -20,7 +20,7 @@ process GATK_GATHERBQSRREPORTS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = reports.collect { "-I $it" }.join(' ')
+    inputs = reports.collect { it -> "-I $it" }.join(' ')
 
     """
     mkdir -p tmp

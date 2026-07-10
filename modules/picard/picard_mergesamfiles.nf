@@ -24,7 +24,7 @@ process PICARD_MERGESAMFILES {
     my_mem =  my_mem[0..-4]
 
     prefix = "${sampleID}.mLb.mkD"
-    bam_files = bam.findAll { it.toString().endsWith('.bam') }.sort()
+    bam_files = bam.findAll { it -> it.toString().endsWith('.bam') }.sort()
     if (bam_files.size() > 1) {
         """
         picard -Xmx${my_mem}G MergeSamFiles \

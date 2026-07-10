@@ -22,7 +22,7 @@ process PLOT_MACS2_QC {
     script:
     def peak_type = params.narrow_peak ? 'narrowPeak' : 'broadPeak'
     def joinedPeaks = peaks.join(',')
-    def sampleNames = peaks.collect { it.name.replace("_peaks.${peak_type}", '') }.join(',')
+    def sampleNames = peaks.collect { it -> it.name.replace("_peaks.${peak_type}", '') }.join(',')
     """
     ${moduleDir}/bin/plot_macs_qc.r \\
         -i ${joinedPeaks} \\

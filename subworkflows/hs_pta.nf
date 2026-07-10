@@ -159,7 +159,7 @@ workflow HS_PTA {
         ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file. 
         if (params.pdx){
 
-            FASTP.out.trimmed_fastq.join(meta_ch).branch{
+            FASTP.out.trimmed_fastq.join(meta_ch).branch{ it ->
                 normal: it[2].status == 0
                 tumor:  it[2].status == 1
             }.set{fastq_files}
@@ -276,7 +276,7 @@ workflow HS_PTA {
         // Step 12: Nextflow channel processing
         // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L854
 
-        bam_file.join(index_file).join(meta_ch).branch{
+        bam_file.join(index_file).join(meta_ch).branch{ it ->
             normal: it[3].status == 0
             tumor:  it[3].status == 1
         }.set{ch_final_bam}
@@ -340,7 +340,7 @@ workflow HS_PTA {
         // Restore un-paired tumor samples, and add NA12878 as pairing in those cases
         ch_paired_samples = ch_tumor_to_cross
             .mix(ch_paired_samples)
-            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{it[2].size() == 1} 
+            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{ it -> it[2].size() == 1} 
                         // it[0] = per-tumor unique ID (sampleID for pre-cross tumors, tumor_id for post-cross pairs), it[1] = meta, it[2] = bam, it[3] = bai, it[4] = sampleReadID. 
                         // Grouping by per-tumor ID (not patient) so that multiple unpaired tumors from the same patient
                         // are each handled independently. A paired tumor appears twice in the mix (once from ch_tumor_to_cross,
@@ -380,22 +380,22 @@ workflow HS_PTA {
 
 
         ch_ind_samples = ch_paired_samples
-            .filter{it[4] != params.na12878_sampleName}
+            .filter{ it -> it[4] != params.na12878_sampleName}
             .multiMap{it -> 
                     normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3], it[4]]
                     tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]
                     }
-            ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-            ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+            ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+            ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]}
 
         ch_tumor_only = ch_paired_samples
-            .filter{it[4] == params.na12878_sampleName}
+            .filter{ it -> it[4] == params.na12878_sampleName}
             .map{it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-            .unique{it[0]}
+            .unique{ it -> it[0]}
 
         ch_msisensor2_input = ch_paired_samples
-            .map{["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-            .unique{it[0]}
+            .map{ it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
+            .unique{ it -> it[0]}
 
         /*
             The above establishes channels needed for germline calling, bicseq2 and MSIsensor2. 
@@ -412,7 +412,7 @@ workflow HS_PTA {
         //    Step not run on tumor-only samples. As contamination analysis is not biologcally relavent. 
 
         conpair_input = ch_paired_samples
-            .filter{it[4] != params.na12878_sampleName}
+            .filter{ it -> it[4] != params.na12878_sampleName}
             .multiMap{it -> 
                     normal: [it[1].patient, "${it[1].normal_id}".toString(), it[2], it[3]]
                     tumor:  [it[1].patient, "${it[1].tumor_id}".toString(), it[5], it[6]]
@@ -424,8 +424,8 @@ workflow HS_PTA {
             Patient ID is used here because samples must be re-crossed after the pileup to match all tumors and normals. 
         */ 
 
-        CONPAIR_NORMAL_PILEUP(conpair_input.normal.unique{it[2]}, 'normal')
-        CONPAIR_TUMOR_PILEUP(conpair_input.tumor.unique{it[2]}, 'tumor') 
+        CONPAIR_NORMAL_PILEUP(conpair_input.normal.unique{ it -> it[2]}, 'normal')
+        CONPAIR_TUMOR_PILEUP(conpair_input.tumor.unique{ it -> it[2]}, 'tumor') 
 
         conpair_input = CONPAIR_NORMAL_PILEUP.out.pileup.cross(CONPAIR_TUMOR_PILEUP.out.pileup)
             .map { normal, tumor -> [normal[0], "${normal[0]}--${tumor[1]}--${normal[1]}".toString(), normal[2], tumor[2]]
@@ -456,7 +456,7 @@ workflow HS_PTA {
         // interval count is used in groupTuple size statements. 
 
         // Applies scatter intervals from above to the BAM file channel prior to variant calling. 
-        chrom_channel = ch_normal_samples.combine(intervals).filter{it[4] != params.na12878_sampleName}
+        chrom_channel = ch_normal_samples.combine(intervals).filter{ it -> it[4] != params.na12878_sampleName}
 
         // Use the list of chroms from above to get a list of primary chromosomes and exclude chrM (dropRight(1))
         // The 'chroms' object and those made below are provided to several tools. 
@@ -626,7 +626,7 @@ workflow HS_PTA {
         // NOTE: with insufficent coverage, the segmentation will fail because the 'lamda' factor can not be properly optimized. 
 
         bicseq2_tumoronly_input = BICSEQ2_NORMALIZE_TUMOR.out.normalized_output
-            .filter{it[2].normal_id == params.na12878_sampleName}
+            .filter{ it -> it[2].normal_id == params.na12878_sampleName}
 
         BICSEQ2_SEG_UNPAIRED(bicseq2_tumoronly_input)
         
@@ -882,14 +882,14 @@ workflow HS_PTA {
         FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
 
         ch_multiqc_files = channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.concordance.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.contamination.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.concordance.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.contamination.collect{ it -> it[1]}.ifEmpty([]))
     
         MULTIQC (
             ch_multiqc_files.collect(),

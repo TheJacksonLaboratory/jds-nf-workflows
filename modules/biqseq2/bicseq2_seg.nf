@@ -18,8 +18,8 @@ process BICSEQ2_SEG {
 
     script:
 
-    normal_norm_list = individual_normal_norm_bin_files.collect { "$it" }.join(' ')
-    tumor_norm_list = individual_tumor_norm_bin_files.collect { "$it" }.join(' ')
+    normal_norm_list = individual_normal_norm_bin_files.collect { it -> "$it" }.join(' ')
+    tumor_norm_list = individual_tumor_norm_bin_files.collect { it -> "$it" }.join(' ')
 
     scale = params.bicseq2_no_scaling ? "--noscale" : ""
 

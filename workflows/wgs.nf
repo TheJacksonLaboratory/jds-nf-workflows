@@ -190,8 +190,8 @@ workflow WGS {
     // Read quality and adapter trimming
     FASTP(trimmer_input)
     FASTQC(FASTP.out.trimmed_fastq)
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
 
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
     // WHEN merge_ind is used, we need an alternative version of this process. The read groups need to be assigned based on the individual ID, not the sample ID.
@@ -251,7 +251,7 @@ workflow WGS {
   
     // Mark Duplicates
     PICARD_MARKDUPLICATES(bam_file)
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
 
     // START Human Specific Calling
     ch_GATK_BASERECALIBRATOR_multiqc = channel.empty() //optional log file for human only.
@@ -268,7 +268,7 @@ workflow WGS {
         GATK_BASERECALIBRATOR(PICARD_MARKDUPLICATES.out.dedup_bam.combine(chroms))
         GATK_GATHERBQSRREPORTS(GATK_BASERECALIBRATOR.out.table.groupTuple(size: num_chroms))
         ch_GATK_BASERECALIBRATOR_multiqc = GATK_GATHERBQSRREPORTS.out.table // set log file for multiqc
-        ch_multiqc_files = ch_multiqc_files.mix(ch_GATK_BASERECALIBRATOR_multiqc.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_GATK_BASERECALIBRATOR_multiqc.collect{ it -> it[1]}.ifEmpty([]))
 
         // Apply BQSR
         apply_bqsr = PICARD_MARKDUPLICATES.out.dedup_bam.join(GATK_GATHERBQSRREPORTS.out.table)
@@ -308,7 +308,7 @@ workflow WGS {
                          .map{it -> [it[2].ind, it[1]]}
                          .groupTuple()
                          .map{it -> [it[0], it[1], it[1].size()]}
-                         .branch{
+                         .branch{ it ->
                                merge: it[2] > 1
                                pass:  it[2] == 1
                           }
@@ -369,8 +369,8 @@ workflow WGS {
   //Use Google DeepVariant to make vcfs and gvcfs if specified; makes gvcfs automatically
   if (params.deepvariant) {
       // Find X and Y chromosomes in chroms channel
-      haploid_chroms = chroms.filter { it ==~ /(?i).*\b(chr)?X\b.*/ }.map{ it[0] }
-              .combine(chroms.filter { it ==~ /(?i).*\b(chr)?Y\b.*/ }.map{ it[0] })
+      haploid_chroms = chroms.filter { it -> it ==~ /(?i).*\b(chr)?X\b.*/ }.map{ it -> it[0] }
+              .combine(chroms.filter { it -> it ==~ /(?i).*\b(chr)?Y\b.*/ }.map{ it -> it[0] })
       // Filter the chrom channel to only X and Y. 
       // Because of channel vs. value the filter produces a channel, 
       // which must be manipulated with map to get the value of that channel. 
@@ -499,8 +499,8 @@ workflow WGS {
   }
 
 
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
   
   MULTIQC (
     ch_multiqc_files.collect(),

@@ -16,7 +16,7 @@ process EMASE_GET_COMMON_ALIGNMENT {
 
     script:
     
-    emase_list = emase_files.collect { "$it" }.join(' -i ')
+    emase_list = emase_files.collect { it -> "$it" }.join(' -i ')
 
     """
     emase get-common-alignments  -i ${emase_list} -o ${sampleID}.merged.emase.h5

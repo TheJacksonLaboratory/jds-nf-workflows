@@ -164,7 +164,7 @@ workflow LCWGS_HR {
     SAMTOOLS_DOWNSAMPLE_BAM(downsampled_bams)
     bams = SAMTOOLS_DOWNSAMPLE_BAM.out.downsampled_bam.groupTuple(by: 1)
                                                       .map { bam_files, downsample_to_cov ->
-                                                      def bam_paths = bam_files.collect { it.toString() }
+                                                      def bam_paths = bam_files.collect { it -> it.toString() }
                                                       tuple(bam_files, bam_paths, downsample_to_cov)
                                                       }.set { bam_input_ch }
 
@@ -176,7 +176,7 @@ workflow LCWGS_HR {
                    .collect()
                    .map{bamlist -> [bamlist, "no_downsample"]}
                    .map { bam_paths, downsample_to_cov ->
-                        def bam_files = bam_paths.collect { file(it) }
+                        def bam_files = bam_paths.collect { it -> file(it) }
                         tuple(bam_files, bam_paths, downsample_to_cov)
                       }
                    .set { bam_input_ch }
@@ -210,13 +210,13 @@ workflow LCWGS_HR {
 
   // MultiQC report
   ch_multiqc_files = channel.empty()
-  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it[1] }.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it[1] }.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it -> it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it -> it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it -> it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it -> it[1] }.ifEmpty([]))
   
   MULTIQC (
     ch_multiqc_files.collect(),

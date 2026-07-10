@@ -238,7 +238,7 @@ workflow ATAC {
     .map{it -> [it[2].baseSampleID, it[1][0], it[1][1]]}
     .groupTuple(by: [0])
     .map { it ->  [ it[0], [it[1], it[2]].flatten() ] }
-    .branch {
+    .branch { it ->
         merge: it[1].size() > 2
         pass:  it[1].size == 2
     }
@@ -304,14 +304,14 @@ workflow ATAC {
   LOG_PARSER(log_agg) 
 
   ch_multiqc_files = channel.empty()
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(CUTADAPT.out.cutadapt_log.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(ALIGN_TRIMMED_FASTQ.out.bowtie_log.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(CALC_MTDNA_FILTER_CHRM.out.mtdna_log.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(CALC_PBC_METRICS.out.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FINAL_CALC_FRIP.out.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FRAG_LEN_PLOT.out.spline_table.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(CUTADAPT.out.cutadapt_log.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(ALIGN_TRIMMED_FASTQ.out.bowtie_log.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(CALC_MTDNA_FILTER_CHRM.out.mtdna_log.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(CALC_PBC_METRICS.out.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FINAL_CALC_FRIP.out.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FRAG_LEN_PLOT.out.spline_table.collect{ it -> it[1]}.ifEmpty([]))
 
   MULTIQC (
     ch_multiqc_files.collect(),

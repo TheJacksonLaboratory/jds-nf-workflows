@@ -274,7 +274,7 @@ workflow CHIPSEQ {
 
   ch_group_bam = control_ch
                     .combine(ch_genome_bam_bai )
-                    .filter { it[0] == it[5] && it[1] == it[7] }
+                    .filter { it -> it[0] == it[5] && it[1] == it[7] }
                     .join(SAMTOOLS_STATS_FILTERED.out.flagstat)
                     .map { it ->  it[2..-1] }
   // Generate combinations of all study design objects:
@@ -310,11 +310,11 @@ workflow CHIPSEQ {
   HOMER_ANNOTATEPEAKS(PEAK_CALLING_CHIPSEQ.out.ip_control_peak, ch_fasta, ch_gtf)
 
   // Step 33 : Plot Macs2 QC
-  PLOT_MACS2_QC(PEAK_CALLING_CHIPSEQ.out.peak.collect{ it[-1] })
+  PLOT_MACS2_QC(PEAK_CALLING_CHIPSEQ.out.peak.collect{ it -> it[-1] })
   // Note: *collect{ it[-1] } collects all peak files, and passes those to the module.  
 
   // Step 34 : Plot Homer Annotate Peaks
-  PLOT_HOMER_ANNOTATEPEAKS(HOMER_ANNOTATEPEAKS.out.txt.collect{ it[-1] }, ch_peak_annotation_header, '_peaks.annotatePeaks.txt')
+  PLOT_HOMER_ANNOTATEPEAKS(HOMER_ANNOTATEPEAKS.out.txt.collect{ it -> it[-1] }, ch_peak_annotation_header, '_peaks.annotatePeaks.txt')
   // Note: *collect{ it[-1] } collects all peak files, and passes those to the module.  
 
   // Step 35 : Consensus peaks across samples, create boolean filtering file, SAF file
@@ -365,35 +365,35 @@ workflow CHIPSEQ {
   // Create channels for multi input files
   ch_multiqc_files = channel.empty()
   
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trimmed_fastqc.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trim_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(TRIM_GALORE.out.trimmed_fastqc.collect{ it -> it[1]}.ifEmpty([]))
 
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect{it[1]}.ifEmpty([]))  
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect{it[1]}.ifEmpty([]))  
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect{it[1]}.ifEmpty([]))  
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MD.out.flagstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MD.out.idxstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MD.out.stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_FILTERED.out.flagstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_FILTERED.out.idxstat.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_FILTERED.out.stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTMULTIPLEMETRICS.out.metrics.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect{ it -> it[1]}.ifEmpty([]))  
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect{ it -> it[1]}.ifEmpty([]))  
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect{ it -> it[1]}.ifEmpty([]))  
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MD.out.flagstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MD.out.idxstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_MD.out.stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_FILTERED.out.flagstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_FILTERED.out.idxstat.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS_FILTERED.out.stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTMULTIPLEMETRICS.out.metrics.collect{ it -> it[1]}.ifEmpty([]))
 
-  ch_multiqc_files = ch_multiqc_files.mix(FRIP_SCORE.out.tsv.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FRIP_SCORE.out.tsv.collect{ it -> it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(PLOT_HOMER_ANNOTATEPEAKS.out.tsv.collect())
-  ch_multiqc_files = ch_multiqc_files.mix(SUBREAD_FEATURECOUNTS.out.summary.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SUBREAD_FEATURECOUNTS.out.summary.collect{ it -> it[1]}.ifEmpty([]))
   ch_multiqc_files = ch_multiqc_files.mix(DESEQ2_QC.out.pca_multiqc.collect())
   ch_multiqc_files = ch_multiqc_files.mix(DESEQ2_QC.out.dists_multiqc.collect())
 
-  ch_multiqc_files = ch_multiqc_files.mix(PRESEQ.out.txt.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(DEEPTOOLS_PLOTFINGERPRINT.out.raw.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(DEEPTOOLS_PLOTPROFILE.out.table.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PHANTOMPEAKQUALTOOLS.out.spp.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS.out.nsc.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS.out.rsc.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS.out.correlation.collect{it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PRESEQ.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(DEEPTOOLS_PLOTFINGERPRINT.out.raw.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(DEEPTOOLS_PLOTPROFILE.out.table.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PHANTOMPEAKQUALTOOLS.out.spp.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS.out.nsc.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS.out.rsc.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(MULTIQC_CUSTOM_PHANTOMPEAKQUALTOOLS.out.correlation.collect{ it -> it[1]}.ifEmpty([]))
    
 
   // Step 41 : MultiQC  

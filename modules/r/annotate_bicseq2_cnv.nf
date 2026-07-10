@@ -20,7 +20,7 @@ process ANNOTATE_BICSEQ2_CNV {
         tuple val(sampleID), file("${sampleID}_cnv_annotated_supplemental.bed"), val(normal_name), val(tumor_name), emit: bicseq_annot_suppl
 
     script:
-        listOfChroms = chrom_list.collect { "$it" }.join(',')
+        listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
         """
         Rscript ${moduleDir}/bin/annotate-cnv.r \

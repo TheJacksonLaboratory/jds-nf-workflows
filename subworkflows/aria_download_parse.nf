@@ -84,7 +84,7 @@ workflow FILE_DOWNLOAD {
                             .map {  sampleID, laneID, meta, readID, file, size -> tuple( groupKey([sampleID, meta, readID], size), laneID, file )  }
                             .groupTuple() // controlled by group key: [sampleID, meta, read_ID] 
                             .map{ it -> tuple(it[0][0], it[1].size(), it[0][1], it[0][2], it[2])} // sampleID, num_lanes, meta, read_ID:[R1|R2], file
-                            .branch{
+                            .branch{ it ->
                                 concat: it[1] > 1
                                 pass:  it[1] == 1
                             }

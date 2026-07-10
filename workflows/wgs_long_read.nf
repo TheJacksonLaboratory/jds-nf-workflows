@@ -103,7 +103,7 @@ workflow WGS_LONG_READ {
             .map { it -> [it[2].ind, it[1]] }
             .groupTuple()
             .map { it -> [it[0], it[1], it[1].size()] }
-            .branch {
+            .branch { it ->
                 merge: it[2] > 1
                 pass: it[2] == 1
             }
@@ -158,8 +158,8 @@ workflow WGS_LONG_READ {
     chrom_channel = bam_file.join(index_file).combine(chroms)
 
     // Find X and Y chromosomes in chroms channel
-    haploid_chroms = chroms.filter { it ==~ /(?i).*\b(chr)?X\b.*/ }.map { it[0] }
-        .combine(chroms.filter { it ==~ /(?i).*\b(chr)?Y\b.*/ }.map { it[0] })
+    haploid_chroms = chroms.filter { it -> it ==~ /(?i).*\b(chr)?X\b.*/ }.map { it -> it[0] }
+        .combine(chroms.filter { it -> it ==~ /(?i).*\b(chr)?Y\b.*/ }.map { it -> it[0] })
     // Filter the chrom channel to only X and Y. 
     // Because of channel vs. value the filter produces a channel, 
     // which must be manipulated with map to get the value of that channel. 
@@ -231,11 +231,11 @@ workflow WGS_LONG_READ {
     ANNOTATE_GENES_SV_SUPPLEMENTAL(ANNOTATE_SV_SUPPLEMENTAL.out.annot_sv_bedpe, "supplemental")
 
     ch_multiqc_files = channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it[1] }.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it[1] }.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it[1] }.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP_LONG.out.quality_json.collect{ it -> it[1] }.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it -> it[1] }.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it -> it[1] }.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it -> it[1] }.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it -> it[1] }.ifEmpty([]))
 
     MULTIQC(
         ch_multiqc_files.collect(),

@@ -25,7 +25,7 @@ process PLOT_HOMER_ANNOTATEPEAKS {
     script:
     def prefix = "macs_annotatepeaks"
     def joinedAnnos = annos.join(',')
-    def sampleNames = annos.collect { it.name.replace(suffix, '') }.join(',')
+    def sampleNames = annos.collect { it -> it.name.replace(suffix, '') }.join(',')
     """
     ${moduleDir}/bin/plot_homer_annotatepeaks.r \\
         -i ${joinedAnnos} \\

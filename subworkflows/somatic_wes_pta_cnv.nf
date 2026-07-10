@@ -23,8 +23,8 @@ workflow CNV {
                     normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3]]
                     tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6]]
                     }
-        ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-        ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+        ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+        ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]}
 
         GATK_PRINTREADS_NORMAL(ch_normal_samples)
         GATK_PRINTREADS_TUMOR(ch_tumor_samples)
