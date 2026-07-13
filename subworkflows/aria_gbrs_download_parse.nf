@@ -101,7 +101,8 @@ workflow FILE_DOWNLOAD {
             Reads are remapped to read_ch and meta is placed in meta_ch. Input tuples for existing modules 
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
-        def second_val = 42
+        
+        second_val = channel.value(42)
 
     emit:
         read_meta_ch = read_meta_ch

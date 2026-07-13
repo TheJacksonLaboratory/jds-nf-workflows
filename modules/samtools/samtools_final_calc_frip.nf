@@ -19,10 +19,9 @@ process FINAL_CALC_FRIP {
     script:
     // Calculate fraction of reads in peak
     """
-    total_reads=\$(samtools view -c ${processed_bams[0]})
-    reads_in_peaks=\$(samtools view -c ${reads_peaks_bams[0]})
-    FRiP=\$(awk -v a="\$reads_in_peaks" -v b="\$total_reads" 'BEGIN {print a/b}')
-    echo -e 'SAMPLEID\\tFRiP\\tFiltered Reads\\n'${sampleID}"\\t"\${FRiP}"\\t"\${total_reads} \
-    > ${sampleID}_Fraction_reads_in_peak.txt
+    bash "${moduleDir}/bin/samtools_final_calc_frip.sh" \
+        "${processed_bams[0]}" \
+        "${reads_peaks_bams[0]}" \
+        "${sampleID}"
     """
 }

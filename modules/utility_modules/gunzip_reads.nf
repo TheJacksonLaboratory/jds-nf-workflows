@@ -13,19 +13,20 @@ process GUNZIP {
 
     output:
     tuple val(sampleID), path("*.{fastq,fq}"), emit: gunzip_fastq
+    
     script:
     """
-    if [[ ${reads[0]} =~ ".gz" ]];
+    if [[ "${reads[0]}" == *.gz ]];
     then
-        gunzip -c ${reads[0]} > ${reads[0].baseName}
+        gunzip -c "${reads[0]}" > "${reads[0].baseName}"
     else
-        mv ${reads[0]} input_${reads[0]}
+        mv "${reads[0]}" "input_${reads[0]}"
     fi
-    if [[ ${reads[1]} =~ ".gz" ]];
+    if [[ "${reads[1]}" == *.gz ]];
     then
-        gunzip -c ${reads[1]} > ${reads[1].baseName}
+        gunzip -c "${reads[1]}" > "${reads[1].baseName}"
     else
-    mv ${reads[1]} input_${reads[1]}
+        mv "${reads[1]}" "input_${reads[1]}"
     fi
     """
 }

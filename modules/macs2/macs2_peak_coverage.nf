@@ -16,7 +16,8 @@ process PEAK_COVERAGE {
 
     script:
     """
-    awk 'OFS="\\t" {print \$1"."\$2"."\$3, \$1, \$2, \$3, "."}' ${narrow_peaks} \
-    > ${sampleID}_peaks.narrowPeak.saf
+    bash "${moduleDir}/bin/macs2_peak_coverage.sh" \
+        "${narrow_peaks}" \
+        "${sampleID}"
     """
 }

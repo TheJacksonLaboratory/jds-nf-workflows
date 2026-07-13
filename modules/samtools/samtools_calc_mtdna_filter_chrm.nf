@@ -11,40 +11,23 @@ process CALC_MTDNA_FILTER_CHRM {
     publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*_mtDNA_Content.txt", mode: 'copy'
 
     input:
-    tuple val(sampleID), file(rmdup_bam_file), file(rmdup_bai_file)
+    tuple val(sampleID), path(rmdup_bam_file), path(rmdup_bai_file)
 
     output:
-    tuple val(sampleID), file("*.sorted.rmDup.rmChrM.bam"), emit: rmChrM_bam
-    tuple val(sampleID), file("*.sorted.rmDup.rmChrM.bam.bai"), emit: rmChrM_bai
-    tuple val(sampleID), file("*_mtDNA_Content.txt"), emit: mtdna_log
+    tuple val(sampleID), path("*.sorted.rmDup.rmChrM.bam"), emit: rmChrM_bam
+    tuple val(sampleID), path("*.sorted.rmDup.rmChrM.bam.bai"), emit: rmChrM_bai
+    tuple val(sampleID), path("*_mtDNA_Content.txt"), emit: mtdna_log
 
     script:
-    // Get Mitochondrial and total read counts, calculate %mtDNA and filter Mitochondrial Reads from bam file 
+    // Get Mitochondrial and total read counts, calculate %mtDNA and filter Mitochondrial Reads from bam file
 
     mt_name = params.gen_org == 'mouse' ?  'MT' : 'chrM'
 
     """
-    # Get Mitochondrial Read Counts from bam file 
-    mtReads=\$(samtools idxstats ${rmdup_bam_file} | grep '${mt_name}' | cut -f 3)
-    
-    # Get Total Read Counts from bam file
-    totalReads=\$(samtools idxstats ${rmdup_bam_file} | awk '{SUM += \$3} END {print SUM}')
-
-    if [ \$mtReads >0 ]
-    then
-        mtReads=\$(echo \$mtReads)
-    else
-        mtReads=\$(echo 0)
-    fi
-
-    # Calculate %mtDNA
-    echo -e 'sampleID\\tPerc mtDNA\\n'${sampleID}'\\t'\$(bc <<< "scale=2;100*\$mtReads/\$totalReads") >> ${sampleID}_mtDNA_Content.txt
-
-    # Filter Mitochondrial Reads from bam file
-    samtools view -@ ${task.cpus} -h ${rmdup_bam_file} \
-    | grep -v ${mt_name} \
-    | samtools sort -@ ${task.cpus} -O bam \
-    -o ${sampleID}.sorted.rmDup.rmChrM.bam \
-    && samtools index ${sampleID}.sorted.rmDup.rmChrM.bam
+    bash "${moduleDir}/bin/samtools_calc_mtdna_filter_chrm.sh" \
+        "${rmdup_bam_file}" \
+        "${sampleID}" \
+        "${mt_name}" \
+        "${task.cpus}"
     """
 }

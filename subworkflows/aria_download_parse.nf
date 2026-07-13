@@ -118,7 +118,7 @@ workflow FILE_DOWNLOAD {
         .groupTuple(by: [0,2], size: group_size) // sampleID, meta
         .map{it -> tuple(it[0], it[2], it[4].toSorted( { a, b -> a.getName() <=> b.getName() } ) ) }
 
-        def second_val = 42
+        second_val = channel.value(42)
 
         /*
             Mix concatenation files, with non-concat files. 'mix' allows for, all, some, or no files to have 

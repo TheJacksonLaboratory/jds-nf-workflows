@@ -75,7 +75,7 @@ workflow CONCATENATE_PTA_FASTQ {
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
 
-        def second_val = 42
+        second_val = channel.value(42)
 
     emit:
         read_meta_ch = read_meta_ch
