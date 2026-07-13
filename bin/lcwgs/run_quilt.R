@@ -113,7 +113,7 @@ if(cross_type == "do" | cross_type == "cc" | cross_type == "het3" | cross_type =
   QUILT::QUILT(chr = mouse_chr,
                regionStart = start,
                regionEnd = end,
-               buffer = 10000,
+               buffer = 100000,
                bamlist = mouse_bamlist,
                outputdir = paste0(getwd(), "/"),
                reference_haplotype_file = hap,

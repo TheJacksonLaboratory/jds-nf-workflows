@@ -35,7 +35,7 @@ Parameter | Default | Description
 --cross_name | null | A string specifying the name of the cross within certain classes to specify genetic background. Defaults to --cross_type if not specified
 --downsample | 'false' | Options: true, false. If true, downsample the aligned reads to coverage specified.
 --downsampling_coverage_csv | /<PATH> | Path to a CSV file specifying the target coverage for downsampling each sample. The CSV file is just one unheadered column with numeric values (X coverage) in each row.
---smooth_window | 200 | Number of markers to smooth over when calculating genotype probabilities in R/qtl2.
+--smooth_window | 200 (for DO mice) | Number of markers to smooth over when calculating genotype probabilities in R/qtl2.
 --interp_250k_gridfile | '/projects/omics_share/mouse/GRCm39/supporting_files/lcwgs_hr/interp_0.25M_physical_grid.csv'
                              | Uniformly spaced marker grid used to interpolate genotype probabilities to a standard 250k marker grid for R/qtl2 QTL mapping.
 '''  
