@@ -5,6 +5,8 @@ nextflow.enable.dsl=2
 include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
@@ -148,6 +150,11 @@ workflow HS_PTA {
         FASTP(trimmer_input)
 
         FASTQC(FASTP.out.trimmed_fastq)
+
+        // HLA Typing
+        if ( params.hla_typing ){
+          OPTITYPE_RUN(FASTP.out.trimmed_fastq)
+        }
 
         // ** Step 2: Get Read Group Information
         READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")

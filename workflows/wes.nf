@@ -13,6 +13,8 @@ include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/conca
 include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
 include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
@@ -143,6 +145,12 @@ workflow WES {
   FASTP(read_ch)
 
   FASTQC(FASTP.out.trimmed_fastq)
+
+
+  // HLA Typing
+  if ( params.hla_typing ){
+    OPTITYPE_RUN(reads)
+  }
 
   // Step 2: Get Read Group Information
   READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")

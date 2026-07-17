@@ -13,6 +13,8 @@ include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/conca
 include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
 // include {GZIP} from "${projectDir}/modules/utility_modules/gzip"
@@ -170,6 +172,11 @@ workflow SOMATIC_WES {
     FASTP(read_ch)
     
     FASTQC(FASTP.out.trimmed_fastq)
+
+    // HLA Typing
+    if ( params.hla_typing ){
+      OPTITYPE_RUN(FASTP.out.trimmed_fastq)
+    }
 
     // Step 3: Get Read Group Information
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")

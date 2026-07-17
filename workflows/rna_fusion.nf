@@ -30,6 +30,7 @@ include {SQUID_ANNOTATE} from "${projectDir}/modules/squid/squid_annotate"
 include {SAMTOOLS_VIEW as SAMTOOLS_VIEW_SQUID} from "${projectDir}/modules/samtools/samtools_view"
 include {STAR_FUSION as STAR_FUSION} from "${projectDir}/modules/star-fusion/star-fusion"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 include {FUSION_REPORT} from "${projectDir}/modules/fusion_report/fusion_report"
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
@@ -111,6 +112,9 @@ workflow RNA_FUSION {
     GUNZIP(read_ch)
 
     FASTQC(GUNZIP.out.gunzip_fastq)
+
+    // HLA Typing
+    OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
 
     // Step 1a: Xengsort if PDX data used.
     ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file.
