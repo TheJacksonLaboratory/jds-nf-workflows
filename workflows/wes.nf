@@ -149,7 +149,7 @@ workflow WES {
 
   // HLA Typing
   if ( params.hla_typing ){
-    OPTITYPE_RUN(reads)
+    OPTITYPE_RUN(FASTP.out.trimmed_fastq)
   }
 
   // Step 2: Get Read Group Information
