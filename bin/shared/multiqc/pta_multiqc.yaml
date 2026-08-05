@@ -33,6 +33,7 @@ extra_fn_clean_exts:
   - "_coverageCap"
   - ".clumpy"
   - "_fastp"
+  - "fastp report"
   - "_aln"
   - type: "truncate"
     pattern: ".fastq"

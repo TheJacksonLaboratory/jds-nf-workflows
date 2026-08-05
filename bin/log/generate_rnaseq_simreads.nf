@@ -42,7 +42,6 @@ ______________________________________________________
 --gen_org                       ${params.gen_org}
 --genome_build                  ${params.genome_build}
 --fa_cds                        ${params.fa_cds}
-
 --library_size                  ${params.library_size}
 --library_strategy              ${params.library_strategy}
 --read_length                   ${params.read_length}

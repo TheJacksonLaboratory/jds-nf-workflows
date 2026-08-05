@@ -9,7 +9,7 @@ Parameter | Type | Description
 -w | /<PATH> | The directory that all intermediary files and nextflow processes utilize. This directory can become quite large. This should be a location on /flashscratch or other directory with ample storage.
 
 --gen_org | mouse | Options: mouse and human.
-
+--genome_build | GRCm38 | Genome build name, used only for internal run tracking.
 --fa_cds | Mouse: 'http://ftp.ensembl.org/pub/release-102/fasta/mus_musculus/cds/Mus_musculus.GRCm38.cds.all.fa.gz' 
          | Human: 'http://ftp.ensembl.org/pub/release-104/fasta/homo_sapiens/cds/Homo_sapiens.GRCh38.cds.all.fa.gz'
          | All transcript coding sequences resulting from Ensembl genes.

@@ -20,6 +20,7 @@ extra_fn_clean_exts:
   - "_FilterTrim"
   - "_dedup"
   - "_fastp"
+  - "fastp report"
   - "*idxstat*"
   - type: "truncate"
     pattern: ".fastq"
