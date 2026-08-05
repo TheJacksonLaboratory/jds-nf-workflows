@@ -9,6 +9,7 @@ nextflow.enable.dsl=2
 include {help} from "${projectDir}/bin/help/haplotype_reconstruction.nf"
 include {param_log} from "${projectDir}/bin/log/haplotype_reconstruction.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv_qtl.nf"
+include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
 include {GS_TO_QTL2} from "${projectDir}/modules/qtl2/geneseek2qtl2"
 include {WRITE_CROSS} from "${projectDir}/modules/qtl2/write_cross"
 include {GENOPROBS} from "${projectDir}/modules/qtl2/genoprobs"
@@ -24,7 +25,12 @@ if (params.help){
 }
 
 // log params
-param_log()
+message = param_log()
+
+// Save params to a file for record-keeping
+workflow.onComplete {
+    final_run_report(message)
+}
 
 // Make channel of consensus files (GigaMUGA)
 founder_genos   = Channel.fromPath(params.gm_cc_do_founder_genotypes).collect()

@@ -21,6 +21,6 @@ nextflow ../main.nf \
 -profile sumner2 \
 --sample_folder <PATH_TO_YOUR_SEQUENCES> \
 --pubdir "/flashscratch/${USER}/outputDir" \
---pubdir "/flashscratch/${USER}/outputDir/work" \
+-w "/flashscratch/${USER}/outputDir/work" \
 --covar_file <PATH_TO_YOUR_COVAR_FILE> \
 --comment "This script will run haplotype inference on lcWGS data from complex mouse crosses"

@@ -8,26 +8,15 @@ process SAMTOOLS_FAIDX_CHR_ONLY {
 
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-
     input:
         path(fasta)
 
     output:
-        path("*CHR_Only.fa"), emit: chr_fa
+        path("*selectedCHR.fa"), emit: chr_fa
 
     script:
-    suffix = params.gen_org=='mouse' ? "\$(echo -e ${fasta} | sed 's/.toplevel.fa//g')" : "\$(echo -e ${fasta} | sed 's/_assembly38.fasta//g')"
+    """
+    samtools faidx ${fasta} ${params.chrom_list} > ${fasta.baseName}.selectedCHR.fa
+    """
 
-    if (params.gen_org=='mouse' && params.workflow=='generate_wgs_simreads')
-    """
-      samtools faidx ${fasta} 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 X Y MT > ${suffix}.primary_CHR_Only.fa
-    """
-    else if (params.gen_org=='mouse' && params.workflow=='generate_wes_simreads')
-    """
-      samtools faidx ${fasta} 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 X Y > ${suffix}.primary_CHR_Only.fa
-    """
-    else if (params.gen_org=='human')
-    """
-      samtools faidx ${fasta} chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrM chrX chrY > ${suffix}.${params.genome_build}.dna.CHR_Only.fa
-    """
 }

@@ -287,7 +287,8 @@ workflow WES {
   ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
 
   MULTIQC (
-      ch_multiqc_files.collect()
+    ch_multiqc_files.collect(),
+    params.multiqc_config
   )
 
 }

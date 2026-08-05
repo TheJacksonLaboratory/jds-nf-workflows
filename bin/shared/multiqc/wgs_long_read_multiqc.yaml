@@ -11,7 +11,7 @@ module_order:
   - mosdepth
 
 fastp:
-  s_name_filenames: true
+  use_filename_as_sample_name: true
 
 
 extra_fn_clean_exts:
@@ -20,10 +20,12 @@ extra_fn_clean_exts:
   - "_FilterTrim"
   - "_dedup"
   - "_fastp"
+  - "fastp report"
   - "*idxstat*"
   - type: "truncate"
     pattern: ".fastq"
 
 custom_logo: "./JAX_logo_rgb_transparentback.png"
+custom_logo_dark: "./JAX_logo_white_transparentback.png"
 custom_logo_url: "https://github.com/TheJacksonLaboratory/cs-nf-pipelines"
 custom_logo_title: "The Jackson Laboratory - NGS Operations Nextflow DSL2 Pipelines"

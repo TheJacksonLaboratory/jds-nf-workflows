@@ -1,7 +1,6 @@
 process GENERATE_SIMULATED_WGS_DATA {
     tag "$chunk_fasta.simpleName"
 
-
     cpus 2
     memory 50.GB
     time 8.hour
@@ -9,32 +8,31 @@ process GENERATE_SIMULATED_WGS_DATA {
 
     container 'quay.io/jaxcompsci/neat:3.3'
 
-    publishDir "${params.pubdir}/results/simulated_10x_individual_chr", pattern: '*fq.gz', mode:'copy'  
-    publishDir "${params.pubdir}/results/gold_truth_vcf", pattern: '*golden.vcf', mode:'copy'  
-
+    publishDir "${params.pubdir}/reads/individual_chr", pattern: '*fq.gz', mode:'copy'  
+    publishDir "${params.pubdir}/gold_truth_vcf/individual_chr", pattern: '*golden.vcf', mode:'copy'  
 
     input:
     path chunk_fasta
 
     output:
     path('*1.fq.gz'), emit: fq1
-    path('*2.fq.gz'), emit: fq2
+    path('*2.fq.gz'), emit: fq2, optional: true
     path('*vcf'),     emit: vcf
  
-
     script:
-    prefix = params.gen_org=='mouse' ? "Mus_musculus.GRCm38" : "Homo_sapiens.GRCh38"
+    paired_end = params.read_type=='PE' ? "--pe ${params.insert_size} ${params.insert_size_sd}" : ""
+    mutation_rate = params.mutation_rate != null ? "-M ${params.mutation_rate}" : "" // NEAT scales mutation rate, if not user set use internal tool defaults.
     """
     python /usr/local/bin/NEAT/gen_reads.py \
         -r ${chunk_fasta} \
-        -R 150 \
-        -o ${prefix}_simVar_10x_${chunk_fasta.simpleName} \
-	-c 10 \
-        -E 0.001 \
-        --vcf \
-        --pe 350 30
-    
+        -R ${params.read_length} \
+        -o ${params.sampleID}_simVar_${params.coverage}x_${chunk_fasta.simpleName} \
+	    -c ${params.coverage} \
+        -E ${params.error_rate} \
+        ${paired_end} \
+        ${mutation_rate} \
+        --vcf
+
     gunzip *vcf.gz
     """
-
 }

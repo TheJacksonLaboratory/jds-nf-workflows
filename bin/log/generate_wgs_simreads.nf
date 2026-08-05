@@ -4,17 +4,15 @@ logo = new Logo()
 println '\n'
 println logo.show()
 
-
-if (!(params.gen_org in ['human', 'mouse'])) {
-  log.error "This workflow supports only --gen_org mouse or --gen_org human. Please retry with correct option."
-  System.exit(1)
-}
-
 if (!params.fasta) {
   log.error "The --fasta parameter is required. Please provide the path to reference fasta."
   System.exit(1)
 }
 
+if (!params.read_type || !(params.read_type in ['PE', 'SE'])) {
+  log.error "The --read_type parameter is required. Please specify 'PE' for paired-end or 'SE' for single-end reads."
+  System.exit(1)
+}
 
 def param_log(){
 
@@ -32,8 +30,16 @@ ______________________________________________________
 -c                              ${params.config}
 --gen_org                       ${params.gen_org}
 --genome_build                  ${params.genome_build}
---annotation_source             ${params.annotation_source}
+--sampleID                      ${params.sampleID}
 --fasta                         ${params.fasta}
+--chrom_list                    ${params.chrom_list}
+--coverage                      ${params.coverage}
+--read_length                   ${params.read_length}
+--error_rate                    ${params.error_rate}
+--read_type                     ${params.read_type}
+${params.mutation_rate != null ? "--mutation_rate                 ${params.mutation_rate}" : ""}
+${params.read_type == 'PE' ? "--insert_size                   ${params.insert_size}" : ""}
+${params.read_type == 'PE' ? "--insert_size_sd                ${params.insert_size_sd}" : ""}
 
 Project Directory: ${projectDir}
 

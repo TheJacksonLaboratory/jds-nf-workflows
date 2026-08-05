@@ -6,7 +6,7 @@
 #
 # Sam Widmayer
 # samuel.widmayer@jax.org
-# 20251124
+# 20260520
 ################################################################################
 
 library(qtl2convert)
@@ -203,6 +203,9 @@ if(chr != "X"){
     print("HET3 strains; sites not expected to adhere to HWE")
     print("Skipping HWE filter")
     # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
+  } else if(cross_type == "F2"){
+    print("F2 cross; sites not expected to adhere to HWE")
+    print("Skipping HWE filter")
   } else {
     print("Pct of sites that deviate from HWE:")
     # paste0(round((table(sample_gt_renamed$HWE < 0.05)[[2]]/quilt_variants*100),2),"%")
@@ -281,6 +284,25 @@ rm(ref, alt)
 all_gt_meta <- all_gt[,1:4]
 if(cross_type == "bxd"){
   all_gt = encode_geno(all_gt[,-c(1:4)], alleles, output_codes = c("-","B","H","D"))
+} else if(cross_type == "F2"){
+  
+  # detect allele codes
+  stopifnot("cross_direction" %in% colnames(meta))
+  cd <- unique(meta$cross_direction)[[1]]
+  bigX = strsplit(cd,"X")[[1]]
+  lilX = strsplit(cd,"X")[[1]]
+  
+  # encode using that information if encoded correctly
+  if(length(bigX) > 1){
+    codes = c("-",bigX[[1]],"H",bigX[[2]])
+    all_gt = encode_geno(all_gt[,-c(1:4)], alleles, output_codes = codes)
+  } else if(length(lilX) > 1){
+    codes = c("-",lilX[[1]],"H",lilX[[2]])
+    all_gt = encode_geno(all_gt[,-c(1:4)], alleles, output_codes = codes)
+  } else {
+    all_gt = encode_geno(all_gt[,-c(1:4)], alleles)
+  }
+  
 } else {
   all_gt = encode_geno(all_gt[,-c(1:4)], alleles)
 }
@@ -373,12 +395,23 @@ if(cross_type == "genail4" | cross_type == "genail8" | cross_type == "cc" | cros
             quote = FALSE, row.names = FALSE)
 
 } else if(cross_type == "bxd"){
-  
+
   # keep the default id column
   stopifnot("id" %in% colnames(meta))
   if("sex" %in% colnames(meta)){
     meta$sex[meta$sex == "female" | meta$sex == "f"] <- "F"
     meta$sex[meta$sex == "male" | meta$sex == "m"] <- "M"
+  }
+  write.csv(meta, file = 'covar.csv',
+            quote = FALSE, row.names = FALSE)
+
+} else if(cross_type == "F2"){
+  stopifnot("id" %in% colnames(meta))
+  if("sex" %in% colnames(meta)){
+    meta$sex[meta$sex == "female" | meta$sex == "f"] <- "F"
+    meta$sex[meta$sex == "male" | meta$sex == "m"] <- "M"
+  } else {
+    message("No sex column included")
   }
   write.csv(meta, file = 'covar.csv',
             quote = FALSE, row.names = FALSE)

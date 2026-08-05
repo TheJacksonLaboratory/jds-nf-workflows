@@ -181,7 +181,7 @@ workflow RNASEQ {
         }
 
         // Check strand setting
-        CHECK_STRANDEDNESS(reads)
+        CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
         rsem_input = reads.join(CHECK_STRANDEDNESS.out.strand_setting).join(GET_READ_LENGTH.out.read_length)
 
@@ -222,7 +222,8 @@ workflow RNASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
-            ch_multiqc_files.collect()
+            ch_multiqc_files.collect(),
+            params.multiqc_config
         )
       }
     }
