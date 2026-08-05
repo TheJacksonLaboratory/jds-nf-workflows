@@ -1,9 +1,10 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include {GATK_PRINTREADS} from "${projectDir}/modules/gatk/gatk_printreads_mt"
-include {PICARD_REVERTSAM} from "${projectDir}/modules/picard/picard_revertsam"
-include {PICARD_SAMTOFASTQ} from "${projectDir}/modules/picard/picard_samtofastq"
+include {GATK_PRINTREADS} from "../modules/gatk/gatk_printreads_mt"
+include {SAMTOOLS_FILTER} from "../modules/samtools/samtools_filter"
+include {PICARD_REVERTSAM} from "../modules/picard/picard_revertsam"
+include {PICARD_SAMTOFASTQ} from "../modules/picard/picard_samtofastq"
 include {BWA_MEM as BWA_MEM_MT;
          BWA_MEM as BWA_MEM_SHIFTED_MT} from "${projectDir}/modules/bwa/bwa_mem_mt"
 include{PICARD_MERGEBAMALIGNMENT as PICARD_MERGEBAMALIGNMENT_MT;
@@ -57,9 +58,17 @@ workflow MT_VARIANT_CALLING {
 
     main:
         // Extract reads from the mitochondrial contig
+
         GATK_PRINTREADS(bam_ch)
 
-        PICARD_REVERTSAM(GATK_PRINTREADS.out.bam)
+        if (params.filter_ambiguous_reads) {
+            SAMTOOLS_FILTER(GATK_PRINTREADS.out.bam, '-F 2304') // not primary alignment (0x100) || supplementary alignment (0x800)
+            input_ch = SAMTOOLS_FILTER.out.bam
+        } else {
+            input_ch = GATK_PRINTREADS.out.bam
+        }
+
+        PICARD_REVERTSAM(input_ch)
 
         PICARD_SAMTOFASTQ(PICARD_REVERTSAM.out.bam)
 

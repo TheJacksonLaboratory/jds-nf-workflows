@@ -7,6 +7,7 @@ include {param_log} from "${projectDir}/bin/log/qtl_mapping.nf"
 include {extract_csv} from "${projectDir}/bin/shared/extract_csv_qtl.nf"
 include {DATA_QC} from "${projectDir}/modules/qtl2/data_qc.nf"
 include {MAP_QTL} from "${projectDir}/modules/qtl2/map_qtl.nf"
+include {MAKE_PERM_VALUE_FILE} from "${projectDir}/modules/utility_modules/make_perm_value_file.nf"
 include {RUN_PERMS} from "${projectDir}/modules/qtl2/run_perms.nf"
 include {HARVEST_QTL} from "${projectDir}/modules/qtl2/harvest_qtl.nf"
 include {QTL_EFFECTS} from "${projectDir}/modules/qtl2/qtl_effects.nf"
@@ -55,13 +56,24 @@ workflow QTL_MAPPING {
     
     // Map QTL
     MAP_QTL(map_perm_ch)
-
-    // Run permutations
-    RUN_PERMS(map_perm_ch)
-
-    // // Collect results
-    perm_ch = RUN_PERMS.out.perm_files.groupTuple(by: 0)
     map_ch  = MAP_QTL.out.scan1_files.groupTuple(by: 0)
+    
+    if(params.perm_threshold){
+        // Skip permutations and just use the provided threshold
+        // Make params.perm_threshold a text file
+        MAKE_PERM_VALUE_FILE(map_perm_ch.map{it -> [it[0], it[5]] })
+
+        // Collect results
+        perm_ch = MAKE_PERM_VALUE_FILE.out.perm_files.groupTuple(by: 0)
+    
+    } else {
+        // Run permutations
+        RUN_PERMS(map_perm_ch)
+
+        // Collect results
+        perm_ch = RUN_PERMS.out.perm_files.groupTuple(by: 0)
+    }
+    
     harvest_ch = perm_ch.join(map_ch, by: 0).map{it -> [it[0], it[1], it[2], it[4], it[5]]}
     HARVEST_QTL(harvest_ch)
 
