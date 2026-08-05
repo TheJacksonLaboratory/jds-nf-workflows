@@ -8,10 +8,13 @@ process HARVEST_QTL {
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
+    publishDir "${params.pubdir}/${id}/qtl_scans", pattern:"peaks.csv", mode:'copy'
     publishDir "${params.pubdir}/${id}/qtl_scans", pattern:"*_scan1_thresh.png", mode:'copy'
 
+    
     input:
     tuple val(id), val(phenos), path(perm_files), path(scan1_files), path(map_files)
+    
 
     output:
     tuple val(id), path("peaks.csv"), emit: qtl_table

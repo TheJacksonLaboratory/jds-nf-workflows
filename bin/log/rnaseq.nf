@@ -105,6 +105,9 @@ ${params.trim_poly_x ? "--poly_x_min_len                        ${params.poly_x_
 def seParams = """
 --fragment_length_mean                  ${params.fragment_length_mean}
 --fragment_length_sd                    ${params.fragment_length_sd}
+
+Human Specific:
+--hla_typing                            ${params.hla_typing}
 """
 
 def umiParas = """

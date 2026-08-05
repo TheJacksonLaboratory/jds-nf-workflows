@@ -1,10 +1,8 @@
 process QTL2_GENOPROBS {
 
   cpus 32
-  memory {200.GB * task.attempt}
-  time {12.hour * task.attempt}
-  errorStrategy 'retry' 
-  maxRetries 1
+  memory {300.GB}
+  time {16.hour}
 
   container 'docker://sjwidmay/jds_lcwgs_hr:1.0.0'
   

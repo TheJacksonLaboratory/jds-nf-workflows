@@ -60,6 +60,7 @@ def humanParams = """
 --dbNSFP                        ${params.dbNSFP}
 --cosmic                        ${params.cosmic}
 --snpEff_config                 ${params.snpEff_config}
+--hla_typing                    ${params.hla_typing}
 """
 
 def svParams = """

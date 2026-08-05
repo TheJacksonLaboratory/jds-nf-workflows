@@ -80,6 +80,8 @@ if(any(covar_info$interactive)){
   
 }
 
+# Save the value
+perm_val = data.frame(summary(perms)[[1]])
+colnames(perm_val) <- c("perm")
+write.table(perm_val, file = paste0(colnames(pheno),"_scan1perms.txt"), row.names = F, quote = F, sep = "/t")
 
-# Save the files
-saveRDS(perms, file = paste0(colnames(pheno),"_scan1perms.rds"))

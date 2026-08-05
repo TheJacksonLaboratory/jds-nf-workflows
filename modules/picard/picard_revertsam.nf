@@ -12,7 +12,7 @@ process PICARD_REVERTSAM {
     tuple val(sampleID), path(bam)
 
     output:
-    tuple val(sampleID), file("*.bam"), emit: bam
+    tuple val(sampleID), path("*.bam"), emit: bam
 
     script:
     String my_mem = (task.memory-1.GB).toString()
