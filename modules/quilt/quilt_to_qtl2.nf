@@ -30,7 +30,7 @@ process QUILT_TO_QTL2 {
 
   """
   # make founder geno table
-  bcftools query --print-header -f '%CHROM\\t%POS\\t%REF\\t%ALT[\\t%GT]\\n' ${params.ref_haps_dir}/${params.cross_type}/chr${chr}_phased_snps.vcf.gz | \
+  bcftools query --print-header -f '%CHROM\\t%POS\\t%REF\\t%ALT[\\t%GT]\\n' ${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chr${chr}_phased_snps.vcf.gz | \
         sed 's/[[# 0-9]*]//g' | \
         sed 's/:GT//g' > chr${chr}_fg.txt
 
@@ -47,7 +47,7 @@ process QUILT_TO_QTL2 {
 	    chr${chr}_sg.txt \
 	    ${covar_file} \
 	    ${params.cross_type} \
-	    ${params.ref_haps_dir}/${params.cross_type}/chr${chr}_gen_map.txt \
+	    ${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chr${chr}_gen_map.txt \
         ${chr} \
         ${params.gridfile}
   """
