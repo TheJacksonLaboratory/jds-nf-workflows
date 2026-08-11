@@ -100,14 +100,13 @@ ${params.trim_poly_x ? "--poly_x_min_len                        ${params.poly_x_
 --rsem_aligner                          ${params.rsem_aligner}
 --merge_rna_counts                      ${params.merge_rna_counts}
 --skip_read_trimming                    ${params.skip_read_trimming}
+
 """
 
 def seParams = """
 --fragment_length_mean                  ${params.fragment_length_mean}
 --fragment_length_sd                    ${params.fragment_length_sd}
 
-Human Specific:
---hla_typing                            ${params.hla_typing}
 """
 
 def umiParas = """
@@ -194,6 +193,10 @@ def bamParams = """
 --read_type                             ${params.read_type}
 """
 
+def humanParams = """
+--hla_typing                            ${params.hla_typing}
+"""
+
 def projectInfo = """
 Project Directory: ${projectDir}
 
@@ -232,6 +235,10 @@ if (params.bam_input) {
   }
 
   msg += commonParams
+
+  if (params.gen_org == 'human') {
+    msg += humanParams
+  }
 
   if (params.pdx && params.rsem_aligner=='bowtie2') {
     msg += pdxParams + pdxBowtie2params

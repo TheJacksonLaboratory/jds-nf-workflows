@@ -50,8 +50,7 @@ Parameter | Default | Description
 --xengsort_idx_path | '/projects/compsci/omics_share/human/GRCh38/supporting_files/xengsort' | Xengsort index for deconvolution of human and mouse reads. Used when `--pdx` is run. If `null`, Xengsort Index is run using ref_fa and host_fa.  
 --xengsort_idx_name | 'hg38_GRCm39-NOD_ShiLtJ' | Xengsort index name associated with files located in `xengsort_idx_path` or name given to outputs produced by Xengsort Index
 
---hla_typing | true | Options: false, true. If specified, skip HLA typing test.
-
+--hla_typing | true | Human Only - Options: true, false. If specified, HLA typing is run.
 '''
 }
 

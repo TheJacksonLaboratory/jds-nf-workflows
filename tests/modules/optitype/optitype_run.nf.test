@@ -60,7 +60,7 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = tuple('testSample_42', [file('/projects/omics_share/meta/benchmarking/jds-nf-test/wgs/human/hg38_WGS_sample_R1.fastq.gz', checkIfExists: true), file('/projects/omics_share/meta/benchmarking/jds-nf-test/wgs/human/hg38_WGS_sample_R2.fastq.gz', checkIfExists: true)])
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_sample_R2.fastq.gz', checkIfExists: true)])
                 """
             }
         }
@@ -70,7 +70,6 @@ nextflow_process {
         }
 
     }
-
 
     test("Single-end -- WGS") {
 
@@ -83,7 +82,29 @@ nextflow_process {
             }
             process {
                 """
-                input[0] = tuple('testSample_42', [file('/projects/omics_share/meta/benchmarking/jds-nf-test/wgs/human/hg38_WGS_sample_R1.fastq.gz', checkIfExists: true)])
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_sample_R1.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("Low Coverage Exit 0") {
+
+        when {
+            params {
+                pipeline = 'wes'
+                pubdir = "tests/results"
+                gen_org = "human"
+                read_type = 'SE'
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wes/human/hg38_WES_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wes/human/hg38_WES_sample_R2.fastq.gz', checkIfExists: true)])
                 """
             }
         }

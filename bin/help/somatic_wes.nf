@@ -58,8 +58,7 @@ Parameter | Default | Description
 --dbNSFP | '/projects/omics_share/human/GRCh38/genome/annotation/function/dbNSFP4.2a.gatk_formatted.txt.gz' | Human Only - Used in variant annotation.
 --cosmic | '/projects/omics_share/human/GRCh38/genome/annotation/function/COSMICv95_Coding_Noncoding.gatk_formatted.vcf' | Human Only - Used in variant annotation. 
 
---hla_typing | true | Human Only - Options: false, true. If specified, skip HLA typing test.
-
+--hla_typing | true | Human Only - Options: true, false. If specified, HLA typing is run.
 '''
 }
 
