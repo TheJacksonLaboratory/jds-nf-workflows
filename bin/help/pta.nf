@@ -98,6 +98,8 @@ The following are human specific parameters. To see help for mouse, add `--gen_o
 
 --read_type | PE | Only 'PE' is accepted for this workflow. 
 
+--hla_typing | true | Human Only - Options: true, false. If specified, HLA typing is run.
+
 '''
 else
 println '''
