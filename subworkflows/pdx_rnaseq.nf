@@ -10,6 +10,7 @@ include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_l
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 // include {GZIP as GZIP_HUMAN;
 //          GZIP as GZIP_MOUSE} from "${projectDir}/modules/utility_modules/gzip"
 include {RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_HUMAN;
@@ -62,6 +63,11 @@ workflow PDX_RNASEQ {
 
       // Xengsort Classification
       XENGSORT_CLASSIFY(xengsort_index, reads) 
+
+      // HLA Typing
+      if ( params.hla_typing ){
+        OPTITYPE_RUN(XENGSORT_CLASSIFY.out.xengsort_human_fastq)
+      }
 
       human_reads = XENGSORT_CLASSIFY.out.xengsort_human_fastq
                     .join(CHECK_STRANDEDNESS.out.strand_setting)

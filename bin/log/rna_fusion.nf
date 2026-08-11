@@ -56,7 +56,6 @@ ______________________________________________________
 --fusion_report_opt                 ${params.fusion_report_opt}
 --databases                         ${params.databases}
 --pdx                               ${params.pdx}
---hla_typing                        ${params.hla_typing}
 
 
 Project Directory: ${projectDir}

@@ -113,9 +113,6 @@ workflow RNA_FUSION {
 
     FASTQC(GUNZIP.out.gunzip_fastq)
 
-    // HLA Typing
-    OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
-
     // Step 1a: Xengsort if PDX data used.
     ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file.
     if (params.pdx){
@@ -132,9 +129,16 @@ workflow RNA_FUSION {
         XENGSORT_CLASSIFY(xengsort_index, GUNZIP.out.gunzip_fastq)
         ch_XENGSORT_CLASSIFY_multiqc = XENGSORT_CLASSIFY.out.xengsort_log
 
+        // HLA Typing
+        OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
+
         fusion_tool_input = XENGSORT_CLASSIFY.out.xengsort_human_fastq
 
     } else { 
+        
+        // HLA Typing
+        OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
+
         fusion_tool_input = GUNZIP.out.gunzip_fastq
     }
 
