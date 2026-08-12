@@ -2,7 +2,7 @@ nextflow_workflow {
 
     name "Test Workflow wgs_long_read"
     script "workflows/wgs_long_read.nf"
-    workflow "wgs_long_read"
+    workflow "WGS_LONG_READ"
 
 
     test("PacBio -- Invalid Param") {
