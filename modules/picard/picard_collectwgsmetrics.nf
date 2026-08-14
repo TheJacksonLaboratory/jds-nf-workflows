@@ -22,7 +22,7 @@ process PICARD_COLLECTWGSMETRICS {
     my_mem =  my_mem[0..-4]
 
     reference = type == 'mt' ? params.mt_fasta : params.ref_fa
-    options = type == 'mt' ? "--COVERAGE_CAP 100000 --USE_FAST_ALGORITHM true --INCLUDE_BQ_HISTOGRAM true --THEORETICAL_SENSITIVITY_OUTPUT ${sampleID}_theoretical_sensitivity.mt.txt" : ""
+    options = type == 'mt' ? "--COVERAGE_CAP 300000 --USE_FAST_ALGORITHM true --INCLUDE_BQ_HISTOGRAM true --THEORETICAL_SENSITIVITY_OUTPUT ${sampleID}_theoretical_sensitivity.mt.txt" : ""
     suffix = type == 'mt' ? ".mt" : ""
 
     """

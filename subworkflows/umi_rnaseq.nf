@@ -10,6 +10,7 @@ include {STAR_ALIGN} from "${projectDir}/modules/star/star_align_rsem"
 include {UMITOOLS_DEDUP as UMITOOLS_DEDUP_GENOME;
          UMITOOLS_DEDUP as UMITOOLS_DEDUP_TRANSCRIPT} from "${projectDir}/modules/umitools/umitools_dedup"
 include {SAMTOOLS_SORT} from "${projectDir}/modules/samtools/samtools_sort"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 include {UMITOOLS_PREPAREFORRSEM} from "${projectDir}/modules/umitools/umitools_prepareforrsem"
 include {RSEM_EXPRESSION} from "${projectDir}/modules/rsem/rsem_expression_umi"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
@@ -53,8 +54,13 @@ workflow UMI_RNASEQ {
         
         FASTQC(reads)
 
+        // HLA Typing
+        if ( params.hla_typing ){
+          OPTITYPE_RUN(reads)
+        }
+
         // Check strand setting
-        CHECK_STRANDEDNESS(reads)
+        CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
         // STAR Alignment
         STAR_ALIGN(reads.join(GET_READ_LENGTH.out.read_length), params.rsem_ref_files, params.rsem_star_prefix)
@@ -116,7 +122,8 @@ workflow UMI_RNASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
-            ch_multiqc_files.collect()
+            ch_multiqc_files.collect(),
+            params.multiqc_config
         )
         
 }

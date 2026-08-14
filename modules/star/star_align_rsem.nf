@@ -21,6 +21,10 @@ process STAR_ALIGN {
     tuple val(sampleID), path("*.transcript.sorted.bam"), path("*.transcript.sorted.bam.bai"), emit: sorted_transcript_bam_bai
     tuple val(sampleID), path("*final.out"), emit: star_log
 
+    /* NOTE: for genomes with large contigs, index creation may fail. 
+             skip_index is available; however, UMI tools deduplication will not work without the index files.
+             If index creation is failing, we must explore a new option for making the BAM index.
+    */
 
     script:
     sort_command="samtools sort -@ 6 -m 5G -o ${sampleID}.transcript.sorted.bam ${sampleID}_Aligned.toTranscriptome.out.bam && samtools sort -@ 6 -m 5G -o ${sampleID}.genome.sorted.bam ${sampleID}_Aligned.out.bam"

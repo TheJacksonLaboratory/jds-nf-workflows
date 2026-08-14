@@ -51,7 +51,9 @@ process RSEM_EXPRESSION {
 
     read_length = read_length.toInteger()
 
-    if( read_length >= 65 && read_length <= 85) {
+    if( read_length >= 45 && read_length <= 60) {
+        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_50/*").collect { "$it" }.join(' ')
+    } else if( read_length >= 65 && read_length <= 85) {
         rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { "$it" }.join(' ')
     } else if( read_length >= 90 && read_length <= 110 ) {
         rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { "$it" }.join(' ')

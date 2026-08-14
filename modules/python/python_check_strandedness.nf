@@ -12,6 +12,7 @@ process CHECK_STRANDEDNESS {
 
     input:
     tuple val(sampleID), path(reads)
+    path(gtf)
 
     output:
     tuple val(sampleID), env(STRAND), emit: strand_setting
@@ -20,9 +21,29 @@ process CHECK_STRANDEDNESS {
     script:
     paired = params.read_type == 'PE' ? "-r2 ${reads[1]}" : ''
 
-    """
-    check_strandedness -g ${params.strandedness_gtf} -k ${params.strandedness_ref} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
+    // In cases where the GTF is provided as a gzipped file, we need to unzip it for use in the strandedness check. 
+    // We want to avoid adding another input stream here, so the path string of params.strandedness_gtf must be used.
+    def gtf_path = gtf
 
+    // Extract just the filename from the string to use for the local unzipped copy
+    // We use .split('/')[-1] to get the filename from the full path string
+    def gtf_filename = gtf.getName()
+    
+    // Determine the local unzipped name
+    def gtf_local = gtf_filename.endsWith('.gz') ? gtf_filename.replace('.gz', '') : gtf_filename
+    
+    // Build the unzip command (streaming from the external path to the local work dir)
+    def unzip_cmd = gtf_filename.endsWith('.gz') ? "gunzip -c ${gtf_path} > ${gtf_local}" : ""
+    
+    // If it wasn't gzipped, we use the original path directly; otherwise, use the local unzipped file
+    def gtf_file = gtf_filename.endsWith('.gz') ? gtf_local : gtf_path
+
+
+    """
+
+    ${unzip_cmd}
+
+    check_strandedness -g ${gtf_file} -k ${params.strandedness_ref} -r1 ${reads[0]} ${paired} > ${sampleID}_strandedness.txt 2>&1
 
     if grep -q "Data is likely" ${sampleID}_strandedness.txt; then
         
@@ -53,3 +74,37 @@ process CHECK_STRANDEDNESS {
 // Data is likely RF/fr-firststrand
 // Data is likely FR/fr-secondstrand
 // Data is likely unstranded
+/*
+
+# Script logic: 
+
+if single_strand:
+    fwd = float(result.iloc[2,0].replace('Fraction of reads explained by "++,--": ', ''))
+    rev = float(result.iloc[3,0].replace('Fraction of reads explained by "+-,-+": ', ''))
+else:
+    fwd = float(result.iloc[2,0].replace('Fraction of reads explained by "1++,1--,2+-,2-+": ', ''))
+    rev = float(result.iloc[3,0].replace('Fraction of reads explained by "1+-,1-+,2++,2--": ', ''))
+if float(result.iloc[1,0].replace('Fraction of reads failed to determine: ', '')) > 0.50:
+    print('Failed to determine strandedness of > 50% of reads.')
+    print('If this is unexpected, try running again with a higher --nreads value')
+if fwd_percent > 0.9:
+    if single_strand:
+        print('Over 90% of reads explained by "++,--"')
+        print('Data is likely FR/fr-stranded')
+    else:
+        print('Over 90% of reads explained by "1++,1--,2+-,2-+"')
+        print('Data is likely FR/fr-secondstrand')
+elif rev_percent > 0.9:
+    if single_strand:
+        print('Over 90% of reads explained by "+-,-+"')
+        print('Data is likely RF/rf-stranded')
+    else:
+        print('Over 90% of reads explained by "1+-,1-+,2++,2--"')
+        print('Data is likely RF/fr-firststrand')
+elif max(fwd_percent, rev_percent) < 0.6:
+    print('Under 60% of reads explained by one direction')
+    print('Data is likely unstranded')
+else:
+    print('Data does not fall into a likely stranded (max percent explained > 0.9) or unstranded layout (max percent explained < 0.6)')
+    print('Please check your data for low quality and contaminating reads before proceeding')
+*/

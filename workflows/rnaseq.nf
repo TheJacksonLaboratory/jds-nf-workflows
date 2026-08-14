@@ -18,6 +18,7 @@ include {PDX_RNASEQ} from "${projectDir}/subworkflows/pdx_rnaseq"
 include {UMI_RNASEQ} from "${projectDir}/subworkflows/umi_rnaseq"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {RSEM_ALIGNMENT_EXPRESSION} from "${projectDir}/modules/rsem/rsem_alignment_expression"
@@ -174,8 +175,13 @@ workflow RNASEQ {
         
         FASTQC(reads)
 
+        // HLA Typing
+        if ( params.hla_typing ){
+          OPTITYPE_RUN(reads)
+        }
+
         // Check strand setting
-        CHECK_STRANDEDNESS(reads)
+        CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
         rsem_input = reads.join(CHECK_STRANDEDNESS.out.strand_setting).join(GET_READ_LENGTH.out.read_length)
 
@@ -216,7 +222,8 @@ workflow RNASEQ {
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
         MULTIQC (
-            ch_multiqc_files.collect()
+            ch_multiqc_files.collect(),
+            params.multiqc_config
         )
       }
     }

@@ -33,6 +33,7 @@ ______________________________________________________
 --mt_shifted_fasta                      ${params.mt_shifted_fasta}
 --shift_back_chain                      ${params.shift_back_chain}
 --mt_fasta_index                        ${params.mt_fasta_index}
+--filter_ambiguous_reads                ${params.filter_ambiguous_reads}
 --mt_shifted_fasta_index                ${params.mt_shifted_fasta_index}
 --max_allele_count                      ${params.max_allele_count}
 --exclusion_sites                       ${params.exclusion_sites}
@@ -73,6 +74,7 @@ ______________________________________________________
 --shift_back_chain                      ${params.shift_back_chain}
 --mt_fasta_index                        ${params.mt_fasta_index}
 --mt_shifted_fasta_index                ${params.mt_shifted_fasta_index}
+--filter_ambiguous_reads                ${params.filter_ambiguous_reads}
 --max_allele_count                      ${params.max_allele_count}
 --exclusion_sites                       ${params.exclusion_sites}
 --non_control_region_interval_list      ${params.non_control_region_interval_list}

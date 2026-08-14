@@ -10,7 +10,7 @@ include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
 include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
 include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
 include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {GUNZIP} from "${projectDir}/modules/utility_modules/gunzip"
+include {GUNZIP} from "${projectDir}/modules/utility_modules/gunzip_reads"
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
 include {STAR_ALIGN as STAR_ARRIBA;
@@ -30,6 +30,7 @@ include {SQUID_ANNOTATE} from "${projectDir}/modules/squid/squid_annotate"
 include {SAMTOOLS_VIEW as SAMTOOLS_VIEW_SQUID} from "${projectDir}/modules/samtools/samtools_view"
 include {STAR_FUSION as STAR_FUSION} from "${projectDir}/modules/star-fusion/star-fusion"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 include {FUSION_REPORT} from "${projectDir}/modules/fusion_report/fusion_report"
 include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
 
@@ -128,9 +129,16 @@ workflow RNA_FUSION {
         XENGSORT_CLASSIFY(xengsort_index, GUNZIP.out.gunzip_fastq)
         ch_XENGSORT_CLASSIFY_multiqc = XENGSORT_CLASSIFY.out.xengsort_log
 
+        // HLA Typing
+        OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
+
         fusion_tool_input = XENGSORT_CLASSIFY.out.xengsort_human_fastq
 
     } else { 
+        
+        // HLA Typing
+        OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
+
         fusion_tool_input = GUNZIP.out.gunzip_fastq
     }
 
@@ -176,6 +184,7 @@ workflow RNA_FUSION {
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
 
     MULTIQC (
-        ch_multiqc_files.collect()
+        ch_multiqc_files.collect(),
+        params.multiqc_config
     )
 }

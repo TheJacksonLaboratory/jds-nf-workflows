@@ -313,7 +313,8 @@ workflow ATAC {
   ch_multiqc_files = ch_multiqc_files.mix(FRAG_LEN_PLOT.out.spline_table.collect{it[1]}.ifEmpty([]))
 
   MULTIQC (
-      ch_multiqc_files.collect()
+    ch_multiqc_files.collect(),
+    params.multiqc_config
   )
 
 }

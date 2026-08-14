@@ -16,6 +16,7 @@ include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/conca
 include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
@@ -34,6 +35,7 @@ include {JVARKIT_COVERAGE_CAP} from "${projectDir}/modules/jvarkit/jvarkit_biost
 include {SAMTOOLS_INDEX;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_IND;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "${projectDir}/modules/samtools/samtools_index"
+include {SAMTOOLS_REHEADER_RGSM} from "${projectDir}/modules/samtools/samtools_reheader_rgsm"
 
 include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
 include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
@@ -192,11 +194,15 @@ workflow WGS {
     // Read quality and adapter trimming
     FASTP(trimmer_input)
     FASTQC(FASTP.out.trimmed_fastq)
+
+    // HLA Typing
+    if ( params.hla_typing ){
+      OPTITYPE_RUN(FASTP.out.trimmed_fastq)
+    }
     ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
 
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
-    
 
     // START Split FASTQ
     if (params.split_fastq) {
@@ -330,10 +336,11 @@ workflow WGS {
       // and can't be an array going forward. 
 
       SAMTOOLS_MERGE_IND(merge_input, 'ind_merged_file')
-      SAMTOOLS_INDEX_IND(SAMTOOLS_MERGE_IND.out.bam)
+      SAMTOOLS_REHEADER_RGSM(SAMTOOLS_MERGE_IND.out.bam)
+      SAMTOOLS_INDEX_IND(SAMTOOLS_REHEADER_RGSM.out.bam)
 
       SAMTOOLS_INDEX_SINGLE(pass_input)
-      bam_file = SAMTOOLS_MERGE_IND.out.bam
+      bam_file = SAMTOOLS_REHEADER_RGSM.out.bam
         .mix(pass_input)
       index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
     }
@@ -345,7 +352,7 @@ workflow WGS {
           .map{it -> it.trim()}
   num_chroms = file(params.chrom_contigs).countLines().toInteger()
 
-  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
+  PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file, 'wgs')
   PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
   
   
@@ -503,7 +510,8 @@ workflow WGS {
   ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
   
   MULTIQC (
-      ch_multiqc_files.collect()
+    ch_multiqc_files.collect(),
+    params.multiqc_config
   )
 
 }

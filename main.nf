@@ -69,6 +69,15 @@ else if (params.workflow == "cnv_array"){
 else if (params.workflow == "generate_rnaseq_index"){
   include {GENERATE_RNASEQ_INDEX} from './subworkflows/generate_rnaseq_index'
 }
+else if (params.workflow == "generate_rnaseq_simreads"){
+  include {GENERATE_RNASEQ_SIMREADS} from './supportworkflows/generate_rnaseq_simreads'
+}
+else if (params.workflow == "generate_wgs_simreads"){
+  include {GENERATE_WGS_SIMREADS} from './supportworkflows/generate_wgs_simreads'
+}
+else if (params.workflow == "generate_wes_simreads"){
+  include {GENERATE_WES_SIMREADS} from './supportworkflows/generate_wes_simreads'
+}
 else if (params.workflow == "joint_gvcf_calling"){
   include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
 }
@@ -82,7 +91,7 @@ else if (params.workflow == "mitochondria_variant_calling"){
   include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
 } 
 else if (params.workflow == "wgs_long_read"){
-  include {wgs_long_read} from './workflows/wgs_long_read'
+  include {WGS_LONG_READ} from './workflows/wgs_long_read'
 }
 else if (params.workflow == "reannotate_pta"){
   include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
@@ -92,6 +101,9 @@ else if (params.workflow == "wgs_sv_bam"){
 }
 else if (params.workflow == "lcwgs_hr"){
   include {LCWGS_HR} from './workflows/lcwgs_hr'
+}
+else if (params.workflow == "bam_to_fastq"){
+  include {BAM_TO_FASTQ} from './subworkflows/bam_to_fastq'
 }
 else {
   // if workflow name is not supported: 
@@ -163,11 +175,20 @@ workflow{
   if (params.workflow == "generate_rnaseq_index"){
     GENERATE_RNASEQ_INDEX()
   }
+  if (params.workflow == "generate_rnaseq_simreads"){
+    GENERATE_RNASEQ_SIMREADS()
+  }
+  if (params.workflow == "generate_wgs_simreads"){
+    GENERATE_WGS_SIMREADS()
+  }
+  if (params.workflow == "generate_wes_simreads"){
+    GENERATE_WES_SIMREADS()
+  }
   if (params.workflow == "joint_gvcf_calling"){
     JOINT_GVCF_CALLING()
   }
   if (params.workflow == "wgs_long_read"){
-    wgs_long_read()
+    WGS_LONG_READ()
   }
   if (params.workflow == "mitochondria_variant_calling"){
     MITOCHONDRIA_VARIANT_CALLING()
@@ -186,5 +207,8 @@ workflow{
   }
   if (params.workflow == "lcwgs_hr"){
     LCWGS_HR()
+  }
+  if (params.workflow == "bam_to_fastq"){
+    BAM_TO_FASTQ()
   }
 }

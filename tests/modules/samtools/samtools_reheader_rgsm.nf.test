@@ -1,0 +1,34 @@
+nextflow_process {
+
+    name "Test Process SAMTOOLS_REHEADER_RGSM"
+    script "modules/samtools/samtools_reheader_rgsm.nf"
+    process "SAMTOOLS_REHEADER_RGSM"
+
+    test("Rewrite read group SM tags") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                gen_org = "human"
+                merge_inds = true
+            }
+            process {
+                """
+                input[0] = tuple('rgsm_unit', file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_realigned_BQSR.bam', checkIfExists: true))
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            def outBam = file("$launchDir/tests/results/rgsm_unit/bam/rgsm_unit_rgsm_normalized.bam")
+            assert outBam.exists()
+
+            def rgLines = ["bash", "-lc", "samtools view -H ${outBam} | grep '^@RG' || true"].execute().text.readLines()
+            assert rgLines.size() > 0
+            assert rgLines.every { it.contains('\tSM:rgsm_unit') }
+        }
+
+    }
+}

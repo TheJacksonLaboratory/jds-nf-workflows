@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --mail-user=samuel.widmayer@jax.org
+#SBATCH --mail-user=first.last@jax.org
 #SBATCH --job-name=haplotype_reconstruction
 #SBATCH --mail-type=END,FAIL
 #SBATCH -p compute
@@ -18,10 +18,7 @@ module load nextflow/24.10.6
 nextflow ../main.nf \
 -profile sumner2 \
 --workflow haplotype_reconstruction \
---csv_input  "/projects/compsci/vmp/USERS/widmas/SODO/HR_rerun_input.csv" \
---rerun false \
---correct_ids true \
---remove_markers true \
---pubdir "/flashscratch/widmas/sodo_hr" \
--w "/flashscratch/widmas/sodo_hr/work" \
+--csv_input <PATH_TO_YOUR_CSV> \
+--pubdir "/flashscratch/${USER}/outputDir" \
+-w "/flashscratch/${USER}/outputDir/work" \
 --comment "This script will run haplotype reconstruction on mouse genotyped using GigaMUGA on default mm10 coordinates"

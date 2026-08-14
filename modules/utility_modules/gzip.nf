@@ -18,7 +18,8 @@ process GZIP {
     
     script:
     """
-    gzip -c ${reads[0]} > ${reads[0]}.gz
-    gzip -c ${reads[1]} > ${reads[1]}.gz
+    gzip -c ${reads[0]} > ${reads[0]}.gz &
+    gzip -c ${reads[1]} > ${reads[1]}.gz &
+    wait
     """
 }

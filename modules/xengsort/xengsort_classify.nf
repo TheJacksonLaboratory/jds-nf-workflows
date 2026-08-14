@@ -57,11 +57,13 @@ process XENGSORT_CLASSIFY {
         --chunksize 32.0 \
         --compression none &> ${sampleID}_xengsort_log.txt
 
-        cat ${sampleID}-host.1.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-host_sorted.1.fq
-        cat ${sampleID}-host.2.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-host_sorted.2.fq
+        cat ${sampleID}-host.1.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-host_sorted.1.fq &
+        cat ${sampleID}-host.2.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-host_sorted.2.fq &
+        wait
 
-        cat ${sampleID}-graft.1.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.1.fq
-        cat ${sampleID}-graft.2.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.2.fq
+        cat ${sampleID}-graft.1.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.1.fq &
+        cat ${sampleID}-graft.2.fq | paste - - - - | sort -k1,1 -T ./ -t " " | tr "\\t" "\\n" > ${sampleID}-graft_sorted.2.fq &
+        wait
         """
 
     else error "${params.read_type} is invalid, specify either SE or PE"

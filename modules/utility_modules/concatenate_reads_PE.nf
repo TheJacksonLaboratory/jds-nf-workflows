@@ -9,17 +9,19 @@ process CONCATENATE_READS_PE {
     container 'ubuntu:20.04'
 
     publishDir "${params.pubdir}/${sampleID + '/concatenated_reads'}", pattern: "*", mode:'copy', enabled: params.keep_intermediate
+    publishDir "${params.pubdir}/reads", pattern: "*", mode:'copy', enabled: params.workflow == 'generate_wes_simreads' || params.workflow == 'generate_wgs_simreads'
 
     input:
-    tuple val(sampleID), file(R1), file(R2)
+    tuple val(sampleID), path(R1), path(R2)
 
     output:
-    tuple val(sampleID), file("*"), emit: concat_fastq
+    tuple val(sampleID), path("*"), emit: concat_fastq
 
     script:
 
     """
-    cat $R1 > ${sampleID}_R1${params.extension}
-    cat $R2 > ${sampleID}_R2${params.extension}
+    cat $R1 > ${sampleID}_R1${params.extension} &
+    cat $R2 > ${sampleID}_R2${params.extension} &
+    wait
     """
 }
