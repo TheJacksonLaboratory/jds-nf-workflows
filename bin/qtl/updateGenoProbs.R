@@ -13,6 +13,7 @@ library(dplyr)
 ################################################################################
 
 args <- commandArgs(trailingOnly = TRUE)
+args <- c("test_covar_norerun.csv","mm10_DO_cross.rds","mm10_DO_genoprobs.rds","mm10_DO_alleleprobs.rds","mm10_DO_maxmarg.rds","mm10_DO_kinship.rds","mm10_DO_bad_markers.rds","do","true","true","mm10_DO_RM")
 covar_file <- args[1]
 cross_file <- args[2]
 genoprobs_file <- args[3]
@@ -64,22 +65,22 @@ if(remove_markers == TRUE){
                             map = cross$pmap, 
                             error_prob = 0.002,
                             lowmem = FALSE,
-                            cores = (parallel::detectCores()/2), 
+                            cores = 8, 
                             quiet = F)
     # clean genotype probabilities
-    genoprobs <- qtl2::clean_genoprob(genoprobs, cores = parallel::detectCores())
+    genoprobs <- qtl2::clean_genoprob(genoprobs, cores = 8)
     
     message("Converting to allele probabilities...")
     # convert to allele probs
     alleleprobs <- qtl2::genoprob_to_alleleprob(probs = genoprobs, 
-                                                cores = parallel::detectCores(), 
+                                                cores = 8, 
                                                 quiet = F)
 
     # calculate kinship matrix
-    k <- calc_kinship(genoprobs, type = "loco", quiet = FALSE, cores = 0)
+    k <- calc_kinship(genoprobs, type = "loco", quiet = FALSE, cores = 8)
 
     # calculate viterbi
-    m <- qtl2::maxmarg(probs = genoprobs, minprob=0.5, map = cross$pmap, quiet = T)
+    m <- qtl2::maxmarg(probs = genoprobs, minprob=0.5, quiet = T)
 
 
 } else{
@@ -117,7 +118,11 @@ if(correct_ids == TRUE){
         genoprobs <- qtl2::replace_ids(genoprobs, c)
         alleleprobs <- qtl2::replace_ids(alleleprobs, c)
         m <- qtl2::replace_ids(m, c)
-        k <- qtl2::replace_ids(k, c)
+        k <- lapply(k, function(x){
+          kk <- qtl2::replace_ids(x, c)
+          colnames(kk) <- rownames(kk)
+          kk
+        })
         
         message("IDs corrected.")
         message("Saving updated cross, genotype probabilities, allele probabilities, and viterbi files...")
