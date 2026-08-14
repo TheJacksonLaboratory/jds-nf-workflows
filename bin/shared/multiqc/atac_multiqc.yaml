@@ -10,8 +10,7 @@ module_order:
   - cutadapt
   - bowtie2
   - picard
-  - custom_content:
-    - fraglen_plot
+  - custom_content
 
 table_columns_visible:
   FastQC:

@@ -29,6 +29,5 @@ nextflow_process {
             assert rgLines.size() > 0
             assert rgLines.every { it.contains('\tSM:rgsm_unit') }
         }
-
     }
 }
