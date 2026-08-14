@@ -1,5 +1,176 @@
 # RELEASE NOTES
 
+## Release 0.9.5
+
+This release adds a number of new support workflows, and numerous smaller adjustments to multiple workflows. Major points are called out below, and a full accounting of changes follows that.
+
+* Three read simulation workflows were added. Support for generating simulated reads for RNAseq (`--workflow generate_rnaseq_simreads`), WES (`--workflow generate_wes_simreads`), and WGS (`--workflow generate_wgs_simreads`) workflows.  
+ For RNA, we implemented the R package `Rsubread` to generate simulated reads from a reference transcriptome. The user can specify the number of reads to simulate, the read length, and the error rate. For WES and WGS, we utilize the `NEAT` read simulator to generate simulated reads from a reference genome where variants are spiked in by the tool. The user can specify the number of reads to simulate, the read length, and the error rate. These data can be used for ground truthing and testing of workflows and associated tools. See the [associated wiki pages](ADD_LINK_HERE) for more details. 
+
+* A support workflow to convert BAM files to FASTQ files was added (`--workflow bam_to_fastq`). Intended for the conversion of aligned reads back to FASTQ format for subsequent re-alignment, or for use in other workflows.
+
+* We added HLA typing support for all relavant human workflows (WGS, RNAseq, RNA-Fusion, WES, Somatic WES, PTA). As a computationally inexpensive tool, HLA typing is on by default, but can be disabled with `--hla_typing false`.
+
+* We also added support for F2 crosses in the low-pass WGS (`--workflow lcwgs_hr`), added a feature for specifying a flat permutation threshold in the QTL mapping (`--workflow qtl_mapping`) workflow, and fixed a sample identifier update bug in the GigaMUGA haplotype reconstruction (`--workflow haplotype_reconstruction`) workflow.
+
+* An optional read filter (`--filter_ambiguous_reads`) was added to the mitocondrial variant calling workflow. If specified the `samtools` bitwise filter: `-F 2304` removes all non primary alignment (0x100) and reads that are marked as supplementary alignment (0x800). In testing, we found such reads were more likely multi-mapped to nuclear DNA and were possible NUMT reads. 
+
+* Updated logic was added to the PTA workflows, to catch cases where multiple unpaired tumor exist for a single sample. Prior logic would omit such samples from downstream analysis (post-mapping) due to a groovy logic mismatch. 
+
+* For WGS and WGS Long Read, we corrected the read group sample names within individual merged BAM files. Previously, when the `--merge_inds` flag was used, individual sample BAM files were merged across and the existing read groups were maintained. Users that have analysis using this flag prior to this release should check variant calls to ensure calls were done per sample.
+
+* Across all workflows that use `MultiQC` the flag `--save_multiqc_inputs` can now be used to save all sample QC logs input to MultiQC. These files can be used with an additonal `MultiQC` run to aggregate batches of samples into a single report.
+
+* For RNAseq the option `--skip_index` can be used with large genomes (> 536.8Mb) to avoid a "Numerical result out of range" error. This error occurs with `samtools index` when individual chromosomes or reference sequences exceed the numerical limit of BAM indexing.
+
+* There was a configuration mismatch in `WGS_SV_BAM` when `--gen_org mouse --genome_build GRCm39`. The `--gap` file was improperly set to GRCm38, which has now been corrected. Prior analyses should be checked. 
+
+### Workflows Added:
+
+None
+
+### Support/Subworkflows Added:
+
+1. subworkflows/bam_to_fastq.nf
+1. supportworkflows/generate_rnaseq_simreads.nf
+1. supportworkflows/generate_wes_simreads.nf
+1. supportworkflows/generate_wgs_simreads.nf
+
+
+### Workflow Changes:
+
+1. workflows/amplicon_fingerprint.nf: Added support for internal multiQC config input.
+1. workflows/amplicon_generic.nf: Added support for internal multiQC config input.
+1. workflows/atac.nf: Added support for internal multiQC config input.
+1. workflows/chipseq.nf: Added support for internal multiQC config input.
+1. workflows/haplotype_reconstruction.nf: Added a final run report.
+1. workflows/lcwgs_hr.nf: Added handling for F2 crosses, update help file path.
+1. workflows/qtl_mapping.nf: Introduced flat permutation threshold handling.
+1. workflows/rna_fusion.nf: Added HLA typing module and support (for PDX human reads are used). Added support for internal multiQC config input. Clarified fastq gunzip module naming
+1. workflows/rnaseq.nf: Added HLA typing module and support. Added support for internal multiQC config input. Added flexible internal gtf input for the `how are we stranded here` module.
+1. workflows/rrbs.nf: Added support for internal multiQC config input.
+1. workflows/smrnaseq.nf: Added support for internal multiQC config input.
+1. workflows/somatic_wes_pta.nf: Added HLA typing module and support (tumor and normal, for PDX human reads are used). Added support for internal multiQC config input. 
+1. workflows/somatic_wes.nf: Added HLA typing module and support (for PDX human reads are used). Added support for internal multiQC config input.
+1. workflows/wes.nf: Added HLA typing module and support. Added support for internal multiQC config input.
+1. workflows/wgs_long_read.nf: Corrected BAM read group for samples merged when `--merge_inds` is used. Added support for internal multiQC config input. 
+1. workflows/wgs.nf: Added HLA typing module and support. Corrected BAM read group for samples merged when `--merge_inds` is used. Added support for internal multiQC config input. 
+
+### Subworkflows Changes:
+
+1. subworkflows/generate_rnaseq_index.nf: Added support for GFF inputs, and gzipped inputs.
+1. subworkflows/hs_pta.nf: Added HLA typing module and support (tumor and normal [if normal provided], for PDX human reads are used). Corrected case when multiple unpaired tumors from the same patient are each present, such that each is handled independently. Previously, analysis of multiple unpaired tumors was skipped due to Groovy logic mismatch. Added support for internal multiQC config input. 
+1. subworkflows/mm_pta.nf: Added HLA typing module and support (tumor and normal [if normal provided]). Corrected case when multiple unpaired tumors from the same patient are each present, such that each is handled independently. Previously, analysis of multiple unpaired tumors was skipped due to Groovy logic mismatch. Added support for internal multiQC config input. 
+1. subworkflows/mt_variant_calling.nf: Added samtools read filter `-F 2304` to remove reads marked as not primary alignment (0x100) || supplementary alignment (0x800). Added additional alignment summary metrics. Added multiqc report generation. 
+1. subworkflows/pdx_rnaseq.nf: Added HLA typing module and support (human reads are used). Added support for internal multiQC config input. Added flexible internal gtf input for the `how are we stranded here` module.
+1. subworkflows/umi_rnaseq.nf: Added HLA typing module and support (human reads are used). Added support for internal multiQC config input. Added flexible internal gtf input for the `how are we stranded here` module.
+
+### Modules Added:
+
+1. modules/bbmap/bbmap_reformat_fasta.nf
+1. modules/bcftools/bcftools_merge_vcf.nf
+1. modules/neat/generate_simulated_WES_data.nf
+1. modules/neat/generate_simulated_WGS_data.nf
+1. modules/optitype/optitype_run.nf
+1. modules/python/pyfaidx_split_files.nf
+1. modules/r/generate_simulated_RNA_data.nf
+1. modules/samtools/samtools_faidx_chr_only.nf
+1. modules/samtools/samtools_fastq.nf
+1. modules/samtools/samtools_reheader_rgsm.nf
+1. modules/tabix/compress_vcf_simreads.nf
+1. modules/utility_modules/gunzip_reads.nf
+1. modules/utility_modules/make_perm_value_file.nf
+1. modules/vcftools/vcf_sort.nf
+1. modules/vcftools/vcftools_simvar.nf
+
+### Module Changes:
+
+1. modules/bowtie/bowtie.nf: Added note on command flag `-q`.
+1. modules/haplocheck/haplocheck.nf: Added catch for multiqc input file.
+1. modules/illumina/manta_germline.nf: Bumped memory limit and wallclock time.
+1. modules/multiqc/multiqc.nf: Bumped version to 1.34.dev0_custom (custom is the addition of JAX specifc tools). Added `save_multiqc_inputs` support to save all MultiQC inputs for subsequent cross batch aggregation. Routed the MultiQC config file to an internal input to increase flexibility of use in workflows with compound MultiQC runs (e.g., WGS with MT variant calling). 
+1. modules/picard/picard_addorreplacereadgroups.nf: Added option to skip index creation (`--skip_index`). This is used in cases when individual chromosomes or reference sequences exceed the numerical limit of BAM indexing.
+1. modules/picard/picard_collectalignmentsummarymetrics.nf: Added support for MT stat generation.
+1. modules/picard/picard_collectwgsmetrics.nf: Increased coverage cap to 30,000x for MT stat generation.
+1. modules/picard/picard_markduplicates_mt.nf: Adjusted internal naming of output file.
+1. modules/picard/picard_reordersam.nf: Added option to skip index creation (`--skip_index`). This is used in cases when individual chromosomes or reference sequences exceed the numerical limit of BAM indexing.
+1. modules/picard/picard_sortsam.nf: Added option to skip index creation (`--skip_index`). This is used in cases when individual chromosomes or reference sequences exceed the numerical limit of BAM indexing.
+1. modules/python/python_check_strandedness.nf: Added option to pass GTF to tool, and ability of tool to deal with gzipped GTF inputs.
+1. modules/qtl2/genoprobs_lcwgs.nf: Bumped memory limit and wallclock time.
+1. modules/qtl2/harvest_qtl.nf: F2 cross handling for reference data.
+1. modules/qtl2/run_perms.nf: F2 cross handling for reference data.
+1. modules/quilt/quilt_to_qtl2.nf: F2 cross handling for reference data.
+1. modules/quilt/run_quilt.nf: F2 cross handling for reference data.
+1. modules/rsem/rsem_alignment_expression.nf: Added STAR support for 50bp read lengths. Added option to skip index creation (`--skip_index`).
+1. modules/rsem/rsem_expression_umi.nf: Added STAR support for 50bp read lengths. 
+1. modules/rsem/rsem_preparereference.nf: Bump memory limit and wallclock time.
+1. modules/samtools/samtools_merge.nf: For `--merge_inds` moved the saved file over to the `samtools_reheader_rgsm` module
+1. modules/samtools/samtools_view.nf: Bump memory limit and wallclock time.
+1. modules/svaba/svaba_germline.nf: Bump memory limit and wallclock time.
+1. modules/svaba/svaba.nf: Bump memory limit and wallclock time.
+1. modules/umitools/umitools_dedup.nf: Bump memory limit and wallclock time.
+1. modules/utility_modules/concatenate_reads_PE.nf: `cat` now runs in parallel.
+1. modules/utility_modules/gunzip.nf: Moved read gunzip to new module `gunzip_reads`, and made this module explicit for single file extraction.
+1. modules/utility_modules/gzip.nf: `gzip` now runs in parallel.
+1. modules/xengsort/xengsort_classify.nf: `cat` statements now run in parallel.
+
+### Module Deleted:  
+
+None
+
+### Configuration Changed:  
+
+1. config/generate_rnaseq_index.config: Added `star_read_lengths` to allow users to set which read lengths to generate STAR index files for.
+1. config/lcwgs_hr.config: `F2` is now supported as a `cross_type`. When `cross_type` == F2, `smooth_window` is set to 2000. `cross_name` now defaults to null, and defaults to `cross_type` if not set. Eliminated superfluous params.
+1. config/mitochondria_variant_calling.config: Added `filter_ambiguous_reads`. MultiQC config was added.
+1. config/pta.config: HLA typing param added.
+1. config/qtl_mapping.config: `perm_threshold` is now `null` by default.
+1. config/rnaseq.config: HLA typing param added.
+1. config/somatic_wes_pta.config: HLA typing param added.
+1. config/somatic_wes.config: HLA typing param added.
+1. config/wes.config: HLA typing param added.
+1. config/wgs_sv_bam.config: For GRCm39, corrected `--gap` to the proper build. 
+1. config/wgs.config: HLA typing param added. MT MultiQC config was added.
+
+### Scripts Added:
+
+1. bin/generate_rnaseq_simreads/generate_simulated_RNA_data.R
+
+### Script Changes:
+
+1. bin/lcwgs/concatGenoProbs_lcwgs.R: Added F2 cross handling.
+1. bin/lcwgs/genoprobs.R: Added F2 cross handling.
+1. bin/lcwgs/prepare_qtl2_files.R: Added F2 cross handling.
+1. bin/lcwgs/run_quilt.R: Added F2 cross handling.
+1. bin/qtl/harvest_qtl.R: Updated for flat permutation handling.
+1. bin/qtl/run_perms.R: Updated for flat permutation handling.
+1. bin/qtl/updateGenoProbs.R: Fixed sample update bugs.
+
+
+### NF-Test Tests Added/Modified: 
+
+1. tests/modules/multiqc/multiqc.nf.test: Added test to cover version bump, and optional file outputs.
+1. tests/modules/optitype/optitype_run.nf.test: Added test to cover HLA typing tool, RNA, WGS, and WES where no coverage exists.
+1. tests/modules/python/python_check_strandedness.nf.test: Added test to cover gtf input, and gunzip logic.
+1. tests/modules/samtools/samtools_reheader_rgsm.nf.test: Added test to ensure header is renamed properly.
+1. tests/subworkflows/bam_to_fastq.nf.test: Added test to cover new workflow.
+1. tests/subworkflows/generate_rnaseq_index.nf.test: Added new tests to cover the new `star_read_lengths` option.
+1. tests/supportworkflows/generate_rnaseq_simreads.nf.test: Added test to cover new workflow.
+1. tests/supportworkflows/generate_wes_simreads.nf.test: Added test to cover new workflow.
+1. tests/supportworkflows/generate_wgs_simreads.nf.test: Added test to cover new workflow.
+1. tests/workflows/mitochondria_variant_calling.nf.test: Added test case for filtering when `filter_ambiguous_reads` is true.
+
+### [CS-NF-Test](https://github.com/TheJacksonLaboratory/cs-nf-test) Data Added: 
+
+1. Added files to test gatherbqsr
+1. Added files to test rRNA in gtf, gff, and MGI based gff3 inputs.
+1. Added MultiQC test files.
+1. Added gzip GTF.
+1. Added simulation testing files. 
+1. Added HLA reads to WGS test data.
+1. Added test bed for PTA reannot
+
+
 ## Release 0.9.4
 
 In this minor release we add support for the MGI based transcriptome annotation in the RNAseq (`--workflow rnaseq`) workflow, and support for genreating MGI based reference sets using the Generate RNA index (`--workflow generate_rnaseq_index`) workflow. This includes the addition of a new module to convert GFF to GTF, and a module to modify the MGI GTF to add the Ensembl biotype. We also added support for using GFF files as input to the `--workflow generate_rnaseq_index` workflow.  
