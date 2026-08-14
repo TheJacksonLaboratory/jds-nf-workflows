@@ -10,6 +10,7 @@ include {GET_READ_LENGTH} from "${projectDir}/modules/utility_modules/get_read_l
 include {CHECK_STRANDEDNESS} from "${projectDir}/modules/python/python_check_strandedness"
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
 // include {GZIP as GZIP_HUMAN;
 //          GZIP as GZIP_MOUSE} from "${projectDir}/modules/utility_modules/gzip"
 include {RSEM_ALIGNMENT_EXPRESSION as RSEM_ALIGNMENT_EXPRESSION_HUMAN;
@@ -50,7 +51,7 @@ workflow PDX_RNASEQ {
       // QC is assess on all reads. Mouse/human is irrelevant here. 
       FASTQC(reads)
 
-      CHECK_STRANDEDNESS(reads)
+      CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
 
       // Generate Xengsort Index if needed
       if (params.xengsort_idx_path) {
@@ -62,6 +63,11 @@ workflow PDX_RNASEQ {
 
       // Xengsort Classification
       XENGSORT_CLASSIFY(xengsort_index, reads) 
+
+      // HLA Typing
+      if ( params.hla_typing ){
+        OPTITYPE_RUN(XENGSORT_CLASSIFY.out.xengsort_human_fastq)
+      }
 
       human_reads = XENGSORT_CLASSIFY.out.xengsort_human_fastq
                     .join(CHECK_STRANDEDNESS.out.strand_setting)
@@ -144,6 +150,7 @@ workflow PDX_RNASEQ {
       ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTRNASEQMETRICS_MOUSE.out.picard_metrics.collect{it[1]}.ifEmpty([]))
 
       MULTIQC (
-          ch_multiqc_files.collect()
+          ch_multiqc_files.collect(),
+            params.multiqc_config
       )
 } 

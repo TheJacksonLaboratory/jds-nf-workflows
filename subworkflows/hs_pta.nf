@@ -5,6 +5,8 @@ nextflow.enable.dsl=2
 include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
 include {FASTP} from "${projectDir}/modules/fastp/fastp"
 include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+
 include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
 include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
@@ -149,6 +151,7 @@ workflow HS_PTA {
 
         FASTQC(FASTP.out.trimmed_fastq)
 
+
         // ** Step 2: Get Read Group Information
         READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
 
@@ -177,12 +180,22 @@ workflow HS_PTA {
             // Xengsort Classification
             XENGSORT_CLASSIFY(xengsort_index, fastq_files.tumor.map{it -> [it[0], it[1]] })
             ch_XENGSORT_CLASSIFY_multiqc = XENGSORT_CLASSIFY.out.xengsort_log
+            
+            // HLA Typing -- tumor and normal
+            if ( params.hla_typing ){
+                OPTITYPE_RUN(XENGSORT_CLASSIFY.out.xengsort_human_fastq.mix(normal_fastqs))
+            }
 
             bwa_mem_mapping = XENGSORT_CLASSIFY.out.xengsort_human_fastq.mix(normal_fastqs).join(READ_GROUPS.out.read_groups)
                               .map{it -> [it[0], it[1], 'aln', it[2]]}
 
         } else { 
             
+            // HLA Typing -- tumor and normal
+            if ( params.hla_typing ){
+                OPTITYPE_RUN(FASTP.out.trimmed_fastq)
+            }
+
             bwa_mem_mapping = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
                               .map{it -> [it[0], it[1], 'aln', it[2]]}
 
@@ -284,7 +297,7 @@ workflow HS_PTA {
         // Process tumor and normal BAMs seperately for conpair. For calling, use mapped and crossed data. 
 
         // ** Get alignment and WGS metrics
-        PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file)
+        PICARD_COLLECTALIGNMENTSUMMARYMETRICS(bam_file, 'wgs')
         PICARD_COLLECTWGSMETRICS(bam_file, 'wgs')
 
         // ** Run MT DNA variant calling.
@@ -340,8 +353,11 @@ workflow HS_PTA {
         // Restore un-paired tumor samples, and add NA12878 as pairing in those cases
         ch_paired_samples = ch_tumor_to_cross
             .mix(ch_paired_samples)
-            .map{it -> [it[1].patient, it[1], it[2], it[3], it[4]]}.groupTuple().filter{it[2].size() == 1} 
-                        // it[0] = sampleID, it[1] = meta, it[2] = bam, it[3] = bai, it[4] = sampleReadID. 
+            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{it[2].size() == 1} 
+                        // it[0] = per-tumor unique ID (sampleID for pre-cross tumors, tumor_id for post-cross pairs), it[1] = meta, it[2] = bam, it[3] = bai, it[4] = sampleReadID. 
+                        // Grouping by per-tumor ID (not patient) so that multiple unpaired tumors from the same patient
+                        // are each handled independently. A paired tumor appears twice in the mix (once from ch_tumor_to_cross,
+                        // once from ch_paired_samples) → size == 2 → filtered out. An unpaired tumor appears once → size == 1 → kept.
                         // unknown group size, no 'size' statement can be used in groupTuple
             .map{tumor -> 
             def meta = [:]
@@ -889,7 +905,8 @@ workflow HS_PTA {
         ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.contamination.collect{it[1]}.ifEmpty([]))
     
         MULTIQC (
-            ch_multiqc_files.collect()
+            ch_multiqc_files.collect(),
+            params.multiqc_config
         )
 
 }

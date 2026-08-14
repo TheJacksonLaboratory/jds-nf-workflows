@@ -21,6 +21,7 @@ include {DEEPVARIANT} from "${projectDir}/modules/deepvariant/deepvariant"
 include {SAMTOOLS_INDEX;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_IND;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "${projectDir}/modules/samtools/samtools_index"
+include {SAMTOOLS_REHEADER_RGSM} from "${projectDir}/modules/samtools/samtools_reheader_rgsm"
 
 include {BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_VCF;
          BCFTOOLS_MERGEDEEPVAR as BCFTOOLS_MERGEDEEPVAR_GVCF} from "${projectDir}/modules/bcftools/bcftools_merge_deepvar_vcfs"
@@ -82,7 +83,7 @@ if (params.csv_input) {
 }
 
 // BEGIN main workflow
-workflow wgs_long_read {
+workflow WGS_LONG_READ {
 
     // ADD A DEMUX STEP FOR DATA NOT IN FASTQ FORMAT??
 
@@ -126,11 +127,12 @@ workflow wgs_long_read {
         // and can't be an array going forward. 
 
         SAMTOOLS_MERGE_IND(merge_input, 'ind_merged_file')
-        SAMTOOLS_INDEX_IND(SAMTOOLS_MERGE_IND.out.bam)
+        SAMTOOLS_REHEADER_RGSM(SAMTOOLS_MERGE_IND.out.bam)
+        SAMTOOLS_INDEX_IND(SAMTOOLS_REHEADER_RGSM.out.bam)
 
         SAMTOOLS_INDEX_SINGLE(pass_input)
 
-        bam_file = SAMTOOLS_MERGE_IND.out.bam
+        bam_file = SAMTOOLS_REHEADER_RGSM.out.bam
             .mix(pass_input)
 
         index_file = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
@@ -238,6 +240,7 @@ workflow wgs_long_read {
     ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
 
     MULTIQC(
-        ch_multiqc_files.collect()
+        ch_multiqc_files.collect(),
+        params.multiqc_config
     )
 }

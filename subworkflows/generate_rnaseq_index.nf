@@ -5,6 +5,7 @@ nextflow.enable.dsl=2
 include {help} from "${projectDir}/bin/help/generate_rnaseq_index.nf"
 include {param_log} from "${projectDir}/bin/log/generate_rnaseq_index.nf"
 include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
+include {GUNZIP} from "${projectDir}/modules/utility_modules/gunzip"
 include {AGAT_GFFTOGTF} from "${projectDir}/modules/agat/agat_gfftogtf"
 include {GFFREAD_GFF3TOGTF} from "${projectDir}/modules/gffread/gffread_gff3togtf"
 include {MODIFY_MGI_GTF} from "${projectDir}/modules/utility_modules/modify_mgi_gtf"
@@ -78,17 +79,31 @@ if (params.custom_gene_fasta) {
     checkFileExists(params.custom_gene_fasta, "custom_gene_fasta")
 }
 
-
 workflow GENERATE_RNASEQ_INDEX {
+
+    star_read_lengths = params.star_read_lengths instanceof String 
+        ? Channel.from(params.star_read_lengths.split(',').collect{it.trim().toInteger()})
+        : Channel.from(params.star_read_lengths.collect{it.toInteger()})
 
     if (params.ref_gff) {
         AGAT_GFFTOGTF(params.ref_gff)
         proc_gtf = AGAT_GFFTOGTF.out.gtf
     } else if (params.ref_gff3) {
-        GFFREAD_GFF3TOGTF(params.ref_gff3)
-        proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+        if (params.ref_gff3.endsWith('.gz')) {
+            GUNZIP(params.ref_gff3)
+            GFFREAD_GFF3TOGTF(GUNZIP.out.gunzip_file)
+            proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+        } else {
+            GFFREAD_GFF3TOGTF(params.ref_gff3)
+            proc_gtf = GFFREAD_GFF3TOGTF.out.gtf
+        }
     } else {
-        proc_gtf = Channel.fromPath(params.ref_gtf)
+        if (params.ref_gtf.endsWith('.gz')) {
+            GUNZIP(params.ref_gtf)
+            proc_gtf = GUNZIP.out.gunzip_file
+        } else {
+            proc_gtf = Channel.fromPath(params.ref_gtf)
+        }
     }
 
     if (params.mgi) {
@@ -104,7 +119,7 @@ workflow GENERATE_RNASEQ_INDEX {
         MAKE_CUSTOM_TRANSCRIPTOME(make_custom_input)
 
         bowtie2_input = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).map{it -> [it[0], it[1], 'bowtie2', '']}
-        star_build_set = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).combine(Channel.of(75, 100, 125, 150)).map{it -> [it[0], it[1], 'STAR', it[2]]}
+        star_build_set = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta.combine(MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf).combine(star_read_lengths).map{it -> [it[0], it[1], 'STAR', it[2]]}
         
         fasta = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_fasta
         gtf = MAKE_CUSTOM_TRANSCRIPTOME.out.concat_gtf
@@ -114,7 +129,7 @@ workflow GENERATE_RNASEQ_INDEX {
         .map{ it -> [params.ref_fa, it, 'bowtie2', ''] }
 
         star_build_set = proc_gtf
-        .map{ it -> [params.ref_fa, it, 'star'] }.combine(Channel.of(75, 100, 125, 150))
+        .map{ it -> [params.ref_fa, it, 'star'] }.combine(star_read_lengths)
         
         fasta = params.ref_fa
         gtf = proc_gtf

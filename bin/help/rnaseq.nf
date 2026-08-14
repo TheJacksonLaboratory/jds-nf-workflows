@@ -92,6 +92,7 @@ Parameter| Default| Description
 --ref_gtf | null | Transcript GTF reference file used to build and RSEM reference when --bam_input is specified, and --rsem_reference_path / --rsem_reference_name are not provided. 
 --bam_strandedness | null | Used when --bam_input is specified. Must be set to 'forward', 'reverse' or 'none'
 
+--hla_typing | true | Human Only - Options: true, false. If specified, HLA typing is run.
 '''
 }
 

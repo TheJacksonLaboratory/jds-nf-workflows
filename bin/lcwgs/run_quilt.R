@@ -105,10 +105,31 @@ if(cross_type == "do" | cross_type == "cc" | cross_type == "het3" | cross_type =
                record_interim_dosages=TRUE,
                save_prepared_reference=TRUE)
   
+} else if(cross_type == "F2"){
+
+  # F2 is always 2 generations from inbred founders; no gen covariate needed
+  covar_nGen <- 2
+
+  QUILT::QUILT(chr = mouse_chr,
+               regionStart = start,
+               regionEnd = end,
+               buffer = 100000,
+               bamlist = mouse_bamlist,
+               outputdir = paste0(getwd(), "/"),
+               reference_haplotype_file = hap,
+               reference_sample_file = samp,
+               reference_legend_file = leg,
+               shuffle_bin_radius = as.numeric(rad),
+               nGen = covar_nGen,
+               nMaxDH = 4,
+               addOptimalHapsToVCF=TRUE,
+               record_interim_dosages=TRUE,
+               save_prepared_reference=TRUE)
+
 } else {
-  
+
   print("Cross type specified has no QUILT implementation at this time.")
-  
+
 }
 
 
