@@ -1,7 +1,7 @@
 process MANTA_CALL {
     tag "$sampleID"
     
-    cpus = 8
+    cpus 8
     memory 200.GB
     time {bam.size() < 40.GB ? '10:00:00' : '36:00:00' }
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}

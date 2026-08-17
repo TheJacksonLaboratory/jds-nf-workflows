@@ -8,6 +8,14 @@ if (params.covar_file == null) {
         error "'--covar_file': \"${params.covar_file}\" is not valid for lcwgs_hr workflow." 
 }
 
+if (params.cross_type == null) {
+        error "'--cross_type': \"${params.cross_type}\" is not valid for lcwgs_hr workflow." 
+}
+
+if (!["do", "het3", "bxd", "cc", "genail4", "F2"].contains(params.cross_type)) {
+        error "'--cross_type': \"${params.cross_type}\" is not valid for lcwgs_hr workflow. Valid options are: do, het3, bxd, cc, genail4, F2." 
+}
+
 if (params.downsample && params.downsampling_coverage_csv == null) {
         error "'--downsampling_coverage_csv': \"${params.downsampling_coverage_csv}\" is required when '--downsample' is set to true for lcwgs_hr workflow."
 }

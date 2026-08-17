@@ -26,8 +26,8 @@ process OPTITYPE_RUN {
     } 
     paired_option = params.read_type == 'PE' ? "${fq_reads[0]} -i ${fq_reads[1]}" : "${fq_reads[0]}"
     """
-    mkdir -p /flashscratch/${USER}/.config/matplotlib
-    export MPLCONFIGDIR=/flashscratch/${USER}/.config/matplotlib
+    mkdir -p .config/matplotlib
+    export MPLCONFIGDIR=.config/matplotlib
     optitype run -i ${paired_option} \
         --${seq_type} \
         -v \
