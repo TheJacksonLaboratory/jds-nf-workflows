@@ -184,7 +184,7 @@ workflow LCWGS_HR {
 
   
   CREATE_BAMLIST(bam_input_ch)
-  chrChunks = channel.fromPath("${params.ref_haps_dir}/${params.cross_type}/chromosome_chunks.csv")
+  chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chromosome_chunks.csv")
                     .splitCsv(header: true)
                     .map {row -> 
                             [ row.chr,

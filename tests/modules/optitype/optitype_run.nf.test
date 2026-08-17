@@ -1,0 +1,118 @@
+nextflow_process {
+
+    name "Test Process OPTITYPE_RUN"
+    script "modules/optitype/optitype_run.nf"
+    process "OPTITYPE_RUN"
+
+    test("Paired-end -- RNA") {
+
+        when {
+            params {
+                pipeline = 'rnaseq'
+                pubdir = "tests/results"
+                gen_org = "human"
+                read_type = 'PE'
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/human/hg38_RNA_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/human/hg38_RNA_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("Single-end -- RNA") {
+
+        when {
+            params {
+                pipeline = 'rnaseq'
+                pubdir = "tests/results"
+                gen_org = "human"
+                read_type = 'SE'
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/rna/human/hg38_RNA_sample_R1.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+
+    test("Paired-end -- WGS") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                gen_org = "human"
+                read_type = 'PE'
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("Single-end -- WGS") {
+
+        when {
+            params {
+                pipeline = 'wgs'
+                pubdir = "tests/results"
+                gen_org = "human"
+                read_type = 'SE'
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/human/hg38_WGS_sample_R1.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+    test("Low Coverage Exit 0") {
+
+        when {
+            params {
+                pipeline = 'wes'
+                pubdir = "tests/results"
+                gen_org = "human"
+                read_type = 'SE'
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', [file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wes/human/hg38_WES_sample_R1.fastq.gz', checkIfExists: true), file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wes/human/hg38_WES_sample_R2.fastq.gz', checkIfExists: true)])
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+
+    }
+
+}

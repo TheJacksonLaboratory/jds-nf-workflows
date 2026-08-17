@@ -23,9 +23,9 @@ process QUILT {
       ${chr} \
       ${covar_file} \
       ${params.cross_type} \
-      ${params.ref_haps_dir}/${params.cross_type}/chr${chr}.hap.gz \
-      ${params.ref_haps_dir}/${params.cross_type}/chr${chr}.samples \
-      ${params.ref_haps_dir}/${params.cross_type}/chr${chr}.legend.gz \
+      ${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chr${chr}.hap.gz \
+      ${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chr${chr}.samples \
+      ${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chr${chr}.legend.gz \
       2000 \
       ${start} \
       ${stop}

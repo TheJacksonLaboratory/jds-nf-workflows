@@ -52,6 +52,7 @@ ______________________________________________________
 --databases                         ${params.databases}
 --pdx                               ${params.pdx}
 
+
 Project Directory: ${projectDir}
 
 Command line call: 

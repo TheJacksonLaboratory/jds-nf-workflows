@@ -27,6 +27,7 @@ if (params.downsample && params.downsampling_coverage_csv == null) {
     --gridfile                      ${params.gridfile}
     --covar_file                    ${params.covar_file}
     --cross_type                    ${params.cross_type}
+    --cross_name                    ${params.cross_name}
     --smooth_window                 ${params.smooth_window}
     --downsample                    ${params.downsample}
     --downsampling_coverage_csv     ${params.downsampling_coverage_csv}

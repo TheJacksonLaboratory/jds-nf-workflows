@@ -73,6 +73,7 @@ def humanParams = """
 --na12878_bam                   ${params.na12878_bam}
 --na12878_bai                   ${params.na12878_bai}
 --na12878_sampleName            ${params.na12878_sampleName}
+--hla_typing                    ${params.hla_typing}
 """
 
 def mouseParams = """

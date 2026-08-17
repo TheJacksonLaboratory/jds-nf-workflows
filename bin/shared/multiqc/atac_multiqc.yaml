@@ -36,6 +36,7 @@ table_columns_placement:
 extra_fn_clean_exts:
   - "_bowtie2"
   - "_R2"
+  - "_sample"
 
 custom_data:
   PCR_statistics:

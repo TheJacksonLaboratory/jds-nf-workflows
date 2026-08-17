@@ -15,6 +15,12 @@
 # Date: 03_10_2023
 
 ################################################################################
+fallback_home <- file.path(tempdir(), "r-home")
+dir.create(fallback_home, recursive = TRUE, showWarnings = FALSE)
+if (!nzchar(Sys.getenv("HOME")) || !dir.exists(Sys.getenv("HOME"))) {
+  Sys.setenv(HOME = fallback_home, R_USER = fallback_home)
+}
+
 ############ loading libraries
 suppressPackageStartupMessages({
   library(optparse)

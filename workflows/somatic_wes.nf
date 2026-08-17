@@ -15,6 +15,7 @@ include {FASTP} from "../modules/fastp/fastp"
 include {FASTQC} from "../modules/fastqc/fastqc"
 include {XENGSORT_INDEX} from "../modules/xengsort/xengsort_index"
 include {XENGSORT_CLASSIFY} from "../modules/xengsort/xengsort_classify"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
 // include {GZIP} from "../modules/utility_modules/gzip"
 include {READ_GROUPS} from "../modules/utility_modules/read_groups"
 include {BWA_MEM} from "../modules/bwa/bwa_mem"
@@ -172,6 +173,7 @@ workflow SOMATIC_WES {
     
     FASTQC(FASTP.out.trimmed_fastq)
 
+
     // Step 3: Get Read Group Information
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
 
@@ -190,11 +192,22 @@ workflow SOMATIC_WES {
         // Xengsort Classification
         XENGSORT_CLASSIFY(xengsort_index, FASTP.out.trimmed_fastq) 
         ch_XENGSORT_CLASSIFY_multiqc = XENGSORT_CLASSIFY.out.xengsort_log
-        
+
+        // HLA Typing
+        if ( params.hla_typing ){
+            OPTITYPE_RUN(XENGSORT_CLASSIFY.out.xengsort_human_fastq)
+        }
+
         // Step 4: BWA-MEM Alignment
         bwa_mem_mapping = XENGSORT_CLASSIFY.out.xengsort_human_fastq.join(READ_GROUPS.out.read_groups)
                           .map{it -> [it[0], it[1], 'aln', it[2]]}
-    } else { 
+    } else {
+
+        // HLA Typing
+        if ( params.hla_typing ){
+            OPTITYPE_RUN(FASTP.out.trimmed_fastq)
+        }
+
         bwa_mem_mapping = FASTP.out.trimmed_fastq.join(READ_GROUPS.out.read_groups)
                           .map{it -> [it[0], it[1], 'aln', it[2]]}
     }

@@ -16,6 +16,7 @@ include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_read
 include {CLUMPIFY} from "../modules/bbmap/bbmap_clumpify"
 include {FASTP} from "../modules/fastp/fastp"
 include {FASTQC} from "../modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
 
 include {READ_GROUPS} from "../modules/utility_modules/read_groups"
 include {BWA_MEM} from "../modules/bwa/bwa_mem"
@@ -33,7 +34,8 @@ include {GATK_APPLYBQSR} from "../modules/gatk/gatk_applybqsr"
 include {JVARKIT_COVERAGE_CAP} from "../modules/jvarkit/jvarkit_biostar154220"
 include {SAMTOOLS_INDEX;
          SAMTOOLS_INDEX as SAMTOOLS_INDEX_IND;
-         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE;} from "../modules/samtools/samtools_index"
+         SAMTOOLS_INDEX as SAMTOOLS_INDEX_SINGLE} from "../modules/samtools/samtools_index"
+include {SAMTOOLS_REHEADER_RGSM} from "../modules/samtools/samtools_reheader_rgsm"
 
 include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "../modules/picard/picard_collectalignmentsummarymetrics"
 include {PICARD_COLLECTWGSMETRICS} from "../modules/picard/picard_collectwgsmetrics"
@@ -193,10 +195,12 @@ workflow WGS {
     ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
 
+    // HLA Typing
+    if ( params.hla_typing ){
+      OPTITYPE_RUN(FASTP.out.trimmed_fastq)
+    }
+
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
-    // WHEN merge_ind is used, we need an alternative version of this process. The read groups need to be assigned based on the individual ID, not the sample ID.
-    // To get IND IDs, the meta_ch must be joined to the FASTP output, and the read group process must be modified to use the IND ID instead of the sample ID.
-    // I think this will require a new module that accepts 'meta' as part of the input tuple. 
 
     // START Split FASTQ
     if (params.split_fastq) {
@@ -330,10 +334,11 @@ workflow WGS {
       // and can't be an array going forward. 
 
       SAMTOOLS_MERGE_IND(merge_input, 'ind_merged_file')
-      SAMTOOLS_INDEX_IND(SAMTOOLS_MERGE_IND.out.bam)
+      SAMTOOLS_REHEADER_RGSM(SAMTOOLS_MERGE_IND.out.bam)
+      SAMTOOLS_INDEX_IND(SAMTOOLS_REHEADER_RGSM.out.bam)
 
       SAMTOOLS_INDEX_SINGLE(pass_input)
-      bam_file = SAMTOOLS_MERGE_IND.out.bam
+      bam_file = SAMTOOLS_REHEADER_RGSM.out.bam
         .mix(pass_input)
       index_file  = SAMTOOLS_INDEX_IND.out.bai.mix(SAMTOOLS_INDEX_SINGLE.out.bai)
     }

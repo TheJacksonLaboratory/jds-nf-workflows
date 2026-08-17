@@ -3,6 +3,7 @@ nextflow.enable.dsl=2
 
 include {UMITOOLS_EXTRACT} from "../modules/umitools/umitools_extract"
 include {FASTP} from "../modules/fastp/fastp"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
 include {FASTQC} from "../modules/fastqc/fastqc"
 include {GET_READ_LENGTH} from "../modules/utility_modules/get_read_length"
 include {CHECK_STRANDEDNESS} from "../modules/python/python_check_strandedness"
@@ -11,6 +12,7 @@ include {UMITOOLS_DEDUP as UMITOOLS_DEDUP_GENOME;
          UMITOOLS_DEDUP as UMITOOLS_DEDUP_TRANSCRIPT} from "../modules/umitools/umitools_dedup"
 include {SAMTOOLS_SORT} from "../modules/samtools/samtools_sort"
 include {UMITOOLS_PREPAREFORRSEM} from "../modules/umitools/umitools_prepareforrsem"
+
 include {RSEM_EXPRESSION} from "../modules/rsem/rsem_expression_umi"
 include {READ_GROUPS} from "../modules/utility_modules/read_groups"
 include {SEX_DETERMINATION} from "../modules/r/sex_determination"
@@ -52,6 +54,11 @@ workflow UMI_RNASEQ {
         GET_READ_LENGTH(read_ch) // set to full reads, regardless of trim state.
         
         FASTQC(reads)
+
+        // HLA Typing
+        if ( params.hla_typing ){
+          OPTITYPE_RUN(reads)
+        }
 
         // Check strand setting
         CHECK_STRANDEDNESS(reads, params.strandedness_gtf)

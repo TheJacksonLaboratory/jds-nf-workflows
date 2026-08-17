@@ -52,6 +52,7 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --dbNSFP                        ${params.dbNSFP}
 --cosmic                        ${params.cosmic}
 --snpEff_config                 ${params.snpEff_config}
+--hla_typing                    ${params.hla_typing}
 
 
 Project Directory: ${projectDir}
@@ -98,6 +99,8 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --mismatch_penalty              ${params.mismatch_penalty}
 --call_val                      ${params.call_val}
 --ploidy_val                    ${params.ploidy_val}
+--hla_typing                    ${params.hla_typing}
+
 
 Project Directory: ${projectDir}
 

@@ -56,6 +56,7 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --dbNSFP                        ${params.dbNSFP}
 --cosmic                        ${params.cosmic}
 --snpEff_config                 ${params.snpEff_config}
+--hla_typing                    ${params.hla_typing}
 
 Project Directory: ${projectDir}
 

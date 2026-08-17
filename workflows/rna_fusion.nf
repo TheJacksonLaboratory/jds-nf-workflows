@@ -30,6 +30,7 @@ include {SQUID_ANNOTATE} from "../modules/squid/squid_annotate"
 include {SAMTOOLS_VIEW as SAMTOOLS_VIEW_SQUID} from "../modules/samtools/samtools_view"
 include {STAR_FUSION as STAR_FUSION} from "../modules/star-fusion/star-fusion"
 include {FASTQC} from "../modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "..//modules/optitype/optitype_run"
 include {FUSION_REPORT} from "../modules/fusion_report/fusion_report"
 include {MULTIQC} from "../modules/multiqc/multiqc"
 
@@ -129,9 +130,16 @@ workflow RNA_FUSION {
         XENGSORT_CLASSIFY(xengsort_index, GUNZIP.out.gunzip_fastq)
         ch_XENGSORT_CLASSIFY_multiqc = XENGSORT_CLASSIFY.out.xengsort_log
 
+        // HLA Typing
+        OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
+
         fusion_tool_input = XENGSORT_CLASSIFY.out.xengsort_human_fastq
 
     } else { 
+        
+        // HLA Typing
+        OPTITYPE_RUN(GUNZIP.out.gunzip_fastq)
+
         fusion_tool_input = GUNZIP.out.gunzip_fastq
     }
 

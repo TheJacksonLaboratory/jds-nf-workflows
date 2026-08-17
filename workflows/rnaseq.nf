@@ -18,6 +18,7 @@ include {PDX_RNASEQ} from "../subworkflows/pdx_rnaseq"
 include {UMI_RNASEQ} from "../subworkflows/umi_rnaseq"
 include {FASTP} from "../modules/fastp/fastp"
 include {FASTQC} from "../modules/fastqc/fastqc"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
 include {CHECK_STRANDEDNESS} from "../modules/python/python_check_strandedness"
 include {READ_GROUPS} from "../modules/utility_modules/read_groups"
 include {RSEM_ALIGNMENT_EXPRESSION} from "../modules/rsem/rsem_alignment_expression"
@@ -173,6 +174,11 @@ workflow RNASEQ {
         GET_READ_LENGTH(read_ch) // set to full reads, regardless of trim state.
         
         FASTQC(reads)
+
+        // HLA Typing
+        if ( params.hla_typing ){
+          OPTITYPE_RUN(reads)
+        }
 
         // Check strand setting
         CHECK_STRANDEDNESS(reads, params.strandedness_gtf)
