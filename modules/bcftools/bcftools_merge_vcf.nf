@@ -7,8 +7,6 @@ process BCFTOOLS_MERGE_VCF {
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'
 
-    publishDir "${params.pubdir}/gold_truth_vcf", pattern: '*ALLchr_golden.vcf.gz', mode:'copy'
-
     input:
     path(vcf)
     path(tbi)
