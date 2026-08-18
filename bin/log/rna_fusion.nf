@@ -30,7 +30,6 @@ ______________________________________________________
 --xenome_prefix                     ${params.xenome_prefix}
 --read_length                       ${params.read_length}
 --star_index                        ${params.star_index}
---star_fusion_star_index            ${params.star_fusion_star_index}
 --gencode_gtf                       ${params.gencode_gtf}
 --ensembl_gtf                       ${params.ensembl_gtf}
 --fasta                             ${params.fasta}
