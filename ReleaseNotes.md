@@ -1,5 +1,26 @@
 # RELEASE NOTES
 
+## Release 1.0.0
+
+This release brings our workflows inline with the latest version of Nextflow v26, and the v2 strict syntax parser.  
+
+Compliance with the v2 strict syntax required a complete refactoring of all workflows, modules, and associated scripts to adhere to the updated syntax rules and best practices.
+
+Broadly the following changes were made:
+
+* `include` declarations are now required to be static declarations, which means all workflows must be instantiated at launch. 
+* The use of `projectDir` has been removed from all workflows and modules, in favor of relative paths and `moduleDir`.
+* As part of restructuring to `moduleDir` all scripts in the `bin` directory were moved to within their respective module directories.
+* All workflow logic now exists within the `workflow` block as is required by the v2 strict syntax.
+* All implicit closure parameters have been replaced with explicit closure parameters.
+* All `if/else` control logic has been removed from configuration files, and replaced with compliant ternary expressions.
+* All modules containing `shell` blocks have been converted to `script` blocks.
+* All module resource request syntax is now compliant.
+* `import` is no longer allowed as a top-level declaration, which has affected how certain functions (e.g., `Logo` display) are called. 
+* Beyond compliance with the v2 strict syntax, the repository now also passes `nextflow lint`. This was done to ensure broader compliance with Nextflow style guidelines.
+
+Releases from this point forward will follow [Semantic Versioning (SemVer)](https://semver.org/) guidelines as outlined in the versioning document `Versioning.md` in this repository.
+
 ## Release 0.9.5
 
 This release adds a number of new support workflows, and numerous smaller adjustments to multiple workflows. Major points are called out below, and a full accounting of changes follows that.
