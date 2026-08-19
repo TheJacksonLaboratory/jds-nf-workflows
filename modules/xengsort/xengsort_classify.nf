@@ -12,7 +12,7 @@ process XENGSORT_CLASSIFY {
     container 'quay.io/jaxcompsci/xengsort_gnu_utils:v2.0.9'
 
     // output directory
-    // publishDir "${params.pubdir}/${sampleID + '/xengsort/xengsort_classify'}", pattern: "*.fq", mode: "copy"
+    // publishDir path: { "${params.pubdir}/${sampleID + '/xengsort/xengsort_classify'}" }, pattern: "*.fq", mode: "copy"
     publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.txt", mode:'copy'
 
     // inputs

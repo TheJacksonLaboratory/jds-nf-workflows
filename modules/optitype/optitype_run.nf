@@ -8,8 +8,8 @@ process OPTITYPE_RUN {
 
     container 'quay.io/jaxcompsci/optitype:v1.5.1'
 
-    publishDir "${params.pubdir}/hla_typing", pattern: '*.tsv', mode:'copy'  
-    publishDir "${params.pubdir}/hla_typing", pattern: '*.pdf', mode:'copy'  
+    publishDir path: { "${params.pubdir}/hla_typing" }, pattern: '*.tsv', mode:'copy'  
+    publishDir path: { "${params.pubdir}/hla_typing" }, pattern: '*.pdf', mode:'copy'  
 
     input:
     tuple val(sampleID), path(fq_reads)

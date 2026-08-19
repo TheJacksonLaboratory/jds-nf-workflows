@@ -8,7 +8,7 @@ process VCF_SORT {
 
     container 'quay.io/jaxcompsci/vcftools:0.1.17--g581c231'
 
-    publishDir "${params.pubdir}/gold_truth_vcf", pattern: '*sorted.vcf.gz*', mode:'copy'
+    publishDir path: { "${params.pubdir}/gold_truth_vcf" }, pattern: '*sorted.vcf.gz*', mode:'copy'
 
     input:
         path(merged_vcf)

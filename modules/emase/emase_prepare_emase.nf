@@ -20,7 +20,7 @@ process EMASE_PREPARE_EMASE {
     publishDir path: { "${params.pubdir}/emase" }, pattern: '*.fa', mode:'copy'
     publishDir path: { "${params.pubdir}/emase" }, pattern: '*.info', mode:'copy', enabled: params.keep_intermediate
     publishDir path: { "${params.pubdir}/emase" }, pattern: '*.tsv', mode:'copy'
-    // publishDir "${params.pubdir}/bowtie", pattern: "*.ebwt", mode:'copy' // TURN ON IF BOWTIE INDEX BUILT HERE.
+    // publishDir path: { "${params.pubdir}/bowtie" }, pattern: "*.ebwt", mode:'copy' // TURN ON IF BOWTIE INDEX BUILT HERE.
 
     output:
     path("*.fa"), emit: pooled_transcript_fasta

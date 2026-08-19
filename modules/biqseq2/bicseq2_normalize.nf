@@ -7,7 +7,7 @@ process BICSEQ2_NORMALIZE {
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/jaxcompsci/bicseq2:v3'
-    // publishDir "${params.pubdir}/${sampleID}", pattern:".txt", mode:'copy'
+    // publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:".txt", mode:'copy'
 
     input:
     tuple val(sampleID), path(individual_chr_seq_files), val(meta), val(read_ID), val(read_length), val(insert_size)

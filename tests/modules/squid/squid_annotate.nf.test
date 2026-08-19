@@ -1,0 +1,27 @@
+nextflow_process {
+
+    name "Test Process SQUID_ANNOTATE"
+    script "modules/squid/squid_annotate.nf"
+    process "SQUID_ANNOTATE"
+
+    test("Basic Annotate") {
+
+        when {
+            params {
+                pipeline = 'rna_fusion'
+                pubdir = "tests/results"
+                gen_org = "human"
+            }
+            process {
+                """
+                input[0] = tuple('testSample_42', file('https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/fusion/human/squid_annotate/hg38_fusion.squid.fusions_sv.txt', checkIfExists: true))
+                input[1] = params.gencode_gtf
+                """
+            }
+        }
+
+        then {
+            assert process.success
+        }
+    }
+}

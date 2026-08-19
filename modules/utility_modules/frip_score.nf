@@ -29,7 +29,7 @@ process FRIP_SCORE {
 /*
 IGV steps removed, re-add if IGV is needed: 
 
-    PUBDIR: publishDir "${params.pubdir}/${'comparison/' + ip + '_vs_' + control + '/macs2'}", pattern: "*.txt", mode: 'copy'
+    PUBDIR: publishDir path: { "${params.pubdir}/${'comparison/' + ip + '_vs_' + control + '/macs2'}" }, pattern: "*.txt", mode: 'copy'
 
     OUTPUT: tuple val(ip), path("*.txt"), emit : txt
 
