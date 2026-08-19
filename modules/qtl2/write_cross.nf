@@ -8,8 +8,7 @@ process WRITE_CROSS {
   container 'docker://sjwidmay/lcgbs_hr:latest'
 
   input:
-  tuple val(project_id), path(covar), val(cross_type), path(dedup_samples)
-  tuple val(project_id), path(sampleGenos)
+  tuple val(project_id), path(covar), val(cross_type), path(dedup_samples), path(sampleGenos)
   path(consensusFiles)
 
   output:
@@ -20,7 +19,7 @@ process WRITE_CROSS {
   current_dir=\$(echo pwd)
   hash=\$(\$current_dir | tail -c 9)
   echo \$hash
-  Rscript --vanilla ${projectDir}/bin/qtl/writeControlFile.R
+  Rscript --vanilla ${moduleDir}/bin/writeControlFile.R
   mv preQC_cross.rds preQC_cross_\${hash}.rds
   """
 }

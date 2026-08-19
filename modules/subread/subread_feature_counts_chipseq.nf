@@ -7,7 +7,7 @@ process SUBREAD_FEATURECOUNTS {
   
     container 'quay.io/biocontainers/subread:2.0.1--hed695b0_0'
 
-    publishDir "${params.pubdir}/${'consensusCalling_' + antibody + '/subread'}", pattern: "*.txt*", mode: 'copy'  
+    publishDir path: { "${params.pubdir}/${'consensusCalling_' + antibody + '/subread'}" }, pattern: "*.txt*", mode: 'copy'  
 
     input:
     tuple val(antibody), val(replicatesExist), val(multipleGroups), path(bams), path(saf)
@@ -18,7 +18,7 @@ process SUBREAD_FEATURECOUNTS {
 
     script:
     prefix = "${antibody}.consensus_peaks"
-    bam_files = bams.findAll { it.toString().endsWith('.bam') }.sort()
+    bam_files = bams.findAll { it -> it.toString().endsWith('.bam') }.sort()
     pe_params = params.read_type == 'SE' ? '' : '-p --donotsort'
     """
     featureCounts \\

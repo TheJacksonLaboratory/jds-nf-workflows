@@ -7,9 +7,9 @@ process DO_TRANSITION_PROBABILITIES {
 
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
-    publishDir "${params.pubdir}", pattern: '*.h5', mode:'copy'
-    publishDir "${params.pubdir}", pattern: '*.tsv', mode:'copy'
-    publishDir "${params.pubdir}/transprob_matrix_plots", pattern: '*.pdf', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: '*.h5', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: '*.tsv', mode:'copy'
+    publishDir path: { "${params.pubdir}/transprob_matrix_plots" }, pattern: '*.pdf', mode:'copy'
 
     output:
     path('*.F.h5'), emit: female_h5_file
@@ -19,7 +19,7 @@ process DO_TRANSITION_PROBABILITIES {
 
     script:
     """
-    Rscript ${projectDir}/bin/gbrs/gene_bp_to_cM_to_transprob.R --ensembl_build ${params.ensembl_build} --num_generation ${params.num_generations} --output_prefix "tranprob.genes.DO."
+    Rscript ${moduleDir}/bin/gene_bp_to_cM_to_transprob.R --ensembl_build ${params.ensembl_build} --num_generation ${params.num_generations} --output_prefix "tranprob.genes.DO."
     """
 
     stub:

@@ -8,7 +8,7 @@ process MINIMAP2_MAP_ONT {
 
     container 'quay.io-biocontainers-minimap2-2.24--h7132678_1'
 
-    publishDir "${params.pubdir}/${sampleID + '/alignments'}", pattern: "*_aln.sam", mode:'copy', enabled: params.keep_intermediate ? true : false
+    publishDir path: { "${params.pubdir}/${sampleID + '/alignments'}" }, pattern: "*_aln.sam", mode:'copy', enabled: params.keep_intermediate ? true : false
 
     input:
         tuple val(sampleID), file(fastq)

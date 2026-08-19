@@ -1,11 +1,11 @@
 // Function to extract information (meta data + file(s)) from csv file(s)
 // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L1084
 
-ANSI_RED = "\u001B[31m";
-ANSI_RESET = "\u001B[0m";
-
 def extract_csv(csv_file) {
-    return Channel.fromPath(csv_file)
+    def ANSI_RED = "\u001B[31m"
+    def ANSI_RESET = "\u001B[0m"
+
+    return channel.fromPath(csv_file)
         .splitCsv(header: true)
         .map{ row ->
             if (!(row.project_id)){

@@ -2,37 +2,35 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/pta.nf"
-include {param_log} from "${projectDir}/bin/log/pta.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
+include {help} from "../bin/help/pta.nf"
+include {param_log} from "../bin/log/pta.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
 
-include {HS_PTA} from "${projectDir}/subworkflows/hs_pta"
-include {MM_PTA} from "${projectDir}/subworkflows/mm_pta"
+include {HS_PTA} from "../subworkflows/hs_pta"
+include {MM_PTA} from "../subworkflows/mm_pta"
 
-include {CONCATENATE_PTA_FASTQ} from "${projectDir}/subworkflows/concatenate_pta_fastq"
-
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-if (!params.csv_input) {
-    exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` or the GitHub Wiki for information."
-}
-
+include {CONCATENATE_PTA_FASTQ} from "../subworkflows/concatenate_pta_fastq"
 
 // main workflow
 workflow PTA {
+
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    if (!params.csv_input) {
+        exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` or the GitHub Wiki for information."
+    }
 
     if (params.csv_input) {
         ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
@@ -57,28 +55,25 @@ workflow PTA {
 // Function to extract information (meta data + file(s)) from csv file(s)
 // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L1084
 def extract_csv(csv_file) {
-    ANSI_RED = "\u001B[31m";
-    ANSI_RESET = "\u001B[0m";
+    def ANSI_RED = "\u001B[31m";
+    def ANSI_RESET = "\u001B[0m";
 
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
-    file(csv_file).withReader('UTF-8') { reader ->
-        def line, numberOfLinesInSampleSheet = 0;
-        while ((line = reader.readLine()) != null) {numberOfLinesInSampleSheet++}
-        if (numberOfLinesInSampleSheet < 2) {
+    def numberOfLinesInSampleSheet = file(csv_file).readLines().size()
+    if (numberOfLinesInSampleSheet < 2) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, so at least two lines." + ANSI_RESET)
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.exit(1)
         }
-    }
 
     // Additional check of sample sheet:
     // 1. Each row should specify a lane and the same combination of patient, sample and lane shouldn't be present in different rows.
     // 2. The same sample shouldn't be listed for different patients.
-    def patient_sample_lane_combinations_in_samplesheet = []
+    // def patient_sample_lane_combinations_in_samplesheet = []
     def sample2patient = [:]
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!sample2patient.containsKey(row.sampleID.toString())) {
                 sample2patient[row.sampleID.toString()] = row.patient.toString()
@@ -88,14 +83,14 @@ def extract_csv(csv_file) {
             }
         }
 
-    sample_count_all = 0
-    sample_count_normal = 0
-    sample_count_tumor = 0
+    def sample_count_all = 0
+    def sample_count_normal = 0
+    def sample_count_tumor = 0
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         //Retrieves number of lanes by grouping together by patient and sample and counting how many entries there are for this combination
         .map{ row ->
-            sample_count_all++
+            sample_count_all += 1
             if (!(row.patient && row.sampleID)){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "Missing field in csv file header. The csv file must have fields: 'patient', 'sampleID', 'lane', 'fastq_1', 'fastq_2'." + ANSI_RESET)
@@ -105,11 +100,11 @@ def extract_csv(csv_file) {
             }
             [[row.patient.toString(), row.sampleID.toString()], row]
         }.groupTuple()
-        .map{ meta, rows ->
-            size = rows.size()
+        .map{ _meta, rows ->
+            def size = rows.size()
             [rows, size]
         }.transpose()
-        .map{ row, numLanes -> //from here do the usual thing for csv parsing
+        .map{ row, _numLanes -> //from here do the usual thing for csv parsing
 
         def meta = [:]
 
@@ -129,8 +124,8 @@ def extract_csv(csv_file) {
         if (row.status) meta.status = row.status.toInteger()
         else meta.status = 0
 
-        if (meta.status == 0) sample_count_normal++
-        else sample_count_tumor++
+        if (meta.status == 0) sample_count_normal += 1
+        else sample_count_tumor += 1
 
         // join meta to fastq
         if (row.fastq_2) {
@@ -144,7 +139,7 @@ def extract_csv(csv_file) {
             try {
                 file(row.fastq_1, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_1 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
@@ -154,7 +149,7 @@ def extract_csv(csv_file) {
             try {
                 file(row.fastq_2, checkIfExists: true)
             }
-            catch (Exception e) {
+            catch (Exception _e) {
                 System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "The file: " + row.fastq_2 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)

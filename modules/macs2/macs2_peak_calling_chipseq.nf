@@ -5,7 +5,7 @@ process PEAK_CALLING_CHIPSEQ {
     memory 10.GB
     time '10:00:00'
 
-    publishDir "${params.pubdir}/${'immuno_precip_samples/' + ip + '_vs_' + control + '/macs2'}", pattern: "*_peaks.*", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${'immuno_precip_samples/' + ip + '_vs_' + control + '/macs2'}" }, pattern: "*_peaks.*", mode: 'copy'
 
     container 'quay.io/biocontainers/macs2:2.2.7.1--py39hbf8eff0_4'  
 

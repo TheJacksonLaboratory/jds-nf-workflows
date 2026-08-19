@@ -8,23 +8,23 @@ process SNIFFLES {
 
     container 'quay.io/biocontainers/sniffles:2.7.1--pyhdfd78af_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/unmerged_calls'}", pattern: "${sampleID}.sniffles_sorted_prefix.vcf", mode: "copy"
+    publishDir path: { "${params.pubdir}/${sampleID + '/unmerged_calls'}" }, pattern: "*.sniffles_sorted_prefix.vcf", mode: "copy"
 
     input:
         tuple val(sampleID), file(bam), file(index)
     output:
         tuple val(sampleID), file("${sampleID}.sniffles_sorted_prefix.vcf"), emit: sniffles_vcf
-    shell:
+    script:
         if(params.tandem_repeats)
             """
             sniffles --input ${bam} --vcf ${sampleID}.sniffles_calls.vcf --tandem-repeats ${params.tandem_repeats} --output-rnames -t ${task.cpus}
             
-            bash ${projectDir}/bin/germline_sv/clean_sniffles.sh ${sampleID}
+            bash ${moduleDir}/bin/clean_sniffles.sh ${sampleID}
             """
         else
             """
             sniffles --input ${bam} --vcf ${sampleID}.sniffles_calls.vcf --output-rnames -t ${task.cpus}
 
-            bash ${projectDir}/bin/germline_sv/clean_sniffles.sh ${sampleID}            
+            bash ${moduleDir}/bin/clean_sniffles.sh ${sampleID}            
             """
 }

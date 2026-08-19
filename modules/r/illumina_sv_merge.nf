@@ -8,7 +8,7 @@ process SV_MERGE {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.bedpe", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.bedpe", mode:'copy'
 
     input:
         tuple val(sampleID), file(vcf_tuple)
@@ -17,7 +17,7 @@ process SV_MERGE {
         tuple val(sampleID), file("*.mergedCall.DLM.supplemental.bedpe"), emit: supp_bedpe
     script:
     """
-        Rscript ${projectDir}/bin/germline_sv/merge_sv.r \
+        Rscript ${moduleDir}/bin/merge_sv.r \
         --vcf=${vcf_tuple[0]},${vcf_tuple[1]},${vcf_tuple[2]} \
         --caller=delly,lumpy,manta \
         --sample_name=${sampleID} \

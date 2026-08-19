@@ -8,7 +8,7 @@ process GENERATE_FINGERPRINT_REPORT {
 
     container 'quay.io/jaxcompsci/biopython-pyvcf:1.78'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.tsv", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), file(vcf)
@@ -19,7 +19,7 @@ process GENERATE_FINGERPRINT_REPORT {
     script:
     """
     python \
-    ${projectDir}/bin/amplicon/generate_fingerprint_report.py \
+    ${moduleDir}/bin/generate_fingerprint_report.py \
     --input_file ${vcf} \
     --output_prefix ${sampleID}_fingerprint \
     --rsid_file ${params.amplicon_rsid_targets}

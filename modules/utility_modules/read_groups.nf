@@ -8,7 +8,7 @@ process READ_GROUPS {
 
     container 'quay.io/jaxcompsci/py3_bgzip:3.10.12'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*read_group.txt", mode:'copy', enabled: params.workflow == 'rnaseq' || params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*read_group.txt", mode:'copy', enabled: params.workflow == 'rnaseq' || params.keep_intermediate
 
     input:
     tuple val(sampleID), path(fq_reads)
@@ -25,6 +25,6 @@ process READ_GROUPS {
         p=''
     }
     """
-    python ${projectDir}/bin/shared/read_group_from_fastq.py $p -s ${sampleID} -o ${sampleID}_read_group.txt ${fq_reads[0]}
+    python ${moduleDir}/bin/read_group_from_fastq.py $p -s ${sampleID} -o ${sampleID}_read_group.txt ${fq_reads[0]}
     """
 }

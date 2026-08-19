@@ -8,7 +8,7 @@ process ANNOTATE_GENES_SV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}/merged_sv", pattern:"*.MDLS_sv_annotated_genes*.bed", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}/merged_sv" }, pattern:"*.MDLS_sv_annotated_genes*.bed", mode:'copy'
 
     input:
         tuple val(sampleID), file(annot_sv_bedpe)
@@ -20,14 +20,14 @@ process ANNOTATE_GENES_SV {
     script:
     if (suppl_switch == "main") {
         """
-        Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-genes.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-genes.r \
             --ensembl=${params.ensemblUniqueBed} \
             --bedpe=${annot_sv_bedpe} \
             --out_file=${sampleID}.MDLS_sv_annotated_genes.bed
         """
     } else if (suppl_switch == "supplemental") {
         """
-        Rscript ${projectDir}/bin/wgs/annotate-bedpe-with-genes.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-genes.r \
             --ensembl=${params.ensemblUniqueBed} \
             --bedpe=${annot_sv_bedpe} \
             --out_file=${sampleID}.MDLS_sv_annotated_genes_supplemental.bed \

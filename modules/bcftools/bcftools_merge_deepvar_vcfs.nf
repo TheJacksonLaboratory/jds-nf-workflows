@@ -9,7 +9,7 @@ process BCFTOOLS_MERGEDEEPVAR {
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.*vcf*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.*vcf*", mode:'copy'
 
     input:
     tuple val(sampleID), path(files), path(index)

@@ -1,17 +1,17 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include {RSEM_PREPAREREFERENCE} from "${projectDir}/modules/rsem/rsem_preparereference"
-include {RSEM_SAM_VALIDATOR} from "${projectDir}/modules/rsem/rsem_sam_validator"
-include {CONVERT_SAM_FOR_RSEM} from "${projectDir}/modules/rsem/convert_sam_for_rsem"
-include {RSEM_EXPRESSION} from "${projectDir}/modules/rsem/rsem_expression"
-include {SEX_DETERMINATION} from "${projectDir}/modules/r/sex_determination"
-include {MERGE_RSEM_COUNTS} from "${projectDir}/modules/utility_modules/merge_rsem_counts"
-include {PICARD_ADDORREPLACEREADGROUPS} from "${projectDir}/modules/picard/picard_addorreplacereadgroups"
-include {PICARD_REORDERSAM} from "${projectDir}/modules/picard/picard_reordersam"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {PICARD_COLLECTRNASEQMETRICS} from "${projectDir}/modules/picard/picard_collectrnaseqmetrics"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {RSEM_PREPAREREFERENCE} from "../modules/rsem/rsem_preparereference"
+include {RSEM_SAM_VALIDATOR} from "../modules/rsem/rsem_sam_validator"
+include {CONVERT_SAM_FOR_RSEM} from "../modules/rsem/convert_sam_for_rsem"
+include {RSEM_EXPRESSION} from "../modules/rsem/rsem_expression"
+include {SEX_DETERMINATION} from "../modules/r/sex_determination"
+include {MERGE_RSEM_COUNTS} from "../modules/utility_modules/merge_rsem_counts"
+include {PICARD_ADDORREPLACEREADGROUPS} from "../modules/picard/picard_addorreplacereadgroups"
+include {PICARD_REORDERSAM} from "../modules/picard/picard_reordersam"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {PICARD_COLLECTRNASEQMETRICS} from "../modules/picard/picard_collectrnaseqmetrics"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 workflow RNA_FROM_BAM {
 
@@ -21,7 +21,7 @@ workflow RNA_FROM_BAM {
     
     main:
         if (!params.rsem_reference_path || params.rsem_reference_path == '' || params.rsem_reference_path == null) {
-            bowtie2_input = Channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
+            bowtie2_input = channel.of([params.ref_fa, params.ref_gtf, 'bowtie2', ''])
             RSEM_PREPAREREFERENCE(bowtie2_input)
 
             rsem_ref_files = RSEM_PREPAREREFERENCE.out.all_files.toList()
@@ -30,7 +30,7 @@ workflow RNA_FROM_BAM {
 
         } else {
 
-            rsem_ref_files = Channel
+            rsem_ref_files = channel
             .fromPath( "${params.rsem_reference_path}/**" )
             .collect()
             .toList()

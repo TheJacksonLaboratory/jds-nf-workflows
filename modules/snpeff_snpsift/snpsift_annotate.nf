@@ -1,16 +1,16 @@
 process SNPSIFT_ANNOTATE {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 20.GB
-    time = '24:00:00'
+    cpus 1
+    memory  20.GB
+    time '24:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/jaxcompsci/snpeff_snpsift_5.1:v5.1d'
     
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*dbsnpID.vcf", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*_germline_snv_indel_annotated_filtered_final.vcf", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.vcf", mode:'copy', enabled: params.workflow == 'amplicon' ? true : false
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*dbsnpID.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*_germline_snv_indel_annotated_filtered_final.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.vcf", mode:'copy', enabled: params.workflow == 'amplicon' ? true : false
 
     input:
     tuple val(sampleID), file(vcf)

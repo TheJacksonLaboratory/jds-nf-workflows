@@ -1,14 +1,14 @@
 process GATK_BASERECALIBRATOR {
     tag "$sampleID"
 
-    cpus = 1
+    cpus 1
     memory { bam.size() < 60.GB ? 60.GB : 80.GB }
     time { bam.size() < 60.GB ? '24:00:00' : '48:00:00' }
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.table", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.table", mode:'copy'
 
     input:
     tuple val(sampleID), file(bam)

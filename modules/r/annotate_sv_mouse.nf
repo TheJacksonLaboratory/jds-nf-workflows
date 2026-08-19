@@ -20,7 +20,7 @@ process ANNOTATE_SV {
 
         if (suppl_switch == "main")
         """
-        Rscript ${projectDir}/bin/pta/annotate-bedpe-with-databases.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
             --db_names=GAP,DEL,INS,INV,EXCLUDE_RANGE \
             --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_list} \
             --slop=500 \
@@ -31,7 +31,7 @@ process ANNOTATE_SV {
         """
         else if (suppl_switch == "supplemental")
         """
-        Rscript ${projectDir}/bin/pta/annotate-bedpe-with-databases.r \
+        Rscript ${moduleDir}/bin/annotate-bedpe-with-databases.r \
             --db_names=GAP,DEL,INS,INV,EXCLUDE_RANGE \
             --db_files=${params.gap},${params.known_del},${params.known_ins},${params.known_inv},${params.exclude_list} \
             --slop=500 \

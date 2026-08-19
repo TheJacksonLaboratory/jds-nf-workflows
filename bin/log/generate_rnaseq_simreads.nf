@@ -1,9 +1,5 @@
-import Logos
 
-logo = new Logo()
-println '\n'
-println logo.show()
-
+def param_log(){
 
 if (!(params.gen_org in ['human', 'mouse', 'other'])) {
   log.error "This workflow supports only --gen_org mouse, --gen_org human, or --gen_org other. Please retry with correct option."
@@ -24,8 +20,6 @@ if (params.read_length != 100 && params.read_length != 75 && !params.quality_ref
   log.error "If --simulate_sequencing_error is TRUE and --quality_reference is not provided, the output read length must be either 100-bp or 75-bp. Please retry with correct option."
   System.exit(1)
 }
-
-def param_log(){
 
 def message = ""
 

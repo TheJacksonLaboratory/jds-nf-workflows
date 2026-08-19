@@ -1,10 +1,4 @@
-import Logos
-
 def param_log(){
-
-logo = new Logo()
-println '\n'
-println logo.show()
 
 if (params.gen_org != "human") {
   error "'--gen_org': \"${params.gen_org}\" is not valid, supported option is 'human'" 

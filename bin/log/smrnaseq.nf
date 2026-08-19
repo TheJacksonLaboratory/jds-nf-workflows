@@ -1,8 +1,4 @@
-import Logos
-
-logo = new Logo()
-println '\n'
-println logo.show()
+def param_log(){
 
 if (!(params.gen_org in ['human', 'mouse'])) {
   log.error "This workflow supports only --gen_org mouse or --gen_org human. Please retry with correct option."
@@ -14,8 +10,6 @@ if (!params.csv_input) {
   System.exit(1)
 }
 
-
-def param_log(){
 
 def message = ""
 
@@ -58,7 +52,6 @@ if (params.gen_org == 'human') {
   --fastp_min_length              ${params.fastp_min_length}
   --fastp_max_length              ${params.fastp_max_length}
   --adapter_fasta                 ${params.adapter_fasta}
-  --tmpdir                        ${params.tmpdir}
 
   Project Directory: ${projectDir}
 
@@ -105,7 +98,6 @@ if (params.gen_org == 'human') {
   --fastp_min_length              ${params.fastp_min_length}
   --fastp_max_length              ${params.fastp_max_length}
   --adapter_fasta                 ${params.adapter_fasta}
-  --tmpdir                        ${params.tmpdir}
 
   Project Directory: ${projectDir}
 

@@ -8,7 +8,7 @@ process SEX_DETERMINATION {
 
     container 'rocker/r-ver:4.4.1'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy'
 
     input:
         tuple val(sampleID), path(counts)
@@ -17,6 +17,6 @@ process SEX_DETERMINATION {
 
     script:
     """
-    /usr/bin/env Rscript ${projectDir}/bin/rnaseq/sex_determination.R ${counts} ./ ${sampleID}
+    /usr/bin/env Rscript ${moduleDir}/bin/sex_determination.R ${counts} ./ ${sampleID}
     """
 }

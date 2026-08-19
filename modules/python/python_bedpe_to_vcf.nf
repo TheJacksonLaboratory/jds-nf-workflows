@@ -8,7 +8,7 @@ process PYTHON_BEDPE_TO_VCF {
 
     container 'quay.io/biocontainers/fuc:0.37.0--pyh7cba7a3_0'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.vcf", mode:'copy'
 
     input:
         tuple val(sampleID), path(bedpe)
@@ -16,6 +16,6 @@ process PYTHON_BEDPE_TO_VCF {
         tuple val(sampleID), path("*.vcf"), emit: vcf
     script:
     """
-    python ${projectDir}/bin/germline_sv/bedpetovcf.py -i ${bedpe} -v ${sampleID}.mergedCall.vcf
+    python ${moduleDir}/bin/bedpetovcf.py -i ${bedpe} -v ${sampleID}.mergedCall.vcf
     """
 }

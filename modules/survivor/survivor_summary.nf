@@ -8,7 +8,7 @@ process SURVIVOR_SUMMARY {
 
     container 'quay.io/jaxcompsci/biopython-pyvcf:1.78'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy', enabled: params.data_type == 'ont' ? false : true
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy', enabled: params.data_type == 'ont' ? false : true
 
     input:
         tuple val(sampleID), file(vcf)
@@ -16,6 +16,6 @@ process SURVIVOR_SUMMARY {
         tuple val(sampleID), file("${sampleID}.survivor_summary.csv"), emit: csv
     script:
         """
-        /usr/bin/env python ${projectDir}/bin/germline_sv/sv_to_table.py -v ${vcf} -o ${sampleID}.survivor_summary.csv
+        /usr/bin/env python ${moduleDir}/bin/sv_to_table.py -v ${vcf} -o ${sampleID}.survivor_summary.csv
         """
 }

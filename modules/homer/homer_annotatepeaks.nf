@@ -13,15 +13,15 @@ process HOMER_ANNOTATEPEAKS {
     container 'quay.io/biocontainers/homer:4.11--pl526hc9558a2_3'
 
     input:
-    tuple val(antibody), val(replicatesExist), val(multipleGroups), val(ip), val(control), file(peak)
-    file(fasta)
-    file(gtf)
-
-    when:
-    params.macs_gsize && !params.skip_peak_annotation
+    tuple val(antibody), val(replicatesExist), val(multipleGroups), val(ip), val(control), path(peak)
+    path(fasta)
+    path(gtf)
 
     output:
     tuple val(tuple_tag), path("*annotatePeaks.txt"), emit: txt
+
+    when:
+    params.macs_gsize && !params.skip_peak_annotation
 
     script:
     prefix = peak =~ /bed/ ?  "${antibody}.consensus_peaks" : "${ip}_peaks"

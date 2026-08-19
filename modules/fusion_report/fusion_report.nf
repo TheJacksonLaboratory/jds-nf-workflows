@@ -6,9 +6,9 @@ process FUSION_REPORT {
     time 2.h
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    container 'quay.io/biocontainers/fusion-report:2.1.5--pyhdfd78af_0'
+    container 'quay.io/jaxcompsci/fusion-report:faf900d0'
 
-    publishDir "${params.pubdir}/${sampleID + '/fusion-report/'}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/fusion-report/'}" }, mode:'copy'
 
     input:
         tuple val(sampleID), path(arriba), path(fusioncatcher), path(jaffa), path(pizzly), path(squid), path(starfusion)

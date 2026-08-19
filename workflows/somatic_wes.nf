@@ -2,144 +2,144 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/somatic_wes.nf"
-include {param_log} from "${projectDir}/bin/log/somatic_wes.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+include {help} from "../bin/help/somatic_wes.nf"
+include {param_log} from "../bin/log/somatic_wes.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {FILE_DOWNLOAD} from "../subworkflows/aria_download_parse"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {XENGSORT_INDEX} from "../modules/xengsort/xengsort_index"
+include {XENGSORT_CLASSIFY} from "../modules/xengsort/xengsort_classify"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
+// include {GZIP} from "../modules/utility_modules/gzip"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
 
-include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
-include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
-// include {GZIP} from "${projectDir}/modules/utility_modules/gzip"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
+include {GATK_BASERECALIBRATOR} from "../modules/gatk/gatk_baserecalibrator_interval"
+include {GATK_GATHERBQSRREPORTS} from "../modules/gatk/gatk_gatherbqsrreports"
+include {GATK_APPLYBQSR} from "../modules/gatk/gatk_applybqsr"
+include {GATK_GETSAMPLENAME} from "../modules/gatk/gatk_getsamplename_noMeta"
 
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
-include {GATK_BASERECALIBRATOR} from "${projectDir}/modules/gatk/gatk_baserecalibrator_interval"
-include {GATK_GATHERBQSRREPORTS} from "${projectDir}/modules/gatk/gatk_gatherbqsrreports"
-include {GATK_APPLYBQSR} from "${projectDir}/modules/gatk/gatk_applybqsr"
-include {GATK_GETSAMPLENAME} from "${projectDir}/modules/gatk/gatk_getsamplename_noMeta"
-
-include {ANCESTRY} from "${projectDir}/workflows/ancestry"
+include {ANCESTRY} from "../workflows/ancestry"
 
 include {GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_SNP;
-         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "${projectDir}/modules/gatk/gatk_variantfiltration_mutect2"
+         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "../modules/gatk/gatk_variantfiltration_mutect2"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
-         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "${projectDir}/modules/gatk/gatk_selectvariants"
+         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants"
 
-include {GATK_GETPILEUPSUMMARIES} from "${projectDir}/modules/gatk/gatk_getpileupsummaries_tumorOnly"
-include {GATK_CALCULATECONTAMINATION} from "${projectDir}/modules/gatk/gatk_calculatecontamination_tumorOnly"
+include {GATK_GETPILEUPSUMMARIES} from "../modules/gatk/gatk_getpileupsummaries_tumorOnly"
+include {GATK_CALCULATECONTAMINATION} from "../modules/gatk/gatk_calculatecontamination_tumorOnly"
 
-include {GATK_LEARNREADORIENTATIONMODEL} from "${projectDir}/modules/gatk/gatk_learnreadorientationmodel"
+include {GATK_LEARNREADORIENTATIONMODEL} from "../modules/gatk/gatk_learnreadorientationmodel"
 
-include {GATK_MUTECT2} from "${projectDir}/modules/gatk/gatk_mutect2_tumorOnly"
-include {GATK_FILTERMUECTCALLS} from "${projectDir}/modules/gatk/gatk_filtermutectcalls_wes"
+include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2_tumorOnly"
+include {GATK_FILTERMUECTCALLS} from "../modules/gatk/gatk_filtermutectcalls_wes"
 
-include {MSISENSOR2_MSI} from "${projectDir}/modules/msisensor2/msisensor2_tumorOnly"
+include {MSISENSOR2_MSI} from "../modules/msisensor2/msisensor2_tumorOnly"
 
 include {GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
-         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
+         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "../modules/gatk/gatk_mergevcf"
 
-include {BEDOPS_SORT} from "${projectDir}/modules/bedops/bedops_sort"
-include {BEDOPS_WINDOW} from "${projectDir}/modules/bedops/bedops_window"
-include {TMB_SCORE} from "${projectDir}/modules/tumor_mutation_burden/tmb_score"
+include {BEDOPS_SORT} from "../modules/bedops/bedops_sort"
+include {BEDOPS_WINDOW} from "../modules/bedops/bedops_window"
+include {TMB_SCORE} from "../modules/tumor_mutation_burden/tmb_score"
 
 include {COSMIC_ANNOTATION as COSMIC_ANNOTATION_SNP;
-         COSMIC_ANNOTATION as COSMIC_ANNOTATION_INDEL} from "${projectDir}/modules/cosmic/cosmic_annotation"
+         COSMIC_ANNOTATION as COSMIC_ANNOTATION_INDEL} from "../modules/cosmic/cosmic_annotation"
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "../modules/snpeff_snpsift/snpsift_annotate"
 include {SNPEFF as SNPEFF_SNP;
-         SNPEFF as SNPEFF_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
+         SNPEFF as SNPEFF_INDEL} from "../modules/snpeff_snpsift/snpeff_snpeff"
 include {SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
-         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "../modules/snpeff_snpsift/snpeff_oneperline"
+include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields"
 include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
-         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
-include {PICARD_COLLECTHSMETRICS} from "${projectDir}/modules/picard/picard_collecthsmetrics"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "../modules/snpeff_snpsift/snpsift_dbnsfp"
+include {PICARD_COLLECTHSMETRICS} from "../modules/picard/picard_collecthsmetrics"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-// prepare reads channel
-
-if (params.download_data && !params.csv_input) {
-    exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
-}
-
-if (params.gen_org == 'mouse' && params.pdx) {
-    exit 1, "PDX workflow was called; however, `--gen_org` was set to: ${params.gen_org}. This is an invalid parameter combination. `--gen_org` must == 'human' for PDX analysis."
-}
-
-if (params.gen_org == 'mouse') {
-    exit 1, "`--gen_org` was set to: ${params.gen_org}. Somatic WES currently supports only human data. `--gen_org` must == 'human' for this analysis."
-}
-
-if (params.csv_input) {
-
-    ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
-    
-    if (params.read_type == 'PE'){
-        ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    } else if (params.read_type == 'SE') {
-        ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    }
-
-} else if (params.concat_lanes){
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel
-            .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-            .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
-            .groupTuple()
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                .map { file, file1 -> tuple(getLibraryId(file), file1) }
-                .groupTuple()
-                .map{t-> [t[0], t[1].flatten()]}
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-} else {
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-
-}
 
 workflow SOMATIC_WES {
 
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    // prepare reads channel
+
+    if (params.download_data && !params.csv_input) {
+        exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
+    }
+
+    if (params.gen_org == 'mouse' && params.pdx) {
+        exit 1, "PDX workflow was called; however, `--gen_org` was set to: ${params.gen_org}. This is an invalid parameter combination. `--gen_org` must == 'human' for PDX analysis."
+    }
+
+    if (params.gen_org == 'mouse') {
+        exit 1, "`--gen_org` was set to: ${params.gen_org}. Somatic WES currently supports only human data. `--gen_org` must == 'human' for this analysis."
+    }
+
+    if (params.csv_input) {
+
+        ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+        
+        if (params.read_type == 'PE'){
+            ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
+            ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+        } else if (params.read_type == 'SE') {
+            ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+            ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+        }
+
+    } else if (params.concat_lanes){
+    
+    if (params.read_type == 'PE'){
+        read_ch = channel
+                .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+                .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+                .groupTuple()
+    }
+    else if (params.read_type == 'SE'){
+        read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                    .map { file, file1 -> tuple(getLibraryId(file), file1) }
+                    .groupTuple()
+                    .map{t-> [t[0], t[1].flatten()]}
+    }
+        // if channel is empty give error message and exit
+        read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+    } else {
+    
+    if (params.read_type == 'PE'){
+        read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+    }
+    else if (params.read_type == 'SE'){
+        read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+    }
+        // if channel is empty give error message and exit
+        read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
+
+    }
+    
     // Step 0: Download data and concat Fastq files if needed. 
     if (params.download_data){
         FILE_DOWNLOAD(ch_input_sample)
@@ -178,7 +178,7 @@ workflow SOMATIC_WES {
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
 
     // Step 1a: Run Xengsort if PDX data used.
-    ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file. 
+    ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file. 
     if (params.pdx){
 
         // Generate Xengsort Index if needed
@@ -220,7 +220,7 @@ workflow SOMATIC_WES {
 
     // Step 6: Variant Pre-Processing - Part 2
     // Read a list of contigs from parameters to provide to GATK as intervals
-    chroms = Channel
+    chroms = channel
         .fromPath("${params.chrom_contigs}")
         .splitText()
         .map{it -> it.trim()}
@@ -306,14 +306,14 @@ workflow SOMATIC_WES {
     
     SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'somatic_wes')
 
-    ch_multiqc_files = Channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(GATK_FILTERMUECTCALLS.out.stats.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = channel.empty()
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(GATK_FILTERMUECTCALLS.out.stats.collect{ it -> it[1]}.ifEmpty([]))
 
     MULTIQC (
         ch_multiqc_files.collect(),

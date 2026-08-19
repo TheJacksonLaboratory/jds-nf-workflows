@@ -8,7 +8,7 @@ process SAMTOOLS_SORT {
     
     container 'quay.io/jaxcompsci/samtools_with_bc:1.3.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*.bam", mode:'copy', enabled: params.workflow == 'rrbs' ? true : false
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern: "*.bam", mode:'copy', enabled: params.workflow == 'rrbs' ? true : false
     
     input:
     tuple val(sampleID), file(sam_file)

@@ -8,7 +8,7 @@ process G2GTOOLS_CONVERT {
 
     container 'quay.io/jaxcompsci/g2gtools:74926ad'
 
-    publishDir "${params.pubdir}/g2gtools", pattern: "*.${format}", mode:'copy', enabled: "${output_gtf}"
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: "*.*", mode:'copy', enabled: { params.append_chromosomes == 'false' || !params.append_chromosomes }
 
     input:
     tuple val(strain), path(vci), path(tbi)
@@ -22,14 +22,8 @@ process G2GTOOLS_CONVERT {
 
     script:
 
-    debug_run = params.debug ? '--debug' : ''
-    run_reverse = reverse ? '--reverse' : ''
-
-    if (params.append_chromosomes == 'false' | !params.append_chromosomes) {
-        output_gtf = true
-    } else {
-        output_gtf = false
-    }
+    def debug_run = params.debug ? '--debug' : ''
+    def run_reverse = reverse ? '--reverse' : ''
 
     """
     g2gtools convert ${debug_run} -i ${input_file} -c ${vci} --file-format ${format} ${run_reverse} -o ${strain}.${params.genome_version}.${format}

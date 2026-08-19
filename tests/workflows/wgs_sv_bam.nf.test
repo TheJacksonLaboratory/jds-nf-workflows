@@ -23,7 +23,7 @@ nextflow_workflow {
 
     }
 
-    test("Full Workflow -- Mouse -- GRCm39") { // This fails because the BAM is in the wrong coordinates. 
+    test("Full Workflow -- Mouse -- GRCm39") { // This fails because the BAM is in the wrong coordinates, and that is expected. 
         tag "GRCm38"
         tag "primary"
         options "-stub-run"

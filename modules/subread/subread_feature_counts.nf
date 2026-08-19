@@ -8,7 +8,7 @@ process FEATURE_COUNTS {
     
     container 'quay.io/biocontainers/subread:1.6.4--h84994c4_1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*_peaks_countMatrix.txt", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_peaks_countMatrix.txt", mode: 'copy'
     
     input:
     tuple val(sampleID), file(processed_bams), file(peak_cvg_saf)

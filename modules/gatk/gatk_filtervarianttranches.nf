@@ -4,14 +4,14 @@ process GATK_FILTER_VARIANT_TRANCHES {
     
     tag "$sampleID"
 
-    cpus = 1
-    memory = 15.GB
-    time = '01:30:00'
+    cpus 1
+    memory  15.GB
+    time '01:30:00'
     errorStrategy 'ignore'
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.*vcf", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.*vcf", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), file(vcf), file(vcf_index)

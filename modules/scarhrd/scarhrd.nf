@@ -8,7 +8,7 @@ process SCARHRD {
 
     container 'quay.io/jaxcompsci/sequenza:v1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*HRD_score.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*HRD_score.txt", mode:'copy'
 
 
     input:
@@ -19,6 +19,6 @@ process SCARHRD {
 
     script:
     """
-    Rscript ${projectDir}/bin/wes/scarHRD.R ${seqz} ${sampleID}
+    Rscript ${moduleDir}/bin/scarHRD.R ${seqz} ${sampleID}
     """
 }

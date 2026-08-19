@@ -8,8 +8,8 @@ process GBRS_RECONSTRUCT  {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.tsv", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.npz", mode: 'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.tsv", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.npz", mode: 'copy', enabled: params.keep_intermediate
     
     input:
     tuple val(sampleID), path(tpm), val(sex), val(generation)

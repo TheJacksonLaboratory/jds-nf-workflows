@@ -6,7 +6,7 @@ process ANNOTATE_SV_WITH_CNV {
     time '04:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bedpe", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bedpe", mode: 'copy'
     
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
@@ -21,7 +21,7 @@ process ANNOTATE_SV_WITH_CNV {
         if (suppl_switch == "main") {
             output_name = "${sampleID}_manta_gridss_sv_annotated_genes_cnv" == annot_sv_genes_bedpe.baseName ? "${sampleID}_manta_gridss_sv_reannotated_genes_cnv.bedpe" : "${sampleID}_manta_gridss_sv_annotated_genes_cnv.bedpe"
             """
-            Rscript ${projectDir}/bin/pta/annotate-bedpe-with-cnv.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-cnv.r \
                 --cnv=${bicseq_annot} \
                 --bedpe=${annot_sv_genes_bedpe} \
                 --distance_limit=1000 \
@@ -30,7 +30,7 @@ process ANNOTATE_SV_WITH_CNV {
         } else if (suppl_switch == "supplemental") {
             output_name = "${sampleID}_manta_gridss_sv_annotated_genes_cnv_supplemental" == annot_sv_genes_bedpe.baseName ? "${sampleID}_manta_gridss_sv_reannotated_genes_cnv_supplemental.bedpe" : "${sampleID}_manta_gridss_sv_annotated_genes_cnv_supplemental.bedpe"
             """
-            Rscript ${projectDir}/bin/pta/annotate-bedpe-with-cnv.r \
+            Rscript ${moduleDir}/bin/annotate-bedpe-with-cnv.r \
                 --cnv=${bicseq_annot} \
                 --bedpe=${annot_sv_genes_bedpe} \
                 --distance_limit=1000 \

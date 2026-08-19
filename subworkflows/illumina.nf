@@ -1,75 +1,62 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
-include {help} from "${projectDir}/bin/help/illumina"
-include {param_log} from "${projectDir}/bin/log/illumina"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {SAMTOOLS_FAIDX} from "${projectDir}/modules/samtools/samtools_faidx"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {SAMTOOLS_SORT} from "${projectDir}/modules/samtools/samtools_sort"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates_removedup"
-include {SAMTOOLS_STATS} from "${projectDir}/modules/samtools/samtools_stats_mmrsvd"
-include {SMOOVE_CALL} from "${projectDir}/modules/smoove/smoove_call_germline"
+
+include {help} from "../bin/help/illumina"
+include {param_log} from "../bin/log/illumina"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
+include {FASTP} from "../modules/fastp/fastp"
+include {SAMTOOLS_FAIDX} from "../modules/samtools/samtools_faidx"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {SAMTOOLS_SORT} from "../modules/samtools/samtools_sort"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates_removedup"
+include {SAMTOOLS_STATS} from "../modules/samtools/samtools_stats_mmrsvd"
+include {SMOOVE_CALL} from "../modules/smoove/smoove_call_germline"
 include {BCFTOOLS_REHEAD_SORT as REHEAD_SORT_LUMPY;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_DELLY;
          BCFTOOLS_REHEAD_SORT as REHEAD_SORT_CNV;
-         BCFTOOLS_REHEAD_SORT as REHEAD_SORT_MANTA} from "${projectDir}/modules/bcftools/bcftools_rehead_sort"
-include {MANTA_CALL} from "${projectDir}/modules/illumina/manta_germline"
-include {DELLY_CALL_GERMLINE} from "${projectDir}/modules/delly/delly_call_germline"
-include {DELLY_CNV_GERMLINE} from "${projectDir}/modules/delly/delly_cnv_germline"
+         BCFTOOLS_REHEAD_SORT as REHEAD_SORT_MANTA} from "../modules/bcftools/bcftools_rehead_sort"
+include {MANTA_CALL} from "../modules/illumina/manta_germline"
+include {DELLY_CALL_GERMLINE} from "../modules/delly/delly_call_germline"
+include {DELLY_CNV_GERMLINE} from "../modules/delly/delly_cnv_germline"
 
 include {GATK_INDEXFEATUREFILE;
-         GATK_INDEXFEATUREFILE as GATK_INDEXFEATUREFILE_SNV} from "${projectDir}/modules/gatk/gatk_indexfeaturefile"
+         GATK_INDEXFEATUREFILE as GATK_INDEXFEATUREFILE_SNV} from "../modules/gatk/gatk_indexfeaturefile"
 
-include {GATK_HAPLOTYPECALLER_INTERVAL} from "${projectDir}/modules/gatk/gatk_haplotypecaller_interval"
-include {MAKE_VCF_LIST} from "${projectDir}/modules/utility_modules/make_vcf_list"
-include {GATK_MERGEVCF_LIST} from "${projectDir}/modules/gatk/gatk_mergevcf_list"
+include {GATK_HAPLOTYPECALLER_INTERVAL} from "../modules/gatk/gatk_haplotypecaller_interval"
+include {MAKE_VCF_LIST} from "../modules/utility_modules/make_vcf_list"
+include {GATK_MERGEVCF_LIST} from "../modules/gatk/gatk_mergevcf_list"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
-         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "${projectDir}/modules/gatk/gatk_selectvariants"
+         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants"
 include {GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_SNP;
-         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "${projectDir}/modules/gatk/gatk_variantfiltration"
-include {GATK_MERGEVCF} from "${projectDir}/modules/gatk/gatk_mergevcf"
+         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "../modules/gatk/gatk_variantfiltration"
+include {GATK_MERGEVCF} from "../modules/gatk/gatk_mergevcf"
 
-if (params.genome_build == 'GRCm39'){
-    include {VEP_GERMLINE as VEP_GERMLINE_GATK;
-            VEP_GERMLINE as VEP_GERMLINE_CNV} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_mouse"
-} 
+include {VEP_GERMLINE as VEP_GERMLINE_CNV_GRCM38} from "../modules/ensembl/varianteffectpredictor_germline_GRCm38"
+include {VEP_GERMLINE as VEP_GERMLINE_CNV_GRCM39} from "../modules/ensembl/varianteffectpredictor_germline_mouse"
 
-if (params.genome_build == 'GRCm38'){
-    include {VEP_GERMLINE as VEP_GERMLINE_GATK;
-            VEP_GERMLINE as VEP_GERMLINE_CNV} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_GRCm38"
-} 
-
-include {BCFTOOLS_VCF_TO_BCF} from "${projectDir}/modules/bcftools/bcftools_vcf_to_bcf"
+include {BCFTOOLS_VCF_TO_BCF} from "../modules/bcftools/bcftools_vcf_to_bcf"
 include {DUPHOLD as DUPHOLD_DELLY;
          DUPHOLD as DUPHOLD_LUMPY;
-         DUPHOLD as DUPHOLD_MANTA} from "${projectDir}/modules/duphold/duphold"
+         DUPHOLD as DUPHOLD_MANTA} from "../modules/duphold/duphold"
 include {BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_DELLY;
          BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_LUMPY;
-         BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_MANTA;} from "${projectDir}/modules/bcftools/bcftools_duphold_filter"
+         BCFTOOLS_DUPHOLD_FILTER as BCFTOOLS_DUPHOLD_FILTER_MANTA;} from "../modules/bcftools/bcftools_duphold_filter"
 
-include {SV_MERGE} from "${projectDir}/modules/r/illumina_sv_merge"
-include {PYTHON_BEDPE_TO_VCF} from "${projectDir}/modules/python/python_bedpe_to_vcf"
-include {SURVIVOR_VCF_TO_TABLE} from "${projectDir}/modules/survivor/survivor_vcf_to_table"
-include {SURVIVOR_SUMMARY} from "${projectDir}/modules/survivor/survivor_summary"
-include {SURVIVOR_TO_BED} from "${projectDir}/modules/survivor/survivor_to_bed"
-include {SURVIVOR_BED_INTERSECT} from "${projectDir}/modules/survivor/survivor_bed_intersect"
-include {SURVIVOR_ANNOTATION} from "${projectDir}/modules/survivor/survivor_annotation"
-include {SURVIVOR_INEXON} from "${projectDir}/modules/survivor/survivor_inexon"
+include {SV_MERGE} from "../modules/r/illumina_sv_merge"
+include {PYTHON_BEDPE_TO_VCF} from "../modules/python/python_bedpe_to_vcf"
+include {SURVIVOR_VCF_TO_TABLE} from "../modules/survivor/survivor_vcf_to_table"
+include {SURVIVOR_SUMMARY} from "../modules/survivor/survivor_summary"
+include {SURVIVOR_TO_BED} from "../modules/survivor/survivor_to_bed"
+include {SURVIVOR_BED_INTERSECT} from "../modules/survivor/survivor_bed_intersect"
+include {SURVIVOR_ANNOTATION} from "../modules/survivor/survivor_annotation"
+include {SURVIVOR_INEXON} from "../modules/survivor/survivor_inexon"
 
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
 
 workflow ILLUMINA {
 
@@ -77,11 +64,19 @@ workflow ILLUMINA {
        help()
         exit 0
     }
- 
-    ch_fastq1 = params.fastq1 ? Channel.fromPath(params.fastq1) : null
-    ch_fastq2 = params.fastq2 ? Channel.fromPath(params.fastq2) : null
-    ch_sampleID = params.sampleID ? Channel.value(params.sampleID) : null
-    ch_bam = params.bam ? Channel.fromPath(params.bam) : null
+    
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    ch_fastq1 = params.fastq1 ? channel.fromPath(params.fastq1) : null
+    ch_fastq2 = params.fastq2 ? channel.fromPath(params.fastq2) : null
+    ch_sampleID = params.sampleID ? channel.value(params.sampleID) : null
+    ch_bam = params.bam ? channel.fromPath(params.bam) : null
 
 
     // Prepare reads channel
@@ -96,13 +91,13 @@ workflow ILLUMINA {
                             .map { it -> tuple(it[0], tuple(it[1], it[2]))}
     }
     else if (params.csv_input && !params.bam && !params.fastq1) {
-        sample_count = Channel.empty()
+        sample_count = channel.empty()
         // If csv input, check sample quantity in csv, if more than one sample in csv, then exit
-        Channel.fromPath(params.csv_input).splitCsv(header: true)
+        channel.fromPath(params.csv_input).splitCsv(header: true)
               .map { row -> tuple( row.sampleID ) }
               .unique()
               .count()
-              .branch{
+              .branch{ it ->
                  pass: it == 1
                        return it
               }
@@ -191,7 +186,12 @@ workflow ILLUMINA {
     DELLY_CNV_GERMLINE(PICARD_MARKDUPLICATES.out.bam_and_index, fasta_index)
     REHEAD_SORT_CNV(DELLY_CNV_GERMLINE.out.delly_bcf, "delly_cnv", fasta_index)
     GATK_INDEXFEATUREFILE(REHEAD_SORT_CNV.out.vcf_sort)
-    VEP_GERMLINE_CNV(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx))
+
+    if (params.gen_org == 'mouse' && params.genome_build == 'GRCm38') {
+        VEP_GERMLINE_CNV_GRCM38(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx))
+    } else {
+        VEP_GERMLINE_CNV_GRCM39(REHEAD_SORT_CNV.out.vcf_sort.join(GATK_INDEXFEATUREFILE.out.idx))
+    }
 
     // Duphold
     DUPHOLD_DELLY(PICARD_MARKDUPLICATES.out.bam_and_index.join(REHEAD_SORT_DELLY.out.vcf_sort), fasta_index, 'delly_sv') 

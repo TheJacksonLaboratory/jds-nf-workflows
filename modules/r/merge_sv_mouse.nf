@@ -18,10 +18,10 @@ process MERGE_SV {
         
 
     script:
-        listOfChroms = chrom_list.collect { "$it" }.join(',')
+        listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
         """
-        Rscript ${projectDir}/bin/pta/merge-caller-vcfs.r \
+        Rscript ${moduleDir}/bin/merge-caller-vcfs.r \
             --vcf=${manta_vcf},${lumpy_vcf},${delly_vcf},${svaba_vcf} \
             --caller=manta,lumpy,delly,svaba \
             --tumor=${tumor_name} \

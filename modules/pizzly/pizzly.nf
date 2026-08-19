@@ -9,7 +9,7 @@ process PIZZLY {
 
     container 'quay.io/biocontainers/pizzly:0.37.3--h470a237_3'
 
-    publishDir "${params.pubdir}/${sampleID + '/fusions'}", pattern: "*_pizzly_fusions.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/fusions'}" }, pattern: "*_pizzly_fusions.txt", mode:'copy'
 
     input:
         tuple val(sampleID), path(kallisto_fusions), path(kallisto_insert_size)

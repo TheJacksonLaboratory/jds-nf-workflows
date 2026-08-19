@@ -9,7 +9,7 @@ process MERGE_RSEM_COUNTS {
 
     container "quay.io/jaxcompsci/py3_perl_pylibs:v2"
 
-    publishDir "${params.pubdir}", pattern: "*rsem.merged.*.tsv", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "*rsem.merged.*.tsv", mode:'copy'
 
     input:
     path("genes/*")

@@ -2,8 +2,8 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {ARIA_DOWNLOAD} from "${projectDir}/modules/utility_modules/aria_download"
-include {CONCATENATE_READS_SAMPLESHEET} from "${projectDir}/modules/utility_modules/concatenate_reads_sampleSheet"
+include {ARIA_DOWNLOAD} from "../modules/utility_modules/aria_download"
+include {CONCATENATE_READS_SAMPLESHEET} from "../modules/utility_modules/concatenate_reads_sampleSheet"
 
 workflow FILE_DOWNLOAD {
 
@@ -29,6 +29,9 @@ workflow FILE_DOWNLOAD {
         if (params.read_type == 'PE') {
             aria_download_input = ch_input_sample
             .multiMap { it ->
+                def sampleID
+                def ind
+                def sex
                 if (params.merge_replicates) {
                     sampleID   = it[1].sampleID+'_'+it[1].replicate
                 } else {
@@ -44,6 +47,9 @@ workflow FILE_DOWNLOAD {
         } else {
             aria_download_input = ch_input_sample
             .multiMap { it ->
+                def sampleID
+                def ind
+                def sex
                 if (params.merge_replicates) {
                     sampleID   = it[1].sampleID+'_'+it[1].replicate
                 } else {
@@ -78,7 +84,7 @@ workflow FILE_DOWNLOAD {
                             .map {  sampleID, laneID, meta, readID, file, size -> tuple( groupKey([sampleID, meta, readID], size), laneID, file )  }
                             .groupTuple() // controlled by group key: [sampleID, meta, read_ID] 
                             .map{ it -> tuple(it[0][0], it[1].size(), it[0][1], it[0][2], it[2])} // sampleID, num_lanes, meta, read_ID:[R1|R2], file
-                            .branch{
+                            .branch{ it ->
                                 concat: it[1] > 1
                                 pass:  it[1] == 1
                             }
@@ -112,7 +118,7 @@ workflow FILE_DOWNLOAD {
         .groupTuple(by: [0,2], size: group_size) // sampleID, meta
         .map{it -> tuple(it[0], it[2], it[4].toSorted( { a, b -> a.getName() <=> b.getName() } ) ) }
 
-        read_meta_ch.view()
+        second_val = channel.value(42)
 
         /*
             Mix concatenation files, with non-concat files. 'mix' allows for, all, some, or no files to have 
@@ -122,5 +128,8 @@ workflow FILE_DOWNLOAD {
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
     emit:
-        read_meta_ch
+        read_meta_ch = read_meta_ch
+        second_val = second_val 
+        // The emit statement explicitly names the emitted value, which avoids warn 'Emit name should be omitted when there is only one emit'
+        // Naming emits, allows for easier code reading / tracing. Should not be a warn, and this is a way around that.
 }

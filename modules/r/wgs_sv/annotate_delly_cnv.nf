@@ -8,7 +8,7 @@ process ANNOTATE_DELLY_CNV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}/cnv", pattern: "*.bed", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}/cnv" }, pattern: "*.bed", mode: 'copy'
 
     input:
         tuple val(sampleID), file(delly_cnv)
@@ -19,11 +19,11 @@ process ANNOTATE_DELLY_CNV {
         tuple val(sampleID), file("${sampleID}_cnv_annotated_supplemental.bed"), emit: delly_annot_suppl
 
     script:
-        listOfChroms = chrom_list.collect { "$it" }.join(',')
+        listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
         if ( params.gen_org == 'mouse' )
         """
-        Rscript ${projectDir}/bin/wgs/annotate-cnv-delly.r \
+        Rscript ${moduleDir}/bin/annotate-cnv-delly.r \
             --cnv=${delly_cnv} \
             --caller="delly" \
             --sample_name=${sampleID} \
@@ -39,7 +39,7 @@ process ANNOTATE_DELLY_CNV {
 
         else if ( params.gen_org == 'human' )
         """
-        Rscript ${projectDir}/bin/wgs/annotate-cnv-delly.r \
+        Rscript ${moduleDir}/bin/annotate-cnv-delly.r \
             --cnv=${delly_cnv} \
             --caller="delly" \
             --sample_name=${sampleID} \

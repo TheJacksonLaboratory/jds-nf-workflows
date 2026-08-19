@@ -2,134 +2,133 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+include {CLUMPIFY} from "../modules/bbmap/bbmap_clumpify"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
+include {XENGSORT_INDEX} from "../modules/xengsort/xengsort_index"
+include {XENGSORT_CLASSIFY} from "../modules/xengsort/xengsort_classify"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {SAMTOOLS_MERGE} from "../modules/samtools/samtools_merge"
+include {SHORT_ALIGNMENT_MARKING} from "../modules/nygc-short-alignment-marking/short_alignment_marking"
+include {PICARD_CLEANSAM} from "../modules/picard/picard_cleansam"
+include {PICARD_FIX_MATE_INFORMATION} from "../modules/picard/picard_fix_mate_information"
+include {PICARD_MARKDUPLICATES}	from "../modules/picard/picard_markduplicates"
+include {GATK_BASERECALIBRATOR} from "../modules/gatk/gatk_baserecalibrator_interval"
+include {GATK_GATHERBQSRREPORTS} from "../modules/gatk/gatk_gatherbqsrreports"
+include {GATK_APPLYBQSR} from "../modules/gatk/gatk_applybqsr"
 
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
-include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {SAMTOOLS_MERGE} from "${projectDir}/modules/samtools/samtools_merge"
-include {SHORT_ALIGNMENT_MARKING} from "${projectDir}/modules/nygc-short-alignment-marking/short_alignment_marking"
-include {PICARD_CLEANSAM} from "${projectDir}/modules/picard/picard_cleansam"
-include {PICARD_FIX_MATE_INFORMATION} from "${projectDir}/modules/picard/picard_fix_mate_information"
-include {PICARD_MARKDUPLICATES}	from "${projectDir}/modules/picard/picard_markduplicates"
-include {GATK_BASERECALIBRATOR} from "${projectDir}/modules/gatk/gatk_baserecalibrator_interval"
-include {GATK_GATHERBQSRREPORTS} from "${projectDir}/modules/gatk/gatk_gatherbqsrreports"
-include {GATK_APPLYBQSR} from "${projectDir}/modules/gatk/gatk_applybqsr"
+include {JVARKIT_COVERAGE_CAP} from "../modules/jvarkit/jvarkit_biostar154220"
+include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 
-include {JVARKIT_COVERAGE_CAP} from "${projectDir}/modules/jvarkit/jvarkit_biostar154220"
-include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
+include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "../modules/picard/picard_collectalignmentsummarymetrics"
+include {PICARD_COLLECTWGSMETRICS} from "../modules/picard/picard_collectwgsmetrics"
 
-include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
-include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
-
-include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
+include {MT_VARIANT_CALLING} from "../subworkflows/mt_variant_calling"
 
 include {CONPAIR_PILEUP as CONPAIR_TUMOR_PILEUP;
-         CONPAIR_PILEUP as CONPAIR_NORMAL_PILEUP} from "${projectDir}/modules/conpair/conpair_pileup"
-include {CONPAIR} from "${projectDir}/modules/conpair/conpair"
+         CONPAIR_PILEUP as CONPAIR_NORMAL_PILEUP} from "../modules/conpair/conpair_pileup"
+include {CONPAIR} from "../modules/conpair/conpair"
 
-include {GATK_HAPLOTYPECALLER_SV_GERMLINE} from "${projectDir}/modules/gatk/gatk_haplotypecaller_sv_germline"
+include {GATK_HAPLOTYPECALLER_SV_GERMLINE} from "../modules/gatk/gatk_haplotypecaller_sv_germline"
 include {GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GERMLINE;
-         GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GENOTYPE} from "${projectDir}/modules/gatk/gatk_sortvcf_germline"
-include {GATK_GENOTYPE_GVCF} from "${projectDir}/modules/gatk/gatk_genotype_gvcf"
-include {GATK_CNNSCORE_VARIANTS} from "${projectDir}/modules/gatk/gatk_cnnscorevariants"
-include {GATK_FILTER_VARIANT_TRANCHES} from "${projectDir}/modules/gatk/gatk_filtervarianttranches"
-include {GATK_VARIANTFILTRATION_AF} from "${projectDir}/modules/gatk/gatk_variantfiltration_af"
-include {BCFTOOLS_GERMLINE_FILTER} from "${projectDir}/modules/bcftools/bcftools_germline_filter"
-include {BCFTOOLS_SPLITMULTIALLELIC_REGIONS} from "${projectDir}/modules/bcftools/bcftools_split_multiallelic_regions"
-include {VEP_GERMLINE} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline"
-include {BCFTOOLS_REMOVESPANNING} from "${projectDir}/modules/bcftools/bcftools_remove_spanning"
-include {COSMIC_ANNOTATION} from "${projectDir}/modules/cosmic/cosmic_annotation"
-include {COSMIC_CANCER_RESISTANCE_MUTATION_GERMLINE} from "${projectDir}/modules/cosmic/cosmic_add_cancer_resistance_mutations_germline"
-include {GERMLINE_VCF_FINALIZATION} from "${projectDir}/modules/python/python_germline_vcf_finalization"
+         GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GENOTYPE} from "../modules/gatk/gatk_sortvcf_germline"
+include {GATK_GENOTYPE_GVCF} from "../modules/gatk/gatk_genotype_gvcf"
+include {GATK_CNNSCORE_VARIANTS} from "../modules/gatk/gatk_cnnscorevariants"
+include {GATK_FILTER_VARIANT_TRANCHES} from "../modules/gatk/gatk_filtervarianttranches"
+include {GATK_VARIANTFILTRATION_AF} from "../modules/gatk/gatk_variantfiltration_af"
+include {BCFTOOLS_GERMLINE_FILTER} from "../modules/bcftools/bcftools_germline_filter"
+include {BCFTOOLS_SPLITMULTIALLELIC_REGIONS} from "../modules/bcftools/bcftools_split_multiallelic_regions"
+include {VEP_GERMLINE} from "../modules/ensembl/varianteffectpredictor_germline"
+include {BCFTOOLS_REMOVESPANNING} from "../modules/bcftools/bcftools_remove_spanning"
+include {COSMIC_ANNOTATION} from "../modules/cosmic/cosmic_annotation"
+include {COSMIC_CANCER_RESISTANCE_MUTATION_GERMLINE} from "../modules/cosmic/cosmic_add_cancer_resistance_mutations_germline"
+include {GERMLINE_VCF_FINALIZATION} from "../modules/python/python_germline_vcf_finalization"
 include {GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_NORMAL;
-         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "${projectDir}/modules/gatk/gatk_getsamplename"
+         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "../modules/gatk/gatk_getsamplename"
 
-include {GATK_MUTECT2} from "${projectDir}/modules/gatk/gatk_mutect2"
-include {GATK_MERGEMUTECTSTATS} from "${projectDir}/modules/gatk/gatk_mergemutectstats"
-include {GATK_FILTERMUECTCALLS} from "${projectDir}/modules/gatk/gatk_filtermutectcalls"
-include {MANTA} from "${projectDir}/modules/illumina/manta"
-include {STRELKA2} from "${projectDir}/modules/illumina/strelka2"
-include {LANCET} from "${projectDir}/modules/nygenome/lancet"
+include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2"
+include {GATK_MERGEMUTECTSTATS} from "../modules/gatk/gatk_mergemutectstats"
+include {GATK_FILTERMUECTCALLS} from "../modules/gatk/gatk_filtermutectcalls"
+include {MANTA} from "../modules/illumina/manta"
+include {STRELKA2} from "../modules/illumina/strelka2"
+include {LANCET} from "../modules/nygenome/lancet"
 include {GATK_SORTVCF as GATK_SORTVCF_MUTECT;
          GATK_SORTVCF as GATK_SORTVCF_LANCET;
          GATK_SORTVCF as GATK_SORTVCF_TOOLS;
-         GATK_SORTVCF as GATK_SORTVCF_TOOLS_LANCET} from "${projectDir}/modules/gatk/gatk_sortvcf_somatic_tools"
-include {GRIDSS_PREPROCESS} from "${projectDir}/modules/gridss/gridss_preprocess"
-include {GRIDSS_ASSEMBLE} from "${projectDir}/modules/gridss/gridss_assemble"
-include {GRIDSS_CALLING} from "${projectDir}/modules/gridss/gridss_calling"
-include {GRIDSS_CHROM_FILTER} from "${projectDir}/modules/gridss/gridss_chrom_filter"
-include {GRIPSS_SOMATIC_FILTER} from "${projectDir}/modules/gridss/gripss_somatic_filter"
+         GATK_SORTVCF as GATK_SORTVCF_TOOLS_LANCET} from "../modules/gatk/gatk_sortvcf_somatic_tools"
+include {GRIDSS_PREPROCESS} from "../modules/gridss/gridss_preprocess"
+include {GRIDSS_ASSEMBLE} from "../modules/gridss/gridss_assemble"
+include {GRIDSS_CALLING} from "../modules/gridss/gridss_calling"
+include {GRIDSS_CHROM_FILTER} from "../modules/gridss/gridss_chrom_filter"
+include {GRIPSS_SOMATIC_FILTER} from "../modules/gridss/gripss_somatic_filter"
 include {SAMTOOLS_STATS_INSERTSIZE as SAMTOOLS_STATS_INSERTSIZE_NORMAL;
-         SAMTOOLS_STATS_INSERTSIZE as SAMTOOLS_STATS_INSERTSIZE_TUMOR} from "${projectDir}/modules/samtools/samtools_stats_insertsize"
+         SAMTOOLS_STATS_INSERTSIZE as SAMTOOLS_STATS_INSERTSIZE_TUMOR} from "../modules/samtools/samtools_stats_insertsize"
 include {SAMTOOLS_FILTER_UNIQUE as SAMTOOLS_FILTER_UNIQUE_NORMAL;
-         SAMTOOLS_FILTER_UNIQUE as SAMTOOLS_FILTER_UNIQUE_TUMOR} from "${projectDir}/modules/samtools/samtools_filter_unique_reads"
+         SAMTOOLS_FILTER_UNIQUE as SAMTOOLS_FILTER_UNIQUE_TUMOR} from "../modules/samtools/samtools_filter_unique_reads"
 include {BICSEQ2_NORMALIZE as BICSEQ2_NORMALIZE_NORMAL;
-         BICSEQ2_NORMALIZE as BICSEQ2_NORMALIZE_TUMOR} from "${projectDir}/modules/biqseq2/bicseq2_normalize"
-include {BICSEQ2_SEG} from "${projectDir}/modules/biqseq2/bicseq2_seg"
-include {BICSEQ2_SEG_UNPAIRED} from "${projectDir}/modules/biqseq2/bicseq2_seg_unpaired"
-include {MSISENSOR2_MSI} from "${projectDir}/modules/msisensor2/msisensor2"
+         BICSEQ2_NORMALIZE as BICSEQ2_NORMALIZE_TUMOR} from "../modules/biqseq2/bicseq2_normalize"
+include {BICSEQ2_SEG} from "../modules/biqseq2/bicseq2_seg"
+include {BICSEQ2_SEG_UNPAIRED} from "../modules/biqseq2/bicseq2_seg_unpaired"
+include {MSISENSOR2_MSI} from "../modules/msisensor2/msisensor2"
 
 include {RENAME_METADATA;
-         RENAME_METADATA as RENAME_METADATA_LANCET} from "${projectDir}/modules/python/python_rename_metadata"
+         RENAME_METADATA as RENAME_METADATA_LANCET} from "../modules/python/python_rename_metadata"
 include {MERGE_PREP;
-         MERGE_PREP as MERGE_PREP_LANCET} from "${projectDir}/modules/python/python_merge_prep"
+         MERGE_PREP as MERGE_PREP_LANCET} from "../modules/python/python_merge_prep"
 include {RENAME_VCF;
-         RENAME_VCF as RENAME_VCF_LANCET;} from "${projectDir}/modules/python/python_rename_vcf"
+         RENAME_VCF as RENAME_VCF_LANCET;} from "../modules/python/python_rename_vcf"
 include {COMPRESS_INDEX_VCF;
          COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_LANCET;
-         COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_REGION_LANCET} from "${projectDir}/modules/tabix/compress_vcf"
+         COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_REGION_LANCET} from "../modules/tabix/compress_vcf"
 include {BCFTOOLS_SPLITMULTIALLELIC;
-         BCFTOOLS_SPLITMULTIALLELIC as BCFTOOLS_SPLITMULTIALLELIC_LANCET} from "${projectDir}/modules/bcftools/bcftools_split_multiallelic"
+         BCFTOOLS_SPLITMULTIALLELIC as BCFTOOLS_SPLITMULTIALLELIC_LANCET} from "../modules/bcftools/bcftools_split_multiallelic"
 include {SPLIT_MNV;
-         SPLIT_MNV as SPLIT_MNV_LANCET} from "${projectDir}/modules/python/python_split_mnv"
-include {REMOVE_CONTIG} from "${projectDir}/modules/python/python_remove_contig"
+         SPLIT_MNV as SPLIT_MNV_LANCET} from "../modules/python/python_split_mnv"
+include {REMOVE_CONTIG} from "../modules/python/python_remove_contig"
 
 include {BCFTOOLS_MERGECALLERS;
-         BCFTOOLS_MERGECALLERS as BCFTOOLS_MERGECALLERS_FINAL} from "${projectDir}/modules/bcftools/bcftools_merge_callers"
-include {BEDTOOLS_STARTCANDIDATES} from "${projectDir}/modules/bedtools/bedtools_start_candidates"
-include {GET_CANDIDATES} from "${projectDir}/modules/python/python_get_candidates"
-include {VCF_TO_BED} from "${projectDir}/modules/python/python_vcf_to_bed"
-include {LANCET_CONFIRM} from "${projectDir}/modules/nygenome/lancet_confirm"
+         BCFTOOLS_MERGECALLERS as BCFTOOLS_MERGECALLERS_FINAL} from "../modules/bcftools/bcftools_merge_callers"
+include {BEDTOOLS_STARTCANDIDATES} from "../modules/bedtools/bedtools_start_candidates"
+include {GET_CANDIDATES} from "../modules/python/python_get_candidates"
+include {VCF_TO_BED} from "../modules/python/python_vcf_to_bed"
+include {LANCET_CONFIRM} from "../modules/nygenome/lancet_confirm"
 include {COMPRESS_INDEX_VCF_REGION;
          COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_ALL_CALLERS;
-         COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_MERGED} from "${projectDir}/modules/tabix/compress_vcf_region"
-include {BCFTOOLS_INTERSECTVCFS} from "${projectDir}/modules/bcftools/bcftools_intersect_lancet_candidates"
+         COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_MERGED} from "../modules/tabix/compress_vcf_region"
+include {BCFTOOLS_INTERSECTVCFS} from "../modules/bcftools/bcftools_intersect_lancet_candidates"
 
-include {MERGE_COLUMNS} from "${projectDir}/modules/python/python_merge_columns"
-include {ADD_NYGC_ALLELE_COUNTS} from "${projectDir}/modules/python/python_add_nygc_allele_counts"
-include {ADD_FINAL_ALLELE_COUNTS} from "${projectDir}/modules/python/python_add_final_allele_counts"
-include {FILTER_PON} from "${projectDir}/modules/python/python_filter_pon"
-include {FILTER_VCF} from "${projectDir}/modules/python/python_filter_vcf"
-include {SNV_TO_MNV_FINAL_FILTER} from "${projectDir}/modules/python/python_snv_to_mnv_final_filter"
+include {MERGE_COLUMNS} from "../modules/python/python_merge_columns"
+include {ADD_NYGC_ALLELE_COUNTS} from "../modules/python/python_add_nygc_allele_counts"
+include {ADD_FINAL_ALLELE_COUNTS} from "../modules/python/python_add_final_allele_counts"
+include {FILTER_PON} from "../modules/python/python_filter_pon"
+include {FILTER_VCF} from "../modules/python/python_filter_vcf"
+include {SNV_TO_MNV_FINAL_FILTER} from "../modules/python/python_snv_to_mnv_final_filter"
 
-include {GATK_SORTVCF_SOMATIC} from "${projectDir}/modules/gatk/gatk_sortvcf_somatic_merge"
-include {REORDER_VCF_COLUMNS} from "${projectDir}/modules/python/python_reorder_vcf_columns"
-include {COMPRESS_INDEX_MERGED_VCF} from "${projectDir}/modules/tabix/compress_merged_vcf"
-include {VEP_SOMATIC} from "${projectDir}/modules/ensembl/varianteffectpredictor_somatic"
-include {COSMIC_ANNOTATION_SOMATIC} from "${projectDir}/modules/cosmic/cosmic_annotation_somatic"
-include {COSMIC_CANCER_RESISTANCE_MUTATION_SOMATIC} from "${projectDir}/modules/cosmic/cosmic_add_cancer_resistance_mutations_somatic"
-include {SOMATIC_VCF_FINALIZATION} from "${projectDir}/modules/python/python_somatic_vcf_finalization"
+include {GATK_SORTVCF_SOMATIC} from "../modules/gatk/gatk_sortvcf_somatic_merge"
+include {REORDER_VCF_COLUMNS} from "../modules/python/python_reorder_vcf_columns"
+include {COMPRESS_INDEX_MERGED_VCF} from "../modules/tabix/compress_merged_vcf"
+include {VEP_SOMATIC} from "../modules/ensembl/varianteffectpredictor_somatic"
+include {COSMIC_ANNOTATION_SOMATIC} from "../modules/cosmic/cosmic_annotation_somatic"
+include {COSMIC_CANCER_RESISTANCE_MUTATION_SOMATIC} from "../modules/cosmic/cosmic_add_cancer_resistance_mutations_somatic"
+include {SOMATIC_VCF_FINALIZATION} from "../modules/python/python_somatic_vcf_finalization"
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_GERMLINE;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
-include {ANNOTATE_BICSEQ2_CNV} from "${projectDir}/modules/r/annotate_bicseq2_cnv"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "../modules/snpeff_snpsift/snpsift_annotate"
+include {ANNOTATE_BICSEQ2_CNV} from "../modules/r/annotate_bicseq2_cnv"
 
-include {MERGE_SV} from "${projectDir}/modules/r/merge_sv"
+include {MERGE_SV} from "../modules/r/merge_sv"
 include {ANNOTATE_SV;
-         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv"
+         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "../modules/r/annotate_sv"
 include {ANNOTATE_GENES_SV;
-         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_genes_sv"
+         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "../modules/r/annotate_genes_sv"
 include {ANNOTATE_SV_WITH_CNV;
-         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_with_cnv"
+         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "../modules/r/annotate_sv_with_cnv"
 include {FILTER_BEDPE;
-         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/filter_bedpe"
+         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "../modules/r/filter_bedpe"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 workflow HS_PTA {
     take:
@@ -159,10 +158,10 @@ workflow HS_PTA {
         // Normal samples should PASS the PDX step. 
 
         // ** Step 2a: Xengsort if PDX data used.
-        ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file. 
+        ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file. 
         if (params.pdx){
 
-            FASTP.out.trimmed_fastq.join(meta_ch).branch{
+            FASTP.out.trimmed_fastq.join(meta_ch).branch{ it ->
                 normal: it[2].status == 0
                 tumor:  it[2].status == 1
             }.set{fastq_files}
@@ -223,7 +222,7 @@ workflow HS_PTA {
             }
             split_fastq_count = split_fastq_files
                             .groupTuple()
-                            .map{sample, reads, index, read_group -> [sample, groupKey(sample, index.size())]}
+                            .map{sample, _reads, index, _read_group -> [sample, groupKey(sample, index.size())]}
                         
             bwa_mem_mapping = split_fastq_count
                         .combine(split_fastq_files, by:0)
@@ -261,7 +260,7 @@ workflow HS_PTA {
         PICARD_MARKDUPLICATES(bam_file)
 
         // Read a list of contigs from parameters to provide to GATK as intervals
-        chroms = Channel
+        chroms = channel
             .fromPath("${params.chrom_contigs}")
             .splitText()
             .map{it -> it.trim()}
@@ -289,7 +288,7 @@ workflow HS_PTA {
         // Step 12: Nextflow channel processing
         // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L854
 
-        bam_file.join(index_file).join(meta_ch).branch{
+        bam_file.join(index_file).join(meta_ch).branch{ it ->
             normal: it[3].status == 0
             tumor:  it[3].status == 1
         }.set{ch_final_bam}
@@ -311,8 +310,8 @@ workflow HS_PTA {
         GATK_GETSAMPLENAME_NORMAL(ch_final_bam.normal.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
         GATK_GETSAMPLENAME_TUMOR(ch_final_bam.tumor.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
 
-        ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
-        ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+        ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+        ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
         
         /* 
         The above map statements adjusts channels for normal, tumor samples to organize them by patient IDs. 
@@ -353,7 +352,7 @@ workflow HS_PTA {
         // Restore un-paired tumor samples, and add NA12878 as pairing in those cases
         ch_paired_samples = ch_tumor_to_cross
             .mix(ch_paired_samples)
-            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{it[2].size() == 1} 
+            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{ it -> it[2].size() == 1} 
                         // it[0] = per-tumor unique ID (sampleID for pre-cross tumors, tumor_id for post-cross pairs), it[1] = meta, it[2] = bam, it[3] = bai, it[4] = sampleReadID. 
                         // Grouping by per-tumor ID (not patient) so that multiple unpaired tumors from the same patient
                         // are each handled independently. A paired tumor appears twice in the mix (once from ch_tumor_to_cross,
@@ -393,22 +392,22 @@ workflow HS_PTA {
 
 
         ch_ind_samples = ch_paired_samples
-            .filter{it[4] != params.na12878_sampleName}
+            .filter{ it -> it[4] != params.na12878_sampleName}
             .multiMap{it -> 
                     normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3], it[4]]
                     tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]
                     }
-            ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-            ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+            ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+            ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]}
 
         ch_tumor_only = ch_paired_samples
-            .filter{it[4] == params.na12878_sampleName}
+            .filter{ it -> it[4] == params.na12878_sampleName}
             .map{it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-            .unique{it[0]}
+            .unique{ it -> it[0]}
 
         ch_msisensor2_input = ch_paired_samples
-            .map{["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-            .unique{it[0]}
+            .map{ it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
+            .unique{ it -> it[0]}
 
         /*
             The above establishes channels needed for germline calling, bicseq2 and MSIsensor2. 
@@ -425,7 +424,7 @@ workflow HS_PTA {
         //    Step not run on tumor-only samples. As contamination analysis is not biologcally relavent. 
 
         conpair_input = ch_paired_samples
-            .filter{it[4] != params.na12878_sampleName}
+            .filter{ it -> it[4] != params.na12878_sampleName}
             .multiMap{it -> 
                     normal: [it[1].patient, "${it[1].normal_id}".toString(), it[2], it[3]]
                     tumor:  [it[1].patient, "${it[1].tumor_id}".toString(), it[5], it[6]]
@@ -437,8 +436,8 @@ workflow HS_PTA {
             Patient ID is used here because samples must be re-crossed after the pileup to match all tumors and normals. 
         */ 
 
-        CONPAIR_NORMAL_PILEUP(conpair_input.normal.unique{it[2]}, 'normal')
-        CONPAIR_TUMOR_PILEUP(conpair_input.tumor.unique{it[2]}, 'tumor') 
+        CONPAIR_NORMAL_PILEUP(conpair_input.normal.unique{ it -> it[2]}, 'normal')
+        CONPAIR_TUMOR_PILEUP(conpair_input.tumor.unique{ it -> it[2]}, 'tumor') 
 
         conpair_input = CONPAIR_NORMAL_PILEUP.out.pileup.cross(CONPAIR_TUMOR_PILEUP.out.pileup)
             .map { normal, tumor -> [normal[0], "${normal[0]}--${tumor[1]}--${normal[1]}".toString(), normal[2], tumor[2]]
@@ -457,7 +456,7 @@ workflow HS_PTA {
         // maps to a set with indicies, flattens the map [file, index, file, index ...], 
         // collates the flattened map into pairs, then remaps to the pairs to tuple
 
-        intervals = Channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
+        intervals = channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
                     .collect()
                     .sort()
                     .map { items -> items.withIndex() }
@@ -469,12 +468,12 @@ workflow HS_PTA {
         // interval count is used in groupTuple size statements. 
 
         // Applies scatter intervals from above to the BAM file channel prior to variant calling. 
-        chrom_channel = ch_normal_samples.combine(intervals).filter{it[4] != params.na12878_sampleName}
+        chrom_channel = ch_normal_samples.combine(intervals).filter{ it -> it[4] != params.na12878_sampleName}
 
         // Use the list of chroms from above to get a list of primary chromosomes and exclude chrM (dropRight(1))
         // The 'chroms' object and those made below are provided to several tools. 
         chrom_list = chroms.collect().dropRight(1)
-        chrom_list_noY = chrom_list.dropRight(1)
+        _chrom_list_noY = chrom_list.dropRight(1) // unused, but left with '_' in case needed in future. 
         
         // Variant calling. 
         GATK_HAPLOTYPECALLER_SV_GERMLINE(chrom_channel)
@@ -549,7 +548,7 @@ workflow HS_PTA {
 
         // ** Lancet - SNP/InDEL Calling
         // Generate a list of chromosome beds. This is generated in the same manner as the calling `intervals` variable above. 
-        lancet_beds = Channel.fromPath( params.lancet_beds_directory+'/*.bed' )
+        lancet_beds = channel.fromPath( params.lancet_beds_directory+'/*.bed' )
                         .collect()
                         .sort()
                         .map { items -> items.withIndex() }
@@ -604,7 +603,7 @@ workflow HS_PTA {
         biqseq_norm_input_tumor = SAMTOOLS_FILTER_UNIQUE_TUMOR.out.uniq_seq.join(SAMTOOLS_STATS_INSERTSIZE_TUMOR.out.read_length_insert_size)
         // sampleID, individual_chr_seq_files, meta, read_ID, read_length, insert_size. 
 
-        fasta_files = Channel.fromPath( file(params.ref_fa).parent + '/*_chr*' )
+        fasta_files = channel.fromPath( file(params.ref_fa).parent + '/*_chr*' )
                 .collect()
         // collect individual chr fasta files. These are located in the same directory as the main reference. 
         // if the extension of `name_chr#.fa` changes this match will break. 
@@ -639,7 +638,7 @@ workflow HS_PTA {
         // NOTE: with insufficent coverage, the segmentation will fail because the 'lamda' factor can not be properly optimized. 
 
         bicseq2_tumoronly_input = BICSEQ2_NORMALIZE_TUMOR.out.normalized_output
-            .filter{it[2].normal_id == params.na12878_sampleName}
+            .filter{ it -> it[2].normal_id == params.na12878_sampleName}
 
         BICSEQ2_SEG_UNPAIRED(bicseq2_tumoronly_input)
         
@@ -719,7 +718,7 @@ workflow HS_PTA {
 
         callers_for_merge = GATK_SORTVCF_TOOLS.out.vcf_tbi
                             .groupTuple(size: 5)
-                            .map{sampleID, vcf, idx, meta, normal_sample, tumor_sample, tool_list -> tuple( sampleID, vcf, idx, meta.unique()[0] )  }
+                            .map{sampleID, vcf, idx, meta, _normal_sample, _tumor_sample, _tool_list -> tuple( sampleID, vcf, idx, meta.unique()[0] )  }
                             .combine(chrom_list.flatten())
         // The above collects all callers on sampleID, then maps to avoid duplication of data and to drop the tool list, which is not needed anymore. 
         // Note that this could be done using 'by' in the groupTuple statement. However, the map is still required to remove the tool list. 
@@ -748,7 +747,7 @@ workflow HS_PTA {
         //    Compress and index the resulting VCF.
         lancet_confirm_input = VCF_TO_BED.out.bed                         
                             .combine(ch_paired_samples, by: 0)
-                            .map{sampleID, bed, meta, chrom, meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, bed, meta, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name, chrom )  }
+                            .map{sampleID, bed, meta, chrom, _meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, bed, meta, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name, chrom )  }
         // The above combines output by sampleID with BAM files. Then maps to avoid duplication of data, and set input tuples for the steps that follow.  
         // Note that "combine" here, combines each output stream from VCF_TO_BED with ch_paired_samples, keeping the scattered chrom seperate. 
 
@@ -758,7 +757,7 @@ workflow HS_PTA {
         // 5. Intersect Lancet Confirm with candidate extractions. 
         candidate_lancet_intersect_input = COMPRESS_INDEX_VCF_REGION.out.compressed_vcf_tbi
                                         .join(COMPRESS_INDEX_VCF_REGION_LANCET.out.compressed_vcf_tbi, by: [0,6])
-                                        .map{sampleID, chrom, vcf, tbi, meta, empty_name, empty_name2, vcf2, tbi2, meta2, normal_name, tumor_name -> tuple( sampleID, vcf, tbi, vcf2, tbi2, meta, normal_name, tumor_name, chrom )}
+                                        .map{sampleID, chrom, vcf, tbi, meta, _empty_name, _empty_name2, vcf2, tbi2, _meta2, normal_name, tumor_name -> tuple( sampleID, vcf, tbi, vcf2, tbi2, meta, normal_name, tumor_name, chrom )}
         // The above joins candidate VCF with Lancet Confirm VCF by sampleID and chrom. Then maps to avoid duplication of data, and set input tuples for the steps that follow.  
         // Note: A. The 'by' statement here, joins on sampleID and chrom, which correspond to index values 0 and 6 in the output tuples. 
         //       B. 'empty_name' is used here because 'normal_name' and 'tumor_name' are not required/used in the candidate steps. 
@@ -800,7 +799,7 @@ workflow HS_PTA {
         // ** Merge lancet confirmed back to all merged callers. Compress and index merged calls.  
         allCalls_lancetConfirm_merge_input = COMPRESS_INDEX_VCF_ALL_CALLERS.out.compressed_vcf_tbi
                                             .join(GATK_SORTVCF_TOOLS_LANCET.out.vcf_tbi, by: [0,6])
-                                            .map{sampleID, chrom, vcf, tbi, meta, empty_name, empty_name2, vcf2, tbi2, meta2, normal_name, tumor_name -> tuple( sampleID, [vcf, vcf2], [tbi, tbi2], meta, chrom )}
+                                            .map{sampleID, chrom, vcf, tbi, meta, _empty_name, _empty_name2, vcf2, tbi2, _meta2, _normal_name, _tumor_name -> tuple( sampleID, [vcf, vcf2], [tbi, tbi2], meta, chrom )}
         // BCFTOOLS_MERGE Requires an input tuple as follows: [val(sampleID), file(vcf), file(idx), val(meta), val(chrom)]
         // Join the output streams on sampleID and chrom, and then map to the require tuple structure. Note that [vcf, vcf2] makes a list that is understoon by the module. 
 
@@ -816,7 +815,7 @@ workflow HS_PTA {
         //    "Runs pileup on tumor and normal bam files to compute allele counts for bi-allelic SNV and Indel variants in VCF file and adds pileup format columns to the VCF file.""
         addAlleleCounts_confirm_input = MERGE_COLUMNS.out.mergeColumn_vcf                         
                             .combine(ch_paired_samples, by: 0)
-                            .map{sampleID, vcf, meta, chrom, meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, vcf, meta, normal_bam, normal_bai, tumor_bam, tumor_bai, chrom )  }
+                            .map{sampleID, vcf, meta, chrom, _meta2, normal_bam, normal_bai, _normal_name, tumor_bam, tumor_bai, _tumor_name -> tuple( sampleID, vcf, meta, normal_bam, normal_bai, tumor_bam, tumor_bai, chrom )  }
         ADD_NYGC_ALLELE_COUNTS(addAlleleCounts_confirm_input)
 
         // 3. Add Final Allele Counts to VCF
@@ -837,7 +836,7 @@ workflow HS_PTA {
         // number of chrom intervals split on during the above steps. A 'value' variable used in groupTuple size statement. MT is removed, hence '- 1'. If dynamic 'Y' is ever implimented. This needs adjustment. 
         chrom_merge_input = SNV_TO_MNV_FINAL_FILTER.out.vcf
                             .groupTuple(size: num_intervals)
-                            .map{sampleID, vcf, meta, chrom -> tuple( sampleID, vcf, meta.unique()[0] )  }
+                            .map{sampleID, vcf, meta, _chrom -> tuple( sampleID, vcf, meta.unique()[0] )  }
                             // Collect scattered chroms, remap to tuple without chrom names. 
 
         GATK_SORTVCF_SOMATIC(chrom_merge_input)
@@ -894,15 +893,15 @@ workflow HS_PTA {
         FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
         FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
 
-        ch_multiqc_files = Channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.concordance.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.contamination.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = channel.empty()
+        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.concordance.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CONPAIR.out.contamination.collect{ it -> it[1]}.ifEmpty([]))
     
         MULTIQC (
             ch_multiqc_files.collect(),

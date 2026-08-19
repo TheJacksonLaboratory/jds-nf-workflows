@@ -2,116 +2,116 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {CLUMPIFY} from "${projectDir}/modules/bbmap/bbmap_clumpify"
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {SAMTOOLS_MERGE} from "${projectDir}/modules/samtools/samtools_merge"
-include {PICARD_MARKDUPLICATES}	from "${projectDir}/modules/picard/picard_markduplicates"
+include {CLUMPIFY} from "../modules/bbmap/bbmap_clumpify"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {SAMTOOLS_MERGE} from "../modules/samtools/samtools_merge"
+include {PICARD_MARKDUPLICATES}	from "../modules/picard/picard_markduplicates"
 
-include {JVARKIT_COVERAGE_CAP} from "${projectDir}/modules/jvarkit/jvarkit_biostar154220"
-include {SAMTOOLS_INDEX} from "${projectDir}/modules/samtools/samtools_index"
+include {JVARKIT_COVERAGE_CAP} from "../modules/jvarkit/jvarkit_biostar154220"
+include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 
-include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "${projectDir}/modules/picard/picard_collectalignmentsummarymetrics"
-include {PICARD_COLLECTWGSMETRICS} from "${projectDir}/modules/picard/picard_collectwgsmetrics"
+include {PICARD_COLLECTALIGNMENTSUMMARYMETRICS} from "../modules/picard/picard_collectalignmentsummarymetrics"
+include {PICARD_COLLECTWGSMETRICS} from "../modules/picard/picard_collectwgsmetrics"
 
-include {MT_VARIANT_CALLING} from "${projectDir}/subworkflows/mt_variant_calling"
+include {MT_VARIANT_CALLING} from "../subworkflows/mt_variant_calling"
 
 include {GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_NORMAL;
-         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "${projectDir}/modules/gatk/gatk_getsamplename"
+         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "../modules/gatk/gatk_getsamplename"
 
-include {GATK_HAPLOTYPECALLER_SV_GERMLINE} from "${projectDir}/modules/gatk/gatk_haplotypecaller_sv_germline"
+include {GATK_HAPLOTYPECALLER_SV_GERMLINE} from "../modules/gatk/gatk_haplotypecaller_sv_germline"
 
 include {GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GERMLINE;
-         GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GENOTYPE} from "${projectDir}/modules/gatk/gatk_sortvcf_germline"
-include {GATK_GENOTYPE_GVCF} from "${projectDir}/modules/gatk/gatk_genotype_gvcf"
-include {GATK_CNNSCORE_VARIANTS} from "${projectDir}/modules/gatk/gatk_cnnscorevariants"
-include {GATK_VARIANTFILTRATION_AF} from "${projectDir}/modules/gatk/gatk_variantfiltration_af"
-include {BCFTOOLS_COMPRESS_INDEX} from "${projectDir}/modules/bcftools/bcftools_compress_index"
-include {BCFTOOLS_SPLITMULTIALLELIC_REGIONS} from "${projectDir}/modules/bcftools/bcftools_split_multiallelic_regions"
-include {VEP_GERMLINE} from "${projectDir}/modules/ensembl/varianteffectpredictor_germline_mouse"
-include {BCFTOOLS_REMOVESPANNING} from "${projectDir}/modules/bcftools/bcftools_remove_spanning"
+         GATK_SORTVCF_GERMLINE as GATK_SORTVCF_GENOTYPE} from "../modules/gatk/gatk_sortvcf_germline"
+include {GATK_GENOTYPE_GVCF} from "../modules/gatk/gatk_genotype_gvcf"
+include {GATK_CNNSCORE_VARIANTS} from "../modules/gatk/gatk_cnnscorevariants"
+include {GATK_VARIANTFILTRATION_AF} from "../modules/gatk/gatk_variantfiltration_af"
+include {BCFTOOLS_COMPRESS_INDEX} from "../modules/bcftools/bcftools_compress_index"
+include {BCFTOOLS_SPLITMULTIALLELIC_REGIONS} from "../modules/bcftools/bcftools_split_multiallelic_regions"
+include {VEP_GERMLINE} from "../modules/ensembl/varianteffectpredictor_germline_mouse"
+include {BCFTOOLS_REMOVESPANNING} from "../modules/bcftools/bcftools_remove_spanning"
 
-include {GATK_MUTECT2} from "${projectDir}/modules/gatk/gatk_mutect2"
-include {GATK_MERGEMUTECTSTATS} from "${projectDir}/modules/gatk/gatk_mergemutectstats"
-include {GATK_FILTERMUECTCALLS} from "${projectDir}/modules/gatk/gatk_filtermutectcalls"
-include {LANCET} from "${projectDir}/modules/nygenome/lancet"
-include {MANTA} from "${projectDir}/modules/illumina/manta"
-include {STRELKA2} from "${projectDir}/modules/illumina/strelka2"
-include {DELLY_CALL_SOMATIC} from "${projectDir}/modules/delly/delly_call_somatic"
-include {DELLY_FILTER_SOMATIC} from "${projectDir}/modules/delly/delly_filter_somatic"
-include {BCFTOOLS_BCF_TO_VCF} from "${projectDir}/modules/bcftools/bcftools_bcf_to_vcf"
-include {SMOOVE_CALL} from "${projectDir}/modules/smoove/smoove_call"
-include {SVABA} from "${projectDir}/modules/svaba/svaba"
+include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2"
+include {GATK_MERGEMUTECTSTATS} from "../modules/gatk/gatk_mergemutectstats"
+include {GATK_FILTERMUECTCALLS} from "../modules/gatk/gatk_filtermutectcalls"
+include {LANCET} from "../modules/nygenome/lancet"
+include {MANTA} from "../modules/illumina/manta"
+include {STRELKA2} from "../modules/illumina/strelka2"
+include {DELLY_CALL_SOMATIC} from "../modules/delly/delly_call_somatic"
+include {DELLY_FILTER_SOMATIC} from "../modules/delly/delly_filter_somatic"
+include {BCFTOOLS_BCF_TO_VCF} from "../modules/bcftools/bcftools_bcf_to_vcf"
+include {SMOOVE_CALL} from "../modules/smoove/smoove_call"
+include {SVABA} from "../modules/svaba/svaba"
 include {GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_SV_UPDATE_DICTIONARY;
-         GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_INDEL_UPDATE_DICTIONARY} from "${projectDir}/modules/gatk/gatk_updatevcfsequencedictionary"
+         GATK_UPDATEVCFSEQUENCEDICTIONARY as SVABA_INDEL_UPDATE_DICTIONARY} from "../modules/gatk/gatk_updatevcfsequencedictionary"
 
-include {DELLY_CNV_SOMATIC} from "${projectDir}/modules/delly/delly_cnv_somatic"
-include {BCFTOOLS_MERGE_DELLY_CNV} from "${projectDir}/modules/bcftools/bcftools_merge_delly_cnv"
-include {DELLY_CLASSIFY} from "${projectDir}/modules/delly/delly_classify"
-include {BCFTOOLS_QUERY_DELLY_CNV} from "${projectDir}/modules/bcftools/bcftools_query_delly_cnv"
-include {PLOT_DELLY_CNV} from "${projectDir}/modules/r/plot_delly_cnv"
+include {DELLY_CNV_SOMATIC} from "../modules/delly/delly_cnv_somatic"
+include {BCFTOOLS_MERGE_DELLY_CNV} from "../modules/bcftools/bcftools_merge_delly_cnv"
+include {DELLY_CLASSIFY} from "../modules/delly/delly_classify"
+include {BCFTOOLS_QUERY_DELLY_CNV} from "../modules/bcftools/bcftools_query_delly_cnv"
+include {PLOT_DELLY_CNV} from "../modules/r/plot_delly_cnv"
 
 include {GATK_SORTVCF as GATK_SORTVCF_MUTECT;
          GATK_SORTVCF as GATK_SORTVCF_LANCET;
          GATK_SORTVCF as GATK_SORTVCF_TOOLS;
-         GATK_SORTVCF as GATK_SORTVCF_TOOLS_LANCET} from "${projectDir}/modules/gatk/gatk_sortvcf_somatic_tools"
+         GATK_SORTVCF as GATK_SORTVCF_TOOLS_LANCET} from "../modules/gatk/gatk_sortvcf_somatic_tools"
 
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_GERMLINE;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_DBSNP_SOMATIC} from "../modules/snpeff_snpsift/snpsift_annotate"
 
 include {RENAME_METADATA;
-         RENAME_METADATA as RENAME_METADATA_LANCET} from "${projectDir}/modules/python/python_rename_metadata"
+         RENAME_METADATA as RENAME_METADATA_LANCET} from "../modules/python/python_rename_metadata"
 include {MERGE_PREP;
-         MERGE_PREP as MERGE_PREP_LANCET} from "${projectDir}/modules/python/python_merge_prep"
+         MERGE_PREP as MERGE_PREP_LANCET} from "../modules/python/python_merge_prep"
 include {RENAME_VCF;
-         RENAME_VCF as RENAME_VCF_LANCET;} from "${projectDir}/modules/python/python_rename_vcf"
+         RENAME_VCF as RENAME_VCF_LANCET;} from "../modules/python/python_rename_vcf"
 include {COMPRESS_INDEX_VCF;
          COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_LANCET;
-         COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_REGION_LANCET} from "${projectDir}/modules/tabix/compress_vcf"
+         COMPRESS_INDEX_VCF as COMPRESS_INDEX_VCF_REGION_LANCET} from "../modules/tabix/compress_vcf"
 include {BCFTOOLS_SPLITMULTIALLELIC;
-         BCFTOOLS_SPLITMULTIALLELIC as BCFTOOLS_SPLITMULTIALLELIC_LANCET} from "${projectDir}/modules/bcftools/bcftools_split_multiallelic"
+         BCFTOOLS_SPLITMULTIALLELIC as BCFTOOLS_SPLITMULTIALLELIC_LANCET} from "../modules/bcftools/bcftools_split_multiallelic"
 include {SPLIT_MNV;
-         SPLIT_MNV as SPLIT_MNV_LANCET} from "${projectDir}/modules/python/python_split_mnv"
+         SPLIT_MNV as SPLIT_MNV_LANCET} from "../modules/python/python_split_mnv"
 
-include {REMOVE_CONTIG} from "${projectDir}/modules/python/python_remove_contig"
+include {REMOVE_CONTIG} from "../modules/python/python_remove_contig"
 include {BCFTOOLS_MERGECALLERS;
-         BCFTOOLS_MERGECALLERS as BCFTOOLS_MERGECALLERS_FINAL} from "${projectDir}/modules/bcftools/bcftools_merge_callers"
-include {BEDTOOLS_STARTCANDIDATES} from "${projectDir}/modules/bedtools/bedtools_start_candidates"
-include {GET_CANDIDATES} from "${projectDir}/modules/python/python_get_candidates"
-include {VCF_TO_BED} from "${projectDir}/modules/python/python_vcf_to_bed"
-include {LANCET_CONFIRM} from "${projectDir}/modules/nygenome/lancet_confirm"
+         BCFTOOLS_MERGECALLERS as BCFTOOLS_MERGECALLERS_FINAL} from "../modules/bcftools/bcftools_merge_callers"
+include {BEDTOOLS_STARTCANDIDATES} from "../modules/bedtools/bedtools_start_candidates"
+include {GET_CANDIDATES} from "../modules/python/python_get_candidates"
+include {VCF_TO_BED} from "../modules/python/python_vcf_to_bed"
+include {LANCET_CONFIRM} from "../modules/nygenome/lancet_confirm"
 include {COMPRESS_INDEX_VCF_REGION;
          COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_ALL_CALLERS;
-         COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_MERGED} from "${projectDir}/modules/tabix/compress_vcf_region"
-include {BCFTOOLS_INTERSECTVCFS} from "${projectDir}/modules/bcftools/bcftools_intersect_lancet_candidates"
+         COMPRESS_INDEX_VCF_REGION as COMPRESS_INDEX_VCF_MERGED} from "../modules/tabix/compress_vcf_region"
+include {BCFTOOLS_INTERSECTVCFS} from "../modules/bcftools/bcftools_intersect_lancet_candidates"
 
-include {MERGE_COLUMNS} from "${projectDir}/modules/python/python_merge_columns"
-include {ADD_NYGC_ALLELE_COUNTS} from "${projectDir}/modules/python/python_add_nygc_allele_counts"
-include {ADD_FINAL_ALLELE_COUNTS} from "${projectDir}/modules/python/python_add_final_allele_counts"
-include {SNV_TO_MNV_FINAL_FILTER} from "${projectDir}/modules/python/python_snv_to_mnv_final_filter"
+include {MERGE_COLUMNS} from "../modules/python/python_merge_columns"
+include {ADD_NYGC_ALLELE_COUNTS} from "../modules/python/python_add_nygc_allele_counts"
+include {ADD_FINAL_ALLELE_COUNTS} from "../modules/python/python_add_final_allele_counts"
+include {SNV_TO_MNV_FINAL_FILTER} from "../modules/python/python_snv_to_mnv_final_filter"
 
-include {GATK_SORTVCF_SOMATIC} from "${projectDir}/modules/gatk/gatk_sortvcf_somatic_merge"
-include {REORDER_VCF_COLUMNS} from "${projectDir}/modules/python/python_reorder_vcf_columns"
-include {COMPRESS_INDEX_MERGED_VCF} from "${projectDir}/modules/tabix/compress_merged_vcf"
-include {VEP_SOMATIC} from "${projectDir}/modules/ensembl/varianteffectpredictor_somatic_mouse"
-include {SOMATIC_VCF_FINALIZATION} from "${projectDir}/modules/python/python_somatic_vcf_finalization_mouse"
+include {GATK_SORTVCF_SOMATIC} from "../modules/gatk/gatk_sortvcf_somatic_merge"
+include {REORDER_VCF_COLUMNS} from "../modules/python/python_reorder_vcf_columns"
+include {COMPRESS_INDEX_MERGED_VCF} from "../modules/tabix/compress_merged_vcf"
+include {VEP_SOMATIC} from "../modules/ensembl/varianteffectpredictor_somatic_mouse"
+include {SOMATIC_VCF_FINALIZATION} from "../modules/python/python_somatic_vcf_finalization_mouse"
 
-include {ANNOTATE_DELLY_CNV} from "${projectDir}/modules/r/annotate_delly_cnv"
+include {ANNOTATE_DELLY_CNV} from "../modules/r/annotate_delly_cnv"
 
-include {MERGE_SV} from "${projectDir}/modules/r/merge_sv_mouse"
+include {MERGE_SV} from "../modules/r/merge_sv_mouse"
 include {ANNOTATE_SV;
-         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_mouse"
+         ANNOTATE_SV as ANNOTATE_SV_SUPPLEMENTAL} from "../modules/r/annotate_sv_mouse"
 include {ANNOTATE_GENES_SV;
-         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_genes_sv_mouse"
+         ANNOTATE_GENES_SV as ANNOTATE_GENES_SV_SUPPLEMENTAL} from "../modules/r/annotate_genes_sv_mouse"
 include {ANNOTATE_SV_WITH_CNV;
-         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "${projectDir}/modules/r/annotate_sv_with_cnv_mouse"
+         ANNOTATE_SV_WITH_CNV as ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL} from "../modules/r/annotate_sv_with_cnv_mouse"
 include {FILTER_BEDPE;
-         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "${projectDir}/modules/r/filter_bedpe_mouse"
+         FILTER_BEDPE as FILTER_BEDPE_SUPPLEMENTAL} from "../modules/r/filter_bedpe_mouse"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 workflow MM_PTA {
     take:
@@ -159,7 +159,7 @@ workflow MM_PTA {
             }
             split_fastq_count = split_fastq_files
                             .groupTuple()
-                            .map{sample, reads, index, read_group -> [sample, groupKey(sample, index.size())]}
+                            .map{sample, _reads, index, _read_group -> [sample, groupKey(sample, index.size())]}
                         
             bwa_mem_mapping = split_fastq_count
                         .combine(split_fastq_files, by:0)
@@ -197,7 +197,7 @@ workflow MM_PTA {
             index_file = PICARD_MARKDUPLICATES.out.dedup_bai
         }
 
-        PICARD_MARKDUPLICATES.out.dedup_bam.join(PICARD_MARKDUPLICATES.out.dedup_bai).join(meta_ch).branch{
+        PICARD_MARKDUPLICATES.out.dedup_bam.join(PICARD_MARKDUPLICATES.out.dedup_bai).join(meta_ch).branch{ it ->
             normal: it[3].status == 0
             tumor:  it[3].status == 1
         }.set{ch_final_bam}
@@ -219,8 +219,8 @@ workflow MM_PTA {
         GATK_GETSAMPLENAME_NORMAL(ch_final_bam.normal.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
         GATK_GETSAMPLENAME_TUMOR(ch_final_bam.tumor.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
 
-        ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
-        ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+        ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+        ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
         
         /* 
         The above map statements adjusts channels for normal, tumor samples to organize them by patient IDs. 
@@ -261,7 +261,7 @@ workflow MM_PTA {
         // Restore un-paired tumor samples, and add the proxy normal sample as pairing in those cases
         ch_paired_samples = ch_tumor_to_cross
             .mix(ch_paired_samples)
-            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{it[2].size() == 1} 
+            .map{it -> [it[1].sampleID ?: it[1].tumor_id, it[1], it[2], it[3], it[4]]}.groupTuple().filter{ it -> it[2].size() == 1} 
                         // it[0] = per-tumor unique ID (sampleID for pre-cross tumors, tumor_id for post-cross pairs), it[1] = meta, it[2] = bam, it[3] = bai, it[4] = sampleReadID. 
                         // Grouping by per-tumor ID (not patient) so that multiple unpaired tumors from the same patient
                         // are each handled independently. A paired tumor appears twice in the mix (once from ch_tumor_to_cross,
@@ -301,18 +301,18 @@ workflow MM_PTA {
 
 
         ch_ind_samples = ch_paired_samples
-            .filter{it[4] != params.proxy_normal_sampleName}
+            .filter{ it -> it[4] != params.proxy_normal_sampleName}
             .multiMap{it -> 
                     normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3], it[4]]
                     tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]
                     }
-            ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-            ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+            ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+            _ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]} // unused in the mouse PTA workflow. left if needed.
 
-        ch_tumor_only = ch_paired_samples
-            .filter{it[4] == params.proxy_normal_sampleName}
+        _ch_tumor_only = ch_paired_samples
+            .filter{ it -> it[4] == params.proxy_normal_sampleName}
             .map{it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-            .unique{it[0]}
+            .unique{ it -> it[0]} // unused in the mouse PTA workflow. left if needed.
 
 
         /*
@@ -335,7 +335,7 @@ workflow MM_PTA {
         // maps to a set with indicies, flattens the map [file, index, file, index ...], 
         // collates the flattened map into pairs, then remaps to the pairs to tuple
 
-        intervals = Channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
+        intervals = channel.fromPath( params.chrom_intervals+'/*/scattered.interval_list' )
                     .collect()
                     .sort()
                     .map { items -> items.withIndex() }
@@ -347,17 +347,17 @@ workflow MM_PTA {
         // interval count is used in groupTuple size statements. 
 
         // Applies scatter intervals from above to the BAM file channel prior to variant calling. 
-        chrom_channel = ch_normal_samples.combine(intervals).filter{it[4] != params.proxy_normal_sampleName}
+        chrom_channel = ch_normal_samples.combine(intervals).filter{ it -> it[4] != params.proxy_normal_sampleName}
 
         // Read a list of chromosome names from a parameter. These are provided to several tools. 
-        chroms = Channel
+        chroms = channel
             .fromPath("${params.chrom_contigs}")
             .splitText()
             .map{it -> it.trim()}
 
         // Get a list of primary chromosomes and exclude chrM (dropRight(1))
         chrom_list = chroms.collect().dropRight(1)
-        chrom_list_noY = chrom_list.dropRight(1)
+        _chrom_list_noY = chrom_list.dropRight(1) // unused, but left with '_' in case needed in future. 
         
 
         // Variant calling. 
@@ -426,7 +426,7 @@ workflow MM_PTA {
 
         // ** Lancet - SNP/InDEL Calling
         // Generate a list of chromosome beds. This is generated in the same manner as the calling `intervals` variable above. 
-        lancet_beds = Channel.fromPath( params.lancet_beds_directory+'/*.bed' )
+        lancet_beds = channel.fromPath( params.lancet_beds_directory+'/*.bed' )
                         .collect()
                         .sort()
                         .map { items -> items.withIndex() }
@@ -559,7 +559,7 @@ workflow MM_PTA {
 
         callers_for_merge = GATK_SORTVCF_TOOLS.out.vcf_tbi
                             .groupTuple(size: 6)
-                            .map{sampleID, vcf, idx, meta, normal_sample, tumor_sample, tool_list -> tuple( sampleID, vcf, idx, meta.unique()[0] )  }
+                            .map{sampleID, vcf, idx, meta, _normal_sample, _tumor_sample, _tool_list -> tuple( sampleID, vcf, idx, meta.unique()[0] )  }
                             .combine(chrom_list.flatten())
 
         // The above collects all callers on sampleID, then maps to avoid duplication of data and to drop the tool list, which is not needed anymore. 
@@ -589,7 +589,7 @@ workflow MM_PTA {
         //    Compress and index the resulting VCF.
         lancet_confirm_input = VCF_TO_BED.out.bed                         
                             .combine(ch_paired_samples, by: 0)
-                            .map{sampleID, bed, meta, chrom, meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, bed, meta, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name, chrom )  }
+                            .map{sampleID, bed, meta, chrom, _meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, bed, meta, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name, chrom )  }
         // The above combines output by sampleID with BAM files. Then maps to avoid duplication of data, and set input tuples for the steps that follow.  
         // Note that "combine" here, combines each output stream from VCF_TO_BED with ch_paired_samples, keeping the scattered chrom seperate. 
 
@@ -599,7 +599,7 @@ workflow MM_PTA {
         // 5. Intersect Lancet Confirm with candidate extractions. 
         candidate_lancet_intersect_input = COMPRESS_INDEX_VCF_REGION.out.compressed_vcf_tbi
                                         .join(COMPRESS_INDEX_VCF_REGION_LANCET.out.compressed_vcf_tbi, by: [0,6])
-                                        .map{sampleID, chrom, vcf, tbi, meta, empty_name, empty_name2, vcf2, tbi2, meta2, normal_name, tumor_name -> tuple( sampleID, vcf, tbi, vcf2, tbi2, meta, normal_name, tumor_name, chrom )}
+                                        .map{sampleID, chrom, vcf, tbi, meta, _empty_name, _empty_name2, vcf2, tbi2, _meta2, normal_name, tumor_name -> tuple( sampleID, vcf, tbi, vcf2, tbi2, meta, normal_name, tumor_name, chrom )}
         // The above joins candidate VCF with Lancet Confirm VCF by sampleID and chrom. Then maps to avoid duplication of data, and set input tuples for the steps that follow.  
         // Note: A. The 'by' statement here, joins on sampleID and chrom, which correspond to index values 0 and 6 in the output tuples. 
         //       B. 'empty_name' is used here because 'normal_name' and 'tumor_name' are not required/used in the candidate steps. 
@@ -641,7 +641,7 @@ workflow MM_PTA {
         // ** Merge lancet confirmed back to all merged callers. Compress and index merged calls.  
         allCalls_lancetConfirm_merge_input = COMPRESS_INDEX_VCF_ALL_CALLERS.out.compressed_vcf_tbi
                                             .join(GATK_SORTVCF_TOOLS_LANCET.out.vcf_tbi, by: [0,6])
-                                            .map{sampleID, chrom, vcf, tbi, meta, empty_name, empty_name2, vcf2, tbi2, meta2, normal_name, tumor_name -> tuple( sampleID, [vcf, vcf2], [tbi, tbi2], meta, chrom )}
+                                            .map{sampleID, chrom, vcf, tbi, meta, _empty_name, _empty_name2, vcf2, tbi2, _meta2, _normal_name, _tumor_name -> tuple( sampleID, [vcf, vcf2], [tbi, tbi2], meta, chrom )}
         // BCFTOOLS_MERGE Requires an input tuple as follows: [val(sampleID), file(vcf), file(idx), val(meta), val(chrom)]
         // Join the output streams on sampleID and chrom, and then map to the require tuple structure. Note that [vcf, vcf2] makes a list that is understoon by the module. 
 
@@ -657,7 +657,7 @@ workflow MM_PTA {
         //    "Runs pileup on tumor and normal bam files to compute allele counts for bi-allelic SNV and Indel variants in VCF file and adds pileup format columns to the VCF file.""
         addAlleleCounts_confirm_input = MERGE_COLUMNS.out.mergeColumn_vcf                         
                             .combine(ch_paired_samples, by: 0)
-                            .map{sampleID, vcf, meta, chrom, meta2, normal_bam, normal_bai, normal_name, tumor_bam, tumor_bai, tumor_name -> tuple( sampleID, vcf, meta, normal_bam, normal_bai, tumor_bam, tumor_bai, chrom )  }
+                            .map{sampleID, vcf, meta, chrom, _meta2, normal_bam, normal_bai, _normal_name, tumor_bam, tumor_bai, _tumor_name -> tuple( sampleID, vcf, meta, normal_bam, normal_bai, tumor_bam, tumor_bai, chrom )  }
         ADD_NYGC_ALLELE_COUNTS(addAlleleCounts_confirm_input)
 
         // 3. Add Final Allele Counts to VCF
@@ -676,7 +676,7 @@ workflow MM_PTA {
         // number of chrom intervals split on during the above steps. A 'value' variable used in groupTuple size statement. MT is removed, hence '- 1'. If dynamic 'Y' is ever implimented. This needs adjustment. 
         chrom_merge_input = SNV_TO_MNV_FINAL_FILTER.out.vcf
                             .groupTuple(size: num_intervals)
-                            .map{sampleID, vcf, meta, chrom -> tuple( sampleID, vcf, meta.unique()[0] )  }
+                            .map{sampleID, vcf, meta, _chrom -> tuple( sampleID, vcf, meta.unique()[0] )  }
                             // Collect scattered chroms, remap to tuple without chrom names. 
 
         GATK_SORTVCF_SOMATIC(chrom_merge_input)
@@ -743,11 +743,11 @@ workflow MM_PTA {
         FILTER_BEDPE(ANNOTATE_SV_WITH_CNV.out.sv_genes_cnv_bedpe, "main")
         FILTER_BEDPE_SUPPLEMENTAL(ANNOTATE_SV_WITH_CNV_SUPPLEMENTAL.out.sv_genes_cnv_bedpe, "supplemental")
    
-        ch_multiqc_files = Channel.empty()
-        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
-        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{it[1]}.ifEmpty([]))
+        ch_multiqc_files = channel.empty()
+        ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTALIGNMENTSUMMARYMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTWGSMETRICS.out.txt.collect{ it -> it[1]}.ifEmpty([]))
     
         MULTIQC (
             ch_multiqc_files.collect(),

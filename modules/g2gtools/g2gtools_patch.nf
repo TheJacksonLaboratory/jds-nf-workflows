@@ -8,7 +8,7 @@ process G2GTOOLS_PATCH {
 
     container 'quay.io/jaxcompsci/g2gtools:74926ad'
 
-    publishDir "${params.pubdir}/g2gtools", pattern: '*.patched.fa', mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: '*.patched.fa', mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(strain), path(vci), path(tbi)

@@ -43,7 +43,7 @@ process QUILT_TO_QTL2 {
         sed 's/:GT//g' > chr${chr}_sg.txt
   
   # quality filter variants and anchor to grid
-  Rscript --vanilla ${projectDir}/bin/lcwgs/prepare_qtl2_files.R chr${chr}_fg.txt \
+  Rscript --vanilla ${moduleDir}/bin/prepare_qtl2_files.R chr${chr}_fg.txt \
 	    chr${chr}_sg.txt \
 	    ${covar_file} \
 	    ${params.cross_type} \

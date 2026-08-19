@@ -6,7 +6,7 @@ process FILTER_BEDPE {
     time '04:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bedpe", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bedpe", mode: 'copy'
     
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
@@ -23,7 +23,7 @@ process FILTER_BEDPE {
     script:
         if(suppl_switch == "main")
         """
-        Rscript ${projectDir}/bin/pta/filter-bedpe.r \
+        Rscript ${moduleDir}/bin/filter-bedpe.r \
             --filter_databases=DGV,1000G,PON \
             --bedpe=${sv_genes_cnv_bedpe} \
             --out_file_somatic=${sampleID}_sv_annotated_somatic_final.bedpe \
@@ -32,7 +32,7 @@ process FILTER_BEDPE {
 
         else if (suppl_switch == "supplemental")
         """
-        Rscript ${projectDir}/bin/pta/filter-bedpe.r \
+        Rscript ${moduleDir}/bin/filter-bedpe.r \
             --filter_databases=DGV,1000G,PON \
             --bedpe=${sv_genes_cnv_bedpe} \
             --out_file_somatic=${sampleID}_sv_annotated_somatic_supplemental.bedpe \

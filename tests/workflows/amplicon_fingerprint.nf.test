@@ -2,7 +2,7 @@ nextflow_workflow {
 
     name "Test Workflow AMPLICON Fingerprint"
     script "workflows/amplicon_fingerprint.nf"
-    workflow "AMPLICON"
+    workflow "AMPLICON_FINGERPRINT"
 
     test("Full Workflow -- Human") {
         tag "GRCh38"

@@ -8,8 +8,8 @@ process G2GTOOLS_VCF2VCI {
 
     container 'quay.io/jaxcompsci/g2gtools:74926ad'
 
-    publishDir "${params.pubdir}/g2gtools", pattern: '*.vci.gz*', mode:'copy'
-    publishDir "${params.pubdir}/g2gtools", pattern: '*.errors.vcf', mode:'copy'
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: '*.vci.gz*', mode:'copy'
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: '*.errors.vcf', mode:'copy'
 
     input:
     val(strain)

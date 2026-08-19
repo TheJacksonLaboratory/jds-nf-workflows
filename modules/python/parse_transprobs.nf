@@ -8,7 +8,7 @@ process PARSE_TRANSITION_PROBABILITIES {
 
     container 'hdfgroup/h5py:2.7.0'
 
-    publishDir "${params.pubdir}", pattern: '*.npz', mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: '*.npz', mode:'copy'
 
     input:
     tuple path(h5), val(generation)
@@ -20,7 +20,7 @@ process PARSE_TRANSITION_PROBABILITIES {
     script:
 
     """
-    python ${projectDir}/bin/gbrs/parse_h5_transprob_to_npz.py -t ${h5} -s ${sex} -g ${generation} -l "${params.haplotype_list}"
+    python ${moduleDir}/bin/parse_h5_transprob_to_npz.py -t ${h5} -s ${sex} -g ${generation} -l "${params.haplotype_list}"
     """
 
     stub:

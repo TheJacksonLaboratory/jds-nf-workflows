@@ -10,7 +10,7 @@ process AGAT_GFFTOGTF {
 
     container "quay.io/biocontainers/agat:1.5.1--pl5321hdfd78af_0"
 
-    publishDir "${params.pubdir}", pattern: "*.gtf", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "*.gtf", mode:'copy'
 
     input:
     path(gff)

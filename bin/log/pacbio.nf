@@ -1,4 +1,5 @@
 def param_log(){
+
 if (params.pbmode != "CCS" && params.pbmode != "CLR") {
     error "'--pbmode': \"${params.pbmode}\" is not valid, supported options are 'CCS' or 'CLR'" 
 }

@@ -8,7 +8,7 @@ process GATK_GATHERVCFS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.{vcf,idx}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.{vcf,idx}", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf)
@@ -23,7 +23,7 @@ process GATK_GATHERVCFS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = vcf.collect { "-I $it" }.join(' ')
+    inputs = vcf.collect { it -> "-I $it" }.join(' ')
 
     """
     mkdir -p tmp

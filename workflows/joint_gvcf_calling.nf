@@ -2,46 +2,46 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/joint_gvcf_calling.nf"
-include {param_log} from "${projectDir}/bin/log/joint_gvcf_calling.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv_gvcf.nf"
-include {SAMTOOLS_FAIDX_TO_BED} from "${projectDir}/modules/samtools/samtools_faidx_to_bed"
-include {GATK_SPLITINTERVALS} from "${projectDir}/modules/gatk/gatk_splitintervals"
-include {GATK_INDEXFEATUREFILE} from "${projectDir}/modules/gatk/gatk_indexfeaturefile"
-include {GATK_GENOMICSDBIMPORT} from "${projectDir}/modules/gatk/gatk_genomicsdbimport"
-include {GATK_GENOTYPEGVCF} from "${projectDir}/modules/gatk/gatk_genotypegvcf"
-include {GATK_GATHERVCFS} from "${projectDir}/modules/gatk/gatk_gathervcfs"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-// prepare reads channel
-if (params.csv_input) {
-    def csvFile = file(params.csv_input)
-    if (!csvFile.exists()) {
-        exit 1, "ERROR: CSV input file does not exist. Parameter csv_input was set to: ${params.csv_input}"
-    }
-    ch_input_sample = extract_csv(csvFile)
-    ch_input_sample.map{it -> [it[0], it[2]]}.set{gvcf_ch}
-    ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-} else {
-    exit 1, "ERROR: CSV input is required. Parameter csv_input was set to: ${params.csv_input}"
-}
+include {help} from "../bin/help/joint_gvcf_calling.nf"
+include {param_log} from "../bin/log/joint_gvcf_calling.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
+include {extract_csv} from "../bin/shared/extract_csv_gvcf.nf"
+include {SAMTOOLS_FAIDX_TO_BED} from "../modules/samtools/samtools_faidx_to_bed"
+include {GATK_SPLITINTERVALS} from "../modules/gatk/gatk_splitintervals"
+include {GATK_INDEXFEATUREFILE} from "../modules/gatk/gatk_indexfeaturefile"
+include {GATK_GENOMICSDBIMPORT} from "../modules/gatk/gatk_genomicsdbimport"
+include {GATK_GENOTYPEGVCF} from "../modules/gatk/gatk_genotypegvcf"
+include {GATK_GATHERVCFS} from "../modules/gatk/gatk_gathervcfs"
 
 // main workflow
 workflow JOINT_GVCF_CALLING {
+
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    // prepare reads channel
+    if (params.csv_input) {
+        def csvFile = file(params.csv_input)
+        if (!csvFile.exists()) {
+            exit 1, "ERROR: CSV input file does not exist. Parameter csv_input was set to: ${params.csv_input}"
+        }
+        ch_input_sample = extract_csv(csvFile)
+        ch_input_sample.map{it -> [it[0], it[2]]}.set{gvcf_ch}
+        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+    } else {
+        exit 1, "ERROR: CSV input is required. Parameter csv_input was set to: ${params.csv_input}"
+    }
 
     SAMTOOLS_FAIDX_TO_BED()
     GATK_SPLITINTERVALS(SAMTOOLS_FAIDX_TO_BED.out.bed)

@@ -15,14 +15,14 @@ process QTL2_GENOPROBS {
   script:
 
   """
-  Rscript --vanilla ${projectDir}/bin/lcwgs/genoprobs.R ${chr} \
+  Rscript --vanilla ${moduleDir}/bin/lcwgs_genoprobs.R ${chr} \
     ${sample_genos} \
     ${founder_geno} \
     ${pmap} \
     ${gmap} \
     ${covar} \
     ${params.cross_type} \
-    ${projectDir}/bin/qtl/smooth_genoprobs.R \
+    ${moduleDir}/bin/smooth_genoprobs.R \
     ${params.smooth_window} \
     ${task.cpus}
   """

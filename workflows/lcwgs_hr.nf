@@ -2,97 +2,98 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/lcwgs_hr.nf"
-include {param_log} from "${projectDir}/bin/log/lcwgs_hr.nf"
-include {getLibraryId} from "${projectDir}/bin/shared/getLibraryId.nf"
-include {extract_csv} from "${projectDir}/bin/shared/extract_csv.nf"
-include {FILE_DOWNLOAD} from "${projectDir}/subworkflows/aria_download_parse"
-include {CONCATENATE_LOCAL_FILES} from "${projectDir}/subworkflows/concatenate_local_files"
-include {CONCATENATE_READS_PE} from "${projectDir}/modules/utility_modules/concatenate_reads_PE"
-include {CONCATENATE_READS_SE} from "${projectDir}/modules/utility_modules/concatenate_reads_SE"
+include {help} from "../bin/help/wgs.nf"
+include {param_log} from "../bin/log/lcwgs_hr.nf"
+include {getLibraryId} from "../bin/shared/getLibraryId.nf"
+include {extract_csv} from "../bin/shared/extract_csv.nf"
+include {FILE_DOWNLOAD} from "../subworkflows/aria_download_parse"
+include {CONCATENATE_LOCAL_FILES} from "../subworkflows/concatenate_local_files"
+include {CONCATENATE_READS_PE} from "../modules/utility_modules/concatenate_reads_PE"
+include {CONCATENATE_READS_SE} from "../modules/utility_modules/concatenate_reads_SE"
 
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
 
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
 include {SAMTOOLS_MERGE;
-         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "${projectDir}/modules/samtools/samtools_merge"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
-include {SAMTOOLS_STATS} from "${projectDir}/modules/samtools/samtools_stats"
-include {MOSDEPTH} from "${projectDir}/modules/mosdepth/mosdepth"
+         SAMTOOLS_MERGE as SAMTOOLS_MERGE_IND} from "../modules/samtools/samtools_merge"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
+include {SAMTOOLS_STATS} from "../modules/samtools/samtools_stats"
+include {MOSDEPTH} from "../modules/mosdepth/mosdepth"
 
-include {SEX_CHECK} from "${projectDir}/modules/r/lcwgs_sex_check"
+include {SEX_CHECK} from "../modules/r/lcwgs_sex_check"
 
-include {SAMTOOLS_DEPTH_VALUE} from "${projectDir}/modules/samtools/samtools_depth_value"
-include {SAMTOOLS_DOWNSAMPLE_BAM} from "${projectDir}/modules/samtools/samtools_downsample"
-include {CREATE_BAMLIST} from "${projectDir}/modules/utility_modules/create_bamlist"
+include {SAMTOOLS_DEPTH_VALUE} from "../modules/samtools/samtools_depth_value"
+include {SAMTOOLS_DOWNSAMPLE_BAM} from "../modules/samtools/samtools_downsample"
+include {CREATE_BAMLIST} from "../modules/utility_modules/create_bamlist"
 
-include {QUILT} from "${projectDir}/modules/quilt/run_quilt"
-include {QUILT_TO_QTL2} from "${projectDir}/modules/quilt/quilt_to_qtl2"
-include {QTL2_GENOPROBS} from "${projectDir}/modules/qtl2/genoprobs_lcwgs"
-include {CONCATENATE_GENOPROBS} from "${projectDir}/modules/qtl2/concat_genoprobs_lcwgs"
+include {QUILT} from "../modules/quilt/run_quilt"
+include {QUILT_TO_QTL2} from "../modules/quilt/quilt_to_qtl2"
+include {QTL2_GENOPROBS} from "../modules/qtl2/genoprobs_lcwgs"
+include {CONCATENATE_GENOPROBS} from "../modules/qtl2/concat_genoprobs_lcwgs"
 
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
 
-// log params
-param_log()
+workflow LCWGS_HR {
 
-if (params.download_data && !params.csv_input) {
-    exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
-}
+  // help if needed
+  if (params.help){
+      help()
+      exit 0
+  }
 
-// prepare reads channel
-if (params.csv_input) {
+  // log params
+  param_log()
 
-    ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+  if (params.download_data && !params.csv_input) {
+      exit 1, "Data download was specified with `--download_data`. However, no input CSV file was specified with `--csv_input`. This is an invalid parameter combination. `--download_data` requires a CSV manifest. See `--help` for information."
+  }
 
+  // prepare reads channel
+  if (params.csv_input) {
+
+      ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
+
+      if (params.read_type == 'PE'){
+          ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      } else if (params.read_type == 'SE') {
+          ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
+          ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      }
+
+  } else if (params.concat_lanes){
+    
     if (params.read_type == 'PE'){
-        ch_input_sample.map{it -> [it[0], [it[2], it[3]]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
-    } else if (params.read_type == 'SE') {
-        ch_input_sample.map{it -> [it[0], it[2]]}.set{read_ch}
-        ch_input_sample.map{it -> [it[0], it[1]]}.set{meta_ch}
+      read_ch = channel
+              .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
+              .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
+              .groupTuple()
     }
+    else if (params.read_type == 'SE'){
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
+                  .map { file, file1 -> tuple(getLibraryId(file), file1) }
+                  .groupTuple()
+                  .map{t-> [t[0], t[1].flatten()]}
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
 
-} else if (params.concat_lanes){
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel
-            .fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true, flat:true )
-            .map { file, file1, file2 -> tuple(getLibraryId(file), file1, file2) }
-            .groupTuple()
+  } else {
+    
+    if (params.read_type == 'PE'){
+      read_ch = channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
+    }
+    else if (params.read_type == 'SE'){
+      read_ch = channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
+    }
+      // if channel is empty give error message and exit
+      read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
   }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}", checkExists:true, size:1 )
-                .map { file, file1 -> tuple(getLibraryId(file), file1) }
-                .groupTuple()
-                .map{t-> [t[0], t[1].flatten()]}
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
 
-} else {
-  
-  if (params.read_type == 'PE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/${params.pattern}${params.extension}",checkExists:true )
-  }
-  else if (params.read_type == 'SE'){
-    read_ch = Channel.fromFilePairs("${params.sample_folder}/*${params.extension}",checkExists:true, size:1 )
-  }
-    // if channel is empty give error message and exit
-    read_ch.ifEmpty{ exit 1, "ERROR: No Files Found in Path: ${params.sample_folder} Matching Pattern: ${params.pattern} and file extension: ${params.extension}"}
-}
-
-
-workflow LCWGS_HR{
   // Step 0: Download data and concat Fastq files if needed. 
   if (params.download_data){
       FILE_DOWNLOAD(ch_input_sample)
@@ -155,7 +156,7 @@ workflow LCWGS_HR{
     }
     
     // Use full coverage estimate and specified downsampling levels to subset the bam file
-    downsampleChannel = Channel.fromPath("${params.downsampling_coverage_csv}")
+    downsampleChannel = channel.fromPath("${params.downsampling_coverage_csv}")
                            .splitCsv()
                            .flatten()
     downsampled_bams = coverageFilesChannel.join(SAMTOOLS_DEPTH_VALUE.out.bam_out).combine(downsampleChannel)
@@ -163,7 +164,7 @@ workflow LCWGS_HR{
     SAMTOOLS_DOWNSAMPLE_BAM(downsampled_bams)
     bams = SAMTOOLS_DOWNSAMPLE_BAM.out.downsampled_bam.groupTuple(by: 1)
                                                       .map { bam_files, downsample_to_cov ->
-                                                      def bam_paths = bam_files.collect { it.toString() }
+                                                      def bam_paths = bam_files.collect { it -> it.toString() }
                                                       tuple(bam_files, bam_paths, downsample_to_cov)
                                                       }.set { bam_input_ch }
 
@@ -175,7 +176,7 @@ workflow LCWGS_HR{
                    .collect()
                    .map{bamlist -> [bamlist, "no_downsample"]}
                    .map { bam_paths, downsample_to_cov ->
-                        def bam_files = bam_paths.collect { file(it) }
+                        def bam_files = bam_paths.collect { it -> file(it) }
                         tuple(bam_files, bam_paths, downsample_to_cov)
                       }
                    .set { bam_input_ch }
@@ -183,12 +184,12 @@ workflow LCWGS_HR{
 
   
   CREATE_BAMLIST(bam_input_ch)
-  chrChunks = Channel.fromPath("${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chromosome_chunks.csv")
+  chrChunks = channel.fromPath("${params.ref_haps_dir}/${params.cross_name ? "${params.cross_type}/${params.cross_name}" : params.cross_type}/chromosome_chunks.csv")
                     .splitCsv(header: true)
                     .map {row -> 
-                            [ chr         = row.chr,
-                              chunk_start = row.start,
-                              chunk_stop  = row.stop] }
+                            [ row.chr,
+                              row.start,
+                              row.stop] }
                     .map {it -> [ it[0].toString(), it[1], it[2] ]}
 
   // Run QUILT
@@ -208,14 +209,14 @@ workflow LCWGS_HR{
   CONCATENATE_GENOPROBS(collected_probs)
 
   // MultiQC report
-  ch_multiqc_files = Channel.empty()
-  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it[1] }.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it[1] }.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it[1] }.ifEmpty([]))
-  ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it[1] }.ifEmpty([]))
+  ch_multiqc_files = channel.empty()
+  ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.flagstat.collect { it -> it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.idxstat.collect { it -> it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_STATS.out.stats.collect { it -> it[1] }.ifEmpty([]))
+  ch_multiqc_files = ch_multiqc_files.mix(MOSDEPTH.out.mosdepth.collect { it -> it[1] }.ifEmpty([]))
   
   MULTIQC (
     ch_multiqc_files.collect(),

@@ -18,6 +18,6 @@ process KALLISTO_INSERT_SIZE {
 
     script:
     """
-    python ${projectDir}/bin/rna_fusion/compute_insert_size.py ${kallisto_abundance} > insert_size.txt
+    python ${moduleDir}/bin/compute_insert_size.py ${kallisto_abundance} > insert_size.txt
     """
 }

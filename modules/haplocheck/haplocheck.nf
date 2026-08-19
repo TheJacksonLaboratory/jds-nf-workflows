@@ -1,14 +1,14 @@
 process HAPLOCHECK {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 15.GB
+    cpus 1
+    memory  15.GB
     time 15.hour
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/haplocheck:1.3.3--h2a3209d_2'
 
-    publishDir "${params.pubdir}/${sampleID + '/mt_callers/contamination'}", pattern: "*haplocheck_output.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/mt_callers/contamination'}" }, pattern: "*haplocheck_output.txt", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(tbi)

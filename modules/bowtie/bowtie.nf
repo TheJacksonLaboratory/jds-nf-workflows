@@ -8,7 +8,7 @@ process BOWTIE {
 
     container 'quay.io/jaxcompsci/bowtie-samtools:v1'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.log", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.log", mode: 'copy'
 
     input:
     tuple val(sampleID), path(fq_read), val(paired_read_num)

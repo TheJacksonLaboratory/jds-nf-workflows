@@ -1,7 +1,7 @@
 process IAAP_CLI {
     tag "$sampleID"
     
-    cpus = 1
+    cpus 1
     memory 24.GB
     time '01:30:00'
 
@@ -9,8 +9,8 @@ process IAAP_CLI {
     
     container 'quay.io/jaxcompsci/gtc2vcf_with_tools:v2'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.gtc", mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.log", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.gtc", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.log", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), val(meta), path(red_idat), path(green_idat)

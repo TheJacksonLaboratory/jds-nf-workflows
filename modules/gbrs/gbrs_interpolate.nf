@@ -8,7 +8,7 @@ process GBRS_INTERPOLATE  {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.npz", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.npz", mode: 'copy'
 
     input:
     tuple val(sampleID), path(genoprobs_npz)

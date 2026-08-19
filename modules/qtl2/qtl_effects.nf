@@ -7,9 +7,9 @@ process QTL_EFFECTS {
     
     container 'docker://sjwidmay/lcgbs_hr:latest'
 
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1coef.png", mode:'copy'
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_scan1blup.png", mode:'copy'
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"*_qtl_effect_files.RData", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/${phenotype}" }, pattern:"*_scan1coef.png", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/${phenotype}" }, pattern:"*_scan1blup.png", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/${phenotype}" }, pattern:"*_qtl_effect_files.RData", mode:'copy'
     
     input:
     tuple val(id), val(phenotype), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(covar_file), path(pheno_file), path(covar_info_file), path(map_file), val(chrom), val(peak_pos), val(start_pos), val(end_pos), path(scan1out_file)
@@ -23,7 +23,7 @@ process QTL_EFFECTS {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/qtl_effects.R ${phenotype} \
+    Rscript ${moduleDir}/bin/qtl_effects.R ${phenotype} \
         ${alleleprobs_file} \
         ${kinship_file} \
         ${covar_file} \

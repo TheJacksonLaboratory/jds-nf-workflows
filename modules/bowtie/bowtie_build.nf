@@ -6,7 +6,7 @@ process BOWTIE_BUILD {
 
     container 'quay.io/jaxcompsci/bowtie-samtools:v1'
 
-    publishDir "${params.pubdir}/bowtie", pattern: '*.ebwt', mode:'copy'
+    publishDir path: { "${params.pubdir}/bowtie" }, pattern: '*.ebwt', mode:'copy'
 
     input:
     path(fasta)

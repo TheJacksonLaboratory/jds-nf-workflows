@@ -8,12 +8,11 @@ process APPEND_DROPPED_CHROMS {
 
     container 'hdfgroup/h5py:2.7.0'
 
-    publishDir "${params.pubdir}/g2gtools", pattern: "*.gtf", mode:'copy'
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: "*.gtf", mode:'copy'
 
     input:
     tuple val(strain), path(vci), path(tbi), path(unmapped), path(gtf)
 
-    output:
     output:
     tuple val(strain), path("*.gtf"), emit: appended_gtf
 
@@ -22,7 +21,7 @@ process APPEND_DROPPED_CHROMS {
 
     script:
     """
-    python ${projectDir}/bin/g2gtools/append_dropped_chroms.py -v ${vci} -u ${unmapped} -g ${gtf} -o ${strain}.${params.genome_version}_DroppedChromAppended.gtf
+    python ${moduleDir}/bin/append_dropped_chroms.py -v ${vci} -u ${unmapped} -g ${gtf} -o ${strain}.${params.genome_version}_DroppedChromAppended.gtf
     """
 
     stub:

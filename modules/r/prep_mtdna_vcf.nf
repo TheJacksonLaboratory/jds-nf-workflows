@@ -17,7 +17,7 @@ process PREP_MTDNA_VCF {
     script:
     
     """
-        Rscript ${projectDir}/bin/mitochondria_variant_calling/prep_mtVCF_headers.r \
+        Rscript ${moduleDir}/bin/prep_mtVCF_headers.r \
         --vcf ${vcf} \
         --caller ${caller} \
         --sampleID ${sampleID}_${caller} \

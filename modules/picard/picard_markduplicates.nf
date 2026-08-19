@@ -38,7 +38,7 @@ process PICARD_MARKDUPLICATES {
     M=${sampleID}_dup_metrics.txt \
     REMOVE_DUPLICATES=false \
     CREATE_INDEX=true \
-    TMP_DIR=${workDir}/temp \
+    TMP_DIR=`pwd`/tmp \
     SORTING_COLLECTION_SIZE_RATIO=0.15 \
     MAX_RECORDS_IN_RAM=300000 \
     VALIDATION_STRINGENCY=SILENT

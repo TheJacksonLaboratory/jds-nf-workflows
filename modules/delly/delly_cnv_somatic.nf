@@ -1,14 +1,14 @@
 process DELLY_CNV_SOMATIC {
     tag "$sampleID"
     
-    cpus = 1
+    cpus 1
     memory 80.GB
     time '12:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
     
     container 'quay.io/biocontainers/delly:1.1.6--h6b1aa3f_2'
     
-    publishDir "${params.pubdir}/${sampleID + '/cnv_plots'}", pattern: "*.cov.gz", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/cnv_plots'}" }, pattern: "*.cov.gz", mode: 'copy'
 
     input:
     tuple val(sampleID), val(meta), path(normal_bam), path(normal_bai), val(normal_name), path(tumor_bam), path(tumor_bai), val(tumor_name)

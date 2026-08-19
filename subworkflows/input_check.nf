@@ -2,7 +2,7 @@
 // Check input samplesheet and get read channels
 //
 
-include {SAMPLESHEET_CHECK} from "${projectDir}/modules/utility_modules/samplesheet_check"
+include {SAMPLESHEET_CHECK} from "../modules/utility_modules/samplesheet_check"
 
 workflow INPUT_CHECK {
     take:
@@ -12,17 +12,18 @@ workflow INPUT_CHECK {
     SAMPLESHEET_CHECK ( samplesheet )
         .csv
         .splitCsv ( header:true, sep:',' )
-        .map { create_fastq_channel(it) }
+        .map { it -> create_fastq_channel(it) }
         .set { reads }
-
+    second_val = channel.value(42)
     emit:
-    reads                                     // channel: [ val(meta), [ reads ] ]
+    reads = reads                                    // channel: [ val(meta), [ reads ] ]
+    second_val = second_val
     //versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
 // Function to get list of [ meta, [ fastq_1 ] ]
 def create_fastq_channel(LinkedHashMap row) {
-    def meta = row.findAll {it.key != "fastq_1"}
+    def meta = row.findAll { it -> it.key != "fastq_1"}
     if (!file(row.fastq_1).exists()) {
         exit 1, "ERROR: Please check input samplesheet -> Read 1 FastQ file does not exist!\n${row.fastq_1}"
     }

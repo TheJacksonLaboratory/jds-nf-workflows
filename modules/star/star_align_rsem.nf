@@ -8,8 +8,8 @@ process STAR_ALIGN {
 
     container 'quay.io/jaxcompsci/rsem_bowtie2_star:0.1.0'
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*genome.sorted.ba*", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*transcript.sorted.ba*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern: "*genome.sorted.ba*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern: "*transcript.sorted.ba*", mode:'copy'
 
     input:
     tuple val(sampleID), path(reads), val(read_length)
@@ -33,13 +33,13 @@ process STAR_ALIGN {
     read_length = read_length.toInteger()
 
     if( read_length >= 65 && read_length <= 85) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { "$it" }.join(' ')
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_75/*").collect { it -> "$it" }.join(' ')
     } else if( read_length >= 90 && read_length <= 110 ) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { "$it" }.join(' ')
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_100/*").collect { it -> "$it" }.join(' ')
     } else if( read_length >= 115 && read_length <= 135 ) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_125/*").collect { "$it" }.join(' ')
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_125/*").collect { it -> "$it" }.join(' ')
     } else if( read_length >= 140 && read_length <= 160 ) {
-        rsem_ref_files = file("${rsem_ref_path}/STAR/${rsem_star_prefix}_150/*").collect { "$it" }.join(' ')
+        rsem_ref_files = files("${rsem_ref_path}/STAR/${rsem_star_prefix}_150/*").collect { it -> "$it" }.join(' ')
     } else {
         log.info("\nUnsupported read length " + read_length + " in RSEM with STAR. RSEM will now fail gracefully.\n\n")
         rsem_ref_files = 'error'

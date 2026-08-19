@@ -1,14 +1,13 @@
 // Function to extract information (meta data + file(s)) from csv file(s)
 // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L1084
 
-ANSI_RED = "\u001B[31m";
-ANSI_RESET = "\u001B[0m";
-
 def extract_csv(csv_file) {
+    def ANSI_RED = "\u001B[31m"
+    def ANSI_RESET = "\u001B[0m"
+
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
     file(csv_file).withReader('UTF-8') { reader ->
-        def line, numberOfLinesInSampleSheet = 0;
-        while ((line = reader.readLine()) != null) {numberOfLinesInSampleSheet++}
+        def numberOfLinesInSampleSheet = reader.readLines().size()
         if (numberOfLinesInSampleSheet < 2) {
             System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, so at least two lines." + ANSI_RESET)
@@ -17,7 +16,7 @@ def extract_csv(csv_file) {
         }
     }
 
-    Channel.from(csv_file).splitCsv(header: true)
+    channel.from(csv_file).splitCsv(header: true)
         .map{ row ->
             if (!(row.sampleID) | !(row.outputID) | !(row.gvcf) ){
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
@@ -28,8 +27,8 @@ def extract_csv(csv_file) {
             }
             [row.sampleID.toString(), row]
         }.groupTuple()
-        .map{ meta, rows ->
-            size = rows.size()
+        .map{ _meta, rows ->
+            def size = rows.size()
             [rows, size]
         }.transpose()
         .map{ row, numLanes -> //from here do the usual thing for csv parsing
@@ -48,14 +47,14 @@ def extract_csv(csv_file) {
         /* 
             NOTE: Additional ID parsing could be added here. For example a concatenation of patient and sample, if those fields were added to the csv sheet. 
         */
-        meta.size = size
+        meta.size = numLanes
         // defines the number of lanes for each sample. 
 
         // join meta to gvcf
         try {
             file(row.gvcf, checkIfExists: true)
         }
-        catch (Exception e) {
+        catch (Exception _e) {
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
             System.err.println(ANSI_RED + "The file: " + row.gvcf + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
             System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)

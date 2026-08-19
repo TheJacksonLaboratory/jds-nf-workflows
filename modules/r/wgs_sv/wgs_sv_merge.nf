@@ -8,7 +8,7 @@ process SV_MERGE {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}/merged_sv", pattern:"*.bedpe", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}/merged_sv" }, pattern:"*.bedpe", mode:'copy'
 
     input:
         tuple val(sampleID), file(vcf_tuple)
@@ -20,12 +20,12 @@ process SV_MERGE {
 
     script:
     
-    listOfChroms = chrom_list.collect { "$it" }.join(',')
+    listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
     if (params.workflow == "wgs" || params.workflow == "wgs_sv_bam") {
 
         """
-            Rscript ${projectDir}/bin/wgs/merge_sv.r \
+            Rscript ${moduleDir}/bin/merge_sv.r \
             --vcf=${vcf_tuple[0]},${vcf_tuple[1]},${vcf_tuple[2]},${vcf_tuple[3]} \
             --callers=manta,delly,lumpy,svaba \
             --sample_name=${sampleID} \
@@ -41,7 +41,7 @@ process SV_MERGE {
     } else if (params.workflow == "wgs_long_read") {
 
         """
-            Rscript ${projectDir}/bin/wgs/merge_sv.r \
+            Rscript ${moduleDir}/bin/merge_sv.r \
             --vcf=${vcf_tuple[0]},${vcf_tuple[1]} \
             --callers=sniffles,pbsv \
             --sample_name=${sampleID} \

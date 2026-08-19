@@ -1,16 +1,16 @@
 process SNPEFF{
     tag "$sampleID"
 
-    cpus = 1
-    memory = 16.GB
-    time = '06:00:00'
+    cpus 1
+    memory  16.GB
+    time '06:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/jaxcompsci/snpeff_snpsift_5.1:v5.1d'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.*", mode:'copy', enabled: params.gen_org=='mouse' ? true : params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.*", mode:'copy', enabled: params.workflow=='amplicon_generic' ? true : params.keep_intermediate
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*mtdna_mergedCallers_annotated.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.*", mode:'copy', enabled: params.gen_org=='mouse' ? true : params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.*", mode:'copy', enabled: params.workflow=='amplicon_generic' ? true : params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*mtdna_mergedCallers_annotated.vcf", mode:'copy'
 
     input:
     tuple val(sampleID),file(vcf)

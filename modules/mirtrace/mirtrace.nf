@@ -1,20 +1,18 @@
 process MIRTRACE_RUN {
-    tag "$sampleID"
 
     cpus 6
     memory 85.GB
     time '08:00:00'
 
-
     container 'quay.io/biocontainers/mirtrace:1.0.1--hdfd78af_1'
 
-    publishDir "${params.pubdir}", pattern: "mirtrace/*", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "mirtrace/*", mode:'copy'
 
     input:
     tuple val(adapter), val(ids), path(reads)
 
     output:
-    path "mirtrace/*"  , emit: mirtrace
+    path "mirtrace/*", emit: mirtrace
 
     when:
     task.ext.when == null || task.ext.when

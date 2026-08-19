@@ -8,7 +8,7 @@ process R_MERGE_DEPTHS {
 
     container 'rocker/tidyverse:4.2.1'    
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy', pattern: "${sampleID}.survivor_joined_results_depths.csv"
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy', pattern: "*.survivor_joined_results_depths.csv"
 
     input:
         tuple val(sampleID), path(nanosv_depths), path(sniffles_depths), path(survivor_ids), path(summary_table)
@@ -17,6 +17,6 @@ process R_MERGE_DEPTHS {
         tuple val(sampleID), file("${sampleID}.merged_depths.bed"), emit: bed
     script:
         """
-        /usr/bin/env Rscript ${projectDir}/bin/germline_sv/merge_depths.R ${sampleID} ${nanosv_depths} ${sniffles_depths} ${survivor_ids} ${summary_table}
+        /usr/bin/env Rscript ${moduleDir}/bin/merge_depths.R ${sampleID} ${nanosv_depths} ${sniffles_depths} ${survivor_ids} ${summary_table}
         """
 }

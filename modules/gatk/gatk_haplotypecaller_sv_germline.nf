@@ -1,14 +1,14 @@
 process GATK_HAPLOTYPECALLER_SV_GERMLINE {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 15.GB
-    time = '10:00:00'
+    cpus 1
+    memory  15.GB
+    time '10:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/callers'}", pattern: "*.*vcf", mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID + '/callers'}" }, pattern: "*.*vcf", mode:'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), val(meta), path(normal_bam), path(normal_bai), val(read_name), path(interval), val(index)

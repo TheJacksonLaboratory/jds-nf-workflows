@@ -2,213 +2,155 @@
 
 nextflow.enable.dsl=2
 
-// import workflow of interest
-if (params.workflow == "rnaseq"){
-  include {RNASEQ} from './workflows/rnaseq'
-}
-else if (params.workflow == "wes"){
-  include {WES} from './workflows/wes'
-}
-else if (params.workflow == "somatic_wes"){
-  include {SOMATIC_WES} from './workflows/somatic_wes'
-}
-else if (params.workflow == "somatic_wes_pta"){
-  include {SOMATIC_WES_PTA} from './workflows/somatic_wes_pta'
-}
-else if (params.workflow == "wgs"){
-  include {WGS} from './workflows/wgs'
-}
-else if (params.workflow == "rrbs"){
-  include {RRBS} from './workflows/rrbs'
-}
-else if (params.workflow == "atac"){
-  include {ATAC} from './workflows/atac'
-}
-else if (params.workflow == "chipseq"){
-  include {CHIPSEQ} from './workflows/chipseq'
-}
-else if (params.workflow == "pta"){
-  include {PTA} from './workflows/pta'
-} 
-else if (params.workflow == "rna_fusion"){
-  include {RNA_FUSION} from './workflows/rna_fusion'
-}
-else if (params.workflow == "generate_pseudoreference"){
-  include {GENERATE_PSEUDOREFERENCE} from './workflows/generate_pseudoreference'
-}
-else if (params.workflow == "prepare_emase"){
-  include {PREPARE_EMASE} from './workflows/prepare_emase'
-}
-else if (params.workflow == "prep_do_gbrs_inputs"){
-  include {PREP_DO_GBRS_INPUT} from './subworkflows/prep_do_gbrs_inputs'
-}
-else if (params.workflow == "emase"){
-  include {EMASE} from './workflows/emase'
-}
-else if (params.workflow == "gbrs"){
-  include {GBRS} from './workflows/gbrs'
-}
-else if (params.workflow == "amplicon"){
-  include {AMPLICON} from './workflows/amplicon_fingerprint'
-}
-else if (params.workflow == "amplicon_generic"){
-  include {AMPLICON} from './workflows/amplicon_generic'
-}
-else if (params.workflow == "ancestry"){
-  include {ANCESTRY_RUN} from './workflows/ancestry'
-}
-else if (params.workflow == "germline_sv") { // MMRSVDB
-  include {GERMLINE_SV} from "./workflows/germline_sv"
-}
-else if (params.workflow == "smrnaseq"){
-  include {SMRNASEQ} from './workflows/smrnaseq'
-}
-else if (params.workflow == "cnv_array"){
-  include {CNV_ARRAY} from './workflows/cnv_array'
-}
-else if (params.workflow == "generate_rnaseq_index"){
-  include {GENERATE_RNASEQ_INDEX} from './subworkflows/generate_rnaseq_index'
-}
-else if (params.workflow == "generate_rnaseq_simreads"){
-  include {GENERATE_RNASEQ_SIMREADS} from './supportworkflows/generate_rnaseq_simreads'
-}
-else if (params.workflow == "generate_wgs_simreads"){
-  include {GENERATE_WGS_SIMREADS} from './supportworkflows/generate_wgs_simreads'
-}
-else if (params.workflow == "generate_wes_simreads"){
-  include {GENERATE_WES_SIMREADS} from './supportworkflows/generate_wes_simreads'
-}
-else if (params.workflow == "joint_gvcf_calling"){
-  include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
-}
-else if (params.workflow == "qtl_mapping"){
-  include {QTL_MAPPING} from './workflows/qtl_mapping'
-}
-else if (params.workflow == "haplotype_reconstruction"){
-  include {HAPLOTYPE_RECONSTRUCTION} from './workflows/haplotype_reconstruction'
-}
-else if (params.workflow == "mitochondria_variant_calling"){
-  include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
-} 
-else if (params.workflow == "wgs_long_read"){
-  include {WGS_LONG_READ} from './workflows/wgs_long_read'
-}
-else if (params.workflow == "reannotate_pta"){
-  include {REANNOTATE_PTA} from './subworkflows/reannotate_pta'
-}
-else if (params.workflow == "wgs_sv_bam"){
-  include {WGS_SV_BAM} from './workflows/wgs_sv_bam'
-}
-else if (params.workflow == "lcwgs_hr"){
-  include {LCWGS_HR} from './workflows/lcwgs_hr'
-}
-else if (params.workflow == "bam_to_fastq"){
-  include {BAM_TO_FASTQ} from './subworkflows/bam_to_fastq'
-}
-else {
-  // if workflow name is not supported: 
-  exit 1, "ERROR: No valid pipeline called. '--workflow ${params.workflow}' is not a valid workflow name."
-}
+include {AMPLICON_FINGERPRINT} from './workflows/amplicon_fingerprint'
+include {AMPLICON_GENERIC} from './workflows/amplicon_generic'
+include {ANCESTRY_RUN} from './workflows/ancestry'
+include {ATAC} from './workflows/atac'
+include {BAM_TO_FASTQ} from './supportworkflows/bam_to_fastq'
+include {CHIPSEQ} from './workflows/chipseq'
+include {CNV_ARRAY} from './workflows/cnv_array'
+include {EMASE} from './workflows/emase'
+include {GBRS} from './workflows/gbrs'
+include {GENERATE_PSEUDOREFERENCE} from './workflows/generate_pseudoreference'
+include {GENERATE_RNASEQ_INDEX} from './supportworkflows/generate_rnaseq_index'
+include {GENERATE_RNASEQ_SIMREADS} from './supportworkflows/generate_rnaseq_simreads'
+include {GENERATE_WES_SIMREADS} from './supportworkflows/generate_wes_simreads'
+include {GENERATE_WGS_SIMREADS} from './supportworkflows/generate_wgs_simreads'
+include {GERMLINE_SV} from "./workflows/germline_sv" // MMRSVDB
+include {HAPLOTYPE_RECONSTRUCTION} from './workflows/haplotype_reconstruction'
+include {JOINT_GVCF_CALLING} from './workflows/joint_gvcf_calling'
+include {LCWGS_HR} from './workflows/lcwgs_hr'
+include {MITOCHONDRIA_VARIANT_CALLING} from './workflows/mitochondria_variant_calling'
+include {PREPARE_EMASE} from './workflows/prepare_emase'
+include {PREP_DO_GBRS_INPUT} from './supportworkflows/prep_do_gbrs_inputs'
+include {PTA} from './workflows/pta'
+include {QTL_MAPPING} from './workflows/qtl_mapping'
+include {REANNOTATE_PTA} from './supportworkflows/reannotate_pta'
+include {RNA_FUSION} from './workflows/rna_fusion'
+include {RNASEQ} from './workflows/rnaseq'
+include {RRBS} from './workflows/rrbs'
+include {SMRNASEQ} from './workflows/smrnaseq'
+include {SOMATIC_WES} from './workflows/somatic_wes'
+include {SOMATIC_WES_PTA} from './workflows/somatic_wes_pta'
+include {WES} from './workflows/wes'
+include {WGS} from './workflows/wgs'
+include {WGS_LONG_READ} from './workflows/wgs_long_read'
+include {WGS_SV_BAM} from './workflows/wgs_sv_bam'
 
 // conditional to launch appropriate workflow
 workflow{
-  if (params.workflow == "rnaseq"){
-    RNASEQ()
-    }
-  if (params.workflow == "wes"){
-    WES()
-    }
-  if (params.workflow == "somatic_wes"){
-    SOMATIC_WES()
+  println([
+    '',
+    '_____ _____  ______     __   _ _____     _  _  _  ____   _____ _     _ _____        ____  _  _  _ ______',
+    '  |   |    \\ |_____ ___ | \\  | |____ ___ |  |  | |    | |____/ |____/  |____ |     |    | |  |  | |_____',
+    '__|   |____/ _____|     |  \\_| |         |__|__| |____| |   \\_ |    \\_ |     |____ |____| |__|__| _____|'
+  ].join('\n'))
+
+  // The logo looks incorrect above, but the backslashes need to be escaped in the string. The actual string is a logo for the pipeline.
+
+  if (params.workflow == "amplicon" || params.workflow == "amplicon_fingerprint"){
+     AMPLICON_FINGERPRINT()
   }
-  if (params.workflow == "somatic_wes_pta"){
-    SOMATIC_WES_PTA()
+  else if (params.workflow == "amplicon_generic"){
+    AMPLICON_GENERIC()
   }
-  if (params.workflow == "wgs"){
-    WGS()
-    }
-  if (params.workflow == "rrbs"){
-    RRBS()
-    }
-  if (params.workflow == "atac"){
-    ATAC()
-    } 
-  if (params.workflow == "chipseq"){
-    CHIPSEQ()
-    }
-  if (params.workflow == "pta"){
-    PTA()
-  } 
-  if (params.workflow == "rna_fusion"){
-    RNA_FUSION()
-  }
-  if (params.workflow == "generate_pseudoreference") {
-    GENERATE_PSEUDOREFERENCE()
-  }
-  if (params.workflow == "prepare_emase"){
-    PREPARE_EMASE()
-  }
-  if (params.workflow == "emase"){
-    EMASE()
-  }
-  if (params.workflow == "gbrs"){
-    GBRS()
-  }
-  if (params.workflow == "prep_do_gbrs_inputs"){
-    PREP_DO_GBRS_INPUT()
-  }
-  if (params.workflow == "amplicon" || params.workflow == "amplicon_generic"){
-    AMPLICON()
-  }
-  if (params.workflow == "ancestry"){
+  else if (params.workflow == "ancestry"){
     ANCESTRY_RUN()
   }
-  if (params.workflow == "germline_sv"){
-    GERMLINE_SV()
+  else if (params.workflow == "atac"){
+    ATAC()
   }
-  if (params.workflow == "smrnaseq"){
-    SMRNASEQ()
+  else if (params.workflow == "bam_to_fastq"){
+    BAM_TO_FASTQ()
   }
-  if (params.workflow == "cnv_array"){
+  else if (params.workflow == "chipseq"){
+    CHIPSEQ()
+  }
+  else if (params.workflow == "cnv_array"){
     CNV_ARRAY()
   }
-  if (params.workflow == "generate_rnaseq_index"){
+  else if (params.workflow == "emase"){
+    EMASE()
+  }
+  else if (params.workflow == "gbrs"){
+    GBRS()
+  }
+  else if (params.workflow == "generate_pseudoreference") {
+    GENERATE_PSEUDOREFERENCE()
+  }
+  else if (params.workflow == "generate_rnaseq_index"){
     GENERATE_RNASEQ_INDEX()
   }
-  if (params.workflow == "generate_rnaseq_simreads"){
+  else if (params.workflow == "generate_rnaseq_simreads"){
     GENERATE_RNASEQ_SIMREADS()
   }
-  if (params.workflow == "generate_wgs_simreads"){
-    GENERATE_WGS_SIMREADS()
-  }
-  if (params.workflow == "generate_wes_simreads"){
+  else if (params.workflow == "generate_wes_simreads"){
     GENERATE_WES_SIMREADS()
   }
-  if (params.workflow == "joint_gvcf_calling"){
-    JOINT_GVCF_CALLING()
+  else if (params.workflow == "generate_wgs_simreads"){
+    GENERATE_WGS_SIMREADS()
   }
-  if (params.workflow == "wgs_long_read"){
-    WGS_LONG_READ()
+  else if (params.workflow == "germline_sv"){
+    GERMLINE_SV()
   }
-  if (params.workflow == "mitochondria_variant_calling"){
-    MITOCHONDRIA_VARIANT_CALLING()
-  }
-  if (params.workflow == "qtl_mapping"){
-    QTL_MAPPING()
-  }
-  if (params.workflow == "haplotype_reconstruction"){
+  else if (params.workflow == "haplotype_reconstruction"){
     HAPLOTYPE_RECONSTRUCTION()
   }
-  if (params.workflow == "reannotate_pta"){
-    REANNOTATE_PTA()
+  else if (params.workflow == "joint_gvcf_calling"){
+    JOINT_GVCF_CALLING()
   }
-  if (params.workflow == "wgs_sv_bam"){
-    WGS_SV_BAM()
-  }
-  if (params.workflow == "lcwgs_hr"){
+  else if (params.workflow == "lcwgs_hr"){
     LCWGS_HR()
   }
-  if (params.workflow == "bam_to_fastq"){
-    BAM_TO_FASTQ()
+  else if (params.workflow == "mitochondria_variant_calling"){
+    MITOCHONDRIA_VARIANT_CALLING()
+  }
+  else if (params.workflow == "prepare_emase"){
+    PREPARE_EMASE()
+  }
+  else if (params.workflow == "prep_do_gbrs_inputs"){
+    PREP_DO_GBRS_INPUT()
+  }
+  else if (params.workflow == "pta"){
+    PTA()
+  }
+  else if (params.workflow == "qtl_mapping"){
+    QTL_MAPPING()
+  }
+  else if (params.workflow == "reannotate_pta"){
+    REANNOTATE_PTA()
+  }
+  else if (params.workflow == "rna_fusion"){
+    RNA_FUSION()
+  }
+  else if (params.workflow == "rnaseq"){
+    RNASEQ()
+  }
+  else if (params.workflow == "rrbs"){
+    RRBS()
+  }
+  else if (params.workflow == "smrnaseq"){
+    SMRNASEQ()
+  }
+  else if (params.workflow == "wes"){
+    WES()
+  }
+  else if (params.workflow == "somatic_wes"){
+    SOMATIC_WES()
+  }
+  else if (params.workflow == "somatic_wes_pta"){
+    SOMATIC_WES_PTA()
+  }
+  else if (params.workflow == "wgs"){
+    WGS()
+  }
+  else if (params.workflow == "wgs_long_read"){
+    WGS_LONG_READ()
+  }
+  else if (params.workflow == "wgs_sv_bam"){
+    WGS_SV_BAM()
+  }
+  else {
+    exit 1, "Invalid workflow specified: ${params.workflow}. Please specify a valid workflow using the `--workflow` parameter. See `--help` for information."
   }
 }

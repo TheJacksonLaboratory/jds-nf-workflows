@@ -20,8 +20,7 @@ process GENOPROBS {
   current_dir=\$(echo pwd)
   hash=\$(\$current_dir | tail -c 9)
   echo \$hash
-  Rscript --vanilla ${projectDir}/bin/qtl/calcGenoProbs.R
+  Rscript --vanilla ${moduleDir}/bin/qtl_calcGenoProbs.R
   mv pr_36state.rds pr_36state_\$hash.rds
-
   """
 }

@@ -8,7 +8,7 @@ process GATK_COMBINEGVCFS_INTERVALS {
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    // publishDir "${params.pubdir}/${sampleID}", pattern: "*.gvcf", mode:'copy'
+    // publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.gvcf", mode:'copy'
 
     input:
     tuple val(sampleID), path(gvcf), path(idx), val(chrom)
@@ -21,7 +21,7 @@ process GATK_COMBINEGVCFS_INTERVALS {
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
 
-    inputs = gvcf.collect { "--variant $it" }.join(' ')
+    inputs = gvcf.collect { it -> "--variant $it" }.join(' ')
 
     """
     mkdir -p tmp

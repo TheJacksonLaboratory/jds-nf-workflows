@@ -1,14 +1,14 @@
 process BCFTOOLS_MERGECALLERS {
     tag "$sampleID"
     
-    cpus = 8
-    memory = 6.GB
-    time = '06:00:00'
+    cpus 8
+    memory  6.GB
+    time '06:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/biocontainers/bcftools:1.15--h0ea216a_2'
     
-    publishDir "${params.pubdir}/${sampleID + '/mt_callers'}", pattern: "*.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/mt_callers'}" }, pattern: "*.vcf", mode:'copy'
 
     input:
     tuple val(sampleID), file(vcf), file(idx)
@@ -18,10 +18,10 @@ process BCFTOOLS_MERGECALLERS {
 
     script:
 
-    def mutect2_vcf = vcf.find { it.name.contains('mutect2') }
-    def mity_vcf = vcf.find { it.name.contains('mity') }
-    def mutserve_vcf = vcf.find { it.name.contains('mutserve') }
-    def ordered_vcfs = [mutect2_vcf, mity_vcf, mutserve_vcf].findAll { it != null }*.name.join(' ')
+    def mutect2_vcf = vcf.find { it -> it.name.contains('mutect2') }
+    def mity_vcf = vcf.find { it -> it.name.contains('mity') }
+    def mutserve_vcf = vcf.find { it -> it.name.contains('mutserve') }
+    def ordered_vcfs = [mutect2_vcf, mity_vcf, mutserve_vcf].findAll { it -> it != null }*.name.join(' ')
 
     """
     bcftools \

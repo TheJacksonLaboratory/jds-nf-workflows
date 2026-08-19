@@ -19,7 +19,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'Sample_42',
                         'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/human/Sample_42_realigned_BQSR.bam', 
@@ -50,7 +50,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'Sample_42',
                         'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/mouse/mm10_WGS_dedup.bam', 
@@ -81,7 +81,7 @@ nextflow_workflow {
             workflow {
                 """
                 // define inputs of the workflow here. Example:
-                input[0] = Channel.fromList([
+                input[0] = channel.fromList([
                     tuple(
                         'Sample_42',
                         'https://raw.githubusercontent.com/TheJacksonLaboratory/jds-nf-test/main/wgs/sv/mouse/Sample_42_dedup.bam', 

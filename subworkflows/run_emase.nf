@@ -1,12 +1,12 @@
 #!/usr/bin/env nextflow
 nextflow.enable.dsl=2
 
-include {BOWTIE} from "${projectDir}/modules/bowtie/bowtie"
-include {EMASE_BAM2EMASE} from "${projectDir}/modules/emase/emase_bam2emase"
+include {BOWTIE} from "../modules/bowtie/bowtie"
+include {EMASE_BAM2EMASE} from "../modules/emase/emase_bam2emase"
 include {GBRS_COMPRESS as GBRS_COMPRESS_SE;
-         GBRS_COMPRESS as GBRS_COMPRESS_PE} from "${projectDir}/modules/gbrs/gbrs_compress"
-include {EMASE_GET_COMMON_ALIGNMENT} from "${projectDir}/modules/emase/emase_get_common_alignment"
-include {GBRS_QUANTIFY} from "${projectDir}/modules/gbrs/gbrs_quantify"
+         GBRS_COMPRESS as GBRS_COMPRESS_PE} from "../modules/gbrs/gbrs_compress"
+include {EMASE_GET_COMMON_ALIGNMENT} from "../modules/emase/emase_get_common_alignment"
+include {GBRS_QUANTIFY} from "../modules/gbrs/gbrs_quantify"
 
 workflow RUN_EMASE {
 
@@ -24,7 +24,7 @@ workflow RUN_EMASE {
         if (params.read_type == 'PE'){
             emase_common_align_pairedReads_input = EMASE_BAM2EMASE.out.emase_h5
                                                 .groupTuple(size: 2)
-                                                .map { sampleID, reads -> tuple( sampleID, reads.sort{it.name} ) }
+                                                .map { sampleID, reads -> tuple( sampleID, reads.sort{ it -> it.name} ) }
             // collect EMASE files by sample ID then map and sort tuple to [sampleID, [R1, R2]]
 
             EMASE_GET_COMMON_ALIGNMENT(emase_common_align_pairedReads_input)
@@ -63,7 +63,7 @@ Note 1: `emase run` can be used as an alternative module to provide near identic
         Files that are output by run-emase, are identical to `gbrs quantify`. 
         Should the user wish, the include and run statements for `run-emase` are provided as an alternative to `gbrs quantify`.
 
-    include {EMASE_RUN} from "${projectDir}/modules/emase/emase_run"
+    include {EMASE_RUN} from "../modules/emase/emase_run"
 
     EMASE_RUN(gbrs_quantify_input)
 

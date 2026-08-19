@@ -8,7 +8,7 @@ process PYTHON_ANNOT_ON_TARGET {
 
     container 'quay.io/biocontainers/pysam:0.15.2--py36h02877da_7'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy'
 
     input:
         tuple val(sampleID), path(vcf)
@@ -19,7 +19,7 @@ process PYTHON_ANNOT_ON_TARGET {
 
     if (params.data_type == "ont" && params.targ_chr && params.targ_start && params.targ_end)
         """
-        /usr/bin/env python ${projectDir}/bin/germline_sv/annot_vcf_with_on_target.py \
+        /usr/bin/env python ${moduleDir}/bin/annot_vcf_with_on_target.py \
             -v ${vcf} \
             -c ${params.targ_chr} \
             -s ${params.targ_start} \
@@ -28,7 +28,7 @@ process PYTHON_ANNOT_ON_TARGET {
         """
     else if (params.data_type == "ont")
         """
-        /usr/bin/env python ${projectDir}/bin/germline_sv/annot_vcf_with_on_target.py \
+        /usr/bin/env python ${moduleDir}/bin/annot_vcf_with_on_target.py \
             -v ${vcf} \
             -c NA \
             -s NA \

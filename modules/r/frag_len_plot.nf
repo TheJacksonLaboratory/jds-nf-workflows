@@ -6,7 +6,7 @@ process FRAG_LEN_PLOT {
     time '04:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*fraglen_plot.pdf", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*fraglen_plot.pdf", mode: 'copy'
     container 'quay.io/jaxcompsci/rstudio:4.2.0' 
 
     input:
@@ -18,7 +18,7 @@ process FRAG_LEN_PLOT {
 
     script:
     """
-    Rscript ${projectDir}/bin/atac/fragment_length_plot.R ${frag_len_count} ${sampleID}_spline_table.txt
+    Rscript ${moduleDir}/bin/fragment_length_plot.R ${frag_len_count} ${sampleID}_spline_table.txt
     mv fraglen_plot.pdf ${sampleID}_fraglen_plot.pdf
     """
 }

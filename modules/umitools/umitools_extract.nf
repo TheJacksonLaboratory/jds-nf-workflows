@@ -8,7 +8,7 @@ process UMITOOLS_EXTRACT {
     
     container "quay.io/biocontainers/umi_tools:1.1.6--py311haab0aaa_0"
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "${sampleID}.umi.log", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.umi.log", mode:'copy'
 
     input:
     tuple val(sampleID), path(reads)

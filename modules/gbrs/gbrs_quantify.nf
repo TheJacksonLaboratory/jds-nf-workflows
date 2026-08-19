@@ -8,12 +8,12 @@ process GBRS_QUANTIFY {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.multiway.isoforms.tpm", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.multiway.isoforms.expected_read_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.multiway.isoforms.alignment_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.multiway.genes.tpm", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.multiway.genes.expected_read_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/emase'}", pattern: "*.multiway.genes.alignment_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.multiway.isoforms.tpm", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.multiway.isoforms.expected_read_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.multiway.isoforms.alignment_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.multiway.genes.tpm", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.multiway.genes.expected_read_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/emase'}" }, pattern: "*.multiway.genes.alignment_counts", mode: 'copy'
 
     input:
     tuple val(sampleID), path(h5)

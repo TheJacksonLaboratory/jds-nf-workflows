@@ -8,7 +8,7 @@ process G2GTOOLS_EXTRACT {
 
     container 'quay.io/jaxcompsci/g2gtools:74926ad'
 
-    publishDir "${params.pubdir}/g2gtools", pattern: '*.fa', mode:'copy'
+    publishDir path: { "${params.pubdir}/g2gtools" }, pattern: '*.fa', mode:'copy'
 
     input:
     tuple val(strain), path(final_fasta), path(db)

@@ -2,102 +2,101 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/somatic_wes.nf"
-include {param_log} from "${projectDir}/bin/log/somatic_wes.nf"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
+include {help} from "../bin/help/somatic_wes.nf"
+include {param_log} from "../bin/log/somatic_wes.nf"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
 
-include {CONCATENATE_PTA_FASTQ} from "${projectDir}/subworkflows/concatenate_pta_fastq"
+include {CONCATENATE_PTA_FASTQ} from "../subworkflows/concatenate_pta_fastq"
 
-include {FASTP} from "${projectDir}/modules/fastp/fastp"
-include {FASTQC} from "${projectDir}/modules/fastqc/fastqc"
-include {OPTITYPE_RUN} from "${projectDir}/modules/optitype/optitype_run"
+include {FASTP} from "../modules/fastp/fastp"
+include {FASTQC} from "../modules/fastqc/fastqc"
+include {XENGSORT_INDEX} from "../modules/xengsort/xengsort_index"
+include {XENGSORT_CLASSIFY} from "../modules/xengsort/xengsort_classify"
+include {OPTITYPE_RUN} from "../modules/optitype/optitype_run"
+// include {GZIP} from "../modules/utility_modules/gzip"
+include {READ_GROUPS} from "../modules/utility_modules/read_groups"
+include {BWA_MEM} from "../modules/bwa/bwa_mem"
+include {PICARD_SORTSAM} from "../modules/picard/picard_sortsam"
+include {PICARD_MARKDUPLICATES} from "../modules/picard/picard_markduplicates"
+include {GATK_BASERECALIBRATOR} from "../modules/gatk/gatk_baserecalibrator_interval"
+include {GATK_GATHERBQSRREPORTS} from "../modules/gatk/gatk_gatherbqsrreports"
+include {GATK_APPLYBQSR} from "../modules/gatk/gatk_applybqsr"
 
-include {XENGSORT_INDEX} from "${projectDir}/modules/xengsort/xengsort_index"
-include {XENGSORT_CLASSIFY} from "${projectDir}/modules/xengsort/xengsort_classify"
-// include {GZIP} from "${projectDir}/modules/utility_modules/gzip"
-include {READ_GROUPS} from "${projectDir}/modules/utility_modules/read_groups"
-include {BWA_MEM} from "${projectDir}/modules/bwa/bwa_mem"
-include {PICARD_SORTSAM} from "${projectDir}/modules/picard/picard_sortsam"
-include {PICARD_MARKDUPLICATES} from "${projectDir}/modules/picard/picard_markduplicates"
-include {GATK_BASERECALIBRATOR} from "${projectDir}/modules/gatk/gatk_baserecalibrator_interval"
-include {GATK_GATHERBQSRREPORTS} from "${projectDir}/modules/gatk/gatk_gatherbqsrreports"
-include {GATK_APPLYBQSR} from "${projectDir}/modules/gatk/gatk_applybqsr"
-
-include {ANCESTRY} from "${projectDir}/workflows/ancestry"
+include {ANCESTRY} from "../workflows/ancestry"
 
 include {GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_NORMAL;
-         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "${projectDir}/modules/gatk/gatk_getsamplename"
+         GATK_GETSAMPLENAME as GATK_GETSAMPLENAME_TUMOR} from "../modules/gatk/gatk_getsamplename"
 
-include {CNV} from "${projectDir}/subworkflows/somatic_wes_pta_cnv"
+include {CNV} from "../subworkflows/somatic_wes_pta_cnv"
 
 include {GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_SNP;
-         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "${projectDir}/modules/gatk/gatk_variantfiltration_mutect2"
+         GATK_VARIANTFILTRATION as GATK_VARIANTFILTRATION_INDEL} from "../modules/gatk/gatk_variantfiltration_mutect2"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
-         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "${projectDir}/modules/gatk/gatk_selectvariants"
-include {GATK_MUTECT2} from "${projectDir}/modules/gatk/gatk_mutect2_wes_pta"
+         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants"
+include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2_wes_pta"
 
 include {GATK_GETPILEUPSUMMARIES as GATK_GETPILEUPSUMMARIES_NORMAL;
-         GATK_GETPILEUPSUMMARIES as GATK_GETPILEUPSUMMARIES_TUMOR} from "${projectDir}/modules/gatk/gatk_getpileupsummaries"
-include {GATK_CALCULATECONTAMINATION} from "${projectDir}/modules/gatk/gatk_calculatecontamination"
+         GATK_GETPILEUPSUMMARIES as GATK_GETPILEUPSUMMARIES_TUMOR} from "../modules/gatk/gatk_getpileupsummaries"
+include {GATK_CALCULATECONTAMINATION} from "../modules/gatk/gatk_calculatecontamination"
 
-include {GATK_LEARNREADORIENTATIONMODEL} from "${projectDir}/modules/gatk/gatk_learnreadorientationmodel"
+include {GATK_LEARNREADORIENTATIONMODEL} from "../modules/gatk/gatk_learnreadorientationmodel"
 
-include {GATK_FILTERMUECTCALLS} from "${projectDir}/modules/gatk/gatk_filtermutectcalls_wes"
+include {GATK_FILTERMUECTCALLS} from "../modules/gatk/gatk_filtermutectcalls_wes"
 
-include {MSISENSOR2_MSI} from "${projectDir}/modules/msisensor2/msisensor2"
+include {MSISENSOR2_MSI} from "../modules/msisensor2/msisensor2"
 
 include {GATK_MERGEVCF as GATK_MERGEVCF_UNANNOTATED;
-         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "${projectDir}/modules/gatk/gatk_mergevcf"
+         GATK_MERGEVCF as GATK_MERGEVCF_ANNOTATED} from "../modules/gatk/gatk_mergevcf"
 
-include {BEDOPS_SORT} from "${projectDir}/modules/bedops/bedops_sort"
-include {BEDOPS_WINDOW} from "${projectDir}/modules/bedops/bedops_window"
-include {TMB_SCORE} from "${projectDir}/modules/tumor_mutation_burden/tmb_score"
+include {BEDOPS_SORT} from "../modules/bedops/bedops_sort"
+include {BEDOPS_WINDOW} from "../modules/bedops/bedops_window"
+include {TMB_SCORE} from "../modules/tumor_mutation_burden/tmb_score"
 
 include {COSMIC_ANNOTATION as COSMIC_ANNOTATION_SNP;
-         COSMIC_ANNOTATION as COSMIC_ANNOTATION_INDEL} from "${projectDir}/modules/cosmic/cosmic_annotation"
+         COSMIC_ANNOTATION as COSMIC_ANNOTATION_INDEL} from "../modules/cosmic/cosmic_annotation"
 include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
-         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "${projectDir}/modules/snpeff_snpsift/snpsift_annotate"
+         SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP} from "../modules/snpeff_snpsift/snpsift_annotate"
 include {SNPEFF as SNPEFF_SNP;
-         SNPEFF as SNPEFF_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_snpeff"
+         SNPEFF as SNPEFF_INDEL} from "../modules/snpeff_snpsift/snpeff_snpeff"
 include {SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
-         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpeff_oneperline"
-include {SNPSIFT_EXTRACTFIELDS} from "${projectDir}/modules/snpeff_snpsift/snpsift_extractfields"
+         SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_INDEL} from "../modules/snpeff_snpsift/snpeff_oneperline"
+include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields"
 include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
-         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "${projectDir}/modules/snpeff_snpsift/snpsift_dbnsfp"
-include {PICARD_COLLECTHSMETRICS} from "${projectDir}/modules/picard/picard_collecthsmetrics"
-include {MULTIQC} from "${projectDir}/modules/multiqc/multiqc"
-
-// help if needed
-if (params.help){
-    help()
-    exit 0
-}
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
-
-// prepare reads channel
-if (!params.csv_input) {
-    exit 1, "CSV Input Required"
-}
-
-if (params.gen_org == 'mouse' && params.pdx) {
-    exit 1, "PDX workflow was called; however, `--gen_org` was set to: ${params.gen_org}. This is an invalid parameter combination. `--gen_org` must == 'human' for PDX analysis."
-}
-
-if (params.gen_org == 'mouse') {
-    exit 1, "`--gen_org` was set to: ${params.gen_org}. Somatic WES currently supports only human data. `--gen_org` must == 'human' for this analysis."
-}
+         SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_INDEL} from "../modules/snpeff_snpsift/snpsift_dbnsfp"
+include {PICARD_COLLECTHSMETRICS} from "../modules/picard/picard_collecthsmetrics"
+include {MULTIQC} from "../modules/multiqc/multiqc"
 
 
 workflow SOMATIC_WES_PTA {
+
+    // help if needed
+    if (params.help){
+        help()
+        exit 0
+    }
+
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    // prepare reads channel
+    if (!params.csv_input) {
+        exit 1, "CSV Input Required"
+    }
+
+    if (params.gen_org == 'mouse' && params.pdx) {
+        exit 1, "PDX workflow was called; however, `--gen_org` was set to: ${params.gen_org}. This is an invalid parameter combination. `--gen_org` must == 'human' for PDX analysis."
+    }
+
+    if (params.gen_org == 'mouse') {
+        exit 1, "`--gen_org` was set to: ${params.gen_org}. Somatic WES currently supports only human data. `--gen_org` must == 'human' for this analysis."
+    }
 
     if (params.csv_input) {
         ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
@@ -118,9 +117,9 @@ workflow SOMATIC_WES_PTA {
     READ_GROUPS(FASTP.out.trimmed_fastq, "gatk")
 
     // Step 1a: Xengsort if PDX data used.
-    ch_XENGSORT_CLASSIFY_multiqc = Channel.empty() //optional log file.
+    ch_XENGSORT_CLASSIFY_multiqc = channel.empty() //optional log file.
     if (params.pdx){
-        FASTP.out.trimmed_fastq.join(meta_ch).branch{
+        FASTP.out.trimmed_fastq.join(meta_ch).branch{ it ->
             normal: it[2].status == 0
             tumor:  it[2].status == 1
         }.set{fastq_files}
@@ -167,7 +166,7 @@ workflow SOMATIC_WES_PTA {
 
     // Step 6: Variant Pre-Processing - Part 2
     // Read a list of contigs from parameters to provide to GATK as intervals
-    chroms = Channel
+    chroms = channel
         .fromPath("${params.chrom_contigs}")
         .splitText()
         .map{it -> it.trim()}
@@ -188,7 +187,7 @@ workflow SOMATIC_WES_PTA {
     // Nextflow channel processing
     // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L854
 
-    GATK_APPLYBQSR.out.bam.join(GATK_APPLYBQSR.out.bai).join(meta_ch).branch{
+    GATK_APPLYBQSR.out.bam.join(GATK_APPLYBQSR.out.bai).join(meta_ch).branch{ it ->
         normal: it[3].status == 0
         tumor:  it[3].status == 1
     }.set{ch_final_bam}
@@ -201,8 +200,8 @@ workflow SOMATIC_WES_PTA {
     GATK_GETSAMPLENAME_NORMAL(ch_final_bam.normal.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
     GATK_GETSAMPLENAME_TUMOR(ch_final_bam.tumor.map{ id, bam, bai, meta -> [id, meta, bam, bai] })
 
-    ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
-    ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+    ch_normal_to_cross = ch_final_bam.normal.join(GATK_GETSAMPLENAME_NORMAL.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
+    ch_tumor_to_cross  = ch_final_bam.tumor.join(GATK_GETSAMPLENAME_TUMOR.out.sample_name).map{ _id, bam, bai, meta, readID -> [meta.patient, meta, bam, bai, readID] }
     
     /* 
     The above map statements adjusts channels for normal, tumor samples to organize them by patient IDs. 
@@ -245,12 +244,12 @@ workflow SOMATIC_WES_PTA {
                 normal: ["${it[1].patient}--${it[1].normal_id}".toString(), it[1], it[2], it[3], it[4]]
                 tumor:  ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]
                 }
-        ch_normal_samples = ch_ind_samples.normal.unique{it[0]}
-        ch_tumor_samples  = ch_ind_samples.tumor.unique{it[0]}
+        ch_normal_samples = ch_ind_samples.normal.unique{ it -> it[0]}
+        ch_tumor_samples  = ch_ind_samples.tumor.unique{ it -> it[0]}
 
     ch_msisensor2_input = ch_paired_samples
-        .map{["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
-        .unique{it[0]}
+        .map{ it -> ["${it[1].patient}--${it[1].tumor_id}".toString(), it[1], it[5], it[6], it[7]]}
+        .unique{ it -> it[0]}
 
     // Step: MSI
     MSISENSOR2_MSI(ch_msisensor2_input)
@@ -265,7 +264,7 @@ workflow SOMATIC_WES_PTA {
     contam_input = GATK_GETPILEUPSUMMARIES_NORMAL.out.pileup_summary
                     .map{it -> [it[1].patient, it[1], it[2]]}
                     .cross(
-                        tumor_pileups = GATK_GETPILEUPSUMMARIES_TUMOR.out.pileup_summary
+                        GATK_GETPILEUPSUMMARIES_TUMOR.out.pileup_summary
                         .map{it -> [it[1].patient, it[1], it[2]]}
                     )
                     .map{normal, tumor -> [tumor[1].id, normal[2], tumor[2]]}
@@ -332,14 +331,14 @@ workflow SOMATIC_WES_PTA {
     
     SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF_ANNOTATED.out.vcf, 'somatic_wes_pta')
 
-    ch_multiqc_files = Channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{it[1]}.ifEmpty([]))
-    ch_multiqc_files = ch_multiqc_files.mix(GATK_FILTERMUECTCALLS.out.stats.collect{it[1]}.ifEmpty([]))
+    ch_multiqc_files = channel.empty()
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.quality_json.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(ch_XENGSORT_CLASSIFY_multiqc.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(GATK_BASERECALIBRATOR.out.table.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.dedup_metrics.collect{ it -> it[1]}.ifEmpty([]))
+    ch_multiqc_files = ch_multiqc_files.mix(GATK_FILTERMUECTCALLS.out.stats.collect{ it -> it[1]}.ifEmpty([]))
 
     MULTIQC (
         ch_multiqc_files.collect(),
@@ -354,125 +353,123 @@ workflow SOMATIC_WES_PTA {
 // Function to extract information (meta data + file(s)) from csv file(s)
 // https://github.com/nf-core/sarek/blob/master/workflows/sarek.nf#L1084
 def extract_csv(csv_file) {
-    ANSI_RED = "\u001B[31m";
-    ANSI_RESET = "\u001B[0m";
+    def ANSI_RED = "\u001B[31m"
+    def ANSI_RESET = "\u001B[0m"
 
     // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
-    file(csv_file).withReader('UTF-8') { reader ->
-        def line, numberOfLinesInSampleSheet = 0;
-        while ((line = reader.readLine()) != null) {numberOfLinesInSampleSheet++}
-        if (numberOfLinesInSampleSheet < 2) {
-            System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
-            System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, so at least two lines." + ANSI_RESET)
-            System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
-            System.exit(1)
-        }
+    def numberOfLinesInSampleSheet = file(csv_file).text.readLines().size()
+    if (numberOfLinesInSampleSheet < 2) {
+        System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
+        System.err.println(ANSI_RED + "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, so at least two lines." + ANSI_RESET)
+        System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
+        System.exit(1)
     }
 
     // Additional check of sample sheet:
     // 1. Each row should specify a lane and the same combination of patient, sample and lane shouldn't be present in different rows.
     // 2. The same sample shouldn't be listed for different patients.
-    def patient_sample_lane_combinations_in_samplesheet = []
     def sample2patient = [:]
 
-    Channel.from(csv_file).splitCsv(header: true)
-        .map{ row ->
-            if (!sample2patient.containsKey(row.sampleID.toString())) {
-                sample2patient[row.sampleID.toString()] = row.patient.toString()
-            } else if (sample2patient[row.sampleID.toString()] != row.patient.toString()) {
-                System.err.println(ANSI_RED + 'The sample "' + row.sampleID.toString() + '" is registered for both patient "' + row.patient.toString() + '" and "' + sample2patient[row.sampleID.toString()] + '" in the sample sheet.' + ANSI_RESET)
-                System.exit(1)
-            }
-        }
+    def sample_count_all = 0
+    def sample_count_normal = 0
+    def sample_count_tumor = 0
 
-    sample_count_all = 0
-    sample_count_normal = 0
-    sample_count_tumor = 0
-
-    Channel.from(csv_file).splitCsv(header: true)
-        //Retrieves number of lanes by grouping together by patient and sample and counting how many entries there are for this combination
-        .map{ row ->
-            sample_count_all++
-            if (!(row.patient && row.sampleID)){
+    channel.from(csv_file).splitCsv(header: true)
+        // Retrieves number of lanes by grouping together by patient and sample and counting how many entries there are for this combination
+        .map { row ->
+            sample_count_all += 1
+            if (!(row.patient && row.sampleID)) {
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
                 System.err.println(ANSI_RED + "Missing field in csv file header. The csv file must have fields: 'patient', 'sampleID', 'lane', 'fastq_1', 'fastq_2'." + ANSI_RESET)
                 System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
                 System.err.println(ANSI_RED + "-----------------------------------------------------------------------" + ANSI_RESET)
                 System.exit(1)
             }
-            [[row.patient.toString(), row.sampleID.toString()], row]
-        }.groupTuple()
-        .map{ meta, rows ->
-            size = rows.size()
-            [rows, size]
-        }.transpose()
-        .map{ row, numLanes -> //from here do the usual thing for csv parsing
 
-        def meta = [:]
-
-        // Meta data to identify samplesheet
-        // Both patient and sample are mandatory
-        // Several sample can belong to the same patient
-        // Sample should be unique for the patient
-        if (row.patient) meta.patient = row.patient.toString()
-        if (row.sampleID)  meta.sampleID  = row.sampleID.toString()
-
-        // If no sex specified, sex is not considered
-        // sex is only mandatory for somatic CNV
-        if (row.sex) meta.sex = row.sex.toString()
-        else meta.sex = 'NA'
-
-        // If no status specified, sample is assumed normal
-        if (row.status) meta.status = row.status.toInteger()
-        else meta.status = 0
-
-        if (meta.status == 0) sample_count_normal++
-        else sample_count_tumor++
-
-        // join meta to fastq
-        if (row.fastq_2) {
-            if (params.read_type == 'SE') {
-                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-                System.err.println(ANSI_RED + "fastq_2 found in CSV manifest, but `--read_type` set to 'SE'. Set `--read_type PE` and restart run." + ANSI_RESET)
-                System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
-                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-                System.exit(1)
-            }
-            try {
-                file(row.fastq_1, checkIfExists: true)
-            }
-            catch (Exception e) {
-                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-                System.err.println(ANSI_RED + "The file: " + row.fastq_1 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
-                System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
-                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-                System.exit(1)
-            }
-            try {
-                file(row.fastq_2, checkIfExists: true)
-            }
-            catch (Exception e) {
-                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-                System.err.println(ANSI_RED + "The file: " + row.fastq_2 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
-                System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
-                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+            def sampleId = row.sampleID.toString()
+            def patientId = row.patient.toString()
+            if (!sample2patient.containsKey(sampleId)) {
+                sample2patient[sampleId] = patientId
+            } else if (sample2patient[sampleId] != patientId) {
+                System.err.println(ANSI_RED + 'The sample "' + sampleId + '" is registered for both patient "' + patientId + '" and "' + sample2patient[sampleId] + '" in the sample sheet.' + ANSI_RESET)
                 System.exit(1)
             }
 
-            meta.id         = "${row.patient}--${row.sampleID}".toString()
-            def fastq_1     = file(row.fastq_1, checkIfExists: true)
-            def fastq_2     = file(row.fastq_2, checkIfExists: true)
-
-            meta.size       = 1 // default number of splitted fastq
-
-            return [meta.id, meta, [fastq_1, fastq_2]]
-
-        } else {
-            System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-            System.err.println(ANSI_RED + "Missing or unknown field in csv file header. Please check your samplesheet" + ANSI_RESET)
-            System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
-            System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
-            System.exit(1)
+            [[patientId, sampleId], row]
         }
-    }
+        .groupTuple()
+        .map { _meta, rows ->
+            def size = rows.size()
+            [rows, size]
+        }
+        .transpose()
+        .map { row, _numLanes -> // from here do the usual thing for csv parsing
+
+            def meta = [:]
+
+            // Meta data to identify samplesheet
+            // Both patient and sample are mandatory
+            // Several sample can belong to the same patient
+            // Sample should be unique for the patient
+            if (row.patient) meta.patient = row.patient.toString()
+            if (row.sampleID) meta.sampleID = row.sampleID.toString()
+
+            // If no sex specified, sex is not considered
+            // sex is only mandatory for somatic CNV
+            if (row.sex) meta.sex = row.sex.toString()
+            else meta.sex = 'NA'
+
+            // If no status specified, sample is assumed normal
+            if (row.status) meta.status = row.status.toInteger()
+            else meta.status = 0
+
+            if (meta.status == 0) sample_count_normal += 1
+            else sample_count_tumor += 1
+
+            // join meta to fastq
+            if (row.fastq_2) {
+                if (params.read_type == 'SE') {
+                    System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                    System.err.println(ANSI_RED + "fastq_2 found in CSV manifest, but `--read_type` set to 'SE'. Set `--read_type PE` and restart run." + ANSI_RESET)
+                    System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
+                    System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                    System.exit(1)
+                }
+                try {
+                    file(row.fastq_1, checkIfExists: true)
+                }
+                catch (Exception _e) {
+                    System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                    System.err.println(ANSI_RED + "The file: " + row.fastq_1 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
+                    System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
+                    System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                    System.exit(1)
+                }
+                try {
+                    file(row.fastq_2, checkIfExists: true)
+                }
+                catch (Exception _e) {
+                    System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                    System.err.println(ANSI_RED + "The file: " + row.fastq_2 + " does not exist. Use absolute paths, and check for correctness." + ANSI_RESET)
+                    System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
+                    System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                    System.exit(1)
+                }
+
+                meta.id = "${row.patient}--${row.sampleID}".toString()
+                def fastq_1 = file(row.fastq_1, checkIfExists: true)
+                def fastq_2 = file(row.fastq_2, checkIfExists: true)
+
+                meta.size = 1 // default number of splitted fastq
+
+                return [meta.id, meta, [fastq_1, fastq_2]]
+
+            } else {
+                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                System.err.println(ANSI_RED + "Missing or unknown field in csv file header. Please check your samplesheet" + ANSI_RESET)
+                System.err.println(ANSI_RED + "Exiting now." + ANSI_RESET)
+                System.err.println(ANSI_RED + "---------------------------------------------" + ANSI_RESET)
+                System.exit(1)
+            }
+        }
 }

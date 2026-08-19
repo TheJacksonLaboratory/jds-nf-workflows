@@ -2,7 +2,7 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {CONCATENATE_READS_SAMPLESHEET} from "${projectDir}/modules/utility_modules/concatenate_reads_sampleSheet"
+include {CONCATENATE_READS_SAMPLESHEET} from "../modules/utility_modules/concatenate_reads_sampleSheet"
 
 workflow CONCATENATE_LOCAL_FILES {
 
@@ -36,7 +36,7 @@ workflow CONCATENATE_LOCAL_FILES {
             .map{ it -> tuple(it[0], it[1].size(), it[2], it[3], it[4]) } // sampleID, num_lanes, meta, read_ID:[R1|R2], file
             
             concat_input = temp_map
-            .branch {
+            .branch { it ->
                 concat: it[1] > 1
                 pass:  it[1] == 1
             }
@@ -55,7 +55,7 @@ workflow CONCATENATE_LOCAL_FILES {
             .map{ it -> tuple(it[0], it[1].size(), it[2], it[3], it[4]) } // sampleID, num_lanes, meta, read_ID:[R1], file
             
             concat_input = temp_map
-            .branch {
+            .branch { it ->
                 concat: it[1] > 1
                 pass:  it[1] == 1
             }
@@ -85,7 +85,11 @@ workflow CONCATENATE_LOCAL_FILES {
             do not expect 'meta' in the tuple. Example expected input tuple: [sampleID, [reads]]
         */
 
-    emit:
-        read_meta_ch
+        second_val = channel.value(42)
 
+    emit:
+        read_meta_ch = read_meta_ch
+        second_val = second_val
+        // The emit statement explicitly names the emitted value, which avoids warn 'Emit name should be omitted when there is only one emit'
+        // Naming emits, allows for easier code reading / tracing. Should not be a warn, and this is a way around that.
 }

@@ -8,8 +8,8 @@ process HARVEST_QTL {
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
-    publishDir "${params.pubdir}/${id}/qtl_scans", pattern:"peaks.csv", mode:'copy'
-    publishDir "${params.pubdir}/${id}/qtl_scans", pattern:"*_scan1_thresh.png", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/qtl_scans" }, pattern:"peaks.csv", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/qtl_scans" }, pattern:"*_scan1_thresh.png", mode:'copy'
 
     
     input:
@@ -24,6 +24,6 @@ process HARVEST_QTL {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/harvest_qtl.R
+    Rscript ${moduleDir}/bin/harvest_qtl.R
     """
 }

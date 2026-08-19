@@ -17,7 +17,7 @@ process COMPUTE_AVG_AF {
     script:
     
     """
-        Rscript ${projectDir}/bin/mitochondria_variant_calling/compute_avgAF.r \
+        Rscript ${moduleDir}/bin/compute_avgAF.r \
         --vcf ${vcf} \
         --sampleID ${sampleID}_avgAF \
         --output ${sampleID}_mtdna_mergedCallers_avgAF.vcf

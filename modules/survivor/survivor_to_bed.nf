@@ -8,7 +8,7 @@ process SURVIVOR_TO_BED {
 
     container 'rocker/tidyverse:4.2.1'
 
-    publishDir "${params.pubdir}/${sampleID}", mode:'copy', enabled: params.data_type == 'ont' ? false : true
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode:'copy', enabled: params.data_type == 'ont' ? false : true
 
     input:
         tuple val(sampleID), file(annot), file(summary)
@@ -16,6 +16,6 @@ process SURVIVOR_TO_BED {
         tuple val(sampleID), file("${sampleID}.ins.bed"), file("${sampleID}.del.bed"), file("${sampleID}.dup.bed"), file("${sampleID}.inv.bed"), file("${sampleID}.tra.bed"), emit: sv_beds
     script:
         """
-        /usr/bin/env Rscript ${projectDir}/bin/germline_sv/surv_annot_process.R ${sampleID}
+        /usr/bin/env Rscript ${moduleDir}/bin/surv_annot_process.R ${sampleID}
         """
 }

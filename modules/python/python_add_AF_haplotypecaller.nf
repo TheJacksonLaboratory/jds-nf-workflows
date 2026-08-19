@@ -8,7 +8,7 @@ process ADD_ALT_AF {
 
     container 'quay.io/jaxcompsci/bedtools-python3:2.26.0'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern:"*.vcf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.vcf", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf)
@@ -19,6 +19,6 @@ process ADD_ALT_AF {
 
     script:
     """
-    python ${projectDir}/bin/wes/AF_haplotypecaller.py ${vcf} ${sampleID}_${output_suffix}.vcf 9
+    python ${moduleDir}/bin/AF_haplotypecaller.py ${vcf} ${sampleID}_${output_suffix}.vcf 9
     """
 }

@@ -8,7 +8,7 @@ process ALNTOOLS_BAM2EMASE {
   
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.h5", mode: 'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.h5", mode: 'copy', enabled: params.keep_intermediate
 
     input:
     tuple val(sampleID), path(bam)

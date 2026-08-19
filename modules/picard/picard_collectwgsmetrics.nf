@@ -1,14 +1,14 @@
 process PICARD_COLLECTWGSMETRICS {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 20.GB
-    time = '18:00:00'
+    cpus 1
+    memory  20.GB
+    time '18:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'broadinstitute/gatk:4.2.4.1'
 
-    publishDir "${params.pubdir}/${sampleID}${type == 'mt' ? '/mt_callers/stats' : '/stats'}", pattern: "*.txt", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}${type == 'mt' ? '/mt_callers/stats' : '/stats'}" }, pattern: "*.txt", mode: 'copy'
 
     input:
     tuple val(sampleID), file(bam)

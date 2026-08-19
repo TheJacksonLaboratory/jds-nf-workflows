@@ -7,8 +7,8 @@ process MOSDEPTH {
 
   container 'brentp/mosdepth:v0.3.3'
 
-  publishDir "${params.pubdir}/${sampleID + '/samtools'}", pattern: "*.mosdepth*", mode:'copy'
-  publishDir "${params.pubdir}/${sampleID + '/samtools'}", pattern: "*.regions.bed*", mode:'copy'
+  publishDir path: { "${params.pubdir}/${sampleID + '/samtools'}" }, pattern: "*.mosdepth*", mode:'copy'
+  publishDir path: { "${params.pubdir}/${sampleID + '/samtools'}" }, pattern: "*.regions.bed*", mode:'copy'
 
   input:
   tuple val(sampleID), file(bam), file(index)

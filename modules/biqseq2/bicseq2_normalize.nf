@@ -1,13 +1,13 @@
 process BICSEQ2_NORMALIZE {
     tag "$sampleID"
 
-    cpus = 1
-    memory = 8.GB
-    time = '05:00:00'
+    cpus 1
+    memory  8.GB
+    time '05:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
     container 'quay.io/jaxcompsci/bicseq2:v3'
-    // publishDir "${params.pubdir}/${sampleID}", pattern:".txt", mode:'copy'
+    // publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:".txt", mode:'copy'
 
     input:
     tuple val(sampleID), path(individual_chr_seq_files), val(meta), val(read_ID), val(read_length), val(insert_size)
@@ -28,7 +28,7 @@ process BICSEQ2_NORMALIZE {
     // `bicseq2_config_writer` will sort lists by chromosome name, and omit invalid chr names. 
     // Chromosome names in file names must have `chr` in the name. OR the bicseq2config file must be changed to exclude it. 
 
-    fasta_files = fasta_file_list.collect { "$it" }.join(' ')
+    fasta_files = fasta_file_list.collect { it -> "$it" }.join(' ')
     
     read_length = read_length.toInteger()
 
@@ -45,7 +45,7 @@ process BICSEQ2_NORMALIZE {
         mappability_path = 'error'
     }
 
-    seq_file_list = individual_chr_seq_files.collect { "$it" }.join(' ')
+    seq_file_list = individual_chr_seq_files.collect { it -> "$it" }.join(' ')
 
 
     """
@@ -54,7 +54,7 @@ process BICSEQ2_NORMALIZE {
     mappability_file_list=`echo ${mappability_path}`
 
     python3 \
-    ${projectDir}/bin/pta/bicseq2_config_writer.py \
+    ${moduleDir}/bin/bicseq2_config_writer.py \
     --fa-files ${fasta_files} \
     --mappability-directory ${mappability_path} \
     --temp-seqs ${seq_file_list} \

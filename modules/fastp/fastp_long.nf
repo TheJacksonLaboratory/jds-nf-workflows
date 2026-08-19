@@ -8,7 +8,7 @@ process FASTP_LONG {
     
     container 'quay.io/biocontainers/fastplong:0.3.0--h224cc79_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "${sampleID}_fastp*.*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*_fastp*.*", mode:'copy'
 
     input:
         tuple val(sampleID), path(fq)

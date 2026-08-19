@@ -8,7 +8,7 @@ process MACS2_CONSENSUS {
     memory 10.GB
     time '10:00:00'
 
-    publishDir "${params.pubdir}/${'consensusCalling_' + antibody + '/macs2'}", pattern: "*_peaks.*", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${'consensusCalling_' + antibody + '/macs2'}" }, pattern: "*_peaks.*", mode: 'copy'
 
     container 'quay.io/biocontainers/mulled-v2-2f48cc59b03027e31ead6d383fe1b8057785dd24:5d182f583f4696f4c4d9f3be93052811b383341f-0'
 
@@ -34,12 +34,12 @@ process MACS2_CONSENSUS {
     collapsecols = params.narrow_peak ? (['collapse']*9).join(',') : (['collapse']*8).join(',')
     expandparam = params.narrow_peak ? '--is_narrow_peak' : ''
     """
-    sort -T '.' -k1,1 -k2,2n ${peaks.collect{it.toString()}.sort().join(' ')} \\
+    sort -T '.' -k1,1 -k2,2n ${peaks.collect{ it -> it.toString()}.sort().join(' ')} \\
         | mergeBed -c $mergecols -o $collapsecols > ${prefix}.txt
 
-    ${projectDir}/bin/chipseq/macs2_merged_expand.py \\
+    ${moduleDir}/bin/macs2_merged_expand.py \\
         ${prefix}.txt \\
-        ${peaks.collect{it.toString()}.sort().join(',').replaceAll("_peaks.${peak_type}","")} \\
+        ${peaks.collect{ it -> it.toString()}.sort().join(',').replaceAll("_peaks.${peak_type}","")} \\
         ${prefix}.boolean.txt \\
         --min_replicates $params.min_reps_consensus \\
         $expandparam
@@ -49,7 +49,7 @@ process MACS2_CONSENSUS {
     echo -e "GeneID\tChr\tStart\tEnd\tStrand" > ${prefix}.saf
     awk -v FS='\t' -v OFS='\t' 'FNR > 1 { print \$4, \$1, \$2, \$3,  "+" }' ${prefix}.boolean.txt >> ${prefix}.saf
 
-    ${projectDir}/bin/chipseq/plot_peak_intersect.r -i ${prefix}.boolean.intersect.txt -o ${prefix}.boolean.intersect.plot.pdf
+    ${moduleDir}/bin/plot_peak_intersect.r -i ${prefix}.boolean.intersect.txt -o ${prefix}.boolean.intersect.plot.pdf
 
     echo "${prefix}.bed\t${antibody}/${prefix}.bed" > ${prefix}.antibody.txt
 

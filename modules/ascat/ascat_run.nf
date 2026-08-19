@@ -8,7 +8,7 @@ process ASCAT {
 
     container 'quay.io/jaxcompsci/ascat:v3.1.3'
 
-    publishDir "${params.pubdir}/${sampleID}", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, mode: 'copy'
 
     input:
         tuple val(sampleID), val(meta), path(BAF), path(LRR)
@@ -21,7 +21,7 @@ process ASCAT {
 
     script:
         """
-        Rscript ${projectDir}/bin/cnv_array/ASCAT_run.R \
+        Rscript ${moduleDir}/bin/ASCAT_run.R \
             ${sampleID} \
             ${BAF} \
             ${LRR} \

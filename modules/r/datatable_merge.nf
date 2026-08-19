@@ -15,7 +15,6 @@ process TABLE_MERGE {
 
     script:
     """
-    ${projectDir}/bin/smrnaseq/collapse_mirtop.r ${mirtop}
-
+    ${moduleDir}/bin/collapse_mirtop.r ${mirtop}
     """
 }

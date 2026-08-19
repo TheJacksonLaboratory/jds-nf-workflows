@@ -8,7 +8,7 @@ process RUN_PERMS {
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
-    publishDir "${params.pubdir}/${id}/${phenotype}", pattern:"_scan1perms.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}/${phenotype}" }, pattern:"_scan1perms.txt", mode:'copy'
 
     input:
     tuple val(id), path(genoprobs_file), path(alleleprobs_file), path(kinship_file), path(covar_file), val(phenotype), path(pheno_file), path(covar_info_file), path(map_file)
@@ -19,7 +19,7 @@ process RUN_PERMS {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/run_perms.R ${covar_file} \
+    Rscript ${moduleDir}/bin/run_perms.R ${covar_file} \
             ${map_file} \
             ${genoprobs_file} \
             ${alleleprobs_file} \

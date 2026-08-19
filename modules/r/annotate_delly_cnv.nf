@@ -8,7 +8,7 @@ process ANNOTATE_DELLY_CNV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bed", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bed", mode: 'copy'
 
     input:
         tuple val(sampleID), file(delly_cnv), val(meta), val(normal_name), val(tumor_name), val(caller)
@@ -19,10 +19,10 @@ process ANNOTATE_DELLY_CNV {
         tuple val(sampleID), file("${sampleID}_cnv_annotated_supplemental.bed"), val(normal_name), val(tumor_name), emit: delly_annot_suppl
 
     script:
-        listOfChroms = chrom_list.collect { "$it" }.join(',')
+        listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
         """
-        Rscript ${projectDir}/bin/pta/annotate-cnv-delly.r \
+        Rscript ${moduleDir}/bin/annotate-cnv-delly.r \
             --cnv=${delly_cnv} \
             --caller="delly" \
             --tumor=${tumor_name} \

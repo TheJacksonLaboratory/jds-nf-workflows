@@ -8,12 +8,12 @@ process GBRS_QUANTIFY_GENOTYPES {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.isoforms.tpm", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.isoforms.expected_read_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.isoforms.alignment_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.genes.tpm", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.genes.expected_read_counts", mode: 'copy'
-    publishDir "${params.pubdir}/${sampleID + '/gbrs'}", pattern: "*.diploid.genes.alignment_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.diploid.isoforms.tpm", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.diploid.isoforms.expected_read_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.diploid.isoforms.alignment_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.diploid.genes.tpm", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.diploid.genes.expected_read_counts", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/gbrs'}" }, pattern: "*.diploid.genes.alignment_counts", mode: 'copy'
 
     input:
     tuple val(sampleID), path(h5), path(genotype_tsv)

@@ -12,10 +12,10 @@ process EMASE_CREATE_HYBRID {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/emase", pattern: "*.fa", mode:'copy'
-    publishDir "${params.pubdir}/emase", pattern: "*.info", mode:'copy'
-    publishDir "${params.pubdir}/emase", pattern: "*.tsv", mode:'copy'
-    publishDir "${params.pubdir}/emase/bowtie", pattern: "*.ebwt", mode:'copy'
+    publishDir path: { "${params.pubdir}/emase" }, pattern: "*.fa", mode:'copy'
+    publishDir path: { "${params.pubdir}/emase" }, pattern: "*.info", mode:'copy'
+    publishDir path: { "${params.pubdir}/emase" }, pattern: "*.tsv", mode:'copy'
+    publishDir path: { "${params.pubdir}/emase/bowtie" }, pattern: "*.ebwt", mode:'copy'
 
     output:
     path file("*.fa"), emit: transcript_fasta

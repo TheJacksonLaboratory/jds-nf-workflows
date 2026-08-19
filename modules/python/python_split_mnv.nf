@@ -17,7 +17,7 @@ process SPLIT_MNV {
     script:
     """
     python \
-    ${projectDir}/bin/pta/split_mnv.py \
+    ${moduleDir}/bin/split_mnv.py \
     ${vcf} \
     ${vcf.baseName}_splitMNV.vcf \
     ${tool}

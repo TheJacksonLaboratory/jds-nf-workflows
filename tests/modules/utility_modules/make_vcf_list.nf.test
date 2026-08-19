@@ -1,0 +1,38 @@
+nextflow_process {
+
+    name "Test Process MAKE_VCF_LIST"
+    script "modules/utility_modules/make_vcf_list.nf"
+    process "MAKE_VCF_LIST"
+
+    test("Sorts Chromosome VCF Paths Into Requested Order") {
+
+        when {
+            params {
+                pipeline = 'wes'
+                pubdir = "tests/results"
+            }
+            process {
+                """
+                input[0] = tuple('testSample_01', ['/tmp/merged_chr2.vcf', '/tmp/merged_chr1.vcf', '/tmp/merged_chrX.vcf'])
+                input[1] = ['chr1', 'chr2', 'chrX']
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.list.size() == 1
+            assert process.out.list[0][0] == 'testSample_01'
+
+            def listFile = process.out.list[0][1]
+            def listPath = new File(listFile.toString())
+            def expectedLines = ['/tmp/merged_chr1.vcf', '/tmp/merged_chr2.vcf', '/tmp/merged_chrX.vcf']
+
+            assert listPath.exists()
+            def actualLines = listPath.readLines().findAll { it?.trim() }
+            assert actualLines == expectedLines
+        }
+
+    }
+
+}

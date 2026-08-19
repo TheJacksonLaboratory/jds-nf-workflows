@@ -8,7 +8,7 @@ process ANNOTATE_BICSEQ2_CNV {
 
     container 'quay.io/jaxcompsci/r-sv_cnv_annotate:4.1.1'
 
-    publishDir "${params.pubdir}/${sampleID}", pattern: "*.bed", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.bed", mode: 'copy'
 
     input:
         //BICSEQ2_SEG.out.bicseq2_sv_calls
@@ -20,10 +20,10 @@ process ANNOTATE_BICSEQ2_CNV {
         tuple val(sampleID), file("${sampleID}_cnv_annotated_supplemental.bed"), val(normal_name), val(tumor_name), emit: bicseq_annot_suppl
 
     script:
-        listOfChroms = chrom_list.collect { "$it" }.join(',')
+        listOfChroms = chrom_list.collect { it -> "$it" }.join(',')
 
         """
-        Rscript ${projectDir}/bin/pta/annotate-cnv.r \
+        Rscript ${moduleDir}/bin/annotate-cnv.r \
             --cnv=${bicseq2_calls} \
             --caller="bicseq2" \
             --tumor=${tumor_name} \

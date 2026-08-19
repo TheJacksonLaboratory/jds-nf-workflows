@@ -9,7 +9,7 @@ process MODIFY_MGI_GTF {
 
     container "quay.io/jaxcompsci/perl:0.1.0"
 
-    publishDir "${params.pubdir}", pattern: "*.gtf", mode:'copy'
+    publishDir path: { "${params.pubdir}" }, pattern: "*.gtf", mode:'copy'
 
     input:
         path(gtf)
@@ -21,6 +21,6 @@ process MODIFY_MGI_GTF {
 
     script:
         """
-        perl ${projectDir}/bin/generate_rnaseq_index/modify_mgi_gtf.pl ${gtf} ${ref_table} ${gtf.getBaseName(2)}.biotypeAdded.gtf
+        perl ${moduleDir}/bin/modify_mgi_gtf.pl ${gtf} ${ref_table} ${gtf.getBaseName(2)}.biotypeAdded.gtf
         """
 }

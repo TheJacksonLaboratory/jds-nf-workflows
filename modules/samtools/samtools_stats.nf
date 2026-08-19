@@ -9,23 +9,23 @@ process SAMTOOLS_STATS {
 
     publishDir {
         def sample   = sampleID.split("_")
-        def sampleID = sample[0]
-        def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${type + sampleID + '/samtools'}"
+        def baseSampleID = sample[0]
+        def type = "${params.workflow}" == 'chipseq' ? ( baseSampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
+        "${params.pubdir}/${type + baseSampleID + '/samtools'}"
     }, pattern: "*.flagstat", mode: 'copy' // Save flagstat outputs to appropriate pubdir
 
     publishDir {
         def sample   = sampleID.split("_")
-        def sampleID = sample[0]
-        def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${type + sampleID + '/samtools'}"
+        def baseSampleID = sample[0]
+        def type = "${params.workflow}" == 'chipseq' ? ( baseSampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
+        "${params.pubdir}/${type + baseSampleID + '/samtools'}"
     }, pattern: "*.idxstats", mode: 'copy' // Save idxstats outputs to appropriate pubdir
 
     publishDir {
         def sample   = sampleID.split("_")
-        def sampleID = sample[0]
-        def type = "${params.workflow}" == 'chipseq' ? ( sampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
-        "${params.pubdir}/${type + sampleID + '/samtools'}"
+        def baseSampleID = sample[0]
+        def type = "${params.workflow}" == 'chipseq' ? ( baseSampleID =~ /INPUT/ ? 'control_samples/' : 'immuno_precip_samples/') : ''
+        "${params.pubdir}/${type + baseSampleID + '/samtools'}"
     }, pattern: "*.stats", mode: 'copy' // Save stats outputs to appropriate pubdir
 
 

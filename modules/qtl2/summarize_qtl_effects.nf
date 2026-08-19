@@ -7,9 +7,9 @@ process SUMMARIZE_QTL_EFFECTS {
     
     container 'quay.io/jaxcompsci/r-qtl2-deseq-biomart-tidy:v4'
 
-    publishDir "${params.pubdir}/${id}", pattern:"*_qtl_effects_heatmap.png", mode:'copy'
-    publishDir "${params.pubdir}/${id}", pattern:"*_all_peaks_file.csv", mode:'copy'
-    publishDir "${params.pubdir}/${id}", pattern:"*_peaks_viewer_file.csv", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}" }, pattern:"*_qtl_effects_heatmap.png", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}" }, pattern:"*_all_peaks_file.csv", mode:'copy'
+    publishDir path: { "${params.pubdir}/${id}" }, pattern:"*_peaks_viewer_file.csv", mode:'copy'
 
     input:
     tuple val(id), path(peak_files)
@@ -21,7 +21,7 @@ process SUMMARIZE_QTL_EFFECTS {
     script:
 
     """
-    Rscript ${projectDir}/bin/qtl/summarize_qtl_effects.R ${id} ${params.primary_chrom_bed}
+    Rscript ${moduleDir}/bin/summarize_qtl_effects.R ${id} ${params.primary_chrom_bed}
     """
 
 }

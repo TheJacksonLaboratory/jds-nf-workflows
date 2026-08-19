@@ -8,7 +8,7 @@ process NON_CHAIN_REINDEX {
 
     container 'quay.io/jaxcompsci/samtools_with_bc:1.3.1'
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern: "*.filtered.shifted.*", mode: 'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern: "*.filtered.shifted.*", mode: 'copy'
     
     input:
     tuple val(sampleID), file(bam_shifted)

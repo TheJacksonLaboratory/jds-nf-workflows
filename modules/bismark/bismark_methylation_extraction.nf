@@ -8,8 +8,8 @@ process BISMARK_METHYLATION_EXTRACTION {
 
     container 'quay.io/biocontainers/bismark:0.23.1--hdfd78af_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*txt", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID + '/bismark_results'}", pattern: "*.{png,gz}", mode:'copy'  
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/bismark_results'}" }, pattern: "*.{png,gz}", mode:'copy'  
 
     input:
     tuple val(sampleID), file(bam)

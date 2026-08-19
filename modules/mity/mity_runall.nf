@@ -8,8 +8,8 @@ process MITY_RUNALL {
 
     container 'quay.io/biocontainers/mity:2.0.0--pyhdfd78af_0'
 
-    publishDir "${params.pubdir}/${sampleID}/mt_callers", pattern: "*.vcf.gz*", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID}/mt_callers", pattern: "*.xlsx", mode:'copy', enabled: params.gen_org == 'human'
+    publishDir path: { "${params.pubdir}/${sampleID}/mt_callers" }, pattern: "*.vcf.gz*", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}/mt_callers" }, pattern: "*.xlsx", mode:'copy', enabled: params.gen_org == 'human'
 
     input:
     tuple val(sampleID), path(bam), path(bai)

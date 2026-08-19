@@ -2,42 +2,34 @@
 nextflow.enable.dsl=2
 
 // import modules
-include {help} from "${projectDir}/bin/help/ont"
-include {param_log} from "${projectDir}/bin/log/ont"
-include {final_run_report} from "${projectDir}/bin/shared/final_run_report.nf"
+include {help} from "../bin/help/ont"
+include {param_log} from "../bin/log/ont"
+include {final_run_report} from "../bin/shared/final_run_report.nf"
 include {NANOSTAT as NANOSTAT_PREFILT;
-         NANOSTAT as NANOSTAT_POSTFILT} from "${projectDir}/modules/nanostat/nanostat"
-include {PORECHOP} from "${projectDir}/modules/porechop/porechop"
-include {NANOQC} from "${projectDir}/modules/nanoqc/nanoqc"
-include {NANOFILT} from "${projectDir}/modules/nanofilt/nanofilt"
-include {MINIMAP2_INDEX} from "${projectDir}/modules/minimap/minimap2_index"
-include {MINIMAP2_MAP_ONT} from "${projectDir}/modules/minimap/minimap2_map_ont"
-include {SAMTOOLS_SORT} from "${projectDir}/modules/samtools/samtools_sort"
-include {SAMTOOLS_FILTER} from "${projectDir}/modules/samtools/samtools_filter_mmrsvd"
-include {SNIFFLES} from "${projectDir}/modules/sniffles/sniffles"
-include {NANOSV} from "${projectDir}/modules/nanosv/nanosv"
+         NANOSTAT as NANOSTAT_POSTFILT} from "../modules/nanostat/nanostat"
+include {PORECHOP} from "../modules/porechop/porechop"
+include {NANOQC} from "../modules/nanoqc/nanoqc"
+include {NANOFILT} from "../modules/nanofilt/nanofilt"
+include {MINIMAP2_INDEX} from "../modules/minimap/minimap2_index"
+include {MINIMAP2_MAP_ONT} from "../modules/minimap/minimap2_map_ont"
+include {SAMTOOLS_SORT} from "../modules/samtools/samtools_sort"
+include {SAMTOOLS_FILTER} from "../modules/samtools/samtools_filter_mmrsvd"
+include {SNIFFLES} from "../modules/sniffles/sniffles"
+include {NANOSV} from "../modules/nanosv/nanosv"
 include {PYTHON_PARSE_DEPTHS as PARSE_NANOSV_DEPTHS;
-         PYTHON_PARSE_DEPTHS as PARSE_SNIFFLES_DEPTHS} from "${projectDir}/modules/python/python_parse_depths"
-include {SURVIVOR_MERGE} from "${projectDir}/modules/survivor/survivor_merge"
-include {PYTHON_PARSE_SURVIVOR_IDS} from "${projectDir}/modules/python/python_parse_survivor_ids"
-include {VCFTOOLS_FILTER} from "${projectDir}/modules/vcftools/vcftools_filter"
-include {SURVIVOR_VCF_TO_TABLE} from "${projectDir}/modules/survivor/survivor_vcf_to_table"
-include {SURVIVOR_SUMMARY} from "${projectDir}/modules/survivor/survivor_summary"
-include {SURVIVOR_TO_BED} from "${projectDir}/modules/survivor/survivor_to_bed"
-include {SURVIVOR_BED_INTERSECT} from "${projectDir}/modules/survivor/survivor_bed_intersect"
-include {SURVIVOR_ANNOTATION} from "${projectDir}/modules/survivor/survivor_annotation"
-include {R_MERGE_DEPTHS} from "${projectDir}/modules/r/r_merge_depths"
-include {SURVIVOR_INEXON} from "${projectDir}/modules/survivor/survivor_inexon"
-include {PYTHON_ANNOT_DEPTHS} from "${projectDir}/modules/python/python_annot_depths"
-include {PYTHON_ANNOT_ON_TARGET} from "${projectDir}/modules/python/python_annot_on_target"
-
-// log params
-message = param_log()
-
-// Save params to a file for record-keeping
-workflow.onComplete {
-    final_run_report(message)
-}
+         PYTHON_PARSE_DEPTHS as PARSE_SNIFFLES_DEPTHS} from "../modules/python/python_parse_depths"
+include {SURVIVOR_MERGE} from "../modules/survivor/survivor_merge"
+include {PYTHON_PARSE_SURVIVOR_IDS} from "../modules/python/python_parse_survivor_ids"
+include {VCFTOOLS_FILTER} from "../modules/vcftools/vcftools_filter"
+include {SURVIVOR_VCF_TO_TABLE} from "../modules/survivor/survivor_vcf_to_table"
+include {SURVIVOR_SUMMARY} from "../modules/survivor/survivor_summary"
+include {SURVIVOR_TO_BED} from "../modules/survivor/survivor_to_bed"
+include {SURVIVOR_BED_INTERSECT} from "../modules/survivor/survivor_bed_intersect"
+include {SURVIVOR_ANNOTATION} from "../modules/survivor/survivor_annotation"
+include {R_MERGE_DEPTHS} from "../modules/r/r_merge_depths"
+include {SURVIVOR_INEXON} from "../modules/survivor/survivor_inexon"
+include {PYTHON_ANNOT_DEPTHS} from "../modules/python/python_annot_depths"
+include {PYTHON_ANNOT_ON_TARGET} from "../modules/python/python_annot_on_target"
 
 workflow ONT {
     if (params.help){
@@ -45,10 +37,18 @@ workflow ONT {
        exit 0
     }
 
-    ch_fasta = params.ref_fa ? Channel.fromPath(params.ref_fa): null
-    ch_fastq1 = params.fastq1 ? Channel.fromPath(params.fastq1) : null
-    ch_sampleID = params.sampleID ? Channel.value(params.sampleID) : null
-    ch_bam = params.bam ? Channel.fromPath(params.bam) : null
+    // log params
+    message = param_log()
+
+    // Save params to a file for record-keeping
+    workflow.onComplete {
+        final_run_report(message)
+    }
+
+    // ch_fasta = params.ref_fa ? channel.fromPath(params.ref_fa): null // var unused, but left if needed in the future.
+    ch_fastq1 = params.fastq1 ? channel.fromPath(params.fastq1) : null
+    ch_sampleID = params.sampleID ? channel.value(params.sampleID) : null
+    ch_bam = params.bam ? channel.fromPath(params.bam) : null
 
     if (params.fastq1 && !params.bam) {
         fq_reads = ch_sampleID.concat(ch_fastq1)

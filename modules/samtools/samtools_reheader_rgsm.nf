@@ -8,7 +8,7 @@ process SAMTOOLS_REHEADER_RGSM {
 
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/bam'}", pattern:"*.bam", mode:'copy', enabled: params.containsKey('merge_inds') && params.merge_inds
+    publishDir path: { "${params.pubdir}/${sampleID + '/bam'}" }, pattern:"*.bam", mode:'copy', enabled: params.containsKey('merge_inds') && params.merge_inds
 
     input:
     tuple val(sampleID), path(bam)

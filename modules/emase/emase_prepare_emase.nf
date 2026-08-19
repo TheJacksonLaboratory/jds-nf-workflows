@@ -17,10 +17,10 @@ process EMASE_PREPARE_EMASE {
 
     container 'quay.io/jaxcompsci/gbrs_py3:v1.1.0-338c782'
 
-    publishDir "${params.pubdir}/emase", pattern: '*.fa', mode:'copy'
-    publishDir "${params.pubdir}/emase", pattern: '*.info', mode:'copy', enabled: params.keep_intermediate
-    publishDir "${params.pubdir}/emase", pattern: '*.tsv', mode:'copy'
-    // publishDir "${params.pubdir}/bowtie", pattern: "*.ebwt", mode:'copy' // TURN ON IF BOWTIE INDEX BUILT HERE.
+    publishDir path: { "${params.pubdir}/emase" }, pattern: '*.fa', mode:'copy'
+    publishDir path: { "${params.pubdir}/emase" }, pattern: '*.info', mode:'copy', enabled: params.keep_intermediate
+    publishDir path: { "${params.pubdir}/emase" }, pattern: '*.tsv', mode:'copy'
+    // publishDir path: { "${params.pubdir}/bowtie" }, pattern: "*.ebwt", mode:'copy' // TURN ON IF BOWTIE INDEX BUILT HERE.
 
     output:
     path("*.fa"), emit: pooled_transcript_fasta

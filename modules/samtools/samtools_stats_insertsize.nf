@@ -8,13 +8,13 @@ process SAMTOOLS_STATS_INSERTSIZE {
 
     container 'quay.io/biocontainers/samtools:1.14--hb421002_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*insert_size.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*insert_size.txt", mode:'copy'
 
     input:
         tuple val(sampleID), val(meta), path(bam), path(bai), val(read_ID)
 
     output:
-        tuple val(sampleID), env(read_length), env(insert_size), emit: read_length_insert_size
+        tuple val(sampleID), env("read_length"), env("insert_size"), emit: read_length_insert_size
         file("*insert_size.txt")
 
     script:

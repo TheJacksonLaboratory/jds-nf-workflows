@@ -8,8 +8,8 @@ process PICARD_COLLECTRNASEQMETRICS {
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
 
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.txt", mode:'copy'
-    publishDir "${params.pubdir}/${sampleID + '/stats'}", pattern: "*.pdf", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.pdf", mode:'copy'
 
     input:
     tuple val(sampleID), file(bam), val(strand_setting)
