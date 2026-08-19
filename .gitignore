@@ -12,3 +12,4 @@ test2.csv
 .nf-test*
 .nf-test.log
 nf-test-report*
+SYNC_NOTES.local.md
