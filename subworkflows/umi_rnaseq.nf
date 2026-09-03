@@ -56,7 +56,7 @@ workflow UMI_RNASEQ {
         FASTQC(reads)
 
         // HLA Typing
-        if ( params.hla_typing ){
+        if ( params.hla_typing && params.gen_org == 'human' ){
           OPTITYPE_RUN(reads)
         }
 

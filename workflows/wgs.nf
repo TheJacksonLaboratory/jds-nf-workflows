@@ -196,7 +196,7 @@ workflow WGS {
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
 
     // HLA Typing
-    if ( params.hla_typing ){
+    if ( params.hla_typing && params.gen_org == 'human' ){
       OPTITYPE_RUN(FASTP.out.trimmed_fastq)
     }
 

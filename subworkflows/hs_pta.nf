@@ -181,7 +181,7 @@ workflow HS_PTA {
             ch_XENGSORT_CLASSIFY_multiqc = XENGSORT_CLASSIFY.out.xengsort_log
             
             // HLA Typing -- tumor and normal
-            if ( params.hla_typing ){
+            if ( params.hla_typing && params.gen_org == 'human' ){
                 OPTITYPE_RUN(XENGSORT_CLASSIFY.out.xengsort_human_fastq.mix(normal_fastqs))
             }
 
@@ -191,7 +191,7 @@ workflow HS_PTA {
         } else { 
             
             // HLA Typing -- tumor and normal
-            if ( params.hla_typing ){
+            if ( params.hla_typing && params.gen_org == 'human' ){
                 OPTITYPE_RUN(FASTP.out.trimmed_fastq)
             }
 
