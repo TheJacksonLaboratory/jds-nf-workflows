@@ -2,7 +2,7 @@ process OPTITYPE_RUN {
     tag "$sampleID"
 
     cpus 2
-    memory 50.GB
+    memory 90.GB
     time 8.hour
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 

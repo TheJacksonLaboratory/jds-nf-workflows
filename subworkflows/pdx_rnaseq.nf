@@ -65,7 +65,7 @@ workflow PDX_RNASEQ {
       XENGSORT_CLASSIFY(xengsort_index, reads) 
 
       // HLA Typing
-      if ( params.hla_typing ){
+      if ( params.hla_typing && params.gen_org == 'human' ){
         OPTITYPE_RUN(XENGSORT_CLASSIFY.out.xengsort_human_fastq)
       }
 
