@@ -1,5 +1,9 @@
 # RELEASE NOTES
 
+## Release 1.0.2
+
+This minor release fixes the minimum required version of Nextflow to >= 26.0.0, and adjusts all example run scripts. 
+
 ## Release 1.0.1
 
 This minor release fixes an issues with the `--hla_typing` parameter in the RNAseq, UMI-RNAseq, WES, Somatic WES, PTA, and WGS workflows. The HLA typing module was being run for all organisms when `--hla_typing` was set to true. This has been corrected to only run for human samples. Additionally, the memory has been increased for the OptiType HLA module. 

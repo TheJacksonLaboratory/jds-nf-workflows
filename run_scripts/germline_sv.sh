@@ -4,15 +4,13 @@
 #SBATCH -p compute
 #SBATCH -q batch
 #SBATCH -t 72:00:00
-#SBATCH --mem=5G
+#SBATCH --mem=15G
 #SBATCH --ntasks=1
 
 # LOAD NEXTFLOW
 module use --append /projects/omics_share/meta/modules
-module load nextflow
+module load nextflow/26.04.6
 
-export NXF_ANSI_SUMMARY=true
-export NXF_ANSI_LOG=true
 
 # RUN TEST PIPELINE
 nextflow ../main.nf \
