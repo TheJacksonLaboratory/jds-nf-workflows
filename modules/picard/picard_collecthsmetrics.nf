@@ -19,6 +19,12 @@ process PICARD_COLLECTHSMETRICS {
     script:
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
+    // No-op unless the caller's config defines this param. Picard's own
+    // default (200) caps the per-base histogram used for MEDIAN_TARGET_COVERAGE
+    // and the PCT_TARGET_BASES_*X columns -- fine at WGS/WES depth, silently
+    // truncates those two metrics at panel depths above ~200x.
+    coverage_cap = params.containsKey('coverage_cap') ?
+        "COVERAGE_CAP=${params.coverage_cap}" : ''
 
     """
     picard -Xmx${my_mem}G CollectHsMetrics \
@@ -27,6 +33,7 @@ process PICARD_COLLECTHSMETRICS {
     BAIT_INTERVALS=${params.bait_picard} \
     TARGET_INTERVALS=${params.target_picard} \
     REFERENCE_SEQUENCE=${params.ref_fa} \
+    ${coverage_cap} \
     VALIDATION_STRINGENCY=SILENT
     """
 }

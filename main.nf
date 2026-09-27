@@ -7,6 +7,7 @@ include {AMPLICON_GENERIC} from './workflows/amplicon_generic'
 include {ANCESTRY_RUN} from './workflows/ancestry'
 include {ATAC} from './workflows/atac'
 include {BAM_TO_FASTQ} from './supportworkflows/bam_to_fastq'
+include {CHIP_SOMATIC} from './workflows/chip_somatic'
 include {CHIPSEQ} from './workflows/chipseq'
 include {CNV_ARRAY} from './workflows/cnv_array'
 include {EMASE} from './workflows/emase'
@@ -62,6 +63,9 @@ workflow{
   }
   else if (params.workflow == "bam_to_fastq"){
     BAM_TO_FASTQ()
+  }
+  else if (params.workflow == "chip_somatic"){
+    CHIP_SOMATIC()
   }
   else if (params.workflow == "chipseq"){
     CHIPSEQ()

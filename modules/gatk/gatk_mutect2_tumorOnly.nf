@@ -24,6 +24,12 @@ process GATK_MUTECT2 {
 
     germline_genotype = params.genotype_germline ? '--genotype-germline-sites true' : ''
     pon_genotype = params.genotype_pon ? '--genotype-pon-sites true' : ''
+    // No-op unless the caller's config defines this param.
+    max_reads_per_alignment_start = params.containsKey('max_reads_per_alignment_start') ?
+        "--max-reads-per-alignment-start ${params.max_reads_per_alignment_start}" : ''
+    // No-op unless the caller's config defines this param.
+    tumor_lod_to_emit = params.containsKey('tumor_lod_to_emit') ?
+        "--tumor-lod-to-emit ${params.tumor_lod_to_emit}" : ''
 
     """
     mkdir -p tmp
@@ -45,6 +51,8 @@ process GATK_MUTECT2 {
     --annotation MappingQualityRankSumTest \
     --annotation ReadPosRankSumTest \
     --min-base-quality-score 20 \
+    ${max_reads_per_alignment_start} \
+    ${tumor_lod_to_emit} \
     -O ${sampleID}_mutect2_somatic.vcf.gz
     """
 }
