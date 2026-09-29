@@ -8,6 +8,12 @@ process FGBIO_ALIGN_BAM {
 
     container 'community.wave.seqera.io/library/bwa-mem2_fgbio_samtools:d6fd27126a192efa'
 
+    // Publish only the final (post-consensus, coordinate-sorted) alignment, renamed
+    // <sample>.consensus.bam(.bai): the BAM Mutect2 reads. The pre-consensus call
+    // (template-coordinate) is an intermediate and is not published.
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.mapped.bam*", mode: 'copy',
+        saveAs: { fn -> sort_order == 'coordinate' ? fn.replace('.mapped.bam', '.consensus.bam') : null }
+
     input:
     tuple val(sampleID), path(unmapped_bam)
     val sort_order // "template-coordinate" (pre-consensus, required by GroupReadsByUmi) or "coordinate" (post-consensus, final)

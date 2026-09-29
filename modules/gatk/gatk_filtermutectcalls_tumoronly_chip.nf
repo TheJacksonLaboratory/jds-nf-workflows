@@ -9,6 +9,7 @@ process GATK_FILTERMUECTCALLS {
     container 'broadinstitute/gatk:4.4.0.0'
 
     publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_mutect2_somatic.filtered.vcf.gz", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_mutect2_somatic.filtered.vcf.gz.tbi", mode:'copy'
     publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.filteringStats.tsv", mode:'copy'
 
     input:

@@ -9,7 +9,7 @@ include {GATK_LEARNREADORIENTATIONMODEL} from "../modules/gatk/gatk_learnreadori
 include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_CONTAM} from "../modules/gatk/gatk_filtermutectcalls_tumoronly_chip_contam"
 include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_NOCONTAM} from "../modules/gatk/gatk_filtermutectcalls_tumoronly_chip"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
-         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants"
+         GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants_chip"
 include {BCFTOOLS_STATS} from "../modules/bcftools/bcftools_stats"
 
 // Tumor-only Mutect2 chain shared by both species (mm_chip_somatic.nf,

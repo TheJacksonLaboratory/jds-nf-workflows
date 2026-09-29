@@ -4,6 +4,25 @@ if (params.gen_org != "mouse" && params.gen_org != "human") {
     error "'--gen_org': \"${params.gen_org}\" is not valid, supported options are 'human' or 'mouse'"
 }
 
+// Panel intervals have no default (see config/chip_somatic.config). Check them
+// here so a missing file stops the run at startup, not at HsMetrics/Mutect2
+// after UMI processing and alignment.
+if (!params.ref_fa_bwamem2_indices) {
+    error "'--ref_fa_bwamem2_indices' is not set for --gen_org ${params.gen_org}"
+}
+if (!file(params.ref_fa_bwamem2_indices + '.0123').exists()) {
+    error "'--ref_fa_bwamem2_indices': no bwa-mem2 index found at prefix ${params.ref_fa_bwamem2_indices} (expected ${params.ref_fa_bwamem2_indices}.0123)"
+}
+
+['target_gatk', 'target_picard', 'bait_picard'].each { p ->
+    if (!params[p]) {
+        error "'--${p}' is required for --workflow chip_somatic (no default until the panel's final probe files exist)"
+    }
+    if (!file(params[p]).exists()) {
+        error "'--${p}': file not found: ${params[p]}"
+    }
+}
+
 def msg = """
 CHIP_SOMATIC PARAMETER LOG
 
@@ -31,6 +50,9 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 
 --ref_fa                        ${params.ref_fa}
 --ref_fa_indices                ${params.ref_fa_indices}
+--ref_fa_bwamem2_indices        ${params.ref_fa_bwamem2_indices}
+--duplex_seq                    ${params.duplex_seq_bool}
+--call_min_reads                ${params.call_min_reads}
 
 --target_gatk                   ${params.target_gatk}
 --target_picard                 ${params.target_picard}
