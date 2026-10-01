@@ -1,0 +1,26 @@
+nextflow_process {
+
+    name "Test Process SUMMARIZE_MESSAGE"
+    script "modules/bash/summarize_message.nf"
+    process "SUMMARIZE_MESSAGE"
+
+    test("Reports the sample ID and word count") {
+
+        when {
+            process {
+                """
+                input[0] = tuple('sample_01', file('${projectDir}/examples/messages.csv'))
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.summary_file.size() == 1
+            assert process.out.summary_file[0][0] == 'sample_01'
+
+            def summaryFile = new File(process.out.summary_file[0][1].toString())
+            assert summaryFile.text.contains('SampleID: sample_01')
+        }
+    }
+}

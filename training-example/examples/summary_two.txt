@@ -1,0 +1,4 @@
+SampleID: sample_02
+Word count: 2
+Message:
+GOODBYE WORLD

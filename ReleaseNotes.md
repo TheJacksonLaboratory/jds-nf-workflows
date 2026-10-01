@@ -1,5 +1,18 @@
 # RELEASE NOTES
 
+## Release 1.1.0
+
+This release adds a self-contained Nextflow DSL2 training example in `training-example/` for demonstrating the repository structure and common workflow patterns.
+
+The example includes:
+
+* A simple `main.nf`, workflow, configuration, and Bash run script.
+* Three small Bash-backed modules that create, transform, and summarize text.
+* A CSV parser that tracks `SampleID` and `Message` across process boundaries for multiple samples.
+* A `moduleDir` example showing how a module calls a helper script from its local `bin/` directory.
+* A scatter/gather example in which per-sample summaries are collected and combined into a single output file.
+* `nf-test` examples covering each module and the complete workflow.
+
 ## Release 1.0.2
 
 This minor release fixes the minimum required version of Nextflow to >= 26.0.0, and adjusts all example run scripts. 

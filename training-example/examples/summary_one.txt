@@ -1,0 +1,4 @@
+SampleID: sample_01
+Word count: 2
+Message:
+HELLO WORLD

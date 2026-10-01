@@ -1,0 +1,26 @@
+nextflow_process {
+
+    name "Test Process CREATE_MESSAGE"
+    script "modules/bash/create_message.nf"
+    process "CREATE_MESSAGE"
+
+    test("Writes one sample message") {
+
+        when {
+            process {
+                """
+                input[0] = tuple('sample_01', 'hello from nf-test')
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.message_file.size() == 1
+            assert process.out.message_file[0][0] == 'sample_01'
+
+            def messageFile = new File(process.out.message_file[0][1].toString())
+            assert messageFile.text.trim() == 'hello from nf-test'
+        }
+    }
+}

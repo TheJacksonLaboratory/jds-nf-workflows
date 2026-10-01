@@ -1,0 +1,29 @@
+nextflow_process {
+
+    name "Test Process GATHER_SUMMARIES"
+    script "modules/bash/gather_summaries.nf"
+    process "GATHER_SUMMARIES"
+
+    test("Combines all scattered summary files") {
+
+        when {
+            process {
+                """
+                input[0] = [
+                    file('${projectDir}/examples/summary_one.txt'),
+                    file('${projectDir}/examples/summary_two.txt')
+                ]
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.gathered_file.size() == 1
+
+            def gatheredFile = new File(process.out.gathered_file[0].toString())
+            assert gatheredFile.text.contains('SampleID: sample_01')
+            assert gatheredFile.text.contains('SampleID: sample_02')
+        }
+    }
+}
