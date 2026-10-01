@@ -1,0 +1,26 @@
+nextflow_process {
+
+    name "Test Process UPPERCASE_MESSAGE"
+    script "modules/bash/uppercase_message.nf"
+    process "UPPERCASE_MESSAGE"
+
+    test("Preserves the sample ID while uppercasing the message") {
+
+        when {
+            process {
+                """
+                input[0] = tuple('sample_01', file('${projectDir}/examples/messages.csv'))
+                """
+            }
+        }
+
+        then {
+            assert process.success
+            assert process.out.uppercase_file.size() == 1
+            assert process.out.uppercase_file[0][0] == 'sample_01'
+
+            def uppercaseFile = new File(process.out.uppercase_file[0][1].toString())
+            assert uppercaseFile.text == uppercaseFile.text.toUpperCase()
+        }
+    }
+}

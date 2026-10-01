@@ -1,0 +1,4 @@
+SampleID,Message
+sample_01,hello from the first sample
+sample_02,nextflow tracks this message separately
+sample_03,each csv row creates a new task

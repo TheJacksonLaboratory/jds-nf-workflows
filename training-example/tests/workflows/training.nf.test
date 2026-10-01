@@ -1,0 +1,27 @@
+nextflow_workflow {
+
+    name "Test Workflow TRAINING_WORKFLOW"
+    script "workflows/training.nf"
+    workflow "TRAINING_WORKFLOW"
+
+    test("Processes every CSV sample") {
+
+        when {
+            params {
+                csv_input = "${projectDir}/examples/messages.csv"
+                pubdir = "results"
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            def outputs = workflow.out.summary_file.collect()
+            assert outputs.size() == 3
+            assert outputs*.getAt(0).sort() == ['sample_01', 'sample_02', 'sample_03']
+
+            def gatheredOutputs = workflow.out.gathered_file.collect()
+            assert gatheredOutputs.size() == 1
+        }
+    }
+}
