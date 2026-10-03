@@ -63,6 +63,10 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --genotype_pon                  ${params.genotype_pon}
 --genotype_germline             ${params.genotype_germline}
 --contam_ref                    ${params.contam_ref}
+--dbSNP                          ${params.dbSNP}
+--cosmic                         ${params.cosmic}
+--dbNSFP                         ${params.dbNSFP}
+--gen_ver                        ${params.gen_ver}
 ______________________________________________________
 """
 

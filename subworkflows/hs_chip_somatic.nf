@@ -6,6 +6,7 @@ include {CHIP_UMI_CONSENSUS} from "./chip_umi_consensus"
 include {GATK_GETSAMPLENAME} from "../modules/gatk/gatk_getsamplename_noMeta"
 include {CHIP_SOMATIC_CALLING} from "./chip_somatic_calling"
 include {MULTIQC} from "../modules/multiqc/multiqc"
+include {CHIP_GENE_REPORT} from "../modules/chip_somatic/chip_gene_report"
 include {REORGANIZE_PUBDIR} from "../modules/chip_somatic/reorganize_pubdir"
 
 // Human chip_somatic: UMI/duplex-consensus chain (subworkflows/chip_umi_consensus.nf,
@@ -35,6 +36,16 @@ workflow HS_CHIP_SOMATIC {
         MULTIQC (
             ch_multiqc_files.collect(),
             params.multiqc_config
+        )
+
+        // Cross-sample HTML variant/gene report (gene name, coordinate,
+        // REF/ALT, VAF, FILTER, dbSNP/COSMIC/SnpEff/dbNSFP annotation --
+        // combines every sample's own annotation_table.txt.gz, same DAG
+        // position as MULTIQC). See modules/chip_somatic/chip_gene_report.nf.
+        CHIP_GENE_REPORT(
+            CHIP_SOMATIC_CALLING.out.annotation_table.collect{ it -> it[1]},
+            file("${projectDir}/modules/chip_somatic/bin/build_gene_report.py"),
+            file("${projectDir}/assets/chip_somatic/jax-gt.svg")
         )
 
         // Last step: fold two shared modules' (samtools_stats.nf,

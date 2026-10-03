@@ -11,6 +11,7 @@ include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_NOCONTAM} from "../modul
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
          GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants_chip"
 include {BCFTOOLS_STATS} from "../modules/bcftools/bcftools_stats"
+include {CHIP_ANNOTATION} from "./chip_annotation"
 
 // Tumor-only Mutect2 chain shared by both species (mm_chip_somatic.nf,
 // hs_chip_somatic.nf). No matched normal, no proxy-normal substitution --
@@ -92,10 +93,17 @@ workflow CHIP_SOMATIC_CALLING {
         // counts. See notes/milestones.md open item 5.
         BCFTOOLS_STATS(filtered_vcf)
 
+        // Annotation (dbSNP/COSMIC IDs, SnpEff consequence, dbNSFP scores where
+        // applicable -- see subworkflows/chip_annotation.nf for what runs per
+        // species). Also on the full filtered VCF, same reasoning as above.
+        CHIP_ANNOTATION(GATK_SELECTVARIANTS_SNP.out.vcf, GATK_SELECTVARIANTS_INDEL.out.vcf)
+
     emit:
-        filtered_vcf = filtered_vcf
-        stats        = stats
-        snp_vcf       = GATK_SELECTVARIANTS_SNP.out.vcf
-        indel_vcf     = GATK_SELECTVARIANTS_INDEL.out.vcf
-        bcftools_stats = BCFTOOLS_STATS.out.stats
+        filtered_vcf     = filtered_vcf
+        stats            = stats
+        snp_vcf          = GATK_SELECTVARIANTS_SNP.out.vcf
+        indel_vcf        = GATK_SELECTVARIANTS_INDEL.out.vcf
+        bcftools_stats   = BCFTOOLS_STATS.out.stats
+        annotated_vcf    = CHIP_ANNOTATION.out.annotated_vcf
+        annotation_table = CHIP_ANNOTATION.out.annotation_table
 }

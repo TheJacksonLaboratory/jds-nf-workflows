@@ -36,6 +36,8 @@ for the full design reasoning.
 --genotype_pon | true (human) / false (mouse placeholder) | Whether Mutect2 emits (still-filtered) calls at PoN-listed sites. False for mouse while the PoN is a content-free placeholder with no real sites to genotype.
 --genotype_germline | true | Whether Mutect2 emits (still-filtered) calls at germline-resource-listed sites.
 --contam_ref | <PATH> or null | Common-SNP resource for GATK GetPileupSummaries/CalculateContamination. Human: existing WES resource (small_exac_common_3.hg38.vcf.gz). Mouse: null — contamination estimation is skipped entirely (see finding 3: biologically inapplicable for B6, not yet built for UM-HET3).
+--dbSNP / --cosmic / --dbNSFP | <PATH> or null | Annotation resources (reused from --workflow somatic_wes): dbSNP + COSMIC add IDs, dbNSFP adds in-silico deleteriousness scores. Human: existing WES resources. Mouse: null — no mouse-build-matched dbSNP, and no mouse COSMIC/dbNSFP exist (see config/chip_somatic.config for why the one MGP-based mouse dbSNP-like resource was not used).
+--gen_ver / --snpEff_config | <string> / <PATH> | SnpEff database name and config, resolved per --gen_org (hg38, or GRCm39.105 — SnpEff annotation runs for both species).
 
 '''
 }
