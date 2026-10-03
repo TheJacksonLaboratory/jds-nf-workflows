@@ -21,14 +21,14 @@ process GATK_FILTERMUECTCALLS {
 
     script:
     // Same GATK version/command shape as gatk_filtermutectcalls_wes.nf, minus the
-    // contamination-table/tumor-segmentation inputs — for chip_somatic backgrounds
+    // contamination-table/tumor-segmentation inputs — for clonal_hema backgrounds
     // (e.g. B6) where contamination estimation is not run at all (see finding 3,
     // germline_resource_design.md). Orientation-bias modeling is not gated on
-    // `params.ffpe` for chip_somatic (finding 6), unlike the WES module.
+    // `params.ffpe` for clonal_hema (finding 6), unlike the WES module.
     String my_mem = (task.memory-1.GB).toString()
     my_mem =  my_mem[0..-4]
     // Orientation-bias priors are applied only when the reads are NOT duplex
-    // consensus (apply_orientation, set by CHIP_SOMATIC_CALLING's caller).
+    // consensus (apply_orientation, set by CLONAL_HEMA_CALLING's caller).
     // Duplex consensus reads all come out F1R2: fgbio 4.0.0 GroupReadsByUmi
     // (Paired) always labels the F1R2 strand /A, and DuplexConsensusCaller
     // builds duplex R1 from the AB R1s. Verified 2026-09-25 on synthetic

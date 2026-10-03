@@ -8,14 +8,14 @@ process SNPSIFT_EXTRACTFIELDS {
 
     container 'quay.io/jaxcompsci/snpeff_snpsift_5.1:v5.1d'
 
-    // chip_somatic counterpart of snpeff_snpsift/snpsift_extractfields.nf.
+    // clonal_hema counterpart of snpeff_snpsift/snpsift_extractfields.nf.
     // Field list adapted from WES's 'somatic_wes' (human) case: same FORMAT
     // fields (this is Mutect2-based like WES), plus the two INFO fields that
-    // drive chip_somatic's germline-vs-somatic call (POPAF, GERMQ -- see
+    // drive clonal_hema's germline-vs-somatic call (POPAF, GERMQ -- see
     // notes/gnomad_af_vaf_synthetic_test_results.md) and FILTER, since
     // FilterMutectCalls' filter reasons (germline/orientation/panel_of_normals/
     // etc.) are how a reviewer will actually triage a call. Mouse: same list
-    // minus the dbNSFP_* fields (dbNSFP is human-only, see chip_somatic.config).
+    // minus the dbNSFP_* fields (dbNSFP is human-only, see clonal_hema.config).
 
     publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.txt.gz", mode:'copy'
 

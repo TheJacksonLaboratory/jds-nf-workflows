@@ -6,7 +6,7 @@ process SNPEFF_ONEPERLINE {
     time '00:10:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    // chip_somatic counterpart of snpeff_snpsift/snpeff_oneperline.nf (unchanged).
+    // clonal_hema counterpart of snpeff_snpsift/snpeff_oneperline.nf (unchanged).
     // Same script (${moduleDir}/bin/vcfEffOnePerLine.pl resolves to the SAME
     // shared bin/ next to this file, since this module lives in the same
     // modules/snpeff_snpsift/ directory -- no need to duplicate the perl

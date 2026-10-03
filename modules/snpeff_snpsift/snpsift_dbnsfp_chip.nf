@@ -8,9 +8,9 @@ process SNPSIFT_DBNSFP {
 
     container 'quay.io/jaxcompsci/snpeff_snpsift_5.1:v5.1d'
 
-    // chip_somatic counterpart of snpeff_snpsift/snpsift_dbnsfp.nf (unchanged).
+    // clonal_hema counterpart of snpeff_snpsift/snpsift_dbnsfp.nf (unchanged).
     // Human only -- called from subworkflows/chip_annotation.nf only when
-    // params.dbNSFP is set (mouse: no dbNSFP resource; see chip_somatic.config).
+    // params.dbNSFP is set (mouse: no dbNSFP resource; see clonal_hema.config).
     // No publishDir: intermediate only.
 
     input:

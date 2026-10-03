@@ -18,7 +18,7 @@ include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 include {PICARD_COLLECTHSMETRICS;
          PICARD_COLLECTHSMETRICS as PICARD_COLLECTHSMETRICS_RAW} from "../modules/picard/picard_collecthsmetrics"
 
-// Shared UMI/duplex-consensus chain for chip_somatic, both species (Twist
+// Shared UMI/duplex-consensus chain for clonal_hema, both species (Twist
 // Bioscience UMI adapter system -- DOC-001337/DOC-001506), replacing the
 // plain BWA_MEM -> PICARD_SORTSAM -> PICARD_MARKDUPLICATES chain used until
 // 2026-09-14. See notes/milestones.md open item 6 for the full rationale:
@@ -26,7 +26,7 @@ include {PICARD_COLLECTHSMETRICS;
 // mates), so extraction is a correctness requirement, not an optional
 // feature -- feeding UMI+skip bases into a normal aligner as if they were
 // genomic sequence would corrupt every alignment. Moved here from
-// hs_chip_somatic.nf on 2026-09-28 so mouse uses the same chain (needs a
+// hs_clonal_hema.nf on 2026-09-28 so mouse uses the same chain (needs a
 // bwa-mem2 index per species: params.ref_fa_bwamem2_indices).
 //
 // FASTP is deliberately NOT run before UMI extraction -- Twist's UMI sits
@@ -60,7 +60,7 @@ workflow CHIP_UMI_CONSENSUS {
         // (single-strand consensus, no duplex requirement -- e.g. min_reads=1
         // to retain singletons) consensus calling, per params.duplex_seq --
         // both branches ported from the same reference pipeline (5baseTAPS's
-        // own params.duplex_seq toggle). See config/chip_somatic.config for
+        // own params.duplex_seq toggle). See config/clonal_hema.config for
         // the call_min_reads format difference between the two modes.
         if (params.duplex_seq_bool) {
             FGBIO_CALLANDFILTERDUPLEXCONSENSUSREADS(FGBIO_GROUPREADSBYUMI.out.bam)

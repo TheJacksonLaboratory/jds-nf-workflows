@@ -13,11 +13,11 @@ include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
 include {BCFTOOLS_STATS} from "../modules/bcftools/bcftools_stats"
 include {CHIP_ANNOTATION} from "./chip_annotation"
 
-// Tumor-only Mutect2 chain shared by both species (mm_chip_somatic.nf,
-// hs_chip_somatic.nf). No matched normal, no proxy-normal substitution --
+// Tumor-only Mutect2 chain shared by both species (mm_clonal_hema.nf,
+// hs_clonal_hema.nf). No matched normal, no proxy-normal substitution --
 // germline filtering is entirely population-resource-based (`gnomad_ref`,
 // `pon_ref`), not comparator-based. See notes/germline_resource_design.md and
-// the chip_somatic implementation plan (findings 1, 3, 5, 6).
+// the clonal_hema implementation plan (findings 1, 3, 5, 6).
 //
 // Contamination estimation (GetPileupSummaries/CalculateContamination) only
 // runs when `params.contam_ref` is set (human: always; mouse: not yet --
@@ -31,7 +31,7 @@ include {CHIP_ANNOTATION} from "./chip_annotation"
 // fields, which this tumor-only chain never produces.
 //
 // Orientation-bias modeling (GATK_LEARNREADORIENTATIONMODEL) always runs,
-// unconditionally -- unlike WES's `params.ffpe` gate, chip_somatic drops that
+// unconditionally -- unlike WES's `params.ffpe` gate, clonal_hema drops that
 // gate entirely (finding 6): at panel depth, rare strand-specific artifacts
 // get statistically "confirmed" by sheer read count in a way WES depth rarely
 // reaches, and CHIP samples are fresh blood/leukocyte-derived anyway, so the
@@ -44,7 +44,7 @@ include {CHIP_ANNOTATION} from "./chip_annotation"
 // consensus with min-reads "2 1 1" already requires both strands. The model
 // is still learned in that mode, as a diagnostic output only.
 
-workflow CHIP_SOMATIC_CALLING {
+workflow CLONAL_HEMA_CALLING {
 
     take:
         tumor_name_ch    // [sampleID, bam, bai, tumor_name]

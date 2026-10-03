@@ -7,9 +7,9 @@ process REORGANIZE_PUBDIR {
     container 'quay.io/biocontainers/multiqc:1.28--pyhdfd78af_0'
 
     // Runs once, last, after every per-sample file has already been
-    // published -- see bin/chip_somatic/reorganize_pubdir.py for what it
+    // published -- see bin/clonal_hema/reorganize_pubdir.py for what it
     // fixes and why (two shared modules, samtools_stats.nf and
-    // picard_collecthsmetrics.nf's raw call, publish some chip_somatic
+    // picard_collecthsmetrics.nf's raw call, publish some clonal_hema
     // output outside each sample's own pubdir folder; not modified here
     // since they're shared with other workflows). Ordering is enforced by
     // taking the MultiQC report as an (unused-content) input -- MultiQC's
@@ -21,6 +21,6 @@ process REORGANIZE_PUBDIR {
 
     script:
     """
-    ${projectDir}/bin/chip_somatic/reorganize_pubdir.py ${params.pubdir} ${sample_ids.join(' ')}
+    ${projectDir}/bin/clonal_hema/reorganize_pubdir.py ${params.pubdir} ${sample_ids.join(' ')}
     """
 }

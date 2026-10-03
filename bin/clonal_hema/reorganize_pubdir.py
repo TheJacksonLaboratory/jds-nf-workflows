@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-Reorganize chip_somatic's published output directory into one folder per
+Reorganize clonal_hema's published output directory into one folder per
 sample. Two SHARED modules used unmodified by this workflow publish some
 files outside each sample's own folder, in ways specific to other
 workflows' naming conventions:
 
-  - samtools_stats.nf (used for chip_somatic's raw/consensus samtools stats)
+  - samtools_stats.nf (used for clonal_hema's raw/consensus samtools stats)
     splits sampleID on "_" and buckets output under
     {pubdir}/{first_token}/samtools/ -- built for chipseq's own
-    INPUT_/treatment naming, not chip_somatic's (e.g. lands at
+    INPUT_/treatment naming, not clonal_hema's (e.g. lands at
     {pubdir}/CHIP/samtools/ for a sampleID like CHIP_REALISTIC_DUPLEX).
   - picard_collecthsmetrics.nf's raw (pre-consensus) HsMetrics call is
     invoked with sampleID suffixed "_raw" to avoid a filename collision

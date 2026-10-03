@@ -8,11 +8,11 @@ process GATK_MERGEVCF {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
-    // chip_somatic counterpart of gatk/gatk_mergevcf.nf. Same MergeVcfs command,
-    // then bgzip + tabix (chip_somatic's final-output convention: every
+    // clonal_hema counterpart of gatk/gatk_mergevcf.nf. Same MergeVcfs command,
+    // then bgzip + tabix (clonal_hema's final-output convention: every
     // published VCF is compressed + indexed, e.g. the filtered VCF and the
     // selected_SNP/INDEL VCFs already are). Always published -- this is the
-    // final annotated deliverable for chip_somatic, unlike the WES module where
+    // final annotated deliverable for clonal_hema, unlike the WES module where
     // this same MergeVcfs step is one of two intermediate merge passes.
 
     publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_annotated_final.vcf.gz*", mode:'copy'

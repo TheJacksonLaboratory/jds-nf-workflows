@@ -8,9 +8,9 @@ process SNPEFF {
 
     container 'quay.io/jaxcompsci/snpeff_snpsift_5.1:v5.1d'
 
-    // chip_somatic counterpart of snpeff_snpsift/snpeff_snpeff.nf (unchanged),
-    // trimmed to the one case chip_somatic actually uses (indel_snp == 'SNP' or
-    // 'INDEL', both species -- see config/chip_somatic.config for gen_ver/
+    // clonal_hema counterpart of snpeff_snpsift/snpeff_snpeff.nf (unchanged),
+    // trimmed to the one case clonal_hema actually uses (indel_snp == 'SNP' or
+    // 'INDEL', both species -- see config/clonal_hema.config for gen_ver/
     // snpEff_config resolved per species). No publishDir: intermediate only.
 
     input:

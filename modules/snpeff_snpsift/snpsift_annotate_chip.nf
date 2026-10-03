@@ -8,7 +8,7 @@ process SNPSIFT_ANNOTATE {
 
     container 'quay.io/jaxcompsci/snpeff_snpsift_5.1:v5.1d'
 
-    // chip_somatic counterpart of snpeff_snpsift/snpsift_annotate.nf (unchanged).
+    // clonal_hema counterpart of snpeff_snpsift/snpsift_annotate.nf (unchanged).
     // Same command; no publishDir here -- this runs twice per SNP/INDEL branch
     // (dbSNP then COSMIC, subworkflows/chip_annotation.nf) and only the final
     // merged, fully-annotated VCF (gatk_mergevcf_chip.nf) is a published product.

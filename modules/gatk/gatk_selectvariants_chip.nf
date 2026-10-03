@@ -6,10 +6,10 @@ process GATK_SELECTVARIANTS {
     time '03:00:00'
     errorStrategy {(task.exitStatus == 140) ? {log.info "\n\nError code: ${task.exitStatus} for task: ${task.name}. Likely caused by the task wall clock: ${task.time} or memory: ${task.memory} being exceeded.\nAttempting orderly shutdown.\nSee .command.log in: ${task.workDir} for more info.\n\n"; return 'finish'}.call() : 'finish'}
 
-    // chip_somatic counterpart of gatk_selectvariants.nf (unchanged). Differences:
+    // clonal_hema counterpart of gatk_selectvariants.nf (unchanged). Differences:
     // same GATK version as the chip FilterMutectCalls modules (4.4.0.0), bgzipped +
     // tabix-indexed output, and always published: the SNP/INDEL VCFs are final
-    // products for chip_somatic, not intermediates (the shared module publishes them
+    // products for clonal_hema, not intermediates (the shared module publishes them
     // only with params.keep_intermediate).
     container 'broadinstitute/gatk:4.4.0.0'
 

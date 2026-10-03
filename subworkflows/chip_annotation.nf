@@ -15,7 +15,7 @@ include {SNPEFF_ONEPERLINE as SNPEFF_ONEPERLINE_SNP;
 include {GATK_MERGEVCF} from "../modules/gatk/gatk_mergevcf_chip"
 include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractfields_chip"
 
-// Annotation for chip_somatic, both species, added 2026-09-29 -- learned from
+// Annotation for clonal_hema, both species, added 2026-09-29 -- learned from
 // --workflow somatic_wes's own annotation chain (dbSNP + COSMIC ID annotation,
 // SnpEff consequence calls, dbNSFP in-silico scores), reusing the same
 // resources somatic_wes already uses (verified present in omics_share) via new
@@ -23,17 +23,17 @@ include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractf
 //
 // Deliberately NOT copied from WES: the GATK_VARIANTFILTRATION hard-filter step
 // (DP < 25, FS > 60) that runs between SelectVariants and annotation in WES.
-// At chip_somatic's panel depths (hundreds to thousands of x even at low VAF),
+// At clonal_hema's panel depths (hundreds to thousands of x even at low VAF),
 // DP < 25 essentially never fires, and FS > 60 strand-bias filtering duplicates
 // what FilterMutectCalls' own orientation/strand_bias filters already do
 // (verified against real FILTER values in our synthetic tests). Adding it would
 // risk a second, WES-tuned filter layer overwriting FILTER reasons we've
 // already characterized. So this subworkflow runs directly on
-// CHIP_SOMATIC_CALLING's SelectVariants output.
+// CLONAL_HEMA_CALLING's SelectVariants output.
 //
 // Human: dbSNP -> COSMIC -> SnpEff -> dbNSFP -> oneperline, both SNP and INDEL.
 // Mouse: dbSNP/COSMIC/dbNSFP are human-only resources (see the comment on
-// params.dbSNP in config/chip_somatic.config for why the one mouse dbSNP-like
+// params.dbSNP in config/clonal_hema.config for why the one mouse dbSNP-like
 // resource that exists was NOT wired in -- GRCm38 coordinates, wrong build).
 // Mouse gets SnpEff consequence/gene annotation only (a real GRCm39 database
 // exists), gated on params.dbSNP/params.cosmic/params.dbNSFP being non-null

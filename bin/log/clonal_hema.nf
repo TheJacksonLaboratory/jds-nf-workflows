@@ -4,7 +4,7 @@ if (params.gen_org != "mouse" && params.gen_org != "human") {
     error "'--gen_org': \"${params.gen_org}\" is not valid, supported options are 'human' or 'mouse'"
 }
 
-// Panel intervals have no default (see config/chip_somatic.config). Check them
+// Panel intervals have no default (see config/clonal_hema.config). Check them
 // here so a missing file stops the run at startup, not at HsMetrics/Mutect2
 // after UMI processing and alignment.
 if (!params.ref_fa_bwamem2_indices) {
@@ -16,7 +16,7 @@ if (!file(params.ref_fa_bwamem2_indices + '.0123').exists()) {
 
 ['target_gatk', 'target_picard', 'bait_picard'].each { p ->
     if (!params[p]) {
-        error "'--${p}' is required for --workflow chip_somatic (no default until the panel's final probe files exist)"
+        error "'--${p}' is required for --workflow clonal_hema (no default until the panel's final probe files exist)"
     }
     if (!file(params[p]).exists()) {
         error "'--${p}': file not found: ${params[p]}"
@@ -24,7 +24,7 @@ if (!file(params.ref_fa_bwamem2_indices + '.0123').exists()) {
 }
 
 def msg = """
-CHIP_SOMATIC PARAMETER LOG
+CLONAL_HEMA PARAMETER LOG
 
 --comment: ${params.comment}
 
