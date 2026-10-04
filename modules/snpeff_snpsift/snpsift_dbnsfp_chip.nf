@@ -27,7 +27,7 @@ process SNPSIFT_DBNSFP {
     """
     java -Xmx${my_mem}G -jar /opt/snpEff/SnpSift.jar \
     dbnsfp -v -db ${params.dbNSFP} -noDownload -a \
-    -f SIFT_score,SIFT_pred,Polyphen2_HDIV_score,MutationAssessor_score,phyloP100way_vertebrate,1000Gp3_AF,1000Gp3_AFR_AF,1000Gp3_EUR_AF,1000Gp3_AMR_AF,1000Gp3_EAS_AF,ESP6500_AA_AF,ESP6500_EA_AF \
+    -f SIFT_score,SIFT_pred,Polyphen2_HDIV_score,MutationAssessor_score,phyloP100way_vertebrate,1000Gp3_AF,1000Gp3_AFR_AF,1000Gp3_EUR_AF,1000Gp3_AMR_AF,1000Gp3_EAS_AF,ESP6500_AA_AF,ESP6500_EA_AF,aapos,Ensembl_transcriptid,genename \
     ${vcf} > ${sampleID}_${output_suffix}
     """
 }
