@@ -21,6 +21,8 @@ process CHIP_GENE_REPORT {
     path(annotation_tables)
     path(report_script)
     path(report_logo)
+    val(species)             // 'human' | 'mouse': picks the column set and wording
+    val(germline_resource)   // 'yes' | 'no': no = placeholder/empty germline resource (mouse B6 default)
 
     output:
     path "CHIP-Panel-Variant-Report.html", emit: report
@@ -33,6 +35,6 @@ process CHIP_GENE_REPORT {
     // build_gene_report.py would never invalidate a cached, stale output
     // (found by a real -resume rerun producing the pre-edit HTML, 2026-10-02).
     """
-    python3 ${report_script} --logo ${report_logo} CHIP-Panel-Variant-Report.html ${annotation_tables}
+    python3 ${report_script} --logo ${report_logo} --species ${species} --germline-resource ${germline_resource} CHIP-Panel-Variant-Report.html ${annotation_tables}
     """
 }

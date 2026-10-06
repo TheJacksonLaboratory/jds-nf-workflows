@@ -74,13 +74,13 @@ METRIC_DESCRIPTIONS = {
             "downstream_gene_variant, 5_prime_UTR_variant, etc., so one "
             "position can appear under more than one gene.",
     "Transcript": "Transcript the Protein/cDNA change is reported against "
-                  "(RefSeq for human, hg38; Ensembl for mouse, GRCm39). "
+                  "(RefSeq for human, GRCh38; Ensembl for mouse, GRCm39). "
                   "Each row is one variant in one gene and shows the "
                   "transcript with the highest-impact consequence (ties: "
                   "first in SnpEff's output order). A +N button means the "
                   "variant was annotated against N more transcripts of the "
                   "same gene; click it to list them all.",
-    "Chrom": "Chromosome (genome build: hg38 human / GRCm39 mouse).",
+    "Chrom": "Chromosome (genome build: GRCh38 human / GRCm39 mouse).",
     "Position": "1-based genomic coordinate of the variant.",
     "Ref": "Reference allele.",
     "Alt": "Alternate (variant) allele.",
@@ -273,6 +273,63 @@ METRIC_DETAILS = {
 }
 
 
+SPECIES_LABEL = {"human": "Human", "mouse": "Mouse"}
+# The assay supports only these two builds, so --gen_org (the species) is enough to name the build.
+DEFAULT_BUILD = {"human": "GRCh38", "mouse": "GRCm39"}
+
+# Columns a species can never fill: dbSNP, COSMIC and dbNSFP (SIFT) are human-only resources, and
+# the mouse germline resource is an empty placeholder (so Pop. Frequency is the same default
+# value on every row). Declared per species, never detected from empty data, so a missing human
+# annotation cannot be hidden by this.
+SPECIES_HIDDEN_COLUMNS = {
+    "mouse": {"dbSNP", "COSMIC", "SIFT Prediction", "Pop. Frequency (gnomAD, -log10)"},
+}
+
+
+def species_text(species, build, germline_resource):
+    """Column Reference text for this run: the human wording, adjusted where the species or the
+    germline resource changes what a value means. Returns (descriptions, details)."""
+    desc, det = dict(METRIC_DESCRIPTIONS), dict(METRIC_DETAILS)
+    desc["Chrom"] = f"Chromosome (genome build {build})."
+    old = "(RefSeq for human, GRCh38; Ensembl for mouse, GRCm39)"
+    if old not in desc["Transcript"]:
+        raise SystemExit("Transcript description changed; update species_text()")
+    ids = "Ensembl transcript IDs" if species == "mouse" else "RefSeq transcript IDs"
+    desc["Transcript"] = desc["Transcript"].replace(old, f"({ids}, {build})")
+    if species != "mouse":
+        return desc, det
+    has_resource = germline_resource == "yes"
+    desc["Filter"] = (
+        "Mutect2's quality verdict on the call: does it look like a real variant in the sample, "
+        "or a likely artifact? PASS = no filter flagged it. Any other value names the filter(s) "
+        "that did, joined by ';'."
+        + ("" if has_resource else
+           " No germline resource was used in this run, so inherited strain variants are not "
+           "flagged and can PASS."))
+    keep = ("weak_evidence", "strand_bias", "orientation", "map_qual", "A call can carry")
+    rest = [b for b in METRIC_DETAILS["Filter"] if b.startswith(keep)]
+    if has_resource:
+        first = [
+            "PASS : none of Mutect2's filters flagged the call, so it is not judged to be a "
+            "technical artifact or an inherited variant (judged against the germline resource "
+            "supplied for this run). This is a technical-quality verdict only: it does not say "
+            "the variant is clinically relevant, and with no matched normal sample 'somatic' is "
+            "inferred, not proven.",
+            "germline : the evidence indicates the variant is inherited, judged mainly from how "
+            "common it is in the germline resource supplied for this run and its allele fraction."]
+    else:
+        first = [
+            "PASS : none of Mutect2's filters flagged the call, so it is not judged to be a "
+            "technical artifact. This is a technical-quality verdict only. This run used no "
+            "germline resource, so an inherited strain variant (for example a ~100% VAF "
+            "difference from the reference genome in an inbred strain) is not flagged and can "
+            "PASS; PASS does not say the variant is somatic or clinically relevant.",
+            "germline : not available. This filter needs a germline resource and this run used "
+            "none, so it cannot flag inherited variants."]
+    det["Filter"] = first + rest
+    return desc, det
+
+
 IMPACT_RANK = {"HIGH": 3, "MODERATE": 2, "LOW": 1, "MODIFIER": 0}
 
 
@@ -359,30 +416,40 @@ def logo_img_tag(logo_path):
 
 def main():
     args = sys.argv[1:]
-    logo_path = None
-    if "--logo" in args:
-        i = args.index("--logo")
-        logo_path = args[i + 1]
-        del args[i:i + 2]
+    opts = {"--logo": None, "--species": "human", "--germline-resource": "yes"}
+    for flag in opts:
+        if flag in args:
+            i = args.index(flag)
+            opts[flag] = args[i + 1]
+            del args[i:i + 2]
+    logo_path, species, germline_resource = opts["--logo"], opts["--species"], opts["--germline-resource"]
+    if species not in SPECIES_LABEL or germline_resource not in ("yes", "no"):
+        raise SystemExit("--species must be human|mouse and --germline-resource yes|no")
+    build = DEFAULT_BUILD[species]
     if len(args) < 2:
-        raise SystemExit("usage: build_gene_report.py [--logo <logo.svg>] <out.html> <table.txt.gz> [...]")
+        raise SystemExit("usage: build_gene_report.py [--logo <logo.svg>] [--species human|mouse] "
+                         "[--germline-resource yes|no] <out.html> <table.txt.gz> [...]")
     out_path = args[0]
     in_paths = args[1:]
+    hidden = SPECIES_HIDDEN_COLUMNS.get(species, set())
+    display_columns = [(raw, disp) for raw, disp in DISPLAY_COLUMNS if disp not in hidden]
+    descriptions, details = species_text(species, build, germline_resource)
+
 
     all_rows = []
     for p in in_paths:
         _, rows = read_table(p)
         all_rows.append(rows)
 
-    raw_fields = [raw for raw, _ in DISPLAY_COLUMNS]
+    raw_fields = [raw for raw, _ in display_columns]
     # Three hidden trailing columns: the group's transcript count, searchable
     # text of every transcript in the group, and the per-transcript details
     # for the expander on the Transcript cell.
-    columns = (["Sample"] + [disp for _, disp in DISPLAY_COLUMNS]
+    columns = (["Sample"] + [disp for _, disp in display_columns]
                + ["_ntx", "_search", "_children", "_chrom_rank", "_sift_tip"])
     vaf_idx = columns.index("VAF (%)")
     reads_idx = columns.index("Ref/Alt Reads")
-    sift_idx = columns.index("SIFT Prediction")
+    sift_idx = columns.index("SIFT Prediction") if "SIFT Prediction" in columns else None
     conseq_idx = columns.index("Consequence")
     pos_idx = columns.index("Position")
     chrom_idx = columns.index("Chrom")
@@ -417,7 +484,8 @@ def main():
         sift_letters, sift_tip = sift_for_line(rep)
         if "missense" not in rep.get("ANN[*].EFFECT", ""):
             sift_letters, sift_tip = "", ""
-        out_row[sift_idx] = sift_letters
+        if sift_idx is not None:
+            out_row[sift_idx] = sift_letters
         children = [[r.get("ANN[*].FEATUREID", ""), r.get("ANN[*].EFFECT", ""),
                      r.get("ANN[*].IMPACT", ""), r.get("ANN[*].HGVS_P", ""),
                      r.get("ANN[*].HGVS_C", ""),
@@ -454,12 +522,12 @@ def main():
     )
 
     def metric_row_html(disp):
-        desc = html.escape(METRIC_DESCRIPTIONS.get(disp, "")).replace("\n", "<br>")
+        desc = html.escape(descriptions.get(disp, "")).replace("\n", "<br>")
         link = METRIC_LINKS.get(disp)
         if link:
             desc += (f' <a href="{html.escape(link[1])}" target="_blank" '
                      f'rel="noopener">{html.escape(link[0])}</a>')
-        detail = METRIC_DETAILS.get(disp)
+        detail = details.get(disp)
         if not detail:
             return f'<tr><td>{html.escape(disp)}</td><td>{desc}</td></tr>'
         slug = "".join(c if c.isalnum() else "-" for c in disp.lower()).strip("-")
@@ -482,7 +550,17 @@ def main():
             + "</ul></td></tr>"
         )
 
-    metric_rows = "".join(metric_row_html(disp) for _, disp in DISPLAY_COLUMNS)
+    metric_rows = "".join(metric_row_html(disp) for _, disp in display_columns)
+
+    species_label = f"{SPECIES_LABEL[species]} ({build})"
+    page_desc_tail = ("variant allele\n      fraction, and population-frequency annotation."
+                      if species == "human" else "and variant allele fraction.")
+    notice_html = ""
+    if species == "mouse" and germline_resource == "no":
+        notice_html = ('<p class="report-note"><strong>No germline resource was used in this run.</strong> '
+                       'Inherited strain variants are not filtered, so a PASS call does not distinguish '
+                       'them from somatic variants. Inherited variants in an inbred strain typically read near '
+                       '100% VAF: sort the VAF column to review the highest ones first.</p>')
 
     html_out = f"""<!DOCTYPE html>
 <html>
@@ -499,7 +577,7 @@ def main():
   :root {{
     --bg: #f4f5f9;
     --surface: #ffffff;
-    --sidebar-bg: #161a2b;
+    --sidebar-bg: #151f3d;
     --sidebar-text: #aeb4c8;
     --sidebar-text-active: #ffffff;
     --sidebar-border: rgba(255,255,255,0.08);
@@ -525,7 +603,7 @@ def main():
     :root {{
       --bg: #11141f;
       --surface: #1a1e2d;
-      --sidebar-bg: #0b0d16;
+      --sidebar-bg: #0b1228;
       --border: #2b3044;
       --switch-off: #3b4259;
       --text: #e7e9f2;
@@ -550,7 +628,7 @@ def main():
     color: var(--sidebar-text); padding: 24px 0; position: sticky; top: 0;
     height: 100vh; overflow-y: auto;
   }}
-  .sidebar-header {{ padding: 0 22px 18px; border-bottom: 1px solid var(--sidebar-border); margin-bottom: 10px; }}
+  .sidebar-header {{ text-align: center; padding: 0 22px 18px; border-bottom: 1px solid var(--sidebar-border); margin-bottom: 10px; }}
   .sidebar-title {{ font-weight: 700; font-size: 1.05rem; color: #fff; margin: 0; }}
   .sidebar-subtitle {{ font-size: 0.75rem; opacity: 0.75; margin-top: 2px; }}
   .sidebar-summary {{ font-size: 0.85rem; opacity: 0.85; margin-top: 12px; }}
@@ -579,7 +657,10 @@ def main():
   .main {{ flex: 1; min-width: 0; padding: 36px 40px 60px; }}
   .page-header {{ display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }}
   .page-header h1 {{ font-size: 1.55rem; line-height: 1.25; margin: 0 0 8px; }}
+  .page-header h1 .title-sub {{ display: block; font-size: calc(1.55rem - 2pt); }}
   .report-logo {{ width: 77px; height: 77px; flex: 0 0 auto; }}
+  .sidebar-logo {{ text-align: center; margin: 0 0 16px; }}
+  .sidebar-logo .report-logo {{ display: block; margin: 0 auto; }}
   .report-footer {{
     margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border);
     color: var(--text-muted); font-size: 0.8rem;
@@ -589,6 +670,11 @@ def main():
   .sample-panel {{ display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }}
   .sample-panel h2 {{ font-size: 1.3rem; margin: 0; }}
   .sample-label {{ color: var(--text-muted); font-weight: 500; }}
+  .report-note {{
+    max-width: 740px; margin: 0 0 30px; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem;
+    line-height: 1.5; color: var(--text); background: rgba(217,119,6,0.12);
+    border-left: 3px solid #d97706;
+  }}
   .sample-sub {{ color: var(--text-muted); font-size: 0.85rem; }}
 
   .table-card {{
@@ -755,6 +841,7 @@ def main():
 <body>
 <nav class="sidebar">
   <div class="sidebar-header">
+    <div class="sidebar-logo">{logo_html}</div>
     <p class="sidebar-title">CHIP Panel</p>
     <p class="sidebar-subtitle">Variant Report</p>
     <p class="sidebar-summary">{n_samples} sample(s) &middot; {n_variants} variant(s)</p>
@@ -765,17 +852,16 @@ def main():
 <main class="main">
   <div class="page-header">
     <div>
-      <h1>Clonal Hematopoiesis of Indeterminate Potential Panel<br>Variant Report</h1>
+      <h1>Clonal Hematopoiesis of Indeterminate Potential<span class="title-sub">Panel Variant Report</span></h1>
       <p class="page-desc">This report lists every variant called across the panel for each
       sample in this run, including calls that Mutect2's filters flagged (see the Filter
-      column), with their predicted consequence, protein/DNA change, variant allele
-      fraction, and population-frequency annotation.</p>
+      column), with their predicted consequence, protein/DNA change, {page_desc_tail}</p>
+      {notice_html}
     </div>
-    {logo_html}
   </div>
 
   <div class="sample-panel">
-    <h2><span class="sample-label">Sample:</span> <span id="sample-headline"></span></h2>
+    <h2><span class="sample-label">{species_label} Sample:</span> <span id="sample-headline"></span></h2>
     <span class="sample-sub" id="sample-subhead"></span>
   </div>
 
@@ -822,6 +908,9 @@ function idLinks(d, type, urlPrefix, linkIf) {{
 }}
 const idxChildren = columns.indexOf("_children");
 const idxSift = columns.indexOf("SIFT Prediction");
+// Mouse tables have no SIFT, dbSNP or COSMIC columns (index -1). DataTables reads a negative
+// target as "counted from the end", so every use of these indexes is guarded.
+const hasSift = idxSift >= 0;
 const idxSiftTip = columns.indexOf("_sift_tip");
 
 function esc(s) {{
@@ -832,10 +921,12 @@ function esc(s) {{
 
 function transcriptTable(children) {{
   let h = '<div class="tx-detail"><table class="tx-table"><thead><tr><th>Transcript</th>' +
-          '<th>Consequence</th><th>Impact</th><th>Protein Change</th><th>cDNA Change</th><th>SIFT</th></tr></thead><tbody>';
+          '<th>Consequence</th><th>Impact</th><th>Protein Change</th><th>cDNA Change</th>' +
+          (hasSift ? '<th>SIFT</th>' : '') + '</tr></thead><tbody>';
   children.forEach(function(c) {{
     h += '<tr><td>' + esc(c[0]) + '</td><td>' + esc(c[1]) + '</td><td class="impact-' + esc(c[2]) + '">' +
-         esc(c[2]) + '</td><td>' + esc(c[3]) + '</td><td>' + esc(c[4]) + '</td><td>' + esc(c[5]) + '</td></tr>';
+         esc(c[2]) + '</td><td>' + esc(c[3]) + '</td><td>' + esc(c[4]) + '</td>' +
+         (hasSift ? '<td>' + esc(c[5]) + '</td>' : '') + '</tr>';
   }});
   return h + '</tbody></table></div>';
 }}
@@ -856,17 +947,17 @@ $(document).ready(function() {{
       {{ targets: idxGene, className: 'col-gene' }},
       {{ targets: idxChromRank, visible: false, searchable: false }},
       {{ targets: idxSiftTip, visible: false, searchable: false, orderable: false }},
-      {{ targets: idxSift, render: function(d, type, row) {{
+      ...(idxSift >= 0 ? [{{ targets: idxSift, render: function(d, type, row) {{
           if (type !== 'display' || !d) return d;
           const tip = row[idxSiftTip];
           return tip ? '<span class="sift-tip" tabindex="0" data-tip="' + esc(tip) + '">' + esc(d) + '</span>' : esc(d);
-        }} }},
-      {{ targets: idxDbsnp, render: function(d, type) {{
+        }} }}] : []),
+      ...(idxDbsnp >= 0 ? [{{ targets: idxDbsnp, render: function(d, type) {{
           return idLinks(d, type, 'https://www.ncbi.nlm.nih.gov/snp/', function(id) {{ return /^rs[0-9]+$/.test(id); }});
-        }} }},
-      {{ targets: idxCosmic, render: function(d, type) {{
+        }} }}] : []),
+      ...(idxCosmic >= 0 ? [{{ targets: idxCosmic, render: function(d, type) {{
           return idLinks(d, type, 'https://cancer.sanger.ac.uk/cosmic/search?q=', function(id) {{ return /^COSV[0-9]+$/.test(id); }});
-        }} }},
+        }} }}] : []),
       {{ targets: [idxChrom, idxPos], orderData: [idxChromRank, idxPos] }},
       {{ targets: idxTranscript, render: function(d, type, row) {{
           if (type !== 'display') return d;
@@ -936,14 +1027,14 @@ $(document).ready(function() {{
     const keep = [];
     columns.forEach(function(c, i) {{ if (c !== 'Sample' && c.charAt(0) !== '_') keep.push(i); }});
     const head = keep.map(function(i) {{ return columns[i]; }});
-    head.push('SIFT by Ensembl transcript (dbNSFP)');
+    if (hasSift) head.push('SIFT by Ensembl transcript (dbNSFP)');
     if (kind === 'transcripts') head.push('Shown in table row');
     const rows = [head.map(csvCell).join(',')];
     // The hover text without its two heading lines: one "ENST (aa N): call (score)" entry per transcript.
     const siftDetail = function(r) {{ return String(r[idxSiftTip] || '').split('\\n').slice(2).join(' | '); }};
     table.rows({{ search: 'applied', order: 'applied' }}).data().each(function(r) {{
       if (kind === 'variants') {{
-        rows.push(keep.map(function(i) {{ return r[i]; }}).concat([siftDetail(r)]).map(csvCell).join(','));
+        rows.push(keep.map(function(i) {{ return r[i]; }}).concat(hasSift ? [siftDetail(r)] : []).map(csvCell).join(','));
         return;
       }}
       JSON.parse(r[idxChildren]).forEach(function(c, n) {{
@@ -951,7 +1042,7 @@ $(document).ready(function() {{
         own[idxTranscript] = c[0]; own[idxConsequence] = c[1]; own[idxImpact] = c[2];
         own[idxProtein] = c[3]; own[idxCdna] = c[4]; own[idxSift] = c[5];
         const vals = keep.map(function(i) {{ return (i in own) ? own[i] : r[i]; }});
-        vals.push(String(c[1]).indexOf('missense') >= 0 ? siftDetail(r) : '');   // like the SIFT letter: missense lines only
+        if (hasSift) vals.push(String(c[1]).indexOf('missense') >= 0 ? siftDetail(r) : '');   // like the SIFT letter: missense lines only
         vals.push(n === 0 ? 'yes' : '');   // the first transcript is the one the table row shows
         rows.push(vals.map(csvCell).join(','));
       }});

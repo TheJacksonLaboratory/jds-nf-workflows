@@ -140,3 +140,54 @@ bookkeeping fields, other dbNSFP scores.
    entries whose gene equals the row's gene and whose `aapos` equals the protein position.
 4. Source-of-truth for what ran: the git commit of the pipeline, the run's `.nextflow.log`, and the
    process container lines listed in section 2.
+
+## 8. Mouse runs (`--gen_org mouse`)
+
+A run is one species, so a report never mixes human and mouse. The subworkflow passes the species,
+and whether a germline resource was used to the report explicitly (`--species`,
+`--germline-resource`); nothing is guessed from empty data.
+
+### Verified
+- The sample headline reads "Human (GRCh38) Sample:" or "Mouse (GRCm39) Sample:". The assay supports only
+  these two builds, so the species (`--gen_org`) alone names the build; no build setting is passed to the report.
+- Mouse transcripts are Ensembl (`ENSMUST...`, SnpEff database `GRCm39.105`); all transcripts in both
+  validation runs below were `ENSMUST`.
+- dbSNP, COSMIC and dbNSFP are human-only resources and are set to null for mouse in
+  `config/clonal_hema.config`. In the 2026-09-29 mouse table (97 transcript lines) the ID field was empty
+  on 97 of 97 lines and `POPAF` was 7.3 on 97 of 97 lines (the default for a variant absent from an empty
+  germline resource).
+- Recorded 2026-09-28 (UM-HET3 test): with the empty B6 placeholder every call gets `POPAF` 7.3, so
+  inherited 100%-VAF differences from GRCm39 PASS as false somatic calls.
+
+### Rules used (Reasoning)
+- For mouse the report omits the columns that cannot carry data: dbSNP, COSMIC, SIFT Prediction and
+  Pop. Frequency. The set is declared per species, not detected, so a missing human annotation can never
+  be hidden by it. The Column Reference, transcript expansion and CSV downloads follow the same column set.
+- If the run used the empty placeholder germline resource (detected by the file name
+  `empty_germline_resource...`), the report shows a banner, the Filter text says inherited strain variants
+  are not flagged, and `germline` is described as unavailable. If a real germline resource was supplied
+  (for example UM-HET3), the banner is absent and `germline` is described as judged from that resource.
+- The `panel_of_normals` bullet is dropped for mouse: the mouse panel of normals is a content-free
+  placeholder (config comment, 2026-09-28).
+
+### Validation (real runs, 2026-10-05, one TITR3 sample each, 28 tasks, 0 failed)
+- B6 placeholder run: 22 variant-gene rows, all PASS, banner shown, 14 visible columns.
+- UM-HET3 resource run: 58 rows (PASS 28, `germline` 29, `strand_bias` 1), no banner, 14 visible columns.
+  The two runs used different input FASTQs (UM-HET3 test vs B6 titration), so these counts are not a
+  like-for-like comparison of the two resources.
+- The human report was regenerated unchanged apart from the label and the single-build Chrom text.
+
+### Open
+- No mouse equivalent of SIFT, dbSNP or COSMIC is shown. The one dbSNP-like resource found (MGP) is on
+  GRCm38 and would need a liftover to GRCm39.
+- No review flag for inherited-looking calls is built (decided 2026-10-05): the table already sorts and
+  searches by VAF, so a flag would repeat that and needed a threshold with no data behind it. Instead the
+  no-germline-resource banner tells the reader that inherited variants in an inbred strain typically read
+  near 100% VAF and to sort the VAF column. In the UM-HET3 test the 6 variants at 99.9-100% were exactly the
+  ones a real germline resource filtered; 12 of the 18 `germline` variants sat at about 49-60%, so a VAF
+  cut-off alone cannot find heterozygous inherited variants. The real remedy is a strain germline resource
+  on the calling side.
+- Whether the UM-HET3 `germline` calls are correct was not re-validated here.
+- Banner detection depends on the placeholder's file name; another empty resource under a different name
+  would not trigger it.
+- Mouse gene symbols are shown as SnpEff reports them; no human ortholog label is added (decision 2026-10-05).

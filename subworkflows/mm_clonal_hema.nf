@@ -49,7 +49,10 @@ workflow MM_CLONAL_HEMA {
         CHIP_GENE_REPORT(
             CLONAL_HEMA_CALLING.out.annotation_table.collect{ it -> it[1]},
             file("${projectDir}/modules/clonal_hema/bin/build_gene_report.py"),
-            file("${projectDir}/assets/clonal_hema/jax-gt.svg")
+            file("${projectDir}/assets/clonal_hema/jax-gt.svg"),
+            'mouse',
+            // the default mouse (B6) germline resource is an empty placeholder: no germline filtering
+            params.gnomad_ref.toString().contains('empty_germline_resource') ? 'no' : 'yes'
         )
 
         // Last step: fold two shared modules' (samtools_stats.nf,
