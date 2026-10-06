@@ -4,7 +4,7 @@ nextflow.enable.dsl=2
 // import modules
 include {GATK_GETPILEUPSUMMARIES} from "../modules/gatk/gatk_getpileupsummaries_tumorOnly"
 include {GATK_CALCULATECONTAMINATION} from "../modules/gatk/gatk_calculatecontamination_tumorOnly"
-include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2_tumorOnly"
+include {GATK_MUTECT2} from "../modules/gatk/gatk_mutect2_tumorOnly_chip"
 include {GATK_LEARNREADORIENTATIONMODEL} from "../modules/gatk/gatk_learnreadorientationmodel"
 include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_CONTAM} from "../modules/gatk/gatk_filtermutectcalls_tumoronly_chip_contam"
 include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_NOCONTAM} from "../modules/gatk/gatk_filtermutectcalls_tumoronly_chip"
@@ -80,7 +80,7 @@ workflow CLONAL_HEMA_CALLING {
 
         // SNP/INDEL split. `-L ${params.target_gatk}` and
         // `--af-of-alleles-not-in-resource` (left at GATK's dynamic default --
-        // finding 5, see the code comment in gatk_mutect2_tumorOnly.nf for the
+        // finding 5, see the code comment in gatk_mutect2_tumorOnly_chip.nf for the
         // UM-HET3-specific justification, which does not automatically extend
         // to other backgrounds) both live inside GATK_MUTECT2 itself.
         GATK_SELECTVARIANTS_SNP(filtered_vcf, 'SNP', 'selected_SNP')

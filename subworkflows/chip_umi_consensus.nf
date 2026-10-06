@@ -16,7 +16,7 @@ include {SAMTOOLS_STATS as SAMTOOLS_STATS_PREDEDUP;
 include {SAMTOOLS_SORT} from "../modules/samtools/samtools_sort"
 include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 include {PICARD_COLLECTHSMETRICS;
-         PICARD_COLLECTHSMETRICS as PICARD_COLLECTHSMETRICS_RAW} from "../modules/picard/picard_collecthsmetrics"
+         PICARD_COLLECTHSMETRICS as PICARD_COLLECTHSMETRICS_RAW} from "../modules/picard/picard_collecthsmetrics_chip"
 
 // Shared UMI/duplex-consensus chain for clonal_hema, both species (Twist
 // Bioscience UMI adapter system -- DOC-001337/DOC-001506), replacing the
