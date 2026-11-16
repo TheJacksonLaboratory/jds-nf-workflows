@@ -39,7 +39,10 @@ process SNPSIFT_EXTRACTFIELDS {
     // rerunning after this fix.
     base_fields = 'CHROM POS ID REF ALT QUAL FILTER POPAF GERMQ "GEN[*].AF" "GEN[*].DP" "GEN[*].AD" "ANN[*].ALLELE" "ANN[*].EFFECT" "ANN[*].IMPACT" "ANN[*].GENE" "ANN[*].GENEID" "ANN[*].FEATURE" "ANN[*].FEATUREID" "ANN[*].BIOTYPE" "ANN[*].RANK" "ANN[*].HGVS_C" "ANN[*].HGVS_P" "ANN[*].CDNA_POS" "ANN[*].CDNA_LEN" "ANN[*].CDS_POS" "ANN[*].CDS_LEN" "ANN[*].AA_POS" "ANN[*].AA_LEN" "ANN[*].DISTANCE"'
     dbnsfp_fields = ' "dbNSFP_SIFT_score" "dbNSFP_SIFT_pred" "dbNSFP_Polyphen2_HDIV_score" "dbNSFP_MutationAssessor_score" "dbNSFP_phyloP100way_vertebrate" "dbNSFP_1000Gp3_AF" "dbNSFP_1000Gp3_AFR_AF" "dbNSFP_1000Gp3_EUR_AF" "dbNSFP_1000Gp3_AMR_AF" "dbNSFP_1000Gp3_EAS_AF" "dbNSFP_ESP6500_AA_AF" "dbNSFP_ESP6500_EA_AF" "dbNSFP_aapos" "dbNSFP_Ensembl_transcriptid" "dbNSFP_genename"'
+    // ClinVar INFO fields: added by BCFTOOLS_ANNOTATE_CLINVAR, only when params.clinvar is set (human)
+    clinvar_fields = ' "CLNSIG" "CLNREVSTAT" "CLNDN" "ALLELEID"'
     fields = gen_org == 'mouse' ? base_fields : base_fields + dbnsfp_fields
+    if (params.clinvar) { fields = fields + clinvar_fields }
 
     // Write to a plain file first, THEN gzip as a separate command -- not
     // piped directly (`java ... | gzip -c > out.gz`). A pipe's exit status is

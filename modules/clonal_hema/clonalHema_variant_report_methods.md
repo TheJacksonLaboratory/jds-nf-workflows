@@ -1,6 +1,6 @@
 # clonal_hema variant report: methods and accountability
 
-Applies to `CHIP-Panel-Variant-Report.html`, built by `modules/clonal_hema/bin/build_gene_report.py`
+Applies to `<project_name>.clonalHema_variant_report.html` (`clonalHema_variant_report.html` without `--project_name`), built by `modules/clonal_hema/bin/build_gene_report.py`
 (process `CHIP_GENE_REPORT`). Written 2026-10-03. Any change to a rule below must update this file
 and repeat the verification it cites.
 
@@ -17,8 +17,8 @@ run), **Reasoning** (a design judgment built on verified facts, not itself indep
 - **Reasoning.** "Somatic" is therefore an inference, never proven. PASS means "no Mutect2 filter flagged
   the call". In the synthetic diagnostic sample, PASS calls exist at VAF 45-95%, which resemble
   heterozygous or homozygous germline variants. The report states this in its Column Reference.
-- **Reasoning.** The report applies no CHIP definition (no VAF >= 2% threshold, no CHIP-gene list).
-  CHIP proper requires VAF >= 2% (`11899_2022_Article_662.pdf`); this assay detects lower fractions.
+- **Reasoning.** The report applies no clinical definition of clonal hematopoiesis (no VAF >= 2% threshold,
+  no gene list). The clinical definition requires VAF >= 2% (`11899_2022_Article_662.pdf`); this assay detects lower fractions.
   Classification is left to the reviewer.
 
 ## 2. Data flow and tool versions
@@ -31,6 +31,7 @@ run), **Reasoning** (a design judgment built on verified facts, not itself indep
 | Annotation | SnpEff / SnpSift 5.1d, database `hg38` (human), `GRCm39.105` (mouse) | container line; `params.gen_ver` |
 | dbSNP, COSMIC | dbSNP build 151, COSMIC v95 (human only) | reference file names in the config |
 | dbNSFP | 4.2a, bare-chromosome copy `dbNSFP4.2a.gatk_formatted.nochr.txt.gz` | config; dbNSFP readme |
+| ClinVar | release 2026-10-04, `clinvar_20261004.GRCh38.chr.vcf.gz` (human only) | `params.clinvar` in the config |
 | Report | Python 3 in the pipeline's MultiQC container; DataTables (CDN tag `@2`, a floating tag: 2.3.8 on 2026-10-03) + jQuery 3.7.1 (pinned) from a CDN | module file; the loaded DataTables file header |
 
 - **Verified.** Variant calling runs on the fgbio UMI consensus BAM (`subworkflows/hs_clonal_hema.nf`
@@ -112,6 +113,7 @@ without one ("+N more Ensembl transcripts with no prediction"), so nothing is si
 | Ref/Alt Reads | `ref,alt` shown as `ref/alt` | Presentation only (avoids a thousands-separator reading) |
 | Pop. Frequency | Mutect2 `POPAF` (-log10 scale) shown as is | Not converted: the module documents that GATK adjusts the "not in resource" default AF, so a fixed 10^-POPAF is not a verified conversion |
 | dbSNP / COSMIC | VCF `ID` split: `rs...` to dbSNP, everything else to COSMIC; each linked to the source site | Reasoning: only these two resources write IDs; all 69 rows split cleanly |
+| ClinVar | the VCF INFO field `CLNSIG` (ClinVar's aggregate germline classification for the single variant), underscores shown as spaces; blank when absent | Verified: field definition in the VCF header and in ClinVar's README_VCF.txt; 21 of 21 test variants equal a direct ClinVar lookup with exact allele match (2026-10-16). Germline classification only: ClinVar's somatic clinical-impact fields are not used |
 | Order | natural chromosome order, then position | Presentation only |
 | cDNA / Protein | SnpEff `HGVS.c` / `HGVS.p` unmodified | HGVS rules checked at hgvs-nomenclature.org |
 
@@ -132,7 +134,7 @@ bookkeeping fields, other dbNSFP scores.
 ## 7. Reproducing and auditing a report
 
 1. Run `nextflow run main.nf --workflow clonal_hema ...` (see `run_clonal_hema_*.slurm` in the project
-   notes). The report is `<pubdir>/gene_report/CHIP-Panel-Variant-Report.html`.
+   notes). The report is `<pubdir>/gene_report/<project_name>.clonalHema_variant_report.html`.
 2. Every displayed value traces to `<pubdir>/<sample>/<sample>_annotation_table.txt.gz`, then to
    `<sample>_annotated_final.vcf.gz`, then to the Mutect2 filtered VCF.
 3. Re-derive a SIFT cell: `tabix <dbNSFP nochr file> <chr>:<pos>-<pos>`, keep the entry with the same
@@ -152,7 +154,7 @@ and whether a germline resource was used to the report explicitly (`--species`,
   these two builds, so the species (`--gen_org`) alone names the build; no build setting is passed to the report.
 - Mouse transcripts are Ensembl (`ENSMUST...`, SnpEff database `GRCm39.105`); all transcripts in both
   validation runs below were `ENSMUST`.
-- dbSNP, COSMIC and dbNSFP are human-only resources and are set to null for mouse in
+- dbSNP, COSMIC, ClinVar and dbNSFP are human-only resources and are set to null for mouse in
   `config/clonal_hema.config`. In the 2026-09-29 mouse table (97 transcript lines) the ID field was empty
   on 97 of 97 lines and `POPAF` was 7.3 on 97 of 97 lines (the default for a variant absent from an empty
   germline resource).
@@ -160,7 +162,7 @@ and whether a germline resource was used to the report explicitly (`--species`,
   inherited 100%-VAF differences from GRCm39 PASS as false somatic calls.
 
 ### Rules used (Reasoning)
-- For mouse the report omits the columns that cannot carry data: dbSNP, COSMIC, SIFT Prediction and
+- For mouse the report omits the columns that cannot carry data: dbSNP, COSMIC, ClinVar, SIFT Prediction and
   Pop. Frequency. The set is declared per species, not detected, so a missing human annotation can never
   be hidden by it. The Column Reference, transcript expansion and CSV downloads follow the same column set.
 - If the run used the empty placeholder germline resource (detected by the file name

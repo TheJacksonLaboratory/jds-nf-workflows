@@ -1,5 +1,8 @@
 // clonal_hema copy of picard/picard_collecthsmetrics.nf: the original stays untouched for the other
-// workflows; this copy adds the optional COVERAGE_CAP hook (panel depths exceed Picard's default cap of 200).
+// workflows; this copy adds the optional COVERAGE_CAP hook (panel depths exceed Picard's default cap of 200)
+// and (2026-11-10) PER_TARGET_COVERAGE + PER_BASE_COVERAGE for the per-gene coverage table
+// (modules/clonal_hema/clonal_hema_gene_coverage.nf). The per-base file (one line per target base,
+// ~5 MB per sample) is an output for that step only and is not published.
 process PICARD_COLLECTHSMETRICS {
     tag "$sampleID"
 
@@ -10,13 +13,15 @@ process PICARD_COLLECTHSMETRICS {
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
 
-    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*{Metrics,per_target_coverage}.txt", mode:'copy'
 
     input:
     tuple val(sampleID), file(bam), file(bai)
 
     output:
     tuple val(sampleID), file("*Metrics.txt"), emit: hsmetrics
+    tuple val(sampleID), file("*_per_target_coverage.txt"), emit: per_target
+    tuple val(sampleID), file("*_per_base_coverage.txt"), emit: per_base
 
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -36,6 +41,8 @@ process PICARD_COLLECTHSMETRICS {
     TARGET_INTERVALS=${params.target_picard} \
     REFERENCE_SEQUENCE=${params.ref_fa} \
     ${coverage_cap} \
+    PER_TARGET_COVERAGE=${sampleID}_per_target_coverage.txt \
+    PER_BASE_COVERAGE=${sampleID}_per_base_coverage.txt \
     VALIDATION_STRINGENCY=SILENT
     """
 }

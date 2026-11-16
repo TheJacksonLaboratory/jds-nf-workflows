@@ -34,6 +34,7 @@ ______________________________________________________
 --workflow                      ${params.workflow}
 --csv_input                     ${params.csv_input}
 --pubdir                        ${params.pubdir}
+--project_name                  ${params.project_name}
 -w                              ${workDir}
 --keep_intermediate             ${params.keep_intermediate}
 -c                              ${params.config}
@@ -57,6 +58,7 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --target_gatk                   ${params.target_gatk}
 --target_picard                 ${params.target_picard}
 --bait_picard                   ${params.bait_picard}
+--read_on_target_padding        ${params.read_on_target_padding}
 
 --germline_resource_vcf         ${params.germline_resource_vcf}
 --pon_ref                       ${params.pon_ref}
@@ -65,6 +67,7 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --contam_ref                    ${params.contam_ref}
 --dbSNP                          ${params.dbSNP}
 --cosmic                         ${params.cosmic}
+--clinvar                        ${params.clinvar}
 --dbNSFP                         ${params.dbNSFP}
 --gen_ver                        ${params.gen_ver}
 ______________________________________________________

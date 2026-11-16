@@ -55,13 +55,13 @@ DISPLAY_COLUMNS = [
     ("ANN[*].EFFECT", "Consequence"),
     ("ANN[*].GENE", "Gene"),
     ("ANN[*].FEATUREID", "Transcript"),
-    ("ANN[*].IMPACT", "Impact"),
     ("ANN[*].HGVS_P", "Protein Change"),
     ("ANN[*].HGVS_C", "cDNA Change"),
     ("dbNSFP_SIFT_pred", "SIFT Prediction"),
     ("FILTER", "Filter"),
     ("__dbsnp__", "dbSNP"),
     ("__cosmic__", "COSMIC"),
+    ("CLNSIG", "ClinVar"),
     ("POPAF", "Pop. Frequency (gnomAD, -log10)"),
     ("GEN[*].DP", "Depth"),
 ]
@@ -72,12 +72,15 @@ METRIC_DESCRIPTIONS = {
             "transcripts is also listed against that gene, with a "
             "Consequence such as upstream_gene_variant, "
             "downstream_gene_variant, 5_prime_UTR_variant, etc., so one "
-            "position can appear under more than one gene.",
+            "position can appear under more than one gene. Rows for genes that are not on the panel carry "
+            "a grey 'nearby' tag; the same variant also has a row under its panel gene. The 'Hide nearby "
+            "genes' switch above the table hides them (also in the downloads).",
     "Transcript": "Transcript the Protein/cDNA change is reported against "
                   "(RefSeq for human, GRCh38; Ensembl for mouse, GRCm39). "
                   "Each row is one variant in one gene and shows the "
-                  "transcript with the highest-impact consequence (ties: "
-                  "first in SnpEff's output order). A +N button means the "
+                  "transcript with the most severe consequence (SnpEff's "
+                  "HIGH > MODERATE > LOW > MODIFIER ranking; ties: first in "
+                  "SnpEff's output order). A +N button means the "
                   "variant was annotated against N more transcripts of the "
                   "same gene; click it to list them all.",
     "Chrom": "Chromosome (genome build: GRCh38 human / GRCm39 mouse).",
@@ -92,13 +95,21 @@ METRIC_DESCRIPTIONS = {
     "COSMIC": "COSV ID(s) from COSMIC (v95), the catalogue of mutations "
               "reported in cancer samples. A match means the variant has "
               "been reported in cancer; it does not by itself make it "
-              "pathogenic or CHIP-relevant. Blank = not in COSMIC (human "
+              "pathogenic or relevant to clonal hematopoiesis. Blank = not in COSMIC (human "
               "samples only). The COSMIC site may ask you to sign in.",
+    "ClinVar": "ClinVar's aggregate germline classification for this exact "
+               "variant (the CLNSIG field), e.g. Pathogenic, Likely "
+               "pathogenic, Uncertain significance, Likely benign, Benign, "
+               "or Conflicting classifications of pathogenicity; several "
+               "values are separated by a vertical bar. It summarizes what "
+               "submitters reported to ClinVar and is a germline "
+               "classification: it is not a somatic or clonal hematopoiesis "
+               "classification and does not by itself make a variant "
+               "clinically actionable. Blank = no ClinVar record for this "
+               "exact allele (human samples only).",
     "Consequence": "Predicted effect of the variant on the transcript "
                    "(SnpEff), given as a Sequence Ontology term (the same "
                    "vocabulary Ensembl VEP uses).",
-    "Impact": "SnpEff's severity category for the Consequence: HIGH, "
-              "MODERATE, LOW or MODIFIER.",
     "Protein Change": "Predicted amino-acid change, HGVS protein notation "
                       "(e.g. p.Lys57Glu). Blank for non-coding consequences.",
     "cDNA Change": "Nucleotide change in HGVS notation, relative to the "
@@ -123,8 +134,8 @@ METRIC_DESCRIPTIONS = {
         "number means the variant is MORE common in the general "
         "population, which makes an inherited (germline) origin more "
         "likely; a HIGHER number means it is rare or absent from the "
-        "database. A low-frequency match does not rule out CHIP: recurrent "
-        "CHIP hotspots can also appear in gnomAD at low frequency (here, "
+        "database. A low-frequency match does not rule out clonal hematopoiesis: "
+        "recurrent clonal hematopoiesis hotspots can also appear in gnomAD at low frequency (here, "
         "DNMT3A p.Arg882His scores 3.35).",
     "SIFT Prediction": "Computational (in-silico) prediction from dbNSFP of "
         "whether a missense change is damaging to the protein (D) or "
@@ -145,7 +156,6 @@ METRIC_DESCRIPTIONS = {
 # a METRIC_DETAILS entry (the small arrow beside the metric name toggles the same detail).
 METRIC_EXPAND_LABELS = {
     "Filter": "Expand for what each filter means",
-    "Impact": "Expand for what each impact level means",
     "Transcript": "Expand for why one variant has several transcripts",
     "cDNA Change": "Expand for how to read c. and n. notation",
     "SIFT Prediction": "Expand for how to read the scores and the aa notation",
@@ -156,6 +166,7 @@ METRIC_EXPAND_LABELS = {
 METRIC_LINKS = {
     "dbSNP": ("NCBI dbSNP", "https://www.ncbi.nlm.nih.gov/snp/"),
     "COSMIC": ("COSMIC website", "https://cancer.sanger.ac.uk/cosmic"),
+    "ClinVar": ("NCBI ClinVar", "https://www.ncbi.nlm.nih.gov/clinvar/"),
     "Consequence": ("Definitions of every term (SnpEff effect table)",
                     "https://pcingola.github.io/SnpEff/snpeff/inputoutput/"
                     "#variant-annotation-details"),
@@ -173,7 +184,7 @@ METRIC_DETAILS = {
         "PASS : none of Mutect2's filters flagged the call, so it is not "
         "judged to be a technical artifact or an inherited variant. This is "
         "a technical-quality verdict only: it does not say the variant is "
-        "clinically significant or CHIP-relevant, and with no matched normal "
+        "clinically significant or relevant to clonal hematopoiesis, and with no matched normal "
         "sample 'somatic' is inferred, not proven.",
         "germline : the evidence indicates the variant is inherited (present "
         "in the person's germline), not acquired. Judged mainly from how "
@@ -196,19 +207,6 @@ METRIC_DETAILS = {
         "Other filters (base_qual, clustered_events, contamination, "
         "duplicate, low_allele_frac, slippage, and more) are defined in the "
         "Mutect2 VCF header.",
-    ],
-    # Impact wording follows the "Impact" table of the SnpEff documentation.
-    "Impact": [
-        "HIGH : assumed to be disruptive to the protein, probably causing "
-        "truncation, loss of function or nonsense-mediated decay (e.g. "
-        "stop_gained, frameshift_variant).",
-        "MODERATE : a non-disruptive change that might alter how well the "
-        "protein works (e.g. missense_variant, inframe_deletion).",
-        "LOW : assumed to be mostly harmless or unlikely to change protein "
-        "behaviour (e.g. synonymous_variant).",
-        "MODIFIER : usually non-coding variants or variants in non-coding "
-        "genes, where predictions are difficult or there is no evidence of "
-        "impact (e.g. downstream_gene_variant).",
     ],
     # SIFT score/call definitions follow the dbNSFP 4.2a readme (SIFT_score, SIFT_pred).
     "SIFT Prediction": [
@@ -277,12 +275,12 @@ SPECIES_LABEL = {"human": "Human", "mouse": "Mouse"}
 # The assay supports only these two builds, so --gen_org (the species) is enough to name the build.
 DEFAULT_BUILD = {"human": "GRCh38", "mouse": "GRCm39"}
 
-# Columns a species can never fill: dbSNP, COSMIC and dbNSFP (SIFT) are human-only resources, and
+# Columns a species can never fill: dbSNP, COSMIC, ClinVar and dbNSFP (SIFT) are human-only resources, and
 # the mouse germline resource is an empty placeholder (so Pop. Frequency is the same default
 # value on every row). Declared per species, never detected from empty data, so a missing human
 # annotation cannot be hidden by this.
 SPECIES_HIDDEN_COLUMNS = {
-    "mouse": {"dbSNP", "COSMIC", "SIFT Prediction", "Pop. Frequency (gnomAD, -log10)"},
+    "mouse": {"dbSNP", "COSMIC", "ClinVar", "SIFT Prediction", "Pop. Frequency (gnomAD, -log10)"},
 }
 
 
@@ -414,45 +412,494 @@ def logo_img_tag(logo_path):
             f'src="data:image/svg+xml;base64,{b64}">')
 
 
+# ---------------------------------------------------------------------------
+# Gene coverage section (2026-11-11): genes x samples heatmap with a metric menu, built from the run-level
+# tables of modules/clonal_hema/clonal_hema_gene_coverage.nf (gene_coverage_all_samples.tsv,
+# on_target_all_samples.tsv). Optional: without them the report has no coverage section.
+# ---------------------------------------------------------------------------
+def _num(v):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def load_coverage(gene_path, ont_path):
+    if not gene_path:
+        return None
+    import csv
+    with open(gene_path) as fh:
+        rows = list(csv.DictReader(fh, delimiter="\t"))
+    if not rows:
+        return None
+    genes, samples = [], set()
+    for r in rows:
+        if r["gene"] not in genes:
+            genes.append(r["gene"])
+        samples.add(r["sample"])
+    samples = sorted(samples)
+    thresholds = sorted({int(c[len("dedup_pct_ge_"):-1]) for c in rows[0] if c.startswith("dedup_pct_ge_")})
+    by = {(r["sample"], r["gene"]): r for r in rows}
+    # sample mean depth over all target bases (dedup), for the relative-depth metric
+    smean = {}
+    for s_ in samples:
+        tot = sum((_num(by[(s_, g)]["dedup_mean_depth"]) or 0) * int(by[(s_, g)]["target_bp"]) for g in genes if (s_, g) in by)
+        bp = sum(int(by[(s_, g)]["target_bp"]) for g in genes if (s_, g) in by)
+        smean[s_] = tot / bp if bp else None
+    metrics = [
+        ("dedup_mean_depth", "Mean depth (after UMI deduplication)", "log",
+         "Mean depth over the gene's target bases on the consensus (deduplicated) BAM: the depth available for calling."),
+        ("raw_mean_depth", "Mean depth (raw, before deduplication)", "log",
+         "Mean depth over the gene's target bases on the raw aligned BAM, before UMI deduplication: what was sequenced."),
+        ("raw_to_dedup_ratio", "Raw / dedup depth ratio", "lin",
+         "Raw mean depth divided by dedup mean depth for this gene. Includes both duplicate reads collapsed into one consensus read "
+         "and reads of molecules that produced no consensus read (dropped by --call_min_reads)."),
+        ("rel_depth", "Depth relative to the sample mean (dedup)", "div",
+         "Gene mean depth divided by the sample's mean depth over all target bases (dedup). 1 = average for that sample; "
+         "compares capture uniformity between samples of different total depth."),
+    ]
+    metrics += [(f"dedup_pct_ge_{t}x", f"% of bases at ≥{t}× (dedup)", "pct",
+                 f"Percentage of the gene's target bases with at least {t} reads on the consensus BAM.") for t in thresholds]
+    metrics += [
+        ("dedup_pct_0x", "% of bases at 0× (dedup)", "pct0",
+         "Percentage of the gene's target bases with no read on the consensus BAM (gaps)."),
+        ("dedup_min_region_mean", "Lowest region mean depth (dedup)", "log",
+         "Mean depth of the gene's least-covered target region on the consensus BAM (the hover box names the region)."),
+    ]
+    values = {}
+    for key, *_ in metrics:
+        mat = []
+        for g in genes:
+            row = []
+            for s_ in samples:
+                r = by.get((s_, g))
+                if r is None:
+                    row.append(None)
+                elif key == "rel_depth":
+                    d = _num(r["dedup_mean_depth"])
+                    row.append(round(d / smean[s_], 3) if d is not None and smean[s_] else None)
+                else:
+                    row.append(_num(r.get(key)))
+            mat.append(row)
+        values[key] = mat
+    min_region = [[(by.get((s_, g)) or {}).get("dedup_min_region", "") for s_ in samples] for g in genes]
+    summary = {}
+    if ont_path:
+        with open(ont_path) as fh:
+            for r in csv.DictReader(fh, delimiter="\t"):
+                summary[r["sample"]] = {k: (_num(v) if _num(v) is not None or v == "" else v)
+                                        for k, v in r.items() if k != "sample"}
+    for s_ in samples:
+        summary.setdefault(s_, {})["sample_mean_dedup"] = round(smean[s_], 1) if smean[s_] else None
+    return {"genes": genes, "samples": samples,
+            "metrics": [{"key": k, "label": l, "scale": sc, "desc": d} for k, l, sc, d in metrics],
+            "values": values, "minRegion": min_region, "summary": summary}
+
+
+COV_CSS = """
+  .sample-qc { margin: 0 0 18px; font-size: 0.86rem; }
+  .sample-qc .qc-sex { margin: 0 0 8px; }
+  .sample-qc .qc-sex b { font-weight: 600; }
+  .sample-qc .qc-muted { color: var(--text-muted); }
+  .sample-qc .qc-wrap { overflow-x: auto; }
+  .sample-qc table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .sample-qc th, .sample-qc td { padding: 4px 12px 4px 0; text-align: right; white-space: nowrap;
+    border-bottom: 1px solid var(--border); }
+  .sample-qc th:first-child, .sample-qc td:first-child { text-align: left; }
+  .sample-qc th { color: var(--text-muted); font-weight: 500; }
+  .sample-qc .qc-note { color: var(--text-muted); font-size: 0.78rem; margin: 6px 0 0; max-width: 900px; }
+  .cov-card { margin-top: 32px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px 26px; }
+  .cov-card h3 { font-size: 1.05rem; margin: 0 0 4px; }
+  .cov-card .metrics-sub { color: var(--text-muted); font-size: 0.82rem; margin: 0 0 16px; max-width: 900px; }
+  .cov-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; margin: 18px 0 10px; font-size: 0.88rem; }
+  .cov-controls label { display: inline-flex; align-items: center; gap: 8px; color: var(--text-muted); }
+  .cov-controls select { font: inherit; color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; }
+  .cov-samples { margin: 0 0 10px; font-size: 0.86rem; }
+  .cov-samples summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  .cov-sample-tools { display: flex; flex-wrap: wrap; gap: 8px 0; align-items: center; margin: 10px 0 8px; }
+  .cov-sample-tools .dl-btn { margin-left: 10px; }
+  .cov-sample-tools input { font: inherit; padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text); }
+  .cov-sample-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 16px;
+    max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  .cov-sample { display: flex; align-items: center; gap: 6px; overflow-wrap: anywhere; cursor: pointer; }
+  .cov-desc { color: var(--text-muted); font-size: 0.82rem; margin: 0 0 8px; max-width: 900px; }
+  .cov-legend { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--text-muted);
+    margin: 0 0 10px; font-variant-numeric: tabular-nums; }
+  .cov-legend .bar { width: 180px; height: 10px; border-radius: 3px; border: 1px solid var(--border); }
+  .cov-legend .na { display: inline-block; width: 12px; height: 10px; background: var(--cov-na); border-radius: 2px; margin-left: 14px; }
+  .cov-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }   /* all genes shown, no vertical scroll */
+  table.cov-heat { border-collapse: separate; border-spacing: 1px; font-size: 0.74rem; }
+  table.cov-heat th { font-weight: 500; color: var(--text-muted); background: var(--surface); }
+  table.cov-heat thead th { position: sticky; top: 0; z-index: 2; height: 150px; vertical-align: bottom; padding: 4px 0; }
+  table.cov-heat thead th span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+  table.cov-heat tbody th { position: sticky; left: 0; z-index: 1; text-align: right; padding: 0 8px; white-space: nowrap; }
+  table.cov-heat thead th.corner { left: 0; z-index: 3; }
+  table.cov-heat td { width: 22px; min-width: 22px; height: 18px; border-radius: 2px; cursor: default; }
+  table.cov-heat td.na { background: var(--cov-na); }
+  table.cov-heat td:hover, table.cov-heat td:focus-visible { outline: 2px solid var(--text); outline-offset: -1px; }
+  table.cov-sum { border-collapse: collapse; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+  table.cov-sum th, table.cov-sum td { padding: 5px 12px; border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+  table.cov-sum th:first-child, table.cov-sum td:first-child { text-align: left; }
+  table.cov-sum th { color: var(--text-muted); font-weight: 600; }
+  .cov-sum-wrap { overflow: auto; max-height: 340px; }
+  .cov-sum-controls { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 0.88rem; color: var(--text-muted); }
+  .cov-sum-controls select { font: inherit; color: var(--text); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; }
+  :root { --cov-na: #d9dce4; }
+  @media (prefers-color-scheme: dark) { :root { --cov-na: #3a4055; } }
+"""
+
+COV_JS = r"""
+// per-sample QC under the sample header: inferred sex, read pairs, on-target reads (raw and consensus)
+(function() {
+  if (!cov) return;
+  const $qc = $('#sample-qc');
+  const n = function(v) { return (v === undefined || v === null || v === '') ? '·' : Math.round(v).toLocaleString(); };
+  const pct = function(v) { return (v === undefined || v === null || v === '') ? '' : ' (' + v.toFixed(1) + '%)'; };
+  const e = function(s) { return $('<div>').text(s).html(); };
+  function render(name) {
+    const r = cov.summary[name];
+    if (!r) { $qc.prop('hidden', true); return; }
+    const pads = Object.keys(r).map(function(k) { const m = /^reads_on_target_pad(\d+)_raw$/.exec(k); return m ? +m[1] : null; })
+                   .filter(function(p) { return p !== null; }).sort(function(a, b) { return a - b; });
+    let h = '';
+    if (r.inferred_sex !== undefined) {
+      const label = { male: 'Male (XY)', female: 'Female (XX)', unclear: 'Unclear' }[r.inferred_sex] || r.inferred_sex;
+      h += '<p class="qc-sex">Inferred sex: <b>' + e(label) + '</b> <span class="qc-muted">· chrY/chrX reads ' +
+           e(String(r.chrY_to_chrX)) + ' · chrX/autosome reads ' + e(String(r.chrX_to_autosome)) + '</span></p>';
+    }
+    const head = ['', 'Read pairs', 'Mapped reads', 'On-target reads'].concat(pads.map(function(p) { return '±' + p + ' bp'; }));
+    const mode = $qc.data('mode');
+    const rowFor = function(x, lab) {
+      return '<tr><td>' + e(lab) + '</td><td>' + n(r['read_pairs_' + x]) + '</td><td>' + n(r['reads_mapped_' + x]) + '</td><td>' +
+        n(r['reads_on_target_' + x]) + pct(r['read_on_target_rate_pct_' + x]) + '</td>' +
+        pads.map(function(p) { return '<td>' + n(r['reads_on_target_pad' + p + '_' + x]) + pct(r['read_on_target_pad' + p + '_rate_pct_' + x]) + '</td>'; }).join('') + '</tr>';
+    };
+    h += '<div class="qc-wrap"><table><thead><tr>' + head.map(function(c) { return '<th>' + e(c) + '</th>'; }).join('') +
+         '</tr></thead><tbody>' + rowFor('raw', 'Raw (before UMI deduplication)') +
+         rowFor('dedup', 'Consensus' + (mode ? ' (' + mode + ')' : '')) + '</tbody></table></div>';
+    h += '<p class="qc-note">Read pairs: all primary reads / 2, unmapped included. Mapped and on-target counts are primary mapped reads; ' +
+         'on-target = overlapping a target region by at least 1 base, ±N bp = target regions padded by N bp on each side; % of mapped reads. ' +
+         'Inferred sex from MAPQ ≥ 30 reads on chrX and chrY of the raw BAM (chrY/chrX < 0.002 female, > 0.005 male).</p>';
+    $qc.html(h).prop('hidden', false);
+  }
+  $(document).on('sample-selected', function(ev, name) { render(name); });
+  render($('#sample-headline').text());
+})();
+(function() {
+  if (!cov) return;
+  const $hover = $('.hover-box').first();
+  const fmt = function(v, sc) {
+    if (v === null || v === undefined) return 'no data';
+    if (sc === 'pct' || sc === 'pct0') return v.toFixed(1) + '%';
+    if (sc === 'lin' || sc === 'div') return v.toFixed(2);
+    return v >= 100 ? Math.round(v).toLocaleString() : v.toFixed(1);
+  };
+  // sequential: light -> dark accent blue; reversed for % at 0x (more gaps = darker); diverging for relative depth
+  const seq = function(t) { const l = 95 - 62 * t; return 'hsl(222, ' + (55 + 15 * t) + '%, ' + l + '%)'; };
+  const div = function(t) {   // t in [-1, 1]: <0 orange (below sample mean), >0 blue (above)
+    const a = Math.min(1, Math.abs(t));
+    return t < 0 ? 'hsl(28, 80%, ' + (95 - 45 * a) + '%)' : 'hsl(222, 65%, ' + (95 - 50 * a) + '%)';
+  };
+  let gOrder = cov.genes.map(function(_, i) { return i; });
+  let sOrder = cov.samples.map(function(_, i) { return i; });
+  // sample selection (checklist, all checked by default); cov.samples is sorted by name in Python
+  const selected = cov.samples.map(function() { return true; });
+
+  // average-linkage hierarchical clustering of the selected samples on the selected metric (genes as features);
+  // log10(depth + 1) for depth metrics; distance = root mean squared difference over genes with values in both samples.
+  // Returns the dendrogram leaf order, or null when clustering is not possible (fewer than 3 samples or no shared data).
+  function clusterOrder(idx, m) {
+    if (idx.length < 3) return null;
+    const tf = function(v) { return v === null ? null : (m.scale === 'log' ? Math.log10(v + 1) : (m.scale === 'div' ? Math.log2(Math.max(v, 1e-3)) : v)); };
+    const vec = idx.map(function(si) { return cov.values[m.key].map(function(row) { return tf(row[si]); }); });
+    const dist = function(a, b) { let s = 0, n = 0; for (let k = 0; k < a.length; k++) { if (a[k] !== null && b[k] !== null) { s += (a[k] - b[k]) ** 2; n++; } } return n ? Math.sqrt(s / n) : null; };
+    const D = idx.map(function(_, i) { return idx.map(function(_, j) { return i === j ? 0 : dist(vec[i], vec[j]); }); });
+    for (let i = 0; i < D.length; i++) for (let j = 0; j < D.length; j++) if (D[i][j] === null) return null;
+    let clusters = idx.map(function(_, i) { return { members: [i], order: [i] }; });
+    const cd = function(a, b) { let s = 0; a.members.forEach(function(i) { b.members.forEach(function(j) { s += D[i][j]; }); }); return s / (a.members.length * b.members.length); };
+    while (clusters.length > 1) {
+      let best = null;
+      for (let i = 0; i < clusters.length; i++) for (let j = i + 1; j < clusters.length; j++) {
+        const d = cd(clusters[i], clusters[j]);
+        if (best === null || d < best[0]) best = [d, i, j];
+      }
+      const a = clusters[best[1]], b = clusters[best[2]];
+      const merged = { members: a.members.concat(b.members), order: a.order.concat(b.order) };
+      clusters = clusters.filter(function(_, k) { return k !== best[1] && k !== best[2]; }).concat([merged]);
+    }
+    return clusters[0].order.map(function(i) { return idx[i]; });
+  }
+
+  function sortOrders(m) {
+    const go = $('#cov-gene-order').val(), so = $('#cov-sample-order').val();
+    gOrder = cov.genes.map(function(_, i) { return i; });
+    if (go === 'alpha') gOrder.sort(function(a, b) { return cov.genes[a].localeCompare(cov.genes[b]); });
+    const idx = cov.samples.map(function(_, i) { return i; }).filter(function(i) { return selected[i]; });
+    sOrder = idx;
+    let note = '';
+    if (so === 'cluster') {
+      const co = clusterOrder(idx, m);
+      if (co) sOrder = co; else note = 'Clustering needs at least 3 selected samples with data; shown by name.';
+    }
+    $('#cov-order-note').text(note);
+  }
+
+  function render() {
+    const m = cov.metrics.find(function(x) { return x.key === $('#cov-metric').val(); });
+    sortOrders(m);
+    renderSummary();
+    $('#cov-sel-count').text(sOrder.length + ' of ' + cov.samples.length + ' samples');
+    const mat = cov.values[m.key];
+    const vals = [];   // colour range from the selected samples only
+    mat.forEach(function(r) { sOrder.forEach(function(si) { if (r[si] !== null) vals.push(r[si]); }); });
+    if (!vals.length) { $('#cov-heat').html(''); $('#cov-legend').html('<span>No sample selected.</span>'); return; }
+    let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    let colour, legendL, legendR, grad;
+    if (m.scale === 'pct' || m.scale === 'pct0') {
+      lo = 0; hi = 100;
+      colour = function(v) { return seq(m.scale === 'pct0' ? v / 100 : v / 100); };
+      legendL = '0%'; legendR = '100%'; grad = 'linear-gradient(90deg,' + seq(0) + ',' + seq(1) + ')';
+    } else if (m.scale === 'div') {
+      // symmetric log2 range from the data, capped at x1/8..x8 so a gene at 0x does not wash out the rest
+      const pos = vals.filter(function(v) { return v > 0; });
+      const ext = Math.min(3, Math.max(0.1, Math.abs(Math.log2(Math.min.apply(null, pos.length ? pos : [1]))),
+                                       Math.abs(Math.log2(Math.max.apply(null, pos.length ? pos : [1])))));
+      colour = function(v) { return div(Math.max(-1, Math.min(1, Math.log2(Math.max(v, 1e-9)) / ext))); };
+      legendL = '≤×' + Math.pow(2, -ext).toFixed(2); legendR = '≥×' + Math.pow(2, ext).toFixed(2);
+      grad = 'linear-gradient(90deg,' + div(-1) + ',' + div(0) + ',' + div(1) + ')';
+    } else if (m.scale === 'log') {
+      const a = Math.log10(Math.max(lo, 0) + 1), b = Math.log10(hi + 1);
+      colour = function(v) { return seq(b > a ? (Math.log10(v + 1) - a) / (b - a) : 0.5); };
+      legendL = fmt(lo, 'log'); legendR = fmt(hi, 'log') + ' (log scale)';
+      grad = 'linear-gradient(90deg,' + seq(0) + ',' + seq(1) + ')';
+    } else {
+      colour = function(v) { return seq(hi > lo ? (v - lo) / (hi - lo) : 0.5); };
+      legendL = fmt(lo, 'lin'); legendR = fmt(hi, 'lin');
+      grad = 'linear-gradient(90deg,' + seq(0) + ',' + seq(1) + ')';
+    }
+    $('#cov-desc').text(m.desc);
+    $('#cov-legend').html('<span>' + esc(legendL) + '</span><span class="bar" style="background:' + grad + '"></span><span>' +
+                          esc(legendR) + '</span><span class="na"></span><span>no data</span>');
+    let h = '<thead><tr><th class="corner"></th>';
+    sOrder.forEach(function(si) { h += '<th><span>' + esc(cov.samples[si]) + '</span></th>'; });
+    h += '</tr></thead><tbody>';
+    gOrder.forEach(function(gi) {
+      h += '<tr><th>' + esc(cov.genes[gi]) + '</th>';
+      sOrder.forEach(function(si) {
+        const v = mat[gi][si];
+        h += v === null ? '<td class="na" tabindex="0" data-g="' + gi + '" data-s="' + si + '"></td>'
+                        : '<td tabindex="0" data-g="' + gi + '" data-s="' + si + '" style="background:' + colour(v) + '"></td>';
+      });
+      h += '</tr>';
+    });
+    $('#cov-heat').html(h + '</tbody>');
+  }
+
+  function cellTip(gi, si) {
+    const lines = [cov.genes[gi] + ' — ' + cov.samples[si], ''];
+    cov.metrics.forEach(function(m) { lines.push(m.label + ': ' + fmt(cov.values[m.key][gi][si], m.scale)); });
+    if (cov.minRegion[gi][si]) lines.push('Lowest region: ' + cov.minRegion[gi][si]);
+    return lines.join('\n');
+  }
+  function showCellHover(td) {
+    td.setAttribute('data-tip', cellTip(+td.dataset.g, +td.dataset.s));
+    const lines = td.getAttribute('data-tip').split('\n');
+    let h = '<div class="hover-title">' + esc(lines[0]) + '</div>';
+    lines.slice(2).forEach(function(l) { h += '<div class="hover-row">' + esc(l) + '</div>'; });
+    $hover.html(h).addClass('on').css({ left: 0, top: 0 });
+    const r = td.getBoundingClientRect(), w = $hover.outerWidth(), ht = $hover.outerHeight();
+    const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+    const above = (r.top - ht - 12 >= 8);
+    const top = above ? r.top - ht - 12 : r.bottom + 12;
+    const arrowX = Math.min(Math.max(14, r.left + r.width / 2 - left), w - 14);
+    $hover.toggleClass('above', above).toggleClass('below', !above)
+          .css({ left: left, top: top, opacity: 1, '--arrow-x': arrowX + 'px' });
+  }
+  const hide = function() { $hover.removeClass('on').css('opacity', 0); };
+
+  // per-sample summary table
+  // per-read on-target with padded targets (columns read_on_target_pad<N>_rate_pct_raw/_dedup, if present)
+  const padCols = [];
+  (function() {
+    const any = cov.summary[cov.samples[0]] || {}, pads = [];
+    Object.keys(any).forEach(function(k) { const m = /^read_on_target_pad(\d+)_rate_pct_raw$/.exec(k); if (m) pads.push(+m[1]); });
+    pads.sort(function(a, b) { return a - b; }).forEach(function(p) {
+      ['raw', 'dedup'].forEach(function(x) {
+        padCols.push(['read_on_target_pad' + p + '_rate_pct_' + x, 'On-target reads ±' + p + ' bp, ' + x, 'readpct']); });
+    });
+  })();
+  const sumCols = [['mean_target_coverage_raw', 'Mean target depth, raw', 'log'],
+                   ['mean_target_coverage_dedup', 'Mean target depth, dedup', 'log'],
+                   ['on_target_rate_pct_raw', 'On-target rate, raw', 'pct'],
+                   ['on_target_rate_pct_dedup', 'On-target rate, dedup', 'pct'],
+                   ['reads_mapped_raw', 'Mapped reads, raw', 'n'],
+                   ['reads_mapped_dedup', 'Mapped reads, dedup', 'n'],
+                   ['read_on_target_rate_pct_raw', 'On-target reads, raw', 'readpct'],
+                   ['read_on_target_rate_pct_dedup', 'On-target reads, dedup', 'readpct'],
+                   ...padCols,
+                   ['selected_bases_pct_dedup', 'On or near bait, dedup', 'pct'],
+                   ['fold_enrichment_dedup', 'Fold enrichment, dedup', 'log']];
+  // rows: the sample shown in the report header (default), or all samples selected for the heatmap (2026-11-12)
+  function renderSummary() {
+    const cur = cov.samples.indexOf($('#sample-headline').text());
+    const rows = ($('#cov-sum-scope').val() === 'all' || cur < 0) ? sOrder : [cur];
+    let sh = '<thead><tr><th>Sample</th>' + sumCols.map(function(c) { return '<th>' + esc(c[1]) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    rows.forEach(function(si) {
+      const s = cov.samples[si], r = cov.summary[s] || {};
+      sh += '<tr><td>' + esc(s) + '</td>' + sumCols.map(function(c) {
+        const v = r[c[0]];
+        if (v === undefined || v === null) return '<td></td>';
+        if (c[2] === 'n') return '<td>' + esc(Math.round(v).toLocaleString()) + '</td>';
+        if (c[2] === 'readpct') {   // count of on-target reads with its % of mapped reads
+          const n = r[c[0].replace('read_on_target', 'reads_on_target').replace('_rate_pct', '')];
+          return '<td>' + esc((n === undefined || n === null ? '' : Math.round(n).toLocaleString() + ' ') + '(' + fmt(v, 'pct') + ')') + '</td>';
+        }
+        return '<td>' + esc(fmt(v, c[2])) + '</td>'; }).join('') + '</tr>';
+    });
+    $('#cov-sum').html(sh + '</tbody>');
+  }
+
+  // sample checklist
+  $('#cov-sample-list').html(cov.samples.map(function(s, i) {
+    return '<label class="cov-sample"><input type="checkbox" checked data-i="' + i + '"> ' + esc(s) + '</label>';
+  }).join(''));
+  $('#cov-sample-list').on('change', 'input', function() { selected[+this.dataset.i] = this.checked; render(); });
+  $('#cov-select-all, #cov-select-none').on('click', function() {
+    const on = this.id === 'cov-select-all';
+    $('#cov-sample-list label').filter(function() { return this.style.display !== 'none'; }).find('input')
+      .each(function() { this.checked = on; selected[+this.dataset.i] = on; });
+    render();
+  });
+  $('#cov-sample-filter').on('input', function() {
+    const q = this.value.toLowerCase();
+    $('#cov-sample-list label').each(function() { $(this).toggle($(this).text().toLowerCase().indexOf(q) >= 0); });
+  });
+
+  cov.metrics.forEach(function(m) { $('#cov-metric').append($('<option>').val(m.key).text(m.label)); });
+  $('#cov-metric, #cov-gene-order, #cov-sample-order').on('change', render);
+  $('#cov-sum-scope').on('change', renderSummary);
+  $(document).on('sample-selected', function() { renderSummary(); });
+  $('#cov-heat').on('mouseenter focusin', 'td', function() { showCellHover(this); })
+                .on('mouseleave focusout', 'td', hide);
+  $('.cov-wrap').on('scroll', hide);
+  $('#cov-download').on('click', function() {
+    const m = cov.metrics.find(function(x) { return x.key === $('#cov-metric').val(); });
+    const q = function(v) { const s = String(v); return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    const rows = [['gene'].concat(sOrder.map(function(si) { return cov.samples[si]; })).map(q).join(',')];
+    gOrder.forEach(function(gi) {
+      rows.push([cov.genes[gi]].concat(sOrder.map(function(si) { const v = cov.values[m.key][gi][si]; return v === null ? '' : v; })).map(q).join(','));
+    });
+    const blob = new Blob(['﻿' + rows.join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'clonalHema_gene_coverage_' + m.key + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(a.href); }, 1000);
+  });
+  render();
+})();
+"""
+
+
+def coverage_card_html(cov):
+    if not cov:
+        return ""
+    return (
+        '<div class="cov-card" id="gene-coverage">'
+        '<h3>Gene Coverage</h3>'
+        '<p class="metrics-sub">Coverage of each panel gene in every sample of this run, from Picard CollectHsMetrics '
+        'per-base coverage of the target regions (reads with mapping quality ≥ 20, bases with quality ≥ 20, '
+        'overlapping mates counted once). &ldquo;Raw&rdquo; is the aligned BAM before UMI deduplication, &ldquo;dedup&rdquo; '
+        'the consensus BAM used for variant calling. On-target rate = bases on target / all aligned bases; on-target reads = primary mapped reads overlapping a '
+        'target by at least one base / all primary mapped reads (&plusmn;N bp: targets padded by N bp on each side).</p>'
+        '<div class="cov-sum-controls"><label for="cov-sum-scope">Rows</label><select id="cov-sum-scope">'
+        '<option value="one">This sample</option><option value="all">All samples selected below</option></select></div>'
+        '<div class="cov-sum-wrap"><table class="cov-sum" id="cov-sum"></table></div>'
+        '<div class="cov-controls">'
+        '<label for="cov-metric">Metric <select id="cov-metric"></select></label>'
+        '<label for="cov-sample-order">Sample order <select id="cov-sample-order">'
+        '<option value="name">By name</option>'
+        '<option value="cluster">Clustered (selected metric)</option></select></label>'
+        '<label for="cov-gene-order">Genes <select id="cov-gene-order">'
+        '<option value="panel">Panel order</option><option value="alpha">Alphabetical</option></select></label>'
+        '<button type="button" class="dl-btn" id="cov-download">Download CSV (selected metric)</button>'
+        '</div>'
+        '<details class="cov-samples"><summary>Samples: <span id="cov-sel-count"></span></summary>'
+        '<div class="cov-sample-tools"><input type="search" id="cov-sample-filter" placeholder="Filter samples" aria-label="Filter samples">'
+        '<button type="button" class="dl-btn" id="cov-select-all">Select shown</button>'
+        '<button type="button" class="dl-btn" id="cov-select-none">Clear shown</button></div>'
+        '<div class="cov-sample-list" id="cov-sample-list"></div></details>'
+        '<p class="cov-desc" id="cov-order-note"></p>'
+        '<p class="cov-desc" id="cov-desc"></p>'
+        '<div class="cov-legend" id="cov-legend"></div>'
+        '<div class="cov-wrap"><table class="cov-heat" id="cov-heat"></table></div>'
+        '</div>'
+    )
+
+
 def main():
     args = sys.argv[1:]
-    opts = {"--logo": None, "--species": "human", "--germline-resource": "yes"}
+    opts = {"--logo": None, "--species": "human", "--germline-resource": "yes",
+            "--gene-coverage": None, "--on-target": None, "--consensus-mode": ""}
     for flag in opts:
         if flag in args:
             i = args.index(flag)
             opts[flag] = args[i + 1]
             del args[i:i + 2]
     logo_path, species, germline_resource = opts["--logo"], opts["--species"], opts["--germline-resource"]
+    cov = load_coverage(opts["--gene-coverage"], opts["--on-target"])
+    cov_json = json.dumps(cov)
+    # Panel genes (2026-11-13): from the gene coverage labels, which come from the panel target BED
+    # ("Gene (HUMAN)", "Tert promoter + Tert (TERT)"); empty without --gene-coverage, then nothing is tagged.
+    panel_genes = set()
+    for lab in (cov or {}).get("genes", []):
+        for part in re.sub(r"\s*\([^)]*\)\s*$", "", lab).split(" + "):
+            if part and not part.endswith(" promoter"):
+                panel_genes.add(part.strip().upper())
+    cov_card = coverage_card_html(cov)
+    cov_css, cov_js = COV_CSS, COV_JS
     if species not in SPECIES_LABEL or germline_resource not in ("yes", "no"):
         raise SystemExit("--species must be human|mouse and --germline-resource yes|no")
     build = DEFAULT_BUILD[species]
     if len(args) < 2:
         raise SystemExit("usage: build_gene_report.py [--logo <logo.svg>] [--species human|mouse] "
-                         "[--germline-resource yes|no] <out.html> <table.txt.gz> [...]")
+                         "[--germline-resource yes|no] [--gene-coverage <gene_coverage_all_samples.tsv> "
+                         "--on-target <on_target_all_samples.tsv>] <out.html> <table.txt.gz> [...]")
     out_path = args[0]
     in_paths = args[1:]
-    hidden = SPECIES_HIDDEN_COLUMNS.get(species, set())
+    all_rows = []
+    table_headers = []
+    for p in in_paths:
+        header, rows = read_table(p)
+        table_headers.append(header)
+        all_rows.append(rows)
+
+    hidden = set(SPECIES_HIDDEN_COLUMNS.get(species, set()))
+    # ClinVar is human-only (declared above) and exists only in tables produced by a run that
+    # annotated with ClinVar (a CLNSIG column in every table). A table without the column
+    # (a run made before ClinVar was added) hides the column, so a missing annotation is never
+    # displayed as "not in ClinVar".
+    if not all("CLNSIG" in h for h in table_headers):
+        hidden.add("ClinVar")
     display_columns = [(raw, disp) for raw, disp in DISPLAY_COLUMNS if disp not in hidden]
     descriptions, details = species_text(species, build, germline_resource)
-
-
-    all_rows = []
-    for p in in_paths:
-        _, rows = read_table(p)
-        all_rows.append(rows)
 
     raw_fields = [raw for raw, _ in display_columns]
     # Three hidden trailing columns: the group's transcript count, searchable
     # text of every transcript in the group, and the per-transcript details
     # for the expander on the Transcript cell.
     columns = (["Sample"] + [disp for _, disp in display_columns]
-               + ["_ntx", "_search", "_children", "_chrom_rank", "_sift_tip"])
+               + ["_ntx", "_search", "_children", "_chrom_rank", "_sift_tip", "_panel"])
     vaf_idx = columns.index("VAF (%)")
     reads_idx = columns.index("Ref/Alt Reads")
     sift_idx = columns.index("SIFT Prediction") if "SIFT Prediction" in columns else None
     conseq_idx = columns.index("Consequence")
     pos_idx = columns.index("Position")
     chrom_idx = columns.index("Chrom")
+    clinvar_idx = columns.index("ClinVar") if "ClinVar" in columns else None
 
     # One table row per (sample, variant, gene): the SnpEff output has one line
     # per transcript, so a variant in a gene with several isoforms repeats.
@@ -477,6 +924,10 @@ def main():
         rep["__cosmic__"] = ";".join(x for x in ids if not x.startswith("rs"))
         out_row = [rep["sample"]] + [rep.get(c, "") for c in raw_fields]
         out_row[vaf_idx] = fmt_vaf_pct(out_row[vaf_idx])
+        # ClinVar CLNSIG: blank when absent ("." or empty); underscores shown as spaces.
+        if clinvar_idx is not None:
+            cv = out_row[clinvar_idx]
+            out_row[clinvar_idx] = "" if cv in ("", ".") else cv.replace("_", " ")
         # SnpSift writes AD as "ref,alt"; a slash can't be mistaken for a thousands separator.
         out_row[reads_idx] = out_row[reads_idx].replace(",", "/")
         # SIFT applies to missense changes only, and is matched per transcript line (see
@@ -496,6 +947,8 @@ def main():
         out_row.append(json.dumps(children))
         out_row.append(chrom_rank(out_row[chrom_idx]))
         out_row.append(sift_tip)
+        # 1 = gene on the panel (or no panel list given), 0 = nearby gene annotated by SnpEff
+        out_row.append(1 if not panel_genes or rep.get("ANN[*].GENE", "").upper() in panel_genes else 0)
         try:
             out_row[pos_idx] = int(out_row[pos_idx])
         except ValueError:
@@ -555,19 +1008,14 @@ def main():
     species_label = f"{SPECIES_LABEL[species]} ({build})"
     page_desc_tail = ("variant allele\n      fraction, and population-frequency annotation."
                       if species == "human" else "and variant allele fraction.")
-    notice_html = ""
-    if species == "mouse" and germline_resource == "no":
-        notice_html = ('<p class="report-note"><strong>No germline resource was used in this run.</strong> '
-                       'Inherited strain variants are not filtered, so a PASS call does not distinguish '
-                       'them from somatic variants. Inherited variants in an inbred strain typically read near '
-                       '100% VAF: sort the VAF column to review the highest ones first.</p>')
+    # The "no germline resource" notice box was removed (user, 2026-11-11).
 
     html_out = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CHIP Panel Variant Report</title>
+<title>Clonal Hematopoiesis Panel Variant Report</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-dt@2/css/dataTables.dataTables.min.css">
@@ -594,10 +1042,6 @@ def main():
     --pass-bg: #e3f5ec;
     --fail: #b4471f;
     --fail-bg: #fbe9e2;
-    --impact-high: #b23a3a;
-    --impact-moderate: #ad7a12;
-    --impact-low: #1e7a4c;
-    --impact-modifier: #636b7d;
   }}
   @media (prefers-color-scheme: dark) {{
     :root {{
@@ -718,6 +1162,9 @@ def main():
   .dl-menu button:hover, .dl-menu button:focus-visible {{ background: var(--accent-soft); outline: none; }}
   .dl-menu button span {{ font-size: 0.78rem; color: var(--text-muted); }}
   .dl-btn:focus-visible {{ outline: 2px solid var(--accent); outline-offset: 2px; }}
+  .nearby-tag {{ display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 4px; font-size: 0.7rem;
+    font-weight: 600; color: var(--text-muted); background: color-mix(in srgb, var(--text-muted) 15%, transparent); cursor: help; }}
+  tr.row-nearby td {{ color: var(--text-muted); }}
   .tool-switch {{
     position: relative; display: inline-flex; align-items: center; gap: 8px;
     cursor: pointer; user-select: none; white-space: nowrap;
@@ -770,10 +1217,6 @@ def main():
   .pill {{ display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 0.82em; font-weight: 600; }}
   .pill-pass {{ color: var(--pass); background: var(--pass-bg); }}
   .pill-fail {{ color: var(--fail); background: var(--fail-bg); }}
-  .impact-HIGH {{ color: var(--impact-high); font-weight: 600; }}
-  .impact-MODERATE {{ color: var(--impact-moderate); font-weight: 600; }}
-  .impact-LOW {{ color: var(--impact-low); }}
-  .impact-MODIFIER {{ color: var(--impact-modifier); }}
 
   .metrics-card {{
     margin-top: 32px; background: var(--surface); border: 1px solid var(--border);
@@ -836,13 +1279,14 @@ def main():
     .sidebar {{ width: 100%; flex: none; position: static; height: auto; }}
     .main {{ padding: 24px 16px 40px; }}
   }}
+{cov_css}
 </style>
 </head>
 <body>
 <nav class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-logo">{logo_html}</div>
-    <p class="sidebar-title">CHIP Panel</p>
+    <p class="sidebar-title">Clonal Hematopoiesis Panel</p>
     <p class="sidebar-subtitle">Variant Report</p>
     <p class="sidebar-summary">{n_samples} sample(s) &middot; {n_variants} variant(s)</p>
   </div>
@@ -852,11 +1296,10 @@ def main():
 <main class="main">
   <div class="page-header">
     <div>
-      <h1>Clonal Hematopoiesis of Indeterminate Potential<span class="title-sub">Panel Variant Report</span></h1>
+      <h1>Clonal Hematopoiesis<span class="title-sub">Panel Variant Report</span></h1>
       <p class="page-desc">This report lists every variant called across the panel for each
       sample in this run, including calls that Mutect2's filters flagged (see the Filter
       column), with their predicted consequence, protein/DNA change, {page_desc_tail}</p>
-      {notice_html}
     </div>
   </div>
 
@@ -864,12 +1307,15 @@ def main():
     <h2><span class="sample-label">{species_label} Sample:</span> <span id="sample-headline"></span></h2>
     <span class="sample-sub" id="sample-subhead"></span>
   </div>
+  <div class="sample-qc" id="sample-qc" data-mode="{html.escape(opts['--consensus-mode'])}" hidden></div>
 
   <div class="table-card" id="table-card">
     <table id="report" class="display" style="width:100%">
     <thead><tr>{"".join(f"<th>{html.escape(c)}</th>" for c in columns)}</tr></thead>
     </table>
   </div>
+
+  {cov_card}
 
   <div class="metrics-card">
     <h3>Column Reference</h3>
@@ -884,9 +1330,9 @@ const columns = {columns_json};
 const data = {data_json};
 const sampleCounts = {sample_counts_json};
 const samples = {samples_json};
+const cov = {cov_json};
 
 const idxSample = columns.indexOf("Sample");
-const idxImpact = columns.indexOf("Impact");
 const idxFilter = columns.indexOf("Filter");
 const idxTranscript = columns.indexOf("Transcript");
 const idxNtx = columns.indexOf("_ntx");
@@ -897,6 +1343,8 @@ const idxChromRank = columns.indexOf("_chrom_rank");
 const idxDbsnp = columns.indexOf("dbSNP");
 const idxCosmic = columns.indexOf("COSMIC");
 const idxGene = columns.indexOf("Gene");
+const idxPanel = columns.indexOf("_panel");
+const hasNearby = data.some(function(r) {{ return r[idxPanel] === 0; }});
 
 function idLinks(d, type, urlPrefix, linkIf) {{
   if (type !== 'display' || !d) return d;
@@ -921,11 +1369,11 @@ function esc(s) {{
 
 function transcriptTable(children) {{
   let h = '<div class="tx-detail"><table class="tx-table"><thead><tr><th>Transcript</th>' +
-          '<th>Consequence</th><th>Impact</th><th>Protein Change</th><th>cDNA Change</th>' +
+          '<th>Consequence</th><th>Protein Change</th><th>cDNA Change</th>' +
           (hasSift ? '<th>SIFT</th>' : '') + '</tr></thead><tbody>';
   children.forEach(function(c) {{
-    h += '<tr><td>' + esc(c[0]) + '</td><td>' + esc(c[1]) + '</td><td class="impact-' + esc(c[2]) + '">' +
-         esc(c[2]) + '</td><td>' + esc(c[3]) + '</td><td>' + esc(c[4]) + '</td>' +
+    // c[2] (SnpEff impact) is kept in the data for transcript ranking but not shown (user, 2026-11-11).
+    h += '<tr><td>' + esc(c[0]) + '</td><td>' + esc(c[1]) + '</td><td>' + esc(c[3]) + '</td><td>' + esc(c[4]) + '</td>' +
          (hasSift ? '<td>' + esc(c[5]) + '</td>' : '') + '</tr>';
   }});
   return h + '</tbody></table></div>';
@@ -944,7 +1392,11 @@ $(document).ready(function() {{
       {{ targets: idxSearch, visible: false, searchable: true }},
       {{ targets: idxChildren, visible: false, searchable: false, orderable: false }},
       {{ targets: idxNtx, visible: false, searchable: false }},
-      {{ targets: idxGene, className: 'col-gene' }},
+      {{ targets: idxGene, className: 'col-gene', render: function(d, type, row) {{
+          if (type !== 'display' || row[idxPanel] !== 0) return type === 'display' ? esc(d) : d;
+          return esc(d) + ' <span class="nearby-tag" title="Not a panel gene. SnpEff lists the variant against this gene because it lies near or in it; the variant also has a row under its panel gene.">nearby</span>';
+        }} }},
+      {{ targets: idxPanel, visible: false, searchable: false }},
       {{ targets: idxChromRank, visible: false, searchable: false }},
       {{ targets: idxSiftTip, visible: false, searchable: false, orderable: false }},
       ...(idxSift >= 0 ? [{{ targets: idxSift, render: function(d, type, row) {{
@@ -966,9 +1418,6 @@ $(document).ready(function() {{
           return esc(d) + ' <button type="button" class="tx-toggle" aria-expanded="false" ' +
                  'title="Show all ' + n + ' transcripts"><span class="chevron">&#9656;</span>+' + (n - 1) + '</button>';
         }} }},
-      {{ targets: idxImpact, createdCell: function(td, cellData) {{
-          if (cellData) $(td).addClass('impact-' + cellData);
-        }} }},
       {{ targets: idxFilter, createdCell: function(td, cellData) {{
           if (!cellData) return;
           const ok = cellData === 'PASS';
@@ -979,6 +1428,7 @@ $(document).ready(function() {{
     language: {{ infoFiltered: '' }},
     layout: {{ topStart: 'search', topEnd: 'pageLength', bottomStart: 'info', bottomEnd: 'paging' }},
     order: [[ idxChrom, 'asc' ]],
+    createdRow: function(tr, row) {{ if (row[idxPanel] === 0) tr.classList.add('row-nearby'); }},
     deferRender: true
   }});
 
@@ -989,6 +1439,7 @@ $(document).ready(function() {{
       .filter('[data-sample="' + CSS.escape(name) + '"]').addClass('active');
     $('#sample-headline').text(name);
     $('#sample-subhead').text((sampleCounts[name] || 0) + ' variant(s)');
+    $(document).trigger('sample-selected', [name]);
     table.column(idxSample).search('^' + escapeRegex(name) + '$', true, false).draw();
   }}
 
@@ -998,13 +1449,21 @@ $(document).ready(function() {{
 
   $(table.column(idxGene).header()).addClass('col-gene');
 
+  // Hide nearby (non-panel) gene rows when the switch is on; applies to paging, counts and downloads.
+  let hideNearby = false;
+  $.fn.dataTable.ext.search.push(function(settings, rowText, i, row) {{
+    return !hideNearby || settings.nTable.id !== 'report' || row[idxPanel] !== 0;
+  }});
+  $(document).on('change', '#hide-nearby-switch', function() {{ hideNearby = this.checked; table.draw(); }});
+
   // Toolbar switches (default off), placed between the Search box and the entries-per-page menu.
   const toolSwitch = function(id, label) {{
     return '<label class="tool-switch"><input type="checkbox" role="switch" id="' + id + '">' +
            '<span class="switch-track" aria-hidden="true"></span><span>' + label + '</span></label>';
   }};
   const $tools = $('<div class="dt-tools">' + toolSwitch('freeze-header-switch', 'Freeze header') +
-                   toolSwitch('freeze-gene-switch', 'Freeze Gene column') + '</div>');
+                   toolSwitch('freeze-gene-switch', 'Freeze Gene column') +
+                   (hasNearby ? toolSwitch('hide-nearby-switch', 'Hide nearby genes') : '') + '</div>');
   const $container = $(table.table().container());
   const $topRow = $container.find('.dt-layout-row').first();
   if ($topRow.children().length >= 2) {{ $topRow.children().first().after($tools); }}
@@ -1015,7 +1474,7 @@ $(document).ready(function() {{
   //  - variants: one row per variant and gene, exactly as the table shows it.
   //  - transcripts: one row per transcript line; the variant-level columns (position, VAF, reads,
   //    filter, dbSNP, COSMIC, ...) are repeated on each, and the transcript-level columns
-  //    (Transcript, Consequence, Impact, Protein/cDNA Change, SIFT) hold that transcript's own values.
+  //    (Transcript, Consequence, Protein/cDNA Change, SIFT) hold that transcript's own values.
   const idxConsequence = columns.indexOf('Consequence');
   const idxProtein = columns.indexOf('Protein Change');
   const idxCdna = columns.indexOf('cDNA Change');
@@ -1039,7 +1498,7 @@ $(document).ready(function() {{
       }}
       JSON.parse(r[idxChildren]).forEach(function(c, n) {{
         const own = {{}};
-        own[idxTranscript] = c[0]; own[idxConsequence] = c[1]; own[idxImpact] = c[2];
+        own[idxTranscript] = c[0]; own[idxConsequence] = c[1];
         own[idxProtein] = c[3]; own[idxCdna] = c[4]; own[idxSift] = c[5];
         const vals = keep.map(function(i) {{ return (i in own) ? own[i] : r[i]; }});
         if (hasSift) vals.push(String(c[1]).indexOf('missense') >= 0 ? siftDetail(r) : '');   // like the SIFT letter: missense lines only
@@ -1050,7 +1509,7 @@ $(document).ready(function() {{
     const blob = new Blob(['\\ufeff' + rows.join('\\r\\n') + '\\r\\n'], {{ type: 'text/csv;charset=utf-8' }});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = (currentSample || 'CHIP-Panel') + '_' + kind + '.csv';
+    a.download = (currentSample || 'clonalHema') + '_' + kind + '.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function() {{ URL.revokeObjectURL(a.href); }}, 1000);
   }}
@@ -1142,6 +1601,7 @@ $(document).ready(function() {{
     $('#' + target).toggleClass('open', !open);
     $(this).attr('aria-expanded', open ? 'false' : 'true');
   }});
+{cov_js}
 }});
 </script>
 </body>

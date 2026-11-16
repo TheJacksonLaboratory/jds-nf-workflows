@@ -5,7 +5,7 @@ nextflow.enable.dsl=2
 include {CHIP_UMI_CONSENSUS} from "./chip_umi_consensus"
 include {GATK_GETSAMPLENAME} from "../modules/gatk/gatk_getsamplename_noMeta"
 include {CLONAL_HEMA_CALLING} from "./clonal_hema_calling"
-include {MULTIQC} from "../modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc_clonal_hema"
 include {CHIP_GENE_REPORT} from "../modules/clonal_hema/chip_gene_report"
 include {REORGANIZE_PUBDIR} from "../modules/clonal_hema/reorganize_pubdir"
 
@@ -47,7 +47,9 @@ workflow HS_CLONAL_HEMA {
             file("${projectDir}/modules/clonal_hema/bin/build_gene_report.py"),
             file("${projectDir}/assets/clonal_hema/jax-gt.svg"),
             'human',
-            'yes'
+            'yes',
+            CHIP_UMI_CONSENSUS.out.gene_coverage,
+            CHIP_UMI_CONSENSUS.out.on_target
         )
 
         // Last step: fold two shared modules' (samtools_stats.nf,

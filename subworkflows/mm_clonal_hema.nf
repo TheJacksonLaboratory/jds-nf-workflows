@@ -5,7 +5,7 @@ nextflow.enable.dsl=2
 include {CHIP_UMI_CONSENSUS} from "./chip_umi_consensus"
 include {GATK_GETSAMPLENAME} from "../modules/gatk/gatk_getsamplename_noMeta"
 include {CLONAL_HEMA_CALLING} from "./clonal_hema_calling"
-include {MULTIQC} from "../modules/multiqc/multiqc"
+include {MULTIQC} from "../modules/multiqc/multiqc_clonal_hema"
 include {CHIP_GENE_REPORT} from "../modules/clonal_hema/chip_gene_report"
 include {REORGANIZE_PUBDIR} from "../modules/clonal_hema/reorganize_pubdir"
 
@@ -52,7 +52,9 @@ workflow MM_CLONAL_HEMA {
             file("${projectDir}/assets/clonal_hema/jax-gt.svg"),
             'mouse',
             // the default mouse (B6) germline resource is an empty placeholder: no germline filtering
-            params.gnomad_ref.toString().contains('empty_germline_resource') ? 'no' : 'yes'
+            params.gnomad_ref.toString().contains('empty_germline_resource') ? 'no' : 'yes',
+            CHIP_UMI_CONSENSUS.out.gene_coverage,
+            CHIP_UMI_CONSENSUS.out.on_target
         )
 
         // Last step: fold two shared modules' (samtools_stats.nf,

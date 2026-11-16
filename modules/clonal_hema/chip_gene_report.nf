@@ -23,11 +23,17 @@ process CHIP_GENE_REPORT {
     path(report_logo)
     val(species)             // 'human' | 'mouse': picks the column set and wording
     val(germline_resource)   // 'yes' | 'no': no = placeholder/empty germline resource (mouse B6 default)
+    path(gene_coverage)      // gene_coverage_all_samples.tsv (CLONAL_HEMA_COVERAGE_SUMMARY): Gene Coverage heatmap
+    path(on_target)          // on_target_all_samples.tsv: per-sample coverage summary above the heatmap
 
     output:
-    path "CHIP-Panel-Variant-Report.html", emit: report
+    path "*clonalHema_variant_report.html", emit: report
 
     script:
+    // optional run-level prefix, e.g. GTBH26-MengQ-149.clonalHema_variant_report.html (--project_name)
+    def report_name = (params.project_name ? "${params.project_name}." : "") + "clonalHema_variant_report.html"
+    // consensus mode shown in the per-sample QC table of the report (2026-11-11)
+    def consensus_mode = params.duplex_seq_bool ? "duplex, call_min_reads ${params.call_min_reads}" : "single-strand, call_min_reads ${params.call_min_reads}"
     // report_script is a declared `path` input (not a ${moduleDir} string
     // interpolation) specifically so Nextflow's -resume cache hashes its
     // content: a bare moduleDir reference renders to the same literal path
@@ -35,6 +41,6 @@ process CHIP_GENE_REPORT {
     // build_gene_report.py would never invalidate a cached, stale output
     // (found by a real -resume rerun producing the pre-edit HTML, 2026-10-02).
     """
-    python3 ${report_script} --logo ${report_logo} --species ${species} --germline-resource ${germline_resource} CHIP-Panel-Variant-Report.html ${annotation_tables}
+    python3 ${report_script} --consensus-mode "${consensus_mode}" --logo ${report_logo} --species ${species} --germline-resource ${germline_resource} --gene-coverage ${gene_coverage} --on-target ${on_target} ${report_name} ${annotation_tables}
     """
 }

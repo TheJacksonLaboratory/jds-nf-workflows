@@ -17,6 +17,10 @@ include {SAMTOOLS_SORT} from "../modules/samtools/samtools_sort"
 include {SAMTOOLS_INDEX} from "../modules/samtools/samtools_index"
 include {PICARD_COLLECTHSMETRICS;
          PICARD_COLLECTHSMETRICS as PICARD_COLLECTHSMETRICS_RAW} from "../modules/picard/picard_collecthsmetrics_chip"
+include {CLONAL_HEMA_READ_ON_TARGET;
+         CLONAL_HEMA_SEX_CHECK;
+         CLONAL_HEMA_GENE_COVERAGE;
+         CLONAL_HEMA_COVERAGE_SUMMARY} from "../modules/clonal_hema/clonal_hema_gene_coverage"
 
 // Shared UMI/duplex-consensus chain for clonal_hema, both species (Twist
 // Bioscience UMI adapter system -- DOC-001337/DOC-001506), replacing the
@@ -124,6 +128,28 @@ workflow CHIP_UMI_CONSENSUS {
         bam_bai = FGBIO_ALIGN_CONS.out.bam.join(FGBIO_ALIGN_CONS.out.bai)
         PICARD_COLLECTHSMETRICS(bam_bai)
 
+        // Per-gene coverage (raw = before UMI deduplication, dedup = consensus BAM) and on-target rates,
+        // from the Picard per-base coverage of both HsMetrics calls (2026-11-10).
+        raw_per_base_hs = PICARD_COLLECTHSMETRICS_RAW.out.per_base.join(PICARD_COLLECTHSMETRICS_RAW.out.hsmetrics)
+            .map{ it -> [it[0].replaceAll('_raw$', ''), it[1], it[2]] }
+        // Per-read on-target rate (2026-11-11): same raw (coordinate-sorted) and consensus BAMs as the two HsMetrics calls.
+        read_ont_input = SAMTOOLS_SORT.out.sorted_file.map{ it -> [it[0].replaceAll('_raw$', ''), it[1]] }
+            .join(FGBIO_ALIGN_CONS.out.bam)
+        CLONAL_HEMA_READ_ON_TARGET(read_ont_input, file(params.target_picard))
+        // Inferred sex from chrX/chrY reads of the indexed raw BAM (2026-11-11).
+        CLONAL_HEMA_SEX_CHECK(raw_bam_bai.map{ it -> [it[0].replaceAll('_raw$', ''), it[1], it[2]] })
+        gene_cov_input = PICARD_COLLECTHSMETRICS.out.per_base.join(PICARD_COLLECTHSMETRICS.out.hsmetrics)
+            .join(raw_per_base_hs)
+            .join(CLONAL_HEMA_READ_ON_TARGET.out.tsv)
+            .join(CLONAL_HEMA_SEX_CHECK.out.tsv)
+        gene_cov_script = file("${projectDir}/modules/clonal_hema/bin/gene_coverage.py")
+        CLONAL_HEMA_GENE_COVERAGE(gene_cov_input, gene_cov_script)
+        CLONAL_HEMA_COVERAGE_SUMMARY(
+            CLONAL_HEMA_GENE_COVERAGE.out.gene_tsv.collect{ it -> it[1] },
+            CLONAL_HEMA_GENE_COVERAGE.out.on_target_tsv.collect{ it -> it[1] },
+            gene_cov_script
+        )
+
         ch_multiqc_files = channel.empty()
         ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.quality_stats.collect{ it -> it[1]}.ifEmpty([]))
         // SAMTOOLS_STATS_PREDEDUP not fed to MultiQC -- its own file is
@@ -135,8 +161,11 @@ workflow CHIP_UMI_CONSENSUS {
         ch_multiqc_files = ch_multiqc_files.mix(FGBIO_GROUPREADSBYUMI.out.histogram.collect{ it -> it[1]}.ifEmpty([]))
         ch_multiqc_files = ch_multiqc_files.mix(ch_duplex_mqc)
         ch_multiqc_files = ch_multiqc_files.mix(PICARD_COLLECTHSMETRICS.out.hsmetrics.collect{ it -> it[1]}.ifEmpty([]))
+        ch_multiqc_files = ch_multiqc_files.mix(CLONAL_HEMA_COVERAGE_SUMMARY.out.mqc.flatten())
 
     emit:
         bam_bai       = bam_bai          // [sampleID, consensus bam, bai]
+        gene_coverage = CLONAL_HEMA_COVERAGE_SUMMARY.out.gene_all       // run-level per-gene coverage table (variant report)
+        on_target     = CLONAL_HEMA_COVERAGE_SUMMARY.out.on_target_all  // run-level on-target table (variant report)
         multiqc_files = ch_multiqc_files // QC files for MULTIQC
 }

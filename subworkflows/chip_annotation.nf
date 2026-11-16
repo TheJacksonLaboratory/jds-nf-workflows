@@ -6,6 +6,8 @@ include {SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_DBSNP;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_SNP_COSMIC;
          SNPSIFT_ANNOTATE as SNPSIFT_ANNOTATE_INDEL_COSMIC} from "../modules/snpeff_snpsift/snpsift_annotate_chip"
+include {BCFTOOLS_ANNOTATE_CLINVAR as BCFTOOLS_ANNOTATE_CLINVAR_SNP;
+         BCFTOOLS_ANNOTATE_CLINVAR as BCFTOOLS_ANNOTATE_CLINVAR_INDEL} from "../modules/bcftools/bcftools_annotate_clinvar_chip"
 include {SNPEFF as SNPEFF_SNP;
          SNPEFF as SNPEFF_INDEL} from "../modules/snpeff_snpsift/snpeff_chip"
 include {SNPSIFT_DBNSFP as SNPSIFT_DBNSFP_SNP;
@@ -31,7 +33,7 @@ include {SNPSIFT_EXTRACTFIELDS} from "../modules/snpeff_snpsift/snpsift_extractf
 // already characterized. So this subworkflow runs directly on
 // CLONAL_HEMA_CALLING's SelectVariants output.
 //
-// Human: dbSNP -> COSMIC -> SnpEff -> dbNSFP -> oneperline, both SNP and INDEL.
+// Human: dbSNP -> COSMIC -> ClinVar -> SnpEff -> dbNSFP -> oneperline, both SNP and INDEL.
 // Mouse: dbSNP/COSMIC/dbNSFP are human-only resources (see the comment on
 // params.dbSNP in config/clonal_hema.config for why the one mouse dbSNP-like
 // resource that exists was NOT wired in -- GRCm38 coordinates, wrong build).
@@ -62,6 +64,14 @@ workflow CHIP_ANNOTATION {
             SNPSIFT_ANNOTATE_INDEL_COSMIC(indel_ch, params.cosmic, params.cosmic_index, 'cosmicID')
             snp_ch = SNPSIFT_ANNOTATE_SNP_COSMIC.out.vcf
             indel_ch = SNPSIFT_ANNOTATE_INDEL_COSMIC.out.vcf
+        }
+
+        // ClinVar (human only: params.clinvar is null for mouse). INFO fields CLNSIG etc.
+        if (params.clinvar) {
+            BCFTOOLS_ANNOTATE_CLINVAR_SNP(snp_ch, params.clinvar, params.clinvar_index, 'clinvar')
+            BCFTOOLS_ANNOTATE_CLINVAR_INDEL(indel_ch, params.clinvar, params.clinvar_index, 'clinvar')
+            snp_ch = BCFTOOLS_ANNOTATE_CLINVAR_SNP.out.vcf
+            indel_ch = BCFTOOLS_ANNOTATE_CLINVAR_INDEL.out.vcf
         }
 
         SNPEFF_SNP(snp_ch, 'SNP')
