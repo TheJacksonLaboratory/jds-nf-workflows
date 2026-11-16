@@ -13,15 +13,15 @@ process PICARD_COLLECTHSMETRICS {
 
     container 'quay.io/biocontainers/picard:2.26.10--hdfd78af_0'
 
-    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*{Metrics,per_target_coverage}.txt", mode:'copy'
+    publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*{Metrics,per_target_coverage}.txt", mode:'copy'  // <sampleID>.CoverageMetrics.txt, <sampleID>.per_target_coverage.txt (sample prefix ends with a dot, 2026-11-16)
 
     input:
     tuple val(sampleID), file(bam), file(bai)
 
     output:
     tuple val(sampleID), file("*Metrics.txt"), emit: hsmetrics
-    tuple val(sampleID), file("*_per_target_coverage.txt"), emit: per_target
-    tuple val(sampleID), file("*_per_base_coverage.txt"), emit: per_base
+    tuple val(sampleID), file("*.per_target_coverage.txt"), emit: per_target
+    tuple val(sampleID), file("*.per_base_coverage.txt"), emit: per_base
 
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -36,13 +36,13 @@ process PICARD_COLLECTHSMETRICS {
     """
     picard -Xmx${my_mem}G CollectHsMetrics \
     INPUT=${bam} \
-    OUTPUT=${sampleID}_CoverageMetrics.txt \
+    OUTPUT=${sampleID}.CoverageMetrics.txt \
     BAIT_INTERVALS=${params.bait_picard} \
     TARGET_INTERVALS=${params.target_picard} \
     REFERENCE_SEQUENCE=${params.ref_fa} \
     ${coverage_cap} \
-    PER_TARGET_COVERAGE=${sampleID}_per_target_coverage.txt \
-    PER_BASE_COVERAGE=${sampleID}_per_base_coverage.txt \
+    PER_TARGET_COVERAGE=${sampleID}.per_target_coverage.txt \
+    PER_BASE_COVERAGE=${sampleID}.per_base_coverage.txt \
     VALIDATION_STRINGENCY=SILENT
     """
 }

@@ -25,7 +25,7 @@ process CLONAL_HEMA_READ_ON_TARGET {
     path(targets)
 
     output:
-    tuple val(sampleID), path("${sampleID}_read_on_target.tsv"), emit: tsv
+    tuple val(sampleID), path("${sampleID}.read_on_target.tsv"), emit: tsv
 
     script:
     """
@@ -43,7 +43,7 @@ process CLONAL_HEMA_READ_ON_TARGET {
             hdr="\$hdr\\treads_on_target\${sfx}_\$x"; row="\$row\\t\$(samtools view -c -F 0xB04 -L t\${pad}.bed \$bam)"
         done
     done
-    printf "\$hdr\\n\$row\\n" > ${sampleID}_read_on_target.tsv
+    printf "\$hdr\\n\$row\\n" > ${sampleID}.read_on_target.tsv
     """
 }
 
@@ -65,7 +65,7 @@ process CLONAL_HEMA_SEX_CHECK {
     tuple val(sampleID), path(raw_bam), path(raw_bai)
 
     output:
-    tuple val(sampleID), path("${sampleID}_sex_check.tsv"), emit: tsv
+    tuple val(sampleID), path("${sampleID}.sex_check.tsv"), emit: tsv
 
     script:
     """
@@ -76,7 +76,7 @@ process CLONAL_HEMA_SEX_CHECK {
     n_auto=\$(samtools view -c -q 30 -F 0xF04 ${raw_bam} \$auto)
     n_x=\$( [ -n "\$x" ] && samtools view -c -q 30 -F 0xF04 ${raw_bam} \$x || echo 0 )
     n_y=\$( [ -n "\$y" ] && samtools view -c -q 30 -F 0xF04 ${raw_bam} \$y || echo 0 )
-    printf 'sample\\tsex_autosome_reads\\tsex_chrX_reads\\tsex_chrY_reads\\n%s\\t%s\\t%s\\t%s\\n' ${sampleID} \$n_auto \$n_x \$n_y > ${sampleID}_sex_check.tsv
+    printf 'sample\\tsex_autosome_reads\\tsex_chrX_reads\\tsex_chrY_reads\\n%s\\t%s\\t%s\\t%s\\n' ${sampleID} \$n_auto \$n_x \$n_y > ${sampleID}.sex_check.tsv
     """
 }
 
@@ -97,8 +97,8 @@ process CLONAL_HEMA_GENE_COVERAGE {
     path(script)
 
     output:
-    tuple val(sampleID), path("${sampleID}_gene_coverage.tsv"), emit: gene_tsv
-    tuple val(sampleID), path("${sampleID}_on_target.tsv"), emit: on_target_tsv
+    tuple val(sampleID), path("${sampleID}.gene_coverage.tsv"), emit: gene_tsv
+    tuple val(sampleID), path("${sampleID}.on_target.tsv"), emit: on_target_tsv
 
     script:
     """

@@ -4,8 +4,8 @@
 Two modes, both stdlib-only:
 
   sample   one sample: Picard CollectHsMetrics PER_BASE_COVERAGE files of the raw (pre-UMI-dedup) and the
-           consensus (dedup) BAM -> <sample>_gene_coverage.tsv (one row per gene), plus the HsMetrics files ->
-           <sample>_on_target.tsv (one row: raw and dedup on-target metrics).
+           consensus (dedup) BAM -> <sample>.gene_coverage.tsv (one row per gene), plus the HsMetrics files ->
+           <sample>.on_target.tsv (one row: raw and dedup on-target metrics).
   summary  all samples: the per-sample files -> run-level TSVs and MultiQC custom-content files
            (gene x sample heatmap of dedup mean depth, on-target table).
 
@@ -130,7 +130,7 @@ def mode_sample(a):
             'dedup_min_region', 'dedup_pct_0x'] + [f'dedup_pct_ge_{t}x' for t in th] + \
            ['raw_mean_depth', 'raw_min_region_mean', 'raw_pct_0x'] + [f'raw_pct_ge_{t}x' for t in th] + \
            ['raw_to_dedup_ratio']
-    with open(f'{a.sample}_gene_coverage.tsv', 'w') as out:
+    with open(f'{a.sample}.gene_coverage.tsv', 'w') as out:
         out.write('\t'.join(cols) + '\n')
         for gname, g in d.items():
             rg = r.get(gname)
@@ -161,7 +161,7 @@ def mode_sample(a):
                                 f'reads_on_target{p}': n_on})
     keys = list(rows['raw'])
     sex = sex_fields(a.sex_check) if a.sex_check else {}
-    with open(f'{a.sample}_on_target.tsv', 'w') as out:
+    with open(f'{a.sample}.on_target.tsv', 'w') as out:
         out.write('\t'.join(['sample'] + [f'{k}_{x}' for x in ('raw', 'dedup') for k in keys] + list(sex)) + '\n')
         out.write('\t'.join([a.sample] + [fmt(rows[x][k], 2) for x in ('raw', 'dedup') for k in keys]
                             + [str(v) for v in sex.values()]) + '\n')

@@ -13,7 +13,8 @@ process GATK_SELECTVARIANTS {
     // only with params.keep_intermediate).
     container 'broadinstitute/gatk:4.4.0.0'
 
-    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_selected_*.vcf.gz*", mode:'copy'
+    // Published as <sampleID>.<suffix>.vcf.gz, e.g. <sampleID>.selected_SNP.vcf.gz (sample prefix ends with a dot; 2026-11-16).
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.selected_*.vcf.gz*", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(idx)
@@ -21,8 +22,8 @@ process GATK_SELECTVARIANTS {
     val(suffix)
 
     output:
-    tuple val(sampleID), path("*_${suffix}.vcf.gz"), emit: vcf
-    tuple val(sampleID), path("*_${suffix}.vcf.gz.tbi"), emit: idx
+    tuple val(sampleID), path("${sampleID}.${suffix}.vcf.gz"), emit: vcf
+    tuple val(sampleID), path("${sampleID}.${suffix}.vcf.gz.tbi"), emit: idx
 
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -33,6 +34,6 @@ process GATK_SELECTVARIANTS {
     -R ${params.ref_fa} \
     -V ${vcf} \
     -select-type ${indel_snp} \
-    -O ${sampleID}_${suffix}.vcf.gz
+    -O ${sampleID}.${suffix}.vcf.gz
     """
 }

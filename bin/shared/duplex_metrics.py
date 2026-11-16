@@ -10,8 +10,8 @@ Usage:
     the correct files are located by suffix.)
 
 Outputs:
-    {sample_id}_duplex_summary_mqc.tsv    — table: dedup summary metrics
-    {sample_id}_duplex_familysize_mqc.tsv — bargraph: family size distribution
+    {sample_id}.duplex_summary_mqc.tsv    — table: dedup summary metrics
+    {sample_id}.duplex_familysize_mqc.tsv — bargraph: family size distribution
 """
 
 import sys
@@ -208,7 +208,7 @@ def main():
         "    suffix: 'x'",
     ]
     write_tsv(
-        f"{sample_id}_duplex_summary_mqc.tsv",
+        f"{sample_id}.duplex_summary_mqc.tsv",
         summary_header,
         ["Sample", "Raw reads", "Consensus reads", "Fold reduction", "Duplex yield %", "Ideal duplex yield %", "DS families", "True duplexes", "SS families", "Raw depth (mean)", "Raw depth (median)"],
         [sample_id, total_pre, total_post, fold_reduction, ds_frac_pct, ds_frac_ideal_pct, ds_families, ds_duplexes, ss_families, raw_mean_depth, raw_median_depth],
@@ -249,7 +249,7 @@ def main():
         "  stacking: 'normal'",
     ]
     write_tsv(
-        f"{sample_id}_duplex_familysize_mqc.tsv",
+        f"{sample_id}.duplex_familysize_mqc.tsv",
         familysize_header,
         ["Sample", "Size 1", "Size 2", "Size 3", "Size 4+"],
         [sample_id, size_pct(1), size_pct(2), size_pct(3), sz4plus_pct],

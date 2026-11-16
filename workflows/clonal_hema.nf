@@ -45,6 +45,10 @@ workflow CLONAL_HEMA {
         exit 1, "No input CSV file was specified with `--csv_input`. A CSV manifest is required. See `--help` for information."
     }
 
+    if (!(params.min_alt_molecules.toString() ==~ /[1-9][0-9]*/)) {
+        exit 1, "`--min_alt_molecules` must be a whole number of 1 or more (got: ${params.min_alt_molecules}). See `--help` for information."
+    }
+
     ch_input_sample = extract_csv(file(params.csv_input, checkIfExists: true))
     CONCATENATE_LOCAL_FILES(ch_input_sample)
 

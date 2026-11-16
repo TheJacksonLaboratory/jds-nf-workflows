@@ -17,6 +17,7 @@ process SNPSIFT_EXTRACTFIELDS {
     // etc.) are how a reviewer will actually triage a call. Mouse: same list
     // minus the dbNSFP_* fields (dbNSFP is human-only, see clonal_hema.config).
 
+    // Published as <sampleID>.annotation_table.txt.gz (sample prefix ends with a dot; 2026-11-16).
     publishDir path: { "${params.pubdir}/${sampleID}" }, pattern:"*.txt.gz", mode:'copy'
 
     input:
@@ -54,7 +55,7 @@ process SNPSIFT_EXTRACTFIELDS {
     """
     java -Xmx${my_mem}G -jar /opt/snpEff/SnpSift.jar \
     extractFields ${vcf} ${fields} \
-    > ${sampleID}_annotation_table.txt
-    gzip ${sampleID}_annotation_table.txt
+    > ${sampleID}.annotation_table.txt
+    gzip ${sampleID}.annotation_table.txt
     """
 }

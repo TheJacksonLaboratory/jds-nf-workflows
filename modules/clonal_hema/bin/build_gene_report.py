@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the clonal_hema cross-sample gene/variant HTML report.
 
-Input: every sample's <sample>_annotation_table.txt.gz (SNPSIFT_EXTRACTFIELDS
+Input: every sample's <sample>.annotation_table.txt.gz (SNPSIFT_EXTRACTFIELDS
 output, already verified correct -- see notes/test_summary_human.txt H15).
 These files are the single source of truth for this report: no VCF is
 re-parsed, no annotation is re-derived.
@@ -32,7 +32,7 @@ Output: one self-contained HTML file (table data embedded as JSON; sorting/
 filtering via DataTables.js loaded from a CDN -- no server, no local JS
 bundle, matches how a customer would open this: just double-click the file).
 
-Usage: build_gene_report.py <out.html> <sample1>_annotation_table.txt.gz [...]
+Usage: build_gene_report.py <out.html> <sample1>.annotation_table.txt.gz [...]
 """
 import base64
 import gzip
@@ -201,6 +201,10 @@ METRIC_DETAILS = {
         "map_qual : the reads supporting the variant align noticeably worse "
         "than the reference reads, so the variant may come from "
         "misalignment.",
+        "min_alt_molecules : fewer DNA molecules carry the variant than the "
+        "minimum set for the run (--min_alt_molecules, default 2). Each "
+        "consensus read is one molecule, so a call seen on a single molecule "
+        "cannot be told apart from a one-off error.",
         "panel_of_normals : the site is on the panel-of-normals blacklist, "
         "i.e. it recurs in normal samples and is treated as background.",
         "A call can carry several filters (e.g. orientation;weak_evidence). "
@@ -304,7 +308,7 @@ def species_text(species, build, germline_resource):
         + ("" if has_resource else
            " No germline resource was used in this run, so inherited strain variants are not "
            "flagged and can PASS."))
-    keep = ("weak_evidence", "strand_bias", "orientation", "map_qual", "A call can carry")
+    keep = ("weak_evidence", "strand_bias", "orientation", "map_qual", "min_alt_molecules", "A call can carry")
     rest = [b for b in METRIC_DETAILS["Filter"] if b.startswith(keep)]
     if has_resource:
         first = [
@@ -378,7 +382,8 @@ def sift_for_line(r):
 
 
 def read_table(path):
-    sample = path.split("/")[-1].replace("_annotation_table.txt.gz", "")
+    # <sample>.annotation_table.txt.gz since 2026-11-16; <sample>_annotation_table.txt.gz in earlier runs
+    sample = re.sub(r"[._]annotation_table\.txt(\.gz)?$", "", path.split("/")[-1])
     opener = gzip.open if path.endswith(".gz") else open
     with opener(path, "rt") as f:
         header = f.readline().rstrip("\n").split("\t")

@@ -10,6 +10,7 @@ include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_CONTAM} from "../modules
 include {GATK_FILTERMUECTCALLS as GATK_FILTERMUECTCALLS_NOCONTAM} from "../modules/gatk/gatk_filtermutectcalls_tumoronly_chip"
 include {GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_SNP;
          GATK_SELECTVARIANTS as GATK_SELECTVARIANTS_INDEL} from "../modules/gatk/gatk_selectvariants_chip"
+include {BCFTOOLS_MIN_ALT_MOLECULES} from "../modules/bcftools/bcftools_min_alt_molecules_chip"
 include {BCFTOOLS_STATS} from "../modules/bcftools/bcftools_stats"
 include {CHIP_ANNOTATION} from "./chip_annotation"
 
@@ -77,6 +78,12 @@ workflow CLONAL_HEMA_CALLING {
             filtered_vcf = GATK_FILTERMUECTCALLS_NOCONTAM.out.mutect2_vcf_tbi
             stats = GATK_FILTERMUECTCALLS_NOCONTAM.out.stats
         }
+
+        // Minimum alt molecules (params.min_alt_molecules, default 2): FILTER min_alt_molecules on records
+        // with fewer alt molecules (FORMAT AD); soft filter, all records kept. Everything downstream
+        // (SNP/INDEL split, stats, annotation, report) and the published filtered VCF use this output.
+        BCFTOOLS_MIN_ALT_MOLECULES(filtered_vcf)
+        filtered_vcf = BCFTOOLS_MIN_ALT_MOLECULES.out.vcf_tbi
 
         // SNP/INDEL split. `-L ${params.target_gatk}` and
         // `--af-of-alleles-not-in-resource` (left at GATK's dynamic default --

@@ -55,7 +55,7 @@ process GATK_MUTECT2 {
     --min-base-quality-score 20 \
     ${max_reads_per_alignment_start} \
     ${tumor_lod_to_emit} \
-    -O ${sampleID}_mutect2_somatic.vcf.gz
+    -O ${sampleID}.mutect2_somatic.vcf.gz
     """
 }
 

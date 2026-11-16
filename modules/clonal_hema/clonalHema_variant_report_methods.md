@@ -117,7 +117,7 @@ without one ("+N more Ensembl transcripts with no prediction"), so nothing is si
 | Order | natural chromosome order, then position | Presentation only |
 | cDNA / Protein | SnpEff `HGVS.c` / `HGVS.p` unmodified | HGVS rules checked at hgvs-nomenclature.org |
 
-Dropped from display (kept in the per-sample `*_annotation_table.txt.gz`): QUAL, GERMQ, transcript
+Dropped from display (kept in the per-sample `<sample>.annotation_table.txt.gz`): QUAL, GERMQ, transcript
 bookkeeping fields, other dbNSFP scores.
 
 ## 6. Limits of the evidence
@@ -135,8 +135,9 @@ bookkeeping fields, other dbNSFP scores.
 
 1. Run `nextflow run main.nf --workflow clonal_hema ...` (see `run_clonal_hema_*.slurm` in the project
    notes). The report is `<pubdir>/gene_report/<project_name>.clonalHema_variant_report.html`.
-2. Every displayed value traces to `<pubdir>/<sample>/<sample>_annotation_table.txt.gz`, then to
-   `<sample>_annotated_final.vcf.gz`, then to the Mutect2 filtered VCF.
+2. Every displayed value traces to `<pubdir>/<sample>/<sample>.annotation_table.txt.gz`, then to
+   `<sample>.mutect2_somatic.annotated_final.vcf.gz`, then to `<sample>.mutect2_somatic.final.vcf.gz`
+   (FilterMutectCalls output plus the `min_alt_molecules` FILTER, `--min_alt_molecules`, default 2).
 3. Re-derive a SIFT cell: `tabix <dbNSFP nochr file> <chr>:<pos>-<pos>`, keep the entry with the same
    ref/alt, split `genename`, `aapos`, `SIFT_pred`, `SIFT_score`, `Ensembl_transcriptid` on `;`, keep the
    entries whose gene equals the row's gene and whose `aapos` equals the protein position.

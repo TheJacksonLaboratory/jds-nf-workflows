@@ -8,15 +8,16 @@ process GATK_FILTERMUECTCALLS {
 
     container 'broadinstitute/gatk:4.4.0.0'
 
-    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_mutect2_somatic.filtered.vcf.gz", mode:'copy'
-    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_mutect2_somatic.filtered.vcf.gz.tbi", mode:'copy'
+    // The filtered VCF is published by BCFTOOLS_MIN_ALT_MOLECULES (bcftools_min_alt_molecules_chip.nf), which
+    // adds the min_alt_molecules FILTER to this output and publishes it as <sampleID>.mutect2_somatic.final.vcf.gz;
+    // only the filtering stats are published here.
     publishDir path: { "${params.pubdir}/${sampleID + '/stats'}" }, pattern: "*.filteringStats.tsv", mode:'copy'
 
     input:
     tuple val(sampleID), path(vcf), path(tbi), path(stats), path(read_orientation_model), val(apply_orientation)
 
     output:
-    tuple val(sampleID), file("*_mutect2_somatic.filtered.vcf.gz"), file("*_mutect2_somatic.filtered.vcf.gz.tbi"), emit: mutect2_vcf_tbi
+    tuple val(sampleID), file("*.mutect2_somatic.filtered.vcf.gz"), file("*.mutect2_somatic.filtered.vcf.gz.tbi"), emit: mutect2_vcf_tbi
     tuple val(sampleID), file("*.filteringStats.tsv"), emit: stats
 
     script:
@@ -50,6 +51,6 @@ process GATK_FILTERMUECTCALLS {
     --stats ${stats} \
     ${orientation_priors} \
     ${f_score_beta} \
-    -O ${sampleID}_mutect2_somatic.filtered.vcf.gz
+    -O ${sampleID}.mutect2_somatic.filtered.vcf.gz
     """
 }

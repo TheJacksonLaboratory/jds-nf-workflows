@@ -32,6 +32,9 @@ extra_fn_clean_exts:
   - "fastp report"
   - "_mutect2_somatic.filtered"
   - "_mutect2_somatic"
+  - ".mutect2_somatic.final"
+  - ".mutect2_somatic.filtered"
+  - ".mutect2_somatic"
   - type: "truncate"
     pattern: ".fastq"
 

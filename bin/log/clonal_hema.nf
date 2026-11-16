@@ -54,6 +54,7 @@ ${params.trim_poly_x ? "--poly_x_min_len                ${params.poly_x_min_len}
 --ref_fa_bwamem2_indices        ${params.ref_fa_bwamem2_indices}
 --duplex_seq                    ${params.duplex_seq_bool}
 --call_min_reads                ${params.call_min_reads}
+--min_alt_molecules             ${params.min_alt_molecules}
 
 --target_gatk                   ${params.target_gatk}
 --target_picard                 ${params.target_picard}

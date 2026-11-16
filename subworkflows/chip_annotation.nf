@@ -90,7 +90,7 @@ workflow CHIP_ANNOTATION {
         SNPEFF_ONEPERLINE_INDEL(indel_ch, 'INDEL')
 
         merged = SNPEFF_ONEPERLINE_SNP.out.vcf.join(SNPEFF_ONEPERLINE_INDEL.out.vcf)
-        GATK_MERGEVCF(merged, 'annotated_final')
+        GATK_MERGEVCF(merged, 'mutect2_somatic.annotated_final')
 
         SNPSIFT_EXTRACTFIELDS(GATK_MERGEVCF.out.vcf, params.gen_org)
 

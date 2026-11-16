@@ -83,7 +83,10 @@ def fix_raw_suffixed_dir(pubdir, sample_ids):
         dest_dir = os.path.join(pubdir, sid, "raw")
         for root, _dirs, files in os.walk(raw_dir):
             for fname in files:
-                move_into(os.path.join(root, fname), dest_dir)
+                moved = move_into(os.path.join(root, fname), dest_dir)
+                # <sid>_raw.CoverageMetrics.txt -> <sid>.raw.CoverageMetrics.txt (sample prefix ends with a dot, 2026-11-16)
+                if fname.startswith(f"{sid}_raw."):
+                    os.replace(moved, os.path.join(dest_dir, f"{sid}.raw." + fname[len(f"{sid}_raw."):]))
         shutil.rmtree(raw_dir)
 
 

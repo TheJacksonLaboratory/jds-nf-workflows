@@ -15,15 +15,17 @@ process GATK_MERGEVCF {
     // final annotated deliverable for clonal_hema, unlike the WES module where
     // this same MergeVcfs step is one of two intermediate merge passes.
 
-    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*_annotated_final.vcf.gz*", mode:'copy'
+    // Published name (2026-11-16): <sampleID>.<suffix>.vcf.gz, here <sampleID>.mutect2_somatic.annotated_final.vcf.gz,
+    // the annotated version of <sampleID>.mutect2_somatic.final.vcf.gz (bcftools_min_alt_molecules_chip.nf).
+    publishDir path: { "${params.pubdir}/${sampleID}" }, pattern: "*.mutect2_somatic.annotated_final.vcf.gz*", mode:'copy'
 
     input:
     tuple val(sampleID), file(snp_vcf), file(indel_vcf)
     val(suffix)
 
     output:
-    tuple val(sampleID), file("*_${suffix}.vcf.gz"), emit: vcf
-    tuple val(sampleID), file("*_${suffix}.vcf.gz.tbi"), emit: idx
+    tuple val(sampleID), file("${sampleID}.${suffix}.vcf.gz"), emit: vcf
+    tuple val(sampleID), file("${sampleID}.${suffix}.vcf.gz.tbi"), emit: idx
 
     script:
     String my_mem = (task.memory-1.GB).toString()
@@ -34,6 +36,6 @@ process GATK_MERGEVCF {
     -R ${params.ref_fa} \
     -I ${snp_vcf} \
     -I ${indel_vcf} \
-    -O ${sampleID}_${suffix}.vcf.gz
+    -O ${sampleID}.${suffix}.vcf.gz
     """
 }
